@@ -73,11 +73,11 @@ public static class AuthEndpoints
             var absoluteLink = $"{request.Scheme}://{request.Host}{callbackPath}";
 
             var body = $@"<p>Hi,</p>
-<p>Click the link below to reset your Workout Planner password:</p>
+<p>Click the link below to reset your WorkOut password:</p>
 <p><a href=""{absoluteLink}"">{absoluteLink}</a></p>
 <p>If you didn't request this, you can ignore this email.</p>";
 
-            var sent = await emailService.SendEmailAsync(req.Email, "Reset your Workout Planner password", body);
+            var sent = await emailService.SendEmailAsync(req.Email, "Reset your WorkOut password", body);
             if (sent)
             {
                 return Results.Ok(new { message = "If that email is registered, a reset link has been sent." });

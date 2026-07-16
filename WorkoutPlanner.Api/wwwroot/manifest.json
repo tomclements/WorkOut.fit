@@ -1,7 +1,7 @@
 {
-  "name": "Workout Planner",
-  "short_name": "Workout",
-  "description": "Generate and run personalised workout plans.",
+  "name": "WorkOut",
+  "short_name": "WorkOut",
+  "description": "Generate and run personalised workout plans with WorkOut.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f9fafb",

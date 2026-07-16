@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: workout-planner
+    name: workout
     runtime: docker
     plan: free
     region: oregon
@@ -11,7 +11,7 @@ services:
         value: Production
       - key: ConnectionStrings__DefaultConnection
         fromDatabase:
-          name: workout-planner-db
+          name: workout-db
           property: connectionString
       - key: Admin__Email
         sync: false
@@ -30,7 +30,7 @@ services:
       - key: Smtp__FromEmail
         sync: false
       - key: Smtp__FromName
-        value: Workout Planner
+        value: WorkOut
       - key: Authentication__Google__ClientId
         sync: false
       - key: Authentication__Google__ClientSecret
@@ -41,6 +41,6 @@ services:
         sync: false
 
 databases:
-  - name: workout-planner-db
+  - name: workout-db
     plan: free
     region: oregon

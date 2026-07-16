@@ -8,5 +8,5 @@ public class SmtpSettings
     public string Username { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string FromEmail { get; set; } = string.Empty;
-    public string FromName { get; set; } = "Workout Planner";
+    public string FromName { get; set; } = "WorkOut";
 }
