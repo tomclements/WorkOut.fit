@@ -141,9 +141,13 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (db.Database.IsRelational())
+    if (db.Database.IsSqlite())
     {
-        db.Database.Migrate();
+        await db.Database.EnsureCreatedAsync();
+    }
+    else if (db.Database.IsRelational())
+    {
+        await db.Database.MigrateAsync();
     }
 }
 
