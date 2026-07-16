@@ -1,0 +1,17 @@
+.tab-btn {
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.active-tab {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.tab-panel {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

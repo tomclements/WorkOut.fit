@@ -1,0 +1,24 @@
+/* Print-friendly plan output */
+@media print {
+  body {
+    background: white;
+  }
+
+  .no-print,
+  #planForm {
+    display: none !important;
+  }
+
+  #results {
+    display: block !important;
+  }
+
+  .days-grid {
+    display: block !important;
+  }
+
+  .days-grid > div {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+}

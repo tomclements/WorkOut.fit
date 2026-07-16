@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: workout-planner
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: workout-planner-db
+          property: connectionString
+      - key: Admin__Email
+        sync: false
+      - key: Admin__Password
+        sync: false
+      - key: Smtp__Host
+        sync: false
+      - key: Smtp__Port
+        value: "587"
+      - key: Smtp__EnableSsl
+        value: "true"
+      - key: Smtp__Username
+        sync: false
+      - key: Smtp__Password
+        sync: false
+      - key: Smtp__FromEmail
+        sync: false
+      - key: Smtp__FromName
+        value: Workout Planner
+      - key: Authentication__Google__ClientId
+        sync: false
+      - key: Authentication__Google__ClientSecret
+        sync: false
+      - key: Authentication__Microsoft__ClientId
+        sync: false
+      - key: Authentication__Microsoft__ClientSecret
+        sync: false
+
+databases:
+  - name: workout-planner-db
+    plan: free
+    region: oregon

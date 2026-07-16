@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1e3a8a" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icon.svg" />
+  <title>Workout Planner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <header class="mb-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight text-blue-900">Workout Planner</h1>
+          <p class="text-gray-600 mt-1">Build and run workout plans that fit your schedule, goals, and equipment.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <a id="adminLink" href="/admin.html" class="hidden text-sm text-blue-600 hover:underline font-medium">Admin</a>
+          <div id="authSection" class="flex items-center gap-3">
+            <button id="openAuthBtn" class="text-sm bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-semibold py-2 px-4 rounded-md transition">Sign in / Register</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="authModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+      <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-4">
+        <div class="flex justify-between items-center mb-4">
+          <h2 id="authModalTitle" class="text-xl font-bold">Sign in</h2>
+          <button id="closeAuthModal" class="text-gray-500 hover:text-gray-700 text-xl leading-none">&times;</button>
+        </div>
+
+        <div id="authPanel">
+          <div id="authError" class="text-sm text-red-600 mb-3 hidden"></div>
+          <input id="authEmail" type="email" placeholder="Email" class="w-full border border-gray-300 rounded-md p-2 mb-3" />
+          <input id="authPassword" type="password" placeholder="Password" class="w-full border border-gray-300 rounded-md p-2 mb-4" />
+          <button id="authSubmitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Sign in</button>
+
+          <div id="externalLoginSection" class="hidden">
+            <div class="relative my-4">
+              <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300"></div></div>
+              <div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-gray-500">Or continue with</span></div>
+            </div>
+
+            <div id="externalLoginButtons" class="grid grid-cols-2 gap-3">
+              <a id="googleLoginBtn" href="/api/auth/external-login?provider=Google" class="text-center border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-md transition">Google</a>
+              <a id="microsoftLoginBtn" href="/api/auth/external-login?provider=Microsoft" class="text-center border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-md transition">Microsoft</a>
+            </div>
+          </div>
+
+          <p class="mt-4 text-sm text-center">
+            <button id="forgotToggleBtn" class="text-blue-600 hover:underline font-medium">Forgot password?</button>
+          </p>
+          <p class="mt-3 text-sm text-center text-gray-600">
+            <span id="authToggleText">Don't have an account?</span>
+            <button id="authToggleBtn" class="text-blue-600 hover:underline font-medium ml-1">Register</button>
+          </p>
+        </div>
+
+        <div id="forgotPanel" class="hidden">
+          <div id="forgotError" class="text-sm text-red-600 mb-3 hidden"></div>
+          <div id="forgotSuccess" class="text-sm text-green-600 mb-3 hidden"></div>
+          <input id="forgotEmail" type="email" placeholder="Email" class="w-full border border-gray-300 rounded-md p-2 mb-4" />
+          <button id="forgotSubmitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Send reset link</button>
+          <p class="mt-4 text-sm text-center text-gray-600">
+            <button id="backToAuthBtn" class="text-blue-600 hover:underline font-medium">Back to sign in</button>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Welcome for logged-out users -->
+    <section id="welcomeSection" class="bg-blue-50 rounded-xl p-6 mb-8">
+      <h2 class="text-xl font-semibold text-blue-900 mb-2">Welcome</h2>
+      <p class="text-gray-700 mb-4">
+        Sign in to save your plans, track your workouts, and see your progress. You can also create a plan below without signing in.
+      </p>
+      <button id="welcomeSignInBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Sign in / Register</button>
+    </section>
+
+    <!-- Dashboard for logged-in users -->
+    <section id="dashboardSection" class="hidden mb-8">
+      <h2 class="text-xl font-semibold mb-4">Your dashboard</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl shadow p-4 text-center">
+          <div id="statPlans" class="text-3xl font-bold text-blue-700">0</div>
+          <div class="text-sm text-gray-600">Saved plans</div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-4 text-center">
+          <div id="statWorkouts" class="text-3xl font-bold text-blue-700">0</div>
+          <div class="text-sm text-gray-600">Workouts done</div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-4 text-center">
+          <div id="statMinutes" class="text-3xl font-bold text-blue-700">0</div>
+          <div class="text-sm text-gray-600">Minutes trained</div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-4 text-center">
+          <div id="statSets" class="text-3xl font-bold text-blue-700">0</div>
+          <div class="text-sm text-gray-600">Sets completed</div>
+        </div>
+      </div>
+
+      <button id="togglePlannerBtn" class="mb-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition">
+        + Create a new plan
+      </button>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
+        <div>
+          <h3 class="text-lg font-semibold mb-3">Your plans</h3>
+          <div id="savedPlansTable" class="bg-white rounded-xl shadow overflow-hidden">
+            <p class="p-4 text-sm text-gray-500">Loading your plans...</p>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold mb-3">Recent activity</h3>
+          <div id="recentActivity" class="bg-white rounded-xl shadow overflow-hidden">
+            <p class="p-4 text-sm text-gray-500">No workouts yet.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Plan builder -->
+    <section id="plannerSection" class="bg-white rounded-xl shadow p-6 mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold">Create a plan</h2>
+        <button id="closePlannerBtn" class="hidden text-sm text-gray-500 hover:text-gray-700">Close</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="weeks">Plan length</label>
+          <select id="weeks" class="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+            <option value="1">1 week</option>
+            <option value="2">2 weeks</option>
+            <option value="3">3 weeks</option>
+            <option value="4" selected>4 weeks</option>
+            <option value="6">6 weeks</option>
+            <option value="8">8 weeks</option>
+            <option value="12">12 weeks</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="daysPerWeek">Days per week: <span id="daysLabel">5</span></label>
+          <input id="daysPerWeek" type="range" min="1" max="7" value="5" class="w-full" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="sessionMinutes">Session length: <span id="minutesLabel">20</span> min</label>
+          <input id="sessionMinutes" type="range" min="5" max="90" step="5" value="20" class="w-full" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="goal">Goal</label>
+          <select id="goal" class="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+            <option value="full-body" selected>Full body</option>
+            <option value="strength">Strength</option>
+            <option value="hypertrophy">Muscle building</option>
+            <option value="endurance">Endurance</option>
+            <option value="fat-loss">Fat loss</option>
+            <option value="upper">Upper body focus</option>
+            <option value="lower">Lower body focus</option>
+            <option value="ppl">Push / Pull / Legs</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="level">Experience level</label>
+          <select id="level" class="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+            <option value="beginner" selected>Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col justify-center gap-2">
+          <label class="inline-flex items-center">
+            <input id="includeWarmup" type="checkbox" checked class="rounded text-blue-600" />
+            <span class="ml-2 text-sm text-gray-700">Include 3-min warm-up</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input id="includeCooldown" type="checkbox" checked class="rounded text-blue-600" />
+            <span class="ml-2 text-sm text-gray-700">Include 2-min cool-down</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <span class="block text-sm font-medium text-gray-700 mb-2">Available equipment</span>
+        <div id="equipmentContainer" class="flex flex-wrap gap-4">
+          <span class="text-sm text-gray-500">Loading equipment...</span>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <span class="block text-sm font-medium text-gray-700 mb-2">Injuries / restrictions</span>
+        <div class="flex flex-wrap gap-4">
+          <label class="inline-flex items-center"><input type="checkbox" name="restrictions" value="shoulder" class="rounded text-blue-600" /><span class="ml-2 text-sm">Shoulder</span></label>
+          <label class="inline-flex items-center"><input type="checkbox" name="restrictions" value="lower-back" class="rounded text-blue-600" /><span class="ml-2 text-sm">Lower back</span></label>
+          <label class="inline-flex items-center"><input type="checkbox" name="restrictions" value="knee" class="rounded text-blue-600" /><span class="ml-2 text-sm">Knee</span></label>
+          <label class="inline-flex items-center"><input type="checkbox" name="restrictions" value="wrist" class="rounded text-blue-600" /><span class="ml-2 text-sm">Wrist</span></label>
+          <label class="inline-flex items-center"><input type="checkbox" name="restrictions" value="elbow" class="rounded text-blue-600" /><span class="ml-2 text-sm">Elbow</span></label>
+          <label class="inline-flex items-center"><input type="checkbox" name="restrictions" value="neck" class="rounded text-blue-600" /><span class="ml-2 text-sm">Neck</span></label>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3 items-center">
+        <button id="generateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition">Create my plan</button>
+        <button id="savePlanBtn" class="hidden bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-md transition">Save this plan</button>
+        <button id="printBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-md transition no-print">Print</button>
+        <a id="startWorkoutBtn" href="/workout.html" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-md transition no-print">Start this workout</a>
+      </div>
+
+      <div id="status" class="mt-4 text-sm text-red-600 hidden"></div>
+    </section>
+
+    <section id="results" class="hidden">
+      <div id="planOutput"></div>
+    </section>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

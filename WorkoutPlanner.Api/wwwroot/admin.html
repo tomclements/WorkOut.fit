@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Workout Planner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <header class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-blue-900">Admin</h1>
+        <p class="text-gray-600 mt-1">Manage exercises, equipment, and workout data.</p>
+      </div>
+      <a href="/" class="text-sm text-blue-600 hover:underline font-medium">&larr; Back to planner</a>
+    </header>
+
+    <section id="loginSection" class="bg-white rounded-xl shadow p-6 max-w-md">
+      <h2 class="text-xl font-bold mb-4">Admin sign in required</h2>
+      <p class="text-gray-700 mb-4">Taking you to the main page to sign in...</p>
+      <a id="loginLink" href="/" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Sign in now</a>
+    </section>
+
+    <section id="adminSection" class="hidden">
+      <div class="border-b border-gray-200 mb-6">
+        <nav class="flex gap-4" aria-label="Tabs">
+          <button data-tab="exercises" class="tab-btn active-tab py-2 px-4 text-sm font-medium border-b-2 border-blue-600 text-blue-600">Exercises</button>
+          <button data-tab="equipment" class="tab-btn py-2 px-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Equipment</button>
+          <button data-tab="users" class="tab-btn py-2 px-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Admins</button>
+        </nav>
+      </div>
+
+      <div id="exercisesTab" class="tab-panel">
+        <div class="bg-white rounded-xl shadow p-6 mb-6">
+          <h2 class="text-lg font-bold mb-4" id="exerciseFormTitle">Add exercise</h2>
+          <form id="exerciseForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <input type="hidden" id="exOriginalId" />
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Id</label>
+              <input id="exId" type="text" class="w-full border rounded-md p-2 text-sm" required />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Name</label>
+              <input id="exName" type="text" class="w-full border rounded-md p-2 text-sm" required />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Slot</label>
+              <select id="exSlot" class="w-full border rounded-md p-2 text-sm">
+                <option value="legs">Legs</option>
+                <option value="push">Push</option>
+                <option value="pull">Pull</option>
+                <option value="core">Core</option>
+                <option value="carry">Carry</option>
+                <option value="total">Total</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Level</label>
+              <select id="exLevel" class="w-full border rounded-md p-2 text-sm">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Primary muscles (comma separated)</label>
+              <input id="exPrimary" type="text" class="w-full border rounded-md p-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Secondary muscles (comma separated)</label>
+              <input id="exSecondary" type="text" class="w-full border rounded-md p-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Base sets</label>
+              <input id="exBaseSets" type="number" min="1" max="10" value="3" class="w-full border rounded-md p-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Reps min</label>
+              <input id="exRepsMin" type="number" min="1" value="8" class="w-full border rounded-md p-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Reps max</label>
+              <input id="exRepsMax" type="number" min="1" value="12" class="w-full border rounded-md p-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Work duration (sec/set)</label>
+              <input id="exWorkDuration" type="number" min="1" value="30" class="w-full border rounded-md p-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Rest (sec)</label>
+              <input id="exRestSec" type="number" min="0" value="60" class="w-full border rounded-md p-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Demo URL</label>
+              <input id="exDemoUrl" type="url" class="w-full border rounded-md p-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Avoid for injuries (comma separated)</label>
+              <input id="exAvoidFor" type="text" placeholder="shoulder, lower-back, knee" class="w-full border rounded-md p-2 text-sm" />
+            </div>
+            <div class="flex items-center gap-4">
+              <label class="inline-flex items-center">
+                <input id="exIsTimeBased" type="checkbox" class="rounded text-blue-600" />
+                <span class="ml-2 text-sm">Time-based reps</span>
+              </label>
+            </div>
+            <div class="md:col-span-2 lg:col-span-3">
+              <label class="block text-xs font-medium text-gray-700 mb-1">Equipment required</label>
+              <div id="exEquipmentContainer" class="flex flex-wrap gap-4"></div>
+            </div>
+            <div class="md:col-span-2 lg:col-span-3 flex gap-3">
+              <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition">Save</button>
+              <button type="button" id="exCancelBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-md transition hidden">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="text-left p-3 font-semibold">Name</th>
+                <th class="text-left p-3 font-semibold">Slot</th>
+                <th class="text-left p-3 font-semibold">Level</th>
+                <th class="text-left p-3 font-semibold">Equipment</th>
+                <th class="text-left p-3 font-semibold">Sets/Reps</th>
+                <th class="text-left p-3 font-semibold">Avoid for</th>
+                <th class="text-left p-3 font-semibold">Demo</th>
+                <th class="text-left p-3 font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="exercisesTableBody" class="divide-y"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="equipmentTab" class="tab-panel hidden">
+        <div class="bg-white rounded-xl shadow p-6 mb-6">
+          <h2 class="text-lg font-bold mb-4" id="equipmentFormTitle">Add equipment</h2>
+          <form id="equipmentForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input type="hidden" id="eqOriginalId" />
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Id</label>
+              <input id="eqId" type="text" class="w-full border rounded-md p-2 text-sm" required />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Name</label>
+              <input id="eqName" type="text" class="w-full border rounded-md p-2 text-sm" required />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Category</label>
+              <input id="eqCategory" type="text" class="w-full border rounded-md p-2 text-sm" />
+            </div>
+            <div class="md:col-span-3 flex gap-3">
+              <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition">Save</button>
+              <button type="button" id="eqCancelBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-md transition hidden">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="text-left p-3 font-semibold">Id</th>
+                <th class="text-left p-3 font-semibold">Name</th>
+                <th class="text-left p-3 font-semibold">Category</th>
+                <th class="text-left p-3 font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="equipmentTableBody" class="divide-y"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="usersTab" class="tab-panel hidden">
+        <div class="bg-white rounded-xl shadow p-6 mb-6">
+          <h2 class="text-lg font-bold mb-4">Add admin user</h2>
+          <form id="userForm" class="flex flex-col md:flex-row gap-3">
+            <input id="userEmail" type="email" placeholder="Email" class="flex-1 border border-gray-300 rounded-md p-2 text-sm" required />
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition">Add admin</button>
+          </form>
+          <div id="userError" class="text-sm text-red-600 mt-2 hidden"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="text-left p-3 font-semibold">Id</th>
+                <th class="text-left p-3 font-semibold">Email</th>
+                <th class="text-left p-3 font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody" class="divide-y"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

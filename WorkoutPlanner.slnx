@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="WorkoutPlanner.Api/WorkoutPlanner.Api.csproj" />
+  <Project Path="WorkoutPlanner.Tests/WorkoutPlanner.Tests.csproj" />
+</Solution>

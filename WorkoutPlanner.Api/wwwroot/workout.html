@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1e3a8a" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icon.svg" />
+  <title>Run Workout</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/workoutRunner.css" />
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+  <div class="max-w-2xl mx-auto px-4 py-6">
+    <header class="flex items-center justify-between mb-6">
+      <a href="/" class="text-blue-600 hover:underline text-sm font-medium">&larr; Planner</a>
+      <h1 class="text-xl font-bold text-blue-900">Workout Runner</h1>
+      <div class="flex items-center gap-2">
+        <span id="userLabel" class="text-xs text-gray-500 hidden sm:inline"></span>
+        <button id="fullscreenBtn" class="text-sm bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-md touch-manipulation">Full</button>
+      </div>
+    </header>
+
+    <!-- Setup -->
+    <section id="setupScreen" class="runner-screen active bg-white rounded-xl shadow p-6">
+      <h2 class="text-lg font-semibold mb-4">Ready to train</h2>
+
+      <div id="loadError" class="text-sm text-red-600 mb-4 hidden"></div>
+
+      <div id="resumeBanner" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 hidden">
+        <div class="text-sm text-blue-800 mb-2">You have a workout in progress.</div>
+        <button id="resumeBtn" class="bg-blue-600 text-white text-sm font-semibold py-2 px-4 rounded-md">Resume</button>
+        <button id="discardBtn" class="text-blue-600 text-sm font-semibold py-2 px-4 ml-2">Discard</button>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="daySelect">Select workout day</label>
+        <select id="daySelect" class="w-full border border-gray-300 rounded-md p-2"></select>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <label class="flex items-center justify-between border rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+          <span class="text-sm font-medium">Background music</span>
+          <input id="musicToggle" type="checkbox" class="rounded text-blue-600" />
+        </label>
+
+        <label class="flex items-center justify-between border rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+          <span class="text-sm font-medium">Motion-sensor reps</span>
+          <input id="motionToggle" type="checkbox" class="rounded text-blue-600" />
+        </label>
+
+        <label class="flex items-center justify-between border rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+          <span class="text-sm font-medium">Voice cues</span>
+          <input id="voiceToggle" type="checkbox" class="rounded text-blue-600" />
+        </label>
+      </div>
+
+      <button id="startBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md transition">
+        Start workout
+      </button>
+
+      <p class="text-xs text-gray-500 mt-3">
+        Motion-sensor mode works best when your phone is in an armband or pocket. Tap "Start workout" to grant sensor permission if needed.
+      </p>
+    </section>
+
+    <!-- Active exercise -->
+    <section id="activeScreen" class="runner-screen bg-white rounded-xl shadow p-6">
+      <div class="mb-4">
+        <div class="flex justify-between text-xs text-gray-600 mb-1">
+          <span>Workout progress</span>
+          <span id="progressText">0%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full transition-all" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
+        <div>
+          <div id="exerciseName" class="text-2xl font-bold text-blue-900">Exercise</div>
+          <div id="exerciseMeta" class="text-sm text-gray-600"></div>
+        </div>
+        <div id="setBadge" class="text-sm font-semibold bg-gray-100 text-gray-800 px-3 py-1 rounded-full self-start sm:self-auto"></div>
+      </div>
+
+      <div id="demoLink" class="mb-4"></div>
+
+      <div class="flex justify-center mb-6">
+        <div id="timerDisplay" class="big-timer text-blue-700">00:00</div>
+      </div>
+
+      <div id="repSection" class="flex flex-col items-center mb-6">
+        <div class="text-sm text-gray-600 mb-2">Reps completed</div>
+        <div class="flex items-center gap-6">
+          <button id="repDec" class="w-16 h-16 sm:w-14 sm:h-14 rounded-full bg-gray-200 active:bg-gray-300 text-2xl font-bold touch-manipulation">-</button>
+          <div id="repCount" class="rep-display text-blue-900">0</div>
+          <button id="repInc" class="w-16 h-16 sm:w-14 sm:h-14 rounded-full bg-blue-600 active:bg-blue-700 text-white text-2xl font-bold touch-manipulation">+</button>
+        </div>
+        <div id="sensorStatus" class="text-xs text-gray-500 mt-2 hidden">Sensor active</div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 mb-4">
+        <button id="musicBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-2 px-2 rounded-md transition text-sm touch-manipulation">
+          Music: off
+        </button>
+        <button id="motionBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-2 px-2 rounded-md transition text-sm touch-manipulation">
+          Sensor: off
+        </button>
+        <button id="voiceBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-2 px-2 rounded-md transition text-sm touch-manipulation">
+          Voice: off
+        </button>
+      </div>
+
+      <button id="completeSetBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md transition pulse">
+        Complete set
+      </button>
+    </section>
+
+    <!-- Rest -->
+    <section id="restScreen" class="runner-screen rest-bg rounded-xl shadow p-6">
+      <div class="text-center mb-6">
+        <div class="text-sm font-semibold text-blue-800 uppercase tracking-wider mb-2">Rest</div>
+        <div id="restTimer" class="big-timer text-blue-800">00:00</div>
+      </div>
+
+      <div class="bg-white rounded-lg p-4 mb-6">
+        <div class="text-xs text-gray-500 uppercase tracking-wider">Next up</div>
+        <div id="nextExerciseName" class="text-lg font-semibold text-gray-900"></div>
+        <div id="nextExerciseMeta" class="text-sm text-gray-600"></div>
+      </div>
+
+      <button id="skipRestBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition">
+        Skip rest
+      </button>
+    </section>
+
+    <!-- Finish -->
+    <section id="finishScreen" class="runner-screen bg-white rounded-xl shadow p-6 text-center">
+      <div class="text-5xl mb-4">🏋️</div>
+      <h2 class="text-2xl font-bold text-blue-900 mb-2">Workout complete!</h2>
+      <p id="finishSummary" class="text-gray-700 mb-6"></p>
+
+      <div id="saveSessionArea" class="mb-4 hidden">
+        <button id="saveSessionBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md transition">
+          Save session
+        </button>
+        <p id="saveSessionStatus" class="text-sm mt-2 hidden"></p>
+      </div>
+
+      <a href="/" class="inline-block w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-md transition">
+        Back to planner
+      </a>
+    </section>
+  </div>
+
+  <script src="js/workoutRunner.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+[
+  {
+    "id": "dumbbells",
+    "name": "Dumbbells",
+    "category": "free-weights"
+  },
+  {
+    "id": "barbell",
+    "name": "Barbell",
+    "category": "free-weights"
+  },
+  {
+    "id": "kettlebell",
+    "name": "Kettlebell",
+    "category": "free-weights"
+  },
+  {
+    "id": "bands",
+    "name": "Resistance bands",
+    "category": "accessories"
+  },
+  {
+    "id": "pullup-bar",
+    "name": "Pull-up bar",
+    "category": "accessories"
+  },
+  {
+    "id": "bench",
+    "name": "Bench",
+    "category": "accessories"
+  },
+  {
+    "id": "machines",
+    "name": "Machines",
+    "category": "gym"
+  },
+  {
+    "id": "bodyweight",
+    "name": "Bodyweight",
+    "category": "bodyweight"
+  },
+  {
+    "id": "cable",
+    "name": "Cable machine",
+    "category": "gym"
+  },
+  {
+    "id": "medicine-ball",
+    "name": "Medicine ball",
+    "category": "accessories"
+  },
+  {
+    "id": "stability-ball",
+    "name": "Stability ball",
+    "category": "accessories"
+  },
+  {
+    "id": "ez-bar",
+    "name": "EZ curl bar",
+    "category": "free-weights"
+  },
+  {
+    "id": "foam-roller",
+    "name": "Foam roller",
+    "category": "accessories"
+  }
+]

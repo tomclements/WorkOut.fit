@@ -1,0 +1,17 @@
+{
+  "name": "Workout Planner",
+  "short_name": "Workout",
+  "description": "Generate and run personalised workout plans.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
