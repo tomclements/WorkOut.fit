@@ -92,7 +92,16 @@ dotnet test --verbosity normal
 | 6.1 | `Favorites_RequiresAuthentication` | Favorites API returns 401 when anonymous. |
 | 6.2 | `Favorites_AddListAndRemove_Works` | Logged-in user can add, list, and remove favorites. |
 
-### 7. Exercise data integrity (`ExerciseDataTests.cs`)
+### 7. Exercise import (`ExerciseImportTests.cs`)
+
+| # | Test case | What it verifies |
+|---|---|---|
+| 7.1 | `NormalizeId_SlugifiesNames` | Source exercise names normalize to stable IDs. |
+| 7.2 | `Refresh_RequiresAdmin` | Anonymous refresh is rejected. |
+| 7.3 | `Stats_RequiresAdmin` | Anonymous stats is rejected. |
+| 7.4 | `Refresh_AsAdmin_ImportsFromMockSource` | Admin import adds new exercises from a mocked free-exercise-db payload and skips duplicates on re-run. |
+
+### 8. Exercise data integrity (`ExerciseDataTests.cs`)
 
 | # | Test case | What it verifies |
 |---|---|---|

@@ -134,6 +134,12 @@ builder.Services.AddAuthorization(options =>
 // Application services
 builder.Services.AddSingleton<IWorkoutPlannerService, WorkoutPlannerService>();
 builder.Services.AddScoped<IWorkoutSessionService, WorkoutSessionService>();
+builder.Services.AddScoped<IExerciseImportService, ExerciseImportService>();
+builder.Services.AddHttpClient("free-exercise-db", client =>
+{
+    client.Timeout = TimeSpan.FromMinutes(2);
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("WorkOut.fit/1.0 (exercise-import)");
+});
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 builder.Services.AddSingleton<IEmailService, SmtpEmailService>();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();

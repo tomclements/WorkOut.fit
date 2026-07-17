@@ -129,12 +129,19 @@ Give admins a one-click way to pull the latest public-domain exercise data from 
 - History **streak** + Chart.js **volume & minutes** charts (last 30 days)
 - **Favorites** UI (star on plan exercises & picker, favorites-only filter, prefer favorites in generation)
 
+## Sprint C (admin import) ✅ Done
+
+- `IExerciseImportService` ports free-exercise-db mapping to C#
+- `GET /api/admin/exercises/stats` + `POST /api/admin/exercises/refresh?force=`
+- Admin UI card: counts, force checkbox, spinner, result summary, seed backup when writable
+- Existing IDs preserved by default; force updates mapped fields from source
+
 ## Suggested next sprint
 
 If you want to continue, I’d recommend this order:
 
-1. **Admin refresh-from-source interface** (covered in section 1).
-2. **Share/export plans** (public link or PDF).
-3. **External music integration** (Spotify/Apple Music links first, full SDK later).
+1. **Share/export plans** (public link or PDF).
+2. **External music integration** (Spotify/Apple Music links first, full SDK later).
+3. **Progressive plan generator** (periodization / auto-progression).
 
 Tell me which one you want to build next.

@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('eqCancelBtn').addEventListener('click', resetEquipmentForm);
 
   document.getElementById('userForm').addEventListener('submit', addAdminUser);
+  document.getElementById('refreshExercisesBtn').addEventListener('click', refreshExercisesFromSource);
 });
 
 async function checkAdmin() {
@@ -23,7 +24,7 @@ async function checkAdmin() {
     if (response.ok) {
       document.getElementById('loginSection').classList.add('hidden');
       document.getElementById('adminSection').classList.remove('hidden');
-      await Promise.all([loadEquipment(), loadExercises(), loadUsers()]);
+      await Promise.all([loadEquipment(), loadExercises(), loadUsers(), loadLibraryStats()]);
       return;
     }
   } catch { }
@@ -61,6 +62,68 @@ async function loadExercises() {
   const response = await fetch('/api/admin/exercises', { credentials: 'include' });
   exercisesList = await response.json();
   renderExercisesTable();
+}
+
+async function loadLibraryStats() {
+  try {
+    const response = await fetch('/api/admin/exercises/stats', { credentials: 'include' });
+    if (!response.ok) return;
+    const stats = await response.json();
+    document.getElementById('statTotalExercises').textContent = stats.totalExercises ?? 0;
+    document.getElementById('statWithImages').textContent = stats.withImages ?? 0;
+    document.getElementById('statTotalEquipment').textContent = stats.totalEquipment ?? 0;
+  } catch {
+    // ignore
+  }
+}
+
+async function refreshExercisesFromSource() {
+  const force = document.getElementById('refreshForce').checked;
+  const msg = force
+    ? 'Force overwrite will update existing exercises from free-exercise-db (manual name/equipment edits on those IDs may be replaced). Continue?'
+    : 'Import new exercises from free-exercise-db? Existing exercises will be left unchanged.';
+  if (!confirm(msg)) return;
+
+  const btn = document.getElementById('refreshExercisesBtn');
+  const spinner = document.getElementById('refreshSpinner');
+  const status = document.getElementById('refreshStatus');
+  btn.disabled = true;
+  spinner.classList.remove('hidden');
+  status.classList.add('hidden');
+
+  try {
+    const response = await fetch(`/api/admin/exercises/refresh?force=${force}`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok && !(data.added || data.updated)) {
+      throw new Error(data.errors?.[0] || data.title || `Refresh failed (${response.status})`);
+    }
+
+    status.className = 'mt-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md p-3';
+    status.innerHTML = `
+      <div class="font-semibold mb-1">Refresh complete</div>
+      <div>Added: <strong>${data.added ?? 0}</strong> · Updated: <strong>${data.updated ?? 0}</strong> ·
+      Duplicates skipped: <strong>${data.duplicates ?? 0}</strong> · Category/equipment skipped: <strong>${data.skipped ?? 0}</strong></div>
+      <div>Equipment added: <strong>${data.equipmentAdded ?? 0}</strong> · Total exercises: <strong>${data.totalExercises ?? '—'}</strong></div>
+      ${data.seedFileUpdated ? `<div class="mt-1 text-xs">Seed file updated${data.backupPath ? ` (backup: ${escapeHtml(data.backupPath)})` : ''}.</div>` : ''}
+      ${(data.errors && data.errors.length) ? `<div class="mt-2 text-amber-700 text-xs">Notes: ${data.errors.map(escapeHtml).join('; ')}</div>` : ''}
+    `;
+    status.classList.remove('hidden');
+    if (typeof showToast === 'function') {
+      showToast(`Import finished: +${data.added || 0} new exercises`, 'success');
+    }
+    await Promise.all([loadEquipment(), loadExercises(), loadLibraryStats()]);
+  } catch (err) {
+    status.className = 'mt-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-3';
+    status.textContent = 'Refresh failed: ' + err.message;
+    status.classList.remove('hidden');
+    if (typeof showToast === 'function') showToast('Exercise refresh failed.', 'error');
+  } finally {
+    btn.disabled = false;
+    spinner.classList.add('hidden');
+  }
 }
 
 async function loadUsers() {

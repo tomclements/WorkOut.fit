@@ -34,6 +34,37 @@
       </div>
 
       <div id="exercisesTab" class="tab-panel">
+        <div class="bg-white rounded-xl shadow p-6 mb-6 border border-blue-100">
+          <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-bold mb-1">Refresh exercises from source</h2>
+              <p class="text-sm text-gray-600 mb-3">
+                Pull the latest public-domain library from
+                <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener" class="text-blue-600 hover:underline">free-exercise-db</a>.
+                New exercises are added; existing IDs are kept unless you force overwrite.
+              </p>
+              <div id="libraryStats" class="text-sm text-gray-700 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div><span class="text-gray-500">Exercises:</span> <strong id="statTotalExercises">—</strong></div>
+                <div><span class="text-gray-500">With images:</span> <strong id="statWithImages">—</strong></div>
+                <div><span class="text-gray-500">Equipment:</span> <strong id="statTotalEquipment">—</strong></div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 min-w-[14rem]">
+              <label class="inline-flex items-center text-sm text-gray-700">
+                <input id="refreshForce" type="checkbox" class="rounded text-blue-600" />
+                <span class="ml-2">Force overwrite existing</span>
+              </label>
+              <button type="button" id="refreshExercisesBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md transition">
+                Refresh now
+              </button>
+            </div>
+          </div>
+          <div id="refreshStatus" class="mt-4 text-sm hidden"></div>
+          <div id="refreshSpinner" class="mt-3 hidden text-sm text-indigo-700 font-medium">
+            Fetching and merging exercises… this can take a few seconds.
+          </div>
+        </div>
+
         <div class="bg-white rounded-xl shadow p-6 mb-6">
           <h2 class="text-lg font-bold mb-4" id="exerciseFormTitle">Add exercise</h2>
           <form id="exerciseForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

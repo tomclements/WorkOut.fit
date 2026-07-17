@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WorkoutPlanner.Api.Data;
 using WorkoutPlanner.Api.Models;
+using WorkoutPlanner.Api.Services;
 using WorkoutPlanner.Api.Validators;
 
 namespace WorkoutPlanner.Api.Endpoints;
@@ -19,6 +20,20 @@ public static class AdminEndpoints
                 .OrderBy(e => e.Name)
                 .ToListAsync();
             return Results.Ok(exercises);
+        }).RequireAuthorization("Admin");
+
+        app.MapGet("/api/admin/exercises/stats", async (IExerciseImportService importService) =>
+        {
+            var stats = await importService.GetLibraryStatsAsync();
+            return Results.Ok(stats);
+        }).RequireAuthorization("Admin");
+
+        app.MapPost("/api/admin/exercises/refresh", async (bool? force, IExerciseImportService importService) =>
+        {
+            var result = await importService.RefreshFromFreeExerciseDbAsync(force ?? false);
+            if (result.Errors.Count > 0 && result.Added == 0 && result.Updated == 0)
+                return Results.Json(result, statusCode: StatusCodes.Status502BadGateway);
+            return Results.Ok(result);
         }).RequireAuthorization("Admin");
 
         app.MapPost("/api/admin/exercises", async (Exercise dto, AppDbContext db) =>
@@ -63,6 +78,7 @@ public static class AdminEndpoints
             existing.WorkDuration = dto.WorkDuration;
             existing.RestSec = dto.RestSec;
             existing.DemoUrl = dto.DemoUrl;
+            existing.ImageUrl = dto.ImageUrl;
             existing.AvoidFor = dto.AvoidFor;
 
             await db.SaveChangesAsync();
