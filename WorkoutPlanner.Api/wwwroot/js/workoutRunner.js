@@ -19,6 +19,9 @@ let voiceInitialized = false;
 let sessionPlanName = 'Workout';
 let currentSavedPlanId = null;
 let currentSavedPlanName = null;
+let isPaused = false;
+let autoPaused = false;
+let pauseStartTime = 0;
 
 const setupScreen = document.getElementById('setupScreen');
 const activeScreen = document.getElementById('activeScreen');
@@ -84,6 +87,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   voiceBtn.addEventListener('click', toggleVoice);
   fullscreenBtn.addEventListener('click', toggleFullscreen);
   saveSessionBtn.addEventListener('click', saveSession);
+  document.getElementById('pauseBtn').addEventListener('click', () => pauseWorkout(false));
+  document.getElementById('restPauseBtn').addEventListener('click', () => pauseWorkout(false));
+  document.getElementById('resumeWorkoutBtn').addEventListener('click', resumeWorkout);
+  document.getElementById('restResumeWorkoutBtn').addEventListener('click', resumeWorkout);
+  document.getElementById('volumeSlider').addEventListener('input', onVolumeChange);
+  window.addEventListener('beforeunload', handleBeforeUnload);
 
   // Keyboard shortcut: space increments reps; enter completes set
   document.addEventListener('keydown', (e) => {
@@ -320,9 +329,66 @@ function releaseWakeLock() {
   }
 }
 
+function handleBeforeUnload(e) {
+  if (phase === 'work' || phase === 'rest') {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+}
+
+function pauseWorkout(auto = false) {
+  if (isPaused || (phase !== 'work' && phase !== 'rest')) return;
+  isPaused = true;
+  autoPaused = auto;
+  pauseStartTime = Date.now();
+  clearInterval(timerInterval);
+  if (musicEngine.isPlaying) musicEngine.setVolume(0.05);
+  if (auto) speak('Workout paused.');
+  updatePauseUI();
+}
+
+function resumeWorkout() {
+  if (!isPaused) return;
+  const pauseDuration = Date.now() - pauseStartTime;
+  phaseStartTime += pauseDuration;
+  startTime += pauseDuration;
+  isPaused = false;
+  autoPaused = false;
+  if (musicEngine.isPlaying) musicEngine.setVolume(1.0);
+  startTimer();
+  speak('Resuming workout.');
+  updatePauseUI();
+}
+
+function updatePauseUI() {
+  const pausedOverlay = document.getElementById('pausedOverlay');
+  const restPausedOverlay = document.getElementById('restPausedOverlay');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const restPauseBtn = document.getElementById('restPauseBtn');
+
+  pausedOverlay.classList.toggle('hidden', !isPaused);
+  restPausedOverlay.classList.toggle('hidden', !isPaused);
+  pauseBtn.classList.toggle('hidden', isPaused);
+  restPauseBtn.classList.toggle('hidden', isPaused);
+}
+
+function onVolumeChange(e) {
+  const value = parseInt(e.target.value, 10);
+  document.getElementById('volumeValue').textContent = value + '%';
+  if (musicEngine) musicEngine.setBaseVolume(value / 100);
+}
+
 async function handleVisibilityChange() {
-  if (document.visibilityState === 'visible' && phase !== 'setup' && phase !== 'finish') {
-    await requestWakeLock();
+  if (document.visibilityState === 'hidden') {
+    if (!isPaused && phase !== 'setup' && phase !== 'finish') {
+      pauseWorkout(true);
+    }
+  } else {
+    if (autoPaused) {
+      resumeWorkout();
+    } else if (phase !== 'setup' && phase !== 'finish') {
+      await requestWakeLock();
+    }
   }
 }
 
@@ -400,6 +466,7 @@ function tick() {
 }
 
 function incrementRep(delta) {
+  if (isPaused) return;
   repCount = Math.max(0, repCount + delta);
   repCountEl.textContent = repCount;
   if (navigator.vibrate) navigator.vibrate(30);
@@ -415,7 +482,7 @@ function onMotionRep() {
 }
 
 function completeSet() {
-  if (phase !== 'work') return;
+  if (isPaused || phase !== 'work') return;
   const ex = currentExercise();
   const duration = ex.isTimeBased
     ? Math.min(elapsedPhaseSeconds, ex.workDuration)
@@ -468,6 +535,7 @@ function enterRest() {
 }
 
 function endRest() {
+  if (isPaused) return;
   clearInterval(timerInterval);
   musicEngine.setVolume(1.0);
   if (navigator.vibrate) navigator.vibrate(30);
@@ -665,7 +733,7 @@ class MusicEngine {
   constructor() {
     this.ctx = null;
     this.isPlaying = false;
-    this.baseVolume = 0.12;
+    this.baseVolume = 0.20;
     this.currentVolume = 1.0;
     this.interval = null;
     this.droneNodes = [];
@@ -708,6 +776,13 @@ class MusicEngine {
 
   setVolume(scale) {
     this.currentVolume = Math.max(0, Math.min(1, scale));
+    if (this.masterGain) {
+      this.masterGain.gain.setTargetAtTime(this.baseVolume * this.currentVolume, this.ctx.currentTime, 0.1);
+    }
+  }
+
+  setBaseVolume(vol) {
+    this.baseVolume = Math.max(0, Math.min(1, vol));
     if (this.masterGain) {
       this.masterGain.gain.setTargetAtTime(this.baseVolume * this.currentVolume, this.ctx.currentTime, 0.1);
     }

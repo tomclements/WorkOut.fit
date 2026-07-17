@@ -105,19 +105,36 @@
       </div>
 
       <div class="grid grid-cols-3 gap-3 mb-4">
-        <button id="musicBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-2 px-2 rounded-md transition text-sm touch-manipulation">
+        <button id="musicBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-md transition text-sm touch-manipulation">
           Music: off
         </button>
-        <button id="motionBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-2 px-2 rounded-md transition text-sm touch-manipulation">
+        <button id="motionBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-md transition text-sm touch-manipulation">
           Sensor: off
         </button>
-        <button id="voiceBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-2 px-2 rounded-md transition text-sm touch-manipulation">
+        <button id="voiceBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-md transition text-sm touch-manipulation">
           Voice: off
         </button>
       </div>
 
-      <button id="completeSetBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md transition pulse">
+      <div class="mb-4">
+        <label class="flex items-center justify-between text-sm text-gray-700 mb-1">
+          <span>Music volume</span>
+          <span id="volumeValue">20%</span>
+        </label>
+        <input id="volumeSlider" type="range" min="0" max="100" value="20" class="w-full" />
+      </div>
+
+      <button id="completeSetBtn" class="w-full bg-green-600 active:bg-green-700 text-white font-bold py-4 px-6 rounded-md transition pulse touch-manipulation">
         Complete set
+      </button>
+
+      <div id="pausedOverlay" class="hidden text-center mt-4">
+        <div class="text-xl font-bold text-amber-600">Paused</div>
+        <button id="resumeWorkoutBtn" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md touch-manipulation">Resume</button>
+      </div>
+
+      <button id="pauseBtn" class="w-full mt-3 bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-md transition touch-manipulation">
+        Pause workout
       </button>
     </section>
 
@@ -134,8 +151,17 @@
         <div id="nextExerciseMeta" class="text-sm text-gray-600"></div>
       </div>
 
-      <button id="skipRestBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition">
+      <button id="skipRestBtn" class="w-full bg-blue-600 active:bg-blue-700 text-white font-semibold py-4 px-6 rounded-md transition touch-manipulation">
         Skip rest
+      </button>
+
+      <div id="restPausedOverlay" class="hidden text-center mt-4">
+        <div class="text-xl font-bold text-amber-600">Paused</div>
+        <button id="restResumeWorkoutBtn" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md touch-manipulation">Resume</button>
+      </div>
+
+      <button id="restPauseBtn" class="w-full mt-3 bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-md transition touch-manipulation">
+        Pause workout
       </button>
     </section>
 
