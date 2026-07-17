@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using WorkoutPlanner.Api.Data;
 using WorkoutPlanner.Api.Endpoints;
 using WorkoutPlanner.Api.Models;
@@ -17,6 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Data Source=workoutplanner.db";
+
+connectionString = NormalizeConnectionString(connectionString);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -168,6 +171,33 @@ app.MapAdminEndpoints();
 app.MapDashboardEndpoints();
 
 app.Run();
+
+static string NormalizeConnectionString(string cs)
+{
+    if (cs.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
+        || cs.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+    {
+        var uri = new Uri(cs);
+        var userInfo = uri.UserInfo;
+        var colon = userInfo.IndexOf(':');
+        var username = colon >= 0 ? Uri.UnescapeDataString(userInfo.Substring(0, colon)) : Uri.UnescapeDataString(userInfo);
+        var password = colon >= 0 ? Uri.UnescapeDataString(userInfo.Substring(colon + 1)) : string.Empty;
+        var host = uri.Host;
+        var port = uri.Port > 0 ? uri.Port : 5432;
+        var database = uri.AbsolutePath.TrimStart('/');
+        var builder = new NpgsqlConnectionStringBuilder
+        {
+            Host = host,
+            Port = port,
+            Username = username,
+            Password = password,
+            Database = database,
+            SslMode = SslMode.Require
+        };
+        return builder.ConnectionString;
+    }
+    return cs;
+}
 
 static async Task SeedDataAsync(IServiceProvider services)
 {
