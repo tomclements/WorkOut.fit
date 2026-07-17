@@ -64,9 +64,9 @@ Give admins a one-click way to pull the latest public-domain exercise data from 
 3. **Exercise favorites / notes**
    - Let users mark exercises as favorites and add private notes.
    - Influence plan generation to prefer favorites when possible.
-4. **Split selection**
-   - Let users explicitly pick a workout split (e.g., full body, upper/lower, push/pull/legs, bro split) when generating a plan.
-   - The generator should honour the split when scheduling days and selecting exercises.
+4. **Split selection** ✅ Done
+   - Users can now pick a workout split (full body, upper/lower, push/pull/legs, bro split) when generating a plan.
+   - The generator uses the split to schedule days and select exercises. Full body draws from all exercise types.
 5. **Export / share plans**
    - Export generated plans as PDF or shareable public read-only link.
    - Import plans from JSON backup.
