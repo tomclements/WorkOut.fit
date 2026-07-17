@@ -94,10 +94,13 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
+var isDevOrTest = builder.Environment.IsDevelopment()
+    || builder.Environment.IsEnvironment("Testing");
+
 builder.Services.AddRateLimiter(options =>
 {
-    // Looser limits in development so tests don't trip over the limiter.
-    var permitLimit = builder.Environment.IsDevelopment() ? 1000 : 5;
+    // Looser limits in development/tests so suites don't trip over the limiter.
+    var permitLimit = isDevOrTest ? 1000 : 5;
     options.AddFixedWindowLimiter("auth", opt =>
     {
         opt.PermitLimit = permitLimit;
@@ -111,7 +114,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.SameSite = SameSiteMode.Lax;
     options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+    // Testing host uses HTTP; Secure cookies would never be stored by the test client.
+    options.Cookie.SecurePolicy = isDevOrTest
         ? CookieSecurePolicy.SameAsRequest
         : CookieSecurePolicy.Always;
     options.Events.OnRedirectToLogin = context =>
