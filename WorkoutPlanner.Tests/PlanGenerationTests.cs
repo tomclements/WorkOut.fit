@@ -199,6 +199,36 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
+    public async Task GeneratePlan_IncludesImageUrlsWhenAvailable()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 5,
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "barbell" },
+            Split = "full-body",
+            Goal = "hypertrophy",
+            Level = "beginner"
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var exercises = result!.Plan
+            .SelectMany(w => w.Days)
+            .Where(d => d.Type == "workout")
+            .SelectMany(d => d.Exercises)
+            .ToList();
+
+        Assert.NotEmpty(exercises);
+        var withImages = exercises.Count(e => !string.IsNullOrWhiteSpace(e.ImageUrl));
+        Assert.True(withImages > 0, "Expected at least some plan exercises to include imageUrl");
+    }
+
+    [Fact]
     public async Task GeneratePlan_BroSplit_UsesBodyPartFocusLabels()
     {
         var request = new PlanRequest

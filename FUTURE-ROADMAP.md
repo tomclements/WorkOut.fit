@@ -123,12 +123,18 @@ Give admins a one-click way to pull the latest public-domain exercise data from 
 - Empty dashboard + history onboarding copy for new users
 - Runner mobile polish: larger timers/targets, high-contrast mode, clearer sensor UX, fullscreen + wake lock already present
 
+## Sprint B (engagement) ✅ Done
+
+- Exercise **images** from free-exercise-db (seeded `imageUrl`, shown in planner / picker / runner)
+- History **streak** + Chart.js **volume & minutes** charts (last 30 days)
+- **Favorites** UI (star on plan exercises & picker, favorites-only filter, prefer favorites in generation)
+
 ## Suggested next sprint
 
 If you want to continue, I’d recommend this order:
 
 1. **Admin refresh-from-source interface** (covered in section 1).
-2. **User preferences** (default equipment, music, voice).
+2. **Share/export plans** (public link or PDF).
 3. **External music integration** (Spotify/Apple Music links first, full SDK later).
 
 Tell me which one you want to build next.

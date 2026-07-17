@@ -46,6 +46,7 @@ dotnet test --verbosity normal
 | 1.9 | `GeneratePlan_BroSplit_ChestDayTargetsChest` | Chest day exercises are majority chest-primary. |
 | 1.10 | `GeneratePlan_BroSplit_FourDay_CombinesShouldersAndArms` | 4-day bro template ends with Shoulders & arms. |
 | 1.11 | `GeneratePlan_SplitVariants_ReturnWorkouts` | bro-split, ppl, and upper-lower each return non-empty workout days. |
+| 1.12 | `GeneratePlan_IncludesImageUrlsWhenAvailable` | Generated plan exercises include imageUrl when available in the library. |
 
 ### 2. Authentication (`AuthTests.cs`)
 
@@ -84,7 +85,14 @@ dotnet test --verbosity normal
 | 5.3 | `Register_InvalidEmail_ReturnsValidationError` | Invalid email format is rejected at registration. |
 | 5.4 | `Register_ShortPassword_ReturnsValidationError` | Passwords shorter than 6 characters are rejected. |
 
-### 6. Exercise data integrity (`ExerciseDataTests.cs`)
+### 6. Favorites (`FavoritesTests.cs`)
+
+| # | Test case | What it verifies |
+|---|---|---|
+| 6.1 | `Favorites_RequiresAuthentication` | Favorites API returns 401 when anonymous. |
+| 6.2 | `Favorites_AddListAndRemove_Works` | Logged-in user can add, list, and remove favorites. |
+
+### 7. Exercise data integrity (`ExerciseDataTests.cs`)
 
 | # | Test case | What it verifies |
 |---|---|---|

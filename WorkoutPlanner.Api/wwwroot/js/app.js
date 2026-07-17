@@ -139,6 +139,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.target.id === 'exercisePickerModal') closeExercisePicker();
   });
   document.getElementById('exerciseSearch').addEventListener('input', renderExerciseList);
+  const favOnly = document.getElementById('exerciseFavoritesOnly');
+  if (favOnly) favOnly.addEventListener('change', renderExerciseList);
 });
 
 function updateRangeLabel(e) {
@@ -209,8 +211,72 @@ function getCriteria() {
     goal: document.getElementById('goal').value,
     level: document.getElementById('level').value,
     includeWarmup: document.getElementById('includeWarmup').checked,
-    includeCooldown: document.getElementById('includeCooldown').checked
+    includeCooldown: document.getElementById('includeCooldown').checked,
+    favoriteExerciseIds: favoriteExerciseIds.slice()
   };
+}
+
+async function loadFavorites() {
+  favoriteExerciseIds = [];
+  try {
+    const response = await fetch('/api/user/favorites', { credentials: 'include' });
+    if (!response.ok) return;
+    const ids = await response.json();
+    favoriteExerciseIds = Array.isArray(ids) ? ids : [];
+  } catch {
+    // anonymous / offline — keep empty
+  }
+}
+
+function isFavorite(exerciseId) {
+  return favoriteExerciseIds.some(id => id.toLowerCase() === String(exerciseId).toLowerCase());
+}
+
+async function toggleFavorite(exerciseId, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  if (!currentUser) {
+    if (typeof showToast === 'function') showToast('Sign in to save favorites.', 'info');
+    openAuthModal();
+    return;
+  }
+
+  const favorited = isFavorite(exerciseId);
+  try {
+    const response = await fetch(`/api/user/favorites/${encodeURIComponent(exerciseId)}`, {
+      method: favorited ? 'DELETE' : 'POST',
+      credentials: 'include'
+    });
+    if (!response.ok) throw new Error('Request failed');
+    if (favorited) {
+      favoriteExerciseIds = favoriteExerciseIds.filter(id => id.toLowerCase() !== exerciseId.toLowerCase());
+      if (typeof showToast === 'function') showToast('Removed from favorites.', 'info', 1800);
+    } else {
+      favoriteExerciseIds.push(exerciseId);
+      if (typeof showToast === 'function') showToast('Added to favorites.', 'success', 1800);
+    }
+    if (currentPlan) renderPlan(currentPlan);
+    if (!document.getElementById('exercisePickerModal').classList.contains('hidden')) {
+      renderExerciseList();
+    }
+  } catch (err) {
+    if (typeof showToast === 'function') showToast('Could not update favorite.', 'error');
+  }
+}
+
+function exerciseThumbHtml(imageUrl, name, sizeClass = 'ex-thumb') {
+  if (!imageUrl) {
+    return `<div class="${sizeClass} ${sizeClass}--placeholder" aria-hidden="true">💪</div>`;
+  }
+  return `<img class="${sizeClass}" src="${escapeHtml(imageUrl)}" alt="" loading="lazy" onerror="this.classList.add('ex-thumb--broken'); this.alt='';" />`;
+}
+
+function favoriteButtonHtml(exerciseId) {
+  const on = isFavorite(exerciseId);
+  return `<button type="button" class="fav-btn ${on ? 'fav-btn--on' : ''}" title="${on ? 'Remove favorite' : 'Add favorite'}"
+    onclick="toggleFavorite('${escapeHtml(exerciseId)}', event)" aria-pressed="${on}">${on ? '★' : '☆'}</button>`;
 }
 
 function setStatus(message, isError = true) {
@@ -518,6 +584,7 @@ function handleReturnUrl() {
 function showLoggedIn(email, roles) {
   currentUser = email;
   currentRoles = roles;
+  loadFavorites();
   const section = document.getElementById('authSection');
   section.innerHTML = `
     <span class="text-sm text-gray-700">${escapeHtml(email)}</span>
@@ -770,16 +837,20 @@ function renderPlan(result) {
         `;
       } else {
         const list = day.exercises.map((ex, exIndex) => `
-          <li class="mb-2">
-            <div class="flex items-start justify-between">
-              <span class="font-medium">${ex.name}</span>
-              <div class="flex items-center gap-2">
-                ${ex.demoUrl ? `<a href="${ex.demoUrl}" target="_blank" rel="noopener" class="text-xs text-blue-600 hover:underline whitespace-nowrap">Demo</a>` : ''}
-                <button onclick="deleteExerciseFromDay(${weekIndex}, ${dayIndex}, ${exIndex})" class="text-xs text-red-600 hover:underline">Remove</button>
+          <li class="mb-3 flex gap-3">
+            ${exerciseThumbHtml(ex.imageUrl, ex.name)}
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <span class="font-medium">${escapeHtml(ex.name)}</span>
+                <div class="flex items-center gap-1 shrink-0">
+                  ${favoriteButtonHtml(ex.id)}
+                  ${ex.demoUrl ? `<a href="${escapeHtml(ex.demoUrl)}" target="_blank" rel="noopener" class="text-xs text-blue-600 hover:underline whitespace-nowrap">Demo</a>` : ''}
+                  <button onclick="deleteExerciseFromDay(${weekIndex}, ${dayIndex}, ${exIndex})" class="text-xs text-red-600 hover:underline">Remove</button>
+                </div>
               </div>
+              <div class="text-sm text-gray-700">${ex.sets} sets × ${escapeHtml(ex.repsDisplay)} <span class="text-gray-500">(${ex.rest}s rest)</span></div>
+              <div class="text-xs text-gray-500">${escapeHtml((ex.primary || []).join(', '))}</div>
             </div>
-            <div class="text-sm text-gray-700">${ex.sets} sets × ${ex.repsDisplay} <span class="text-gray-500">(${ex.rest}s rest)</span></div>
-            <div class="text-xs text-gray-500">${(ex.primary || []).join(', ')}</div>
           </li>
         `).join('');
 
@@ -873,22 +944,42 @@ function closeExercisePicker() {
 
 function renderExerciseList() {
   const query = document.getElementById('exerciseSearch').value.trim().toLowerCase();
+  const favoritesOnly = document.getElementById('exerciseFavoritesOnly')?.checked;
   const container = document.getElementById('exerciseList');
-  const filtered = allExercises.filter(ex =>
+  let filtered = allExercises.filter(ex =>
     ex.name.toLowerCase().includes(query) ||
     (ex.slot || '').toLowerCase().includes(query) ||
     (ex.primary || []).some(p => p.toLowerCase().includes(query))
   );
 
+  if (favoritesOnly) {
+    filtered = filtered.filter(ex => isFavorite(ex.id));
+  }
+
+  // Favorites first
+  filtered = filtered.slice().sort((a, b) => {
+    const af = isFavorite(a.id) ? 1 : 0;
+    const bf = isFavorite(b.id) ? 1 : 0;
+    if (af !== bf) return bf - af;
+    return a.name.localeCompare(b.name);
+  });
+
   container.innerHTML = filtered.map(ex => `
-    <button type="button" onclick="selectExerciseForDay('${escapeHtml(ex.id)}')" class="w-full text-left border rounded-md p-3 hover:bg-blue-50 transition">
-      <div class="font-medium">${escapeHtml(ex.name)}</div>
-      <div class="text-xs text-gray-500">${escapeHtml(ex.slot)} • ${escapeHtml((ex.primary || []).join(', '))} • ${escapeHtml((ex.equipment || []).join(', '))}</div>
-    </button>
+    <div class="flex items-stretch gap-2 border rounded-md p-2 hover:bg-blue-50 transition">
+      ${exerciseThumbHtml(ex.imageUrl, ex.name, 'ex-thumb ex-thumb--sm')}
+      <button type="button" onclick="selectExerciseForDay('${escapeHtml(ex.id)}')" class="flex-1 text-left min-w-0">
+        <div class="font-medium flex items-center gap-1">
+          ${escapeHtml(ex.name)}
+          ${isFavorite(ex.id) ? '<span class="text-amber-500 text-xs" title="Favorite">★</span>' : ''}
+        </div>
+        <div class="text-xs text-gray-500 truncate">${escapeHtml(ex.slot)} • ${escapeHtml((ex.primary || []).join(', '))} • ${escapeHtml((ex.equipment || []).join(', '))}</div>
+      </button>
+      ${favoriteButtonHtml(ex.id)}
+    </div>
   `).join('');
 
   if (filtered.length === 0) {
-    container.innerHTML = `<p class="text-sm text-gray-500">No exercises found.</p>`;
+    container.innerHTML = `<p class="text-sm text-gray-500">${favoritesOnly ? 'No favorite exercises match. Star exercises to build your list.' : 'No exercises found.'}</p>`;
   }
 }
 
@@ -925,7 +1016,8 @@ function createPlanExercise(exercise, goal, weeks) {
     isTimeBased: exercise.isTimeBased || false,
     primary: exercise.primary || [],
     progression: progressionHint(goal, weeks),
-    demoUrl: exercise.demoUrl || null
+    demoUrl: exercise.demoUrl || null,
+    imageUrl: exercise.imageUrl || null
   };
 }
 

@@ -156,3 +156,22 @@ body.high-contrast .sensor-help {
   gap: 0.5rem;
   align-items: center;
 }
+
+.ex-thumb {
+  width: 3.25rem;
+  height: 3.25rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  background: #e5e7eb;
+}
+
+.ex-thumb--lg {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 0.85rem;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+}
+
+body.high-contrast .ex-thumb--lg {
+  border: 1px solid #555;
+}

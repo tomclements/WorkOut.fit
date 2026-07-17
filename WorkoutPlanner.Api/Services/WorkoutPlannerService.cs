@@ -201,7 +201,8 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 IsTimeBased = ex.IsTimeBased,
                 Primary = ex.Primary,
                 Progression = ProgressionHint(goal, week, isBro),
-                DemoUrl = ex.DemoUrl
+                DemoUrl = ex.DemoUrl,
+                ImageUrl = ex.ImageUrl
             });
             usedToday.Add(ex.Id);
             timeUsed += exerciseDuration;

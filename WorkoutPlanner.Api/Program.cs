@@ -271,17 +271,43 @@ static async Task SeedDataAsync(IServiceProvider services)
         }
     }
 
+    var exercisesPath = Path.Combine(env.ContentRootPath, "Data", "exercises.json");
+    var exercisesJson = File.ReadAllText(exercisesPath);
+    var seedExercises = JsonSerializer.Deserialize<List<Exercise>>(exercisesJson,
+        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<Exercise>();
+
     if (!await db.Exercises.AnyAsync())
     {
-        var exercisesPath = Path.Combine(env.ContentRootPath, "Data", "exercises.json");
-        var exercisesJson = File.ReadAllText(exercisesPath);
-        var exercises = JsonSerializer.Deserialize<List<Exercise>>(exercisesJson,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        if (exercises != null)
+        if (seedExercises.Count > 0)
         {
-            db.Exercises.AddRange(exercises);
+            db.Exercises.AddRange(seedExercises);
             await db.SaveChangesAsync();
         }
+    }
+    else
+    {
+        // Keep image/demo URLs in sync with the seed file without wiping curated rows
+        var seedById = seedExercises.ToDictionary(e => e.Id, StringComparer.OrdinalIgnoreCase);
+        var existing = await db.Exercises.ToListAsync();
+        var updated = 0;
+        foreach (var ex in existing)
+        {
+            if (!seedById.TryGetValue(ex.Id, out var seed)) continue;
+            var changed = false;
+            if (!string.IsNullOrWhiteSpace(seed.ImageUrl) && ex.ImageUrl != seed.ImageUrl)
+            {
+                ex.ImageUrl = seed.ImageUrl;
+                changed = true;
+            }
+            if (!string.IsNullOrWhiteSpace(seed.DemoUrl) && string.IsNullOrWhiteSpace(ex.DemoUrl))
+            {
+                ex.DemoUrl = seed.DemoUrl;
+                changed = true;
+            }
+            if (changed) updated++;
+        }
+        if (updated > 0)
+            await db.SaveChangesAsync();
     }
 }
 

@@ -198,6 +198,7 @@ async function saveExercise(e) {
     restSec: parseInt(document.getElementById('exRestSec').value, 10),
     isTimeBased: document.getElementById('exIsTimeBased').checked,
     demoUrl: document.getElementById('exDemoUrl').value.trim(),
+    imageUrl: document.getElementById('exImageUrl').value.trim() || null,
     avoidFor: splitCsv(document.getElementById('exAvoidFor').value),
     equipment: getSelectedEquipment()
   };
@@ -242,6 +243,7 @@ function editExercise(id) {
   document.getElementById('exRestSec').value = ex.restSec;
   document.getElementById('exIsTimeBased').checked = ex.isTimeBased;
     document.getElementById('exDemoUrl').value = ex.demoUrl || '';
+    document.getElementById('exImageUrl').value = ex.imageUrl || '';
     document.getElementById('exAvoidFor').value = (ex.avoidFor || []).join(', ');
     setSelectedEquipment(ex.equipment || []);
 

@@ -95,6 +95,16 @@ def build_demo_url(name: str) -> str:
     return f"https://www.youtube.com/results?search_query={query}"
 
 
+IMAGE_BASE = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/"
+
+
+def build_image_url(images: list) -> str | None:
+    if not images:
+        return None
+    # Source paths look like "Barbell_Curl/0.jpg"
+    return IMAGE_BASE + images[0]
+
+
 def map_avoid_for(primary_muscles: list[str], secondary_muscles: list[str], category: str) -> list[str]:
     avoid = []
     all_muscles = set(primary_muscles) | set(secondary_muscles)
@@ -176,6 +186,7 @@ def import_exercises(source_path: str | None = None):
             "workDuration": 30,
             "restSec": 60,
             "demoUrl": build_demo_url(src["name"]),
+            "imageUrl": build_image_url(src.get("images") or []),
             "avoidFor": map_avoid_for(src.get("primaryMuscles", []), src.get("secondaryMuscles", []), category),
         }
         existing.append(exercise)

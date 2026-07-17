@@ -31,6 +31,13 @@
     </section>
 
     <section id="historySection" class="hidden">
+      <div class="flex flex-wrap items-center gap-3 mb-4">
+        <div id="streakBadge" class="streak-badge hidden" title="Consecutive calendar days with a completed workout">
+          🔥 <span id="streakCount">0</span>-day streak
+        </div>
+        <p id="streakHint" class="text-sm text-gray-500 hidden">Complete a workout today to start a streak.</p>
+      </div>
+
       <div id="summary" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow p-4 text-center">
           <div id="statWorkouts" class="text-3xl font-bold text-blue-700">0</div>
@@ -47,6 +54,17 @@
         <div class="bg-white rounded-xl shadow p-4 text-center">
           <div id="statReps" class="text-3xl font-bold text-blue-700">0</div>
           <div class="text-sm text-gray-600">Reps</div>
+        </div>
+      </div>
+
+      <div id="chartsSection" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 hidden">
+        <div class="chart-card">
+          <h3 class="text-sm font-semibold text-gray-700 mb-2">Volume (sets) — last 30 days</h3>
+          <canvas id="volumeChart" height="160" aria-label="Sets completed per day"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3 class="text-sm font-semibold text-gray-700 mb-2">Minutes trained — last 30 days</h3>
+          <canvas id="minutesChart" height="160" aria-label="Minutes trained per day"></canvas>
         </div>
       </div>
 
@@ -85,6 +103,7 @@
     </a>
   </nav>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="js/site.js"></script>
   <script src="js/history.js"></script>
 </body>

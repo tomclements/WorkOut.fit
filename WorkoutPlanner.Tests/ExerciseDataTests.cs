@@ -88,4 +88,18 @@ public class ExerciseDataTests
         var exercises = JsonSerializer.Deserialize<List<Exercise>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         Assert.True(exercises.Count > 100, $"Expected more than 100 exercises, found {exercises.Count}");
     }
+
+    [Fact]
+    public void MostExercises_HaveImageUrl()
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "WorkoutPlanner.Api", "Data", "exercises.json");
+        var json = File.ReadAllText(path);
+        var exercises = JsonSerializer.Deserialize<List<Exercise>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        var withImage = exercises.Count(e => !string.IsNullOrWhiteSpace(e.ImageUrl));
+        Assert.True(withImage > exercises.Count * 0.8,
+            $"Expected most exercises to have imageUrl, got {withImage}/{exercises.Count}");
+        Assert.All(exercises.Where(e => !string.IsNullOrWhiteSpace(e.ImageUrl)), ex =>
+            Assert.StartsWith("http", ex.ImageUrl!));
+    }
 }

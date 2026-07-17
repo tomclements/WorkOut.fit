@@ -148,6 +148,79 @@ body.workout-active .site-toast {
   margin-bottom: 0.85rem;
 }
 
+/* ---------- Exercise thumbs & favorites ---------- */
+.ex-thumb {
+  width: 3.25rem;
+  height: 3.25rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  background: #e5e7eb;
+  flex-shrink: 0;
+}
+
+.ex-thumb--sm {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.ex-thumb--lg {
+  width: 6.5rem;
+  height: 6.5rem;
+  border-radius: 0.75rem;
+}
+
+.ex-thumb--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background: #eff6ff;
+}
+
+.ex-thumb--broken {
+  visibility: hidden;
+  position: relative;
+}
+
+.fav-btn {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 0.15rem 0.25rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.fav-btn:hover {
+  color: #f59e0b;
+}
+
+.fav-btn--on {
+  color: #f59e0b;
+}
+
+.chart-card {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  padding: 1rem 1.1rem;
+}
+
+.streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #fff7ed;
+  color: #c2410c;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #fed7aa;
+}
+
 /* Desktop: bottom nav still useful but can sit more compact */
 @media (min-width: 768px) {
   .bottom-nav {

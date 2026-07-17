@@ -278,9 +278,7 @@ async function resumeSession() {
       exerciseNameEl.textContent = ex.name;
       exerciseMetaEl.textContent = `${ex.sets} sets × ${ex.repsDisplay} • ${ex.rest}s rest`;
       setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
-      demoLinkEl.innerHTML = ex.demoUrl
-        ? `<a href="${ex.demoUrl}" target="_blank" rel="noopener" class="text-sm text-blue-600 hover:underline">Watch demo</a>`
-        : '';
+      demoLinkEl.innerHTML = exerciseMediaHtml(ex);
       repCount = ex.isTimeBased ? 0 : (ex.completedSets[currentSetIndex]?.reps || 0);
       repCountEl.textContent = repCount;
       if (ex.isTimeBased) {
@@ -444,6 +442,17 @@ function currentExercise() {
   return sessionExercises[currentExerciseIndex];
 }
 
+function exerciseMediaHtml(ex) {
+  const img = ex.imageUrl
+    ? `<img class="ex-thumb ex-thumb--lg mx-auto mb-2" src="${ex.imageUrl}" alt="" loading="lazy" onerror="this.style.display='none'" />`
+    : '';
+  const demo = ex.demoUrl
+    ? `<a href="${ex.demoUrl}" target="_blank" rel="noopener" class="text-sm text-blue-600 hover:underline">Watch demo</a>`
+    : '';
+  if (!img && !demo) return '';
+  return `<div class="text-center mb-2">${img}${demo}</div>`;
+}
+
 function enterWork() {
   phase = 'work';
   phaseStartTime = Date.now();
@@ -454,9 +463,7 @@ function enterWork() {
   exerciseNameEl.textContent = ex.name;
   exerciseMetaEl.textContent = `${ex.sets} sets × ${ex.repsDisplay} • ${ex.rest}s rest`;
   setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
-  demoLinkEl.innerHTML = ex.demoUrl
-    ? `<a href="${ex.demoUrl}" target="_blank" rel="noopener" class="text-sm text-blue-600 hover:underline">Watch demo</a>`
-    : '';
+  demoLinkEl.innerHTML = exerciseMediaHtml(ex);
 
   if (ex.isTimeBased) {
     repSection.classList.add('hidden');

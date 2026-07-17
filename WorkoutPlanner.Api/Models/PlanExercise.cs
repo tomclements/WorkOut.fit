@@ -13,4 +13,5 @@ public class PlanExercise
     public List<string> Primary { get; set; } = new();
     public string Progression { get; set; } = string.Empty;
     public string? DemoUrl { get; set; }
+    public string? ImageUrl { get; set; }
 }

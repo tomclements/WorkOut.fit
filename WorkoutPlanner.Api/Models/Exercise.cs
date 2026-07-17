@@ -16,5 +16,7 @@ public class Exercise
     public int WorkDuration { get; set; } = 30;
     public int RestSec { get; set; } = 60;
     public string? DemoUrl { get; set; }
+    /// <summary>Optional illustration URL (typically free-exercise-db on GitHub raw).</summary>
+    public string? ImageUrl { get; set; }
     public List<string> AvoidFor { get; set; } = new();
 }
