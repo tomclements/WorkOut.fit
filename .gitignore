@@ -22,3 +22,8 @@ out/
 
 # Runtime
 publish/
+
+# Seed backups from admin import
+WorkoutPlanner.Api/Data/backups/
+WorkoutPlanner.Api/Data/*.bak.*
+*.json.bak.*

@@ -239,6 +239,13 @@ public class ExerciseImportService : IExerciseImportService
 
     private async Task PersistSeedFilesAsync(AppDbContext db, ExerciseImportResult result, CancellationToken ct)
     {
+        // Never rewrite on-disk seed files during automated tests
+        if (string.Equals(_env.EnvironmentName, "Testing", StringComparison.OrdinalIgnoreCase))
+        {
+            result.SeedFileUpdated = false;
+            return;
+        }
+
         var exercisesPath = GetSeedPath("exercises.json");
         var equipmentPath = GetSeedPath("equipment.json");
         var dir = Path.GetDirectoryName(exercisesPath)!;
@@ -246,9 +253,11 @@ public class ExerciseImportService : IExerciseImportService
 
         if (File.Exists(exercisesPath))
         {
-            var backup = Path.Combine(dir, $"exercises.json.bak.{DateTime.UtcNow:yyyyMMddHHmmss}");
+            var backupDir = Path.Combine(dir, "backups");
+            Directory.CreateDirectory(backupDir);
+            var backup = Path.Combine(backupDir, $"exercises.json.bak.{DateTime.UtcNow:yyyyMMddHHmmss}");
             File.Copy(exercisesPath, backup, overwrite: true);
-            result.BackupPath = Path.GetFileName(backup);
+            result.BackupPath = Path.GetRelativePath(dir, backup);
         }
 
         var allExercises = await db.Exercises.AsNoTracking().OrderBy(e => e.Name).ToListAsync(ct);

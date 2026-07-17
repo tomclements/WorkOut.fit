@@ -6092,7 +6092,7 @@
   },
   {
     "id": "farmers-carry",
-    "name": "Farmer\u0027s Carry",
+    "name": "Farmer's Carry",
     "equipment": [
       "dumbbells"
     ],
@@ -8272,7 +8272,7 @@
     "isTimeBased": false,
     "workDuration": 40,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=how\u002Bto\u002Bdo\u002BKettlebell\u002BGoblet\u002BSquat",
+    "demoUrl": "https://www.youtube.com/results?search_query=how+to+do+Kettlebell+Goblet+Squat",
     "avoidFor": [
       "knee"
     ]
@@ -8855,7 +8855,7 @@
   },
   {
     "id": "landmine-180-s",
-    "name": "Landmine 180\u0027s",
+    "name": "Landmine 180's",
     "equipment": [
       "barbell"
     ],
@@ -17850,33 +17850,6 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Wrist%20Rotations%20with%20Straight%20Bar%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wrist_Rotations_with_Straight_Bar/0.jpg",
-    "avoidFor": [
-      "elbow",
-      "wrist"
-    ]
-  },
-  {
-    "id": "zzz-unique-import-test-curl",
-    "name": "ZZZ Unique Import Test Curl",
-    "equipment": [
-      "dumbbells"
-    ],
-    "level": "beginner",
-    "primary": [
-      "biceps"
-    ],
-    "secondary": [
-      "forearms"
-    ],
-    "slot": "pull",
-    "baseSets": 3,
-    "repsMin": 8,
-    "repsMax": 12,
-    "isTimeBased": false,
-    "workDuration": 30,
-    "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=ZZZ%20Unique%20Import%20Test%20Curl%20exercise",
-    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/ZZZ_Unique_Import_Test_Curl/0.jpg",
     "avoidFor": [
       "elbow",
       "wrist"
