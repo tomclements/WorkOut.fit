@@ -20,6 +20,15 @@ public static class WorkoutEndpoints
             return Results.Ok(equipment);
         }).AllowAnonymous();
 
+        app.MapGet("/api/exercises", async (AppDbContext db) =>
+        {
+            var exercises = await db.Exercises
+                .AsNoTracking()
+                .OrderBy(e => e.Name)
+                .ToListAsync();
+            return Results.Ok(exercises);
+        }).AllowAnonymous();
+
         app.MapPost("/api/plan", async (PlanRequest request, IWorkoutPlannerService service) =>
         {
             try

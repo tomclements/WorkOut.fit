@@ -3,6 +3,8 @@ let currentRoles = [];
 let currentPlan = null;
 let currentPlanId = null;
 let isLoginMode = true;
+let allExercises = [];
+let pickerTarget = { weekIndex: -1, dayIndex: -1 };
 
 const welcomeSection = document.getElementById('welcomeSection');
 const dashboardSection = document.getElementById('dashboardSection');
@@ -74,6 +76,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('forgotEmail').addEventListener('keypress', e => {
     if (e.key === 'Enter') submitForgotPassword();
   });
+
+  document.getElementById('closeExercisePicker').addEventListener('click', closeExercisePicker);
+  document.getElementById('exercisePickerModal').addEventListener('click', e => {
+    if (e.target.id === 'exercisePickerModal') closeExercisePicker();
+  });
+  document.getElementById('exerciseSearch').addEventListener('input', renderExerciseList);
 });
 
 function updateRangeLabel(e) {
@@ -91,6 +99,7 @@ function getCriteria() {
     sessionMinutes: parseInt(document.getElementById('sessionMinutes').value, 10),
     equipment,
     restrictions,
+    split: document.getElementById('split').value,
     goal: document.getElementById('goal').value,
     level: document.getElementById('level').value,
     includeWarmup: document.getElementById('includeWarmup').checked,
@@ -517,12 +526,15 @@ function renderPlan(result) {
     <h2 class="text-2xl font-bold mb-2">Your ${result.criteria.weeks}-week plan</h2>
     <p class="text-gray-700">
       ${result.criteria.daysPerWeek} days/week • ${result.criteria.sessionMinutes} min sessions
-      • ${capitalize(result.criteria.goal)} • ${capitalize(result.criteria.level)}
+      • ${capitalize(result.criteria.split || 'full-body')} split
+      • ${capitalize(result.criteria.goal)}
+      • ${capitalize(result.criteria.level)}
     </p>
+    <p class="text-sm text-gray-500 mt-1">Use the buttons on each day to add or remove exercises and to switch a day between workout and rest.</p>
   `;
   container.appendChild(summary);
 
-  result.plan.forEach(week => {
+  result.plan.forEach((week, weekIndex) => {
     const weekEl = document.createElement('section');
     weekEl.className = 'mb-8';
     weekEl.innerHTML = `
@@ -531,7 +543,7 @@ function renderPlan(result) {
     `;
     const grid = weekEl.querySelector('.days-grid');
 
-    week.days.forEach(day => {
+    week.days.forEach((day, dayIndex) => {
       const card = document.createElement('div');
       card.className = 'border rounded-lg p-4 shadow-sm ' + (day.type === 'rest' ? 'bg-gray-50' : 'bg-white');
 
@@ -539,26 +551,36 @@ function renderPlan(result) {
         card.innerHTML = `
           <div class="font-semibold text-gray-500">${day.day}</div>
           <div class="text-sm text-gray-600">${day.note || 'Rest / mobility'}</div>
+          <div class="mt-3">
+            <button onclick="toggleDayType(${weekIndex}, ${dayIndex})" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-2 rounded">Make workout day</button>
+          </div>
         `;
       } else {
-        const list = day.exercises.map(ex => `
+        const list = day.exercises.map((ex, exIndex) => `
           <li class="mb-2">
             <div class="flex items-start justify-between">
               <span class="font-medium">${ex.name}</span>
-              ${ex.demoUrl ? `<a href="${ex.demoUrl}" target="_blank" rel="noopener" class="text-xs text-blue-600 hover:underline whitespace-nowrap ml-2">Demo</a>` : ''}
+              <div class="flex items-center gap-2">
+                ${ex.demoUrl ? `<a href="${ex.demoUrl}" target="_blank" rel="noopener" class="text-xs text-blue-600 hover:underline whitespace-nowrap">Demo</a>` : ''}
+                <button onclick="deleteExerciseFromDay(${weekIndex}, ${dayIndex}, ${exIndex})" class="text-xs text-red-600 hover:underline">Remove</button>
+              </div>
             </div>
             <div class="text-sm text-gray-700">${ex.sets} sets × ${ex.repsDisplay} <span class="text-gray-500">(${ex.rest}s rest)</span></div>
-            <div class="text-xs text-gray-500">${ex.primary.join(', ')}</div>
+            <div class="text-xs text-gray-500">${(ex.primary || []).join(', ')}</div>
           </li>
         `).join('');
 
         card.innerHTML = `
           <div class="flex justify-between items-center mb-2">
             <span class="font-bold">${day.day}</span>
-            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${day.focus}</span>
+            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${day.focus || 'Workout'}</span>
           </div>
           <div class="text-sm text-gray-600 mb-2">~${day.estimatedMinutes} min</div>
           <ul class="text-sm">${list}</ul>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button onclick="openExercisePicker(${weekIndex}, ${dayIndex})" class="text-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-2 rounded">+ Add exercise</button>
+            <button onclick="toggleDayType(${weekIndex}, ${dayIndex})" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-2 rounded">Make rest day</button>
+          </div>
           <div class="mt-2 text-xs text-blue-700 italic">${day.exercises[0]?.progression || ''}</div>
         `;
       }
@@ -573,6 +595,132 @@ function renderPlan(result) {
   startWorkoutBtn.classList.remove('hidden');
   startWorkoutBtn.href = currentPlanId ? `/workout.html?planId=${currentPlanId}` : '/workout.html';
   document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteExerciseFromDay(weekIndex, dayIndex, exIndex) {
+  if (!currentPlan) return;
+  const day = currentPlan.plan[weekIndex].days[dayIndex];
+  day.exercises.splice(exIndex, 1);
+  recalculateDayMinutes(day);
+  localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
+  renderPlan(currentPlan);
+}
+
+function toggleDayType(weekIndex, dayIndex) {
+  if (!currentPlan) return;
+  const day = currentPlan.plan[weekIndex].days[dayIndex];
+  if (day.type === 'rest') {
+    day.type = 'workout';
+    day.focus = '';
+    day.exercises = [];
+    day.note = '';
+  } else {
+    day.type = 'rest';
+    day.focus = '';
+    day.exercises = [];
+    day.note = 'Rest / mobility';
+  }
+  recalculateDayMinutes(day);
+  localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
+  renderPlan(currentPlan);
+}
+
+function recalculateDayMinutes(day) {
+  if (!currentPlan || !day.exercises) return;
+  const transition = 30;
+  let timeUsed = day.exercises.reduce((sum, ex) => sum + ex.sets * (ex.workDuration + ex.rest) + transition, 0);
+  const includeWarmup = currentPlan.criteria.includeWarmup ? 180 : 0;
+  const includeCooldown = currentPlan.criteria.includeCooldown ? 120 : 0;
+  day.estimatedMinutes = Math.max(0, Math.round((timeUsed + includeWarmup + includeCooldown) / 60));
+}
+
+async function openExercisePicker(weekIndex, dayIndex) {
+  if (!currentPlan) return;
+  pickerTarget = { weekIndex, dayIndex };
+  document.getElementById('exerciseSearch').value = '';
+  document.getElementById('exercisePickerModal').classList.remove('hidden');
+  if (allExercises.length === 0) {
+    try {
+      const response = await fetch('/api/exercises', { credentials: 'include' });
+      if (!response.ok) throw new Error('Failed to load exercises');
+      allExercises = await response.json();
+    } catch (err) {
+      setStatus(`Could not load exercises: ${err.message}`);
+      closeExercisePicker();
+      return;
+    }
+  }
+  renderExerciseList();
+}
+
+function closeExercisePicker() {
+  document.getElementById('exercisePickerModal').classList.add('hidden');
+  pickerTarget = { weekIndex: -1, dayIndex: -1 };
+}
+
+function renderExerciseList() {
+  const query = document.getElementById('exerciseSearch').value.trim().toLowerCase();
+  const container = document.getElementById('exerciseList');
+  const filtered = allExercises.filter(ex =>
+    ex.name.toLowerCase().includes(query) ||
+    (ex.slot || '').toLowerCase().includes(query) ||
+    (ex.primary || []).some(p => p.toLowerCase().includes(query))
+  );
+
+  container.innerHTML = filtered.map(ex => `
+    <button type="button" onclick="selectExerciseForDay('${escapeHtml(ex.id)}')" class="w-full text-left border rounded-md p-3 hover:bg-blue-50 transition">
+      <div class="font-medium">${escapeHtml(ex.name)}</div>
+      <div class="text-xs text-gray-500">${escapeHtml(ex.slot)} • ${escapeHtml((ex.primary || []).join(', '))} • ${escapeHtml((ex.equipment || []).join(', '))}</div>
+    </button>
+  `).join('');
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<p class="text-sm text-gray-500">No exercises found.</p>`;
+  }
+}
+
+function selectExerciseForDay(exerciseId) {
+  if (!currentPlan || pickerTarget.weekIndex < 0) return;
+  const ex = allExercises.find(e => e.id === exerciseId);
+  if (!ex) return;
+
+  const day = currentPlan.plan[pickerTarget.weekIndex].days[pickerTarget.dayIndex];
+  if (day.type === 'rest') {
+    day.type = 'workout';
+    day.note = '';
+  }
+  day.exercises.push(createPlanExercise(ex, currentPlan.criteria.goal, currentPlan.criteria.weeks));
+  recalculateDayMinutes(day);
+  localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
+  closeExercisePicker();
+  renderPlan(currentPlan);
+}
+
+function createPlanExercise(exercise, goal, weeks) {
+  const sets = exercise.baseSets || 3;
+  const reps = exercise.isTimeBased
+    ? `${exercise.repsMin || 8}-${exercise.repsMax || 12} sec`
+    : `${exercise.repsMin || 8}-${exercise.repsMax || 12}`;
+  return {
+    id: exercise.id,
+    name: exercise.name,
+    slot: exercise.slot,
+    sets: sets,
+    repsDisplay: reps,
+    rest: exercise.restSec || 60,
+    workDuration: exercise.workDuration || 30,
+    isTimeBased: exercise.isTimeBased || false,
+    primary: exercise.primary || [],
+    progression: progressionHint(goal, weeks),
+    demoUrl: exercise.demoUrl || null
+  };
+}
+
+function progressionHint(goal, week) {
+  if (week === 1) return 'Learn the movement; use a weight you can control with good form.';
+  if (goal === 'strength') return 'If you completed all sets last week, add a small amount of weight.';
+  if (goal === 'endurance' || goal === 'fat-loss') return 'Aim for the top of the rep range or reduce rest slightly.';
+  return 'Add reps, sets, or weight when the top of the range feels easy.';
 }
 
 function loadDefaults() {

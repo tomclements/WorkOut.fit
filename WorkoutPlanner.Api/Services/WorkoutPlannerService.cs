@@ -35,7 +35,8 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         int daysPerWeek = Math.Clamp(req.DaysPerWeek, 1, 7);
         int sessionMinutes = Math.Clamp(req.SessionMinutes, 5, 90);
         var selectedEquipment = req.Equipment ?? new List<string>();
-        string goal = string.IsNullOrWhiteSpace(req.Goal) ? "full-body" : req.Goal.ToLowerInvariant();
+        string split = string.IsNullOrWhiteSpace(req.Split) ? InferSplit(req.Goal) : req.Split.ToLowerInvariant();
+        string goal = NormalizeGoal(req.Goal);
         int userLevelNum = LevelToNum(req.Level);
 
         var workoutIndices = DayPatterns[daysPerWeek];
@@ -55,9 +56,9 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             for (int i = 0; i < workoutIndices.Length; i++)
             {
                 int dayIdx = workoutIndices[i];
-                var slotOrder = GetSlotOrder(goal, dayIdx, i, daysPerWeek);
+                var slotOrder = GetSlotOrder(split, dayIdx, i, daysPerWeek);
                 var session = BuildSession(dayIdx, w, i + 1, targetTime, selectedEquipment,
-                    userLevelNum, goal, slotOrder, exercises, recentUses, req.IncludeWarmup, req.IncludeCooldown, req.Restrictions);
+                    userLevelNum, goal, split, slotOrder, exercises, recentUses, req.IncludeWarmup, req.IncludeCooldown, req.Restrictions);
 
                 recentUses.Add(new HashSet<string>(session.Exercises.Select(e => e.Id)));
                 if (recentUses.Count > 2) recentUses.RemoveAt(0);
@@ -93,7 +94,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
     }
 
     private DayPlan BuildSession(int dayIdx, int week, int dayNumber, int targetTime,
-        List<string> equipment, int userLevelNum, string goal, List<string> slotOrder,
+        List<string> equipment, int userLevelNum, string goal, string split, List<string> slotOrder,
         List<Exercise> allExercises, List<HashSet<string>> recentUses, bool includeWarmup, bool includeCooldown,
         List<string> restrictions)
     {
@@ -117,9 +118,11 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
         foreach (var slot in slotOrder)
         {
+            bool MatchesSlot(Exercise e) => split == "full-body" || e.Slot == slot || e.Slot == "total";
+
             var candidates = pool
-                .Where(e => (e.Slot == slot || e.Slot == "total") && !usedToday.Contains(e.Id))
-                .Where(e => !banned.Contains(e.Id) || pool.Count(x => (x.Slot == slot || x.Slot == "total") && !usedToday.Contains(x.Id)) < 3)
+                .Where(e => MatchesSlot(e) && !usedToday.Contains(e.Id))
+                .Where(e => !banned.Contains(e.Id) || pool.Count(x => MatchesSlot(x) && !usedToday.Contains(x.Id)) < 3)
                 .OrderByDescending(e => e.Primary.Count)
                 .ThenBy(e => e.Name)
                 .ToList();
@@ -242,20 +245,46 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         return "Add reps, sets, or weight when the top of the range feels easy.";
     }
 
-    private static List<string> GetSlotOrder(string goal, int dayIdx, int workoutIndex, int daysPerWeek)
+    private static List<string> GetSlotOrder(string split, int dayIdx, int workoutIndex, int daysPerWeek)
     {
-        if (goal == "upper") return new List<string> { "push", "pull", "push", "core" };
-        if (goal == "lower") return new List<string> { "legs", "legs", "core", "carry" };
-        if (goal == "ppl")
+        switch (split)
         {
-            int r = workoutIndex % 3;
-            if (r == 0) return new List<string> { "push", "push", "core" };
-            if (r == 1) return new List<string> { "pull", "pull", "core" };
-            return new List<string> { "legs", "legs", "core" };
+            case "upper-lower":
+                return (workoutIndex % 2 == 0)
+                    ? new List<string> { "push", "pull", "push", "core" }
+                    : new List<string> { "legs", "legs", "core", "carry" };
+            case "ppl":
+                int r = workoutIndex % 3;
+                if (r == 0) return new List<string> { "push", "push", "core" };
+                if (r == 1) return new List<string> { "pull", "pull", "core" };
+                return new List<string> { "legs", "legs", "core" };
+            case "bro-split":
+                var broSlots = new List<string> { "push", "pull", "legs", "core", "carry", "total" };
+                var focus = broSlots[workoutIndex % broSlots.Count];
+                return new List<string> { focus, focus, focus, "core" };
+            case "full-body":
+            default:
+                var baseSlots = new List<string> { "legs", "push", "pull", "core" };
+                int offset = (dayIdx + workoutIndex) % baseSlots.Count;
+                return baseSlots.Skip(offset).Concat(baseSlots.Take(offset)).ToList();
         }
-
-        var baseSlots = new List<string> { "legs", "push", "pull", "core" };
-        int offset = (dayIdx + workoutIndex) % baseSlots.Count;
-        return baseSlots.Skip(offset).Concat(baseSlots.Take(offset)).ToList();
     }
+
+    private static string InferSplit(string? goal) => goal?.ToLowerInvariant() switch
+    {
+        "upper" or "upper-lower" or "lower" => "upper-lower",
+        "ppl" or "push-pull-legs" or "push / pull / legs" => "ppl",
+        "bro" or "bro-split" or "bro split" => "bro-split",
+        "full-body" or "full body" or "total" or "total-body" or "total body" => "full-body",
+        _ => "full-body"
+    };
+
+    private static string NormalizeGoal(string? goal) => goal?.ToLowerInvariant() switch
+    {
+        "strength" => "strength",
+        "hypertrophy" or "muscle-building" or "muscle building" => "hypertrophy",
+        "endurance" => "endurance",
+        "fat-loss" or "fat loss" => "fat-loss",
+        _ => "hypertrophy"
+    };
 }

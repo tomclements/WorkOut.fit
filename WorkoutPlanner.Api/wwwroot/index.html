@@ -158,16 +158,22 @@
         </div>
 
         <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="split">Split</label>
+          <select id="split" class="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+            <option value="full-body" selected>Full body</option>
+            <option value="upper-lower">Upper / Lower</option>
+            <option value="ppl">Push / Pull / Legs</option>
+            <option value="bro-split">Bro split</option>
+          </select>
+        </div>
+
+        <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" for="goal">Goal</label>
           <select id="goal" class="w-full border-gray-300 rounded-md shadow-sm p-2 border">
-            <option value="full-body" selected>Full body</option>
             <option value="strength">Strength</option>
-            <option value="hypertrophy">Muscle building</option>
+            <option value="hypertrophy" selected>Muscle building</option>
             <option value="endurance">Endurance</option>
             <option value="fat-loss">Fat loss</option>
-            <option value="upper">Upper body focus</option>
-            <option value="lower">Lower body focus</option>
-            <option value="ppl">Push / Pull / Legs</option>
           </select>
         </div>
 
@@ -225,6 +231,18 @@
       <div id="planOutput"></div>
     </section>
   </div>
+
+  <section id="exercisePickerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Add exercise</h2>
+        <button id="closeExercisePicker" class="text-gray-500 hover:text-gray-700 text-xl leading-none">&times;</button>
+      </div>
+      <input id="exerciseSearch" type="text" placeholder="Search exercises..." class="w-full border border-gray-300 rounded-md p-2 mb-4" />
+      <div id="exerciseList" class="overflow-y-auto flex-1 space-y-2"></div>
+      <div class="mt-4 text-sm text-gray-500">Click an exercise to add it to the selected day.</div>
+    </div>
+  </section>
 
   <script src="js/app.js"></script>
   <script>
