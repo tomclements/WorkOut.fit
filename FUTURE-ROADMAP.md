@@ -136,12 +136,17 @@ Give admins a one-click way to pull the latest public-domain exercise data from 
 - Admin UI card: counts, force checkbox, spinner, result summary, seed backup when writable
 - Existing IDs preserved by default; force updates mapped fields from source
 
+## Sprint D (progression + help) ✅ Done
+
+- Progressive plan generator: **linear / wave / block / none** with week phases, deloads, set/rep/rest modifiers, and a plain-language progression summary
+- Non-technical **Help** page (`/help.html`) linked from header, welcome, bottom nav, and plan results
+
 ## Suggested next sprint
 
 If you want to continue, I’d recommend this order:
 
-1. **Share/export plans** (public link or PDF).
-2. **External music integration** (Spotify/Apple Music links first, full SDK later).
-3. **Progressive plan generator** (periodization / auto-progression).
+1. **External music integration** (Spotify/Apple Music links first, full SDK later).
+2. **Session feedback → next plan** (use completed weights/reps to auto-progress the following block).
+3. **Share/export plans** (public link or PDF) — deferred by choice.
 
 Tell me which one you want to build next.

@@ -14,4 +14,9 @@ public class PlanRequest
     public bool IncludeCooldown { get; set; } = true;
     public List<string> Restrictions { get; set; } = new();
     public List<string> FavoriteExerciseIds { get; set; } = new();
+
+    /// <summary>
+    /// How the plan progresses across weeks: none, linear, wave, or block.
+    /// </summary>
+    public string Progression { get; set; } = "linear";
 }

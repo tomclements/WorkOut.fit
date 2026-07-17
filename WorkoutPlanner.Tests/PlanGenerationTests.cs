@@ -327,6 +327,82 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Theory]
+    [InlineData("linear")]
+    [InlineData("wave")]
+    [InlineData("block")]
+    [InlineData("none")]
+    public async Task GeneratePlan_ProgressionModes_HavePhases(string progression)
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 8,
+            DaysPerWeek = 3,
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight" },
+            Split = "full-body",
+            Goal = "hypertrophy",
+            Level = "beginner",
+            Progression = progression
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+        Assert.Equal(8, result!.Plan.Count);
+        Assert.False(string.IsNullOrWhiteSpace(result.ProgressionSummary));
+        Assert.Equal(progression, result.Criteria.Progression);
+        Assert.All(result.Plan, w =>
+        {
+            Assert.False(string.IsNullOrWhiteSpace(w.Phase));
+            Assert.False(string.IsNullOrWhiteSpace(w.PhaseLabel));
+            Assert.False(string.IsNullOrWhiteSpace(w.FocusNote));
+        });
+
+        if (progression is "linear" or "wave" or "block")
+        {
+            Assert.Contains(result.Plan, w => w.Phase == "deload");
+        }
+
+        if (progression == "none")
+        {
+            Assert.All(result.Plan, w => Assert.Equal("base", w.Phase));
+        }
+    }
+
+    [Fact]
+    public async Task GeneratePlan_Linear_DeloadHasFewerSetsThanPeakBuild()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 4,
+            DaysPerWeek = 3,
+            SessionMinutes = 40,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench" },
+            Split = "full-body",
+            Goal = "hypertrophy",
+            Level = "intermediate",
+            Progression = "linear"
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var week3 = result!.Plan.First(w => w.Week == 3);
+        var week4 = result.Plan.First(w => w.Week == 4);
+        Assert.Equal("deload", week4.Phase);
+
+        double AvgSets(WeekPlan w) =>
+            w.Days.Where(d => d.Type == "workout").SelectMany(d => d.Exercises).DefaultIfEmpty()
+                .Average(e => e?.Sets ?? 0);
+
+        Assert.True(AvgSets(week4) <= AvgSets(week3),
+            $"Expected deload week sets ({AvgSets(week4)}) <= build week sets ({AvgSets(week3)})");
+    }
+
+    [Theory]
     [InlineData("bro-split")]
     [InlineData("ppl")]
     [InlineData("upper-lower")]

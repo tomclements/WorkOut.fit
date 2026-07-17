@@ -47,6 +47,8 @@ dotnet test --verbosity normal
 | 1.10 | `GeneratePlan_BroSplit_FourDay_CombinesShouldersAndArms` | 4-day bro template ends with Shoulders & arms. |
 | 1.11 | `GeneratePlan_SplitVariants_ReturnWorkouts` | bro-split, ppl, and upper-lower each return non-empty workout days. |
 | 1.12 | `GeneratePlan_IncludesImageUrlsWhenAvailable` | Generated plan exercises include imageUrl when available in the library. |
+| 1.13 | `GeneratePlan_ProgressionModes_HavePhases` | linear/wave/block/none set week phases and a progression summary; deload present for progressive modes on 8-week plans. |
+| 1.14 | `GeneratePlan_Linear_DeloadHasFewerSetsThanPeakBuild` | Linear week 4 deload has average sets ≤ week 3. |
 
 ### 2. Authentication (`AuthTests.cs`)
 

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1e3a8a" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <title>Help - WorkOut</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen has-bottom-nav">
+  <div class="max-w-3xl mx-auto px-4 py-8">
+    <header class="mb-8">
+      <p class="text-sm text-blue-700 font-medium mb-1"><a href="/" class="hover:underline">WorkOut</a> · Help</p>
+      <h1 class="text-3xl font-extrabold tracking-tight text-blue-900">Help &amp; getting started</h1>
+      <p class="text-gray-600 mt-2">
+        Plain-language guide for using WorkOut — no fitness jargon required. Skim the list below or jump to a topic.
+      </p>
+    </header>
+
+    <nav class="bg-white rounded-xl shadow p-4 mb-8" aria-label="Help topics">
+      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">On this page</p>
+      <ul class="grid sm:grid-cols-2 gap-2 text-sm">
+        <li><a class="text-blue-700 hover:underline" href="#first-plan">Create your first plan</a></li>
+        <li><a class="text-blue-700 hover:underline" href="#equipment">Equipment &amp; injuries</a></li>
+        <li><a class="text-blue-700 hover:underline" href="#splits">Workout styles (splits)</a></li>
+        <li><a class="text-blue-700 hover:underline" href="#progression">How plans get harder</a></li>
+        <li><a class="text-blue-700 hover:underline" href="#runner">Running a workout</a></li>
+        <li><a class="text-blue-700 hover:underline" href="#account">Account, history &amp; favorites</a></li>
+        <li><a class="text-blue-700 hover:underline" href="#faq">Common questions</a></li>
+      </ul>
+    </nav>
+
+    <article class="space-y-10 text-gray-800 leading-relaxed">
+      <section id="first-plan" class="bg-white rounded-xl shadow p-6 scroll-mt-20">
+        <h2 class="text-xl font-bold text-blue-900 mb-3">Create your first plan</h2>
+        <ol class="list-decimal pl-5 space-y-2">
+          <li>Open the <strong>Planner</strong> (home page).</li>
+          <li>Choose how long the plan lasts (for example 4 weeks) and which days you train.</li>
+          <li>Set session length — how many minutes you have on a normal day.</li>
+          <li>Pick a <strong>goal</strong> (build muscle, get stronger, endurance, or fat loss) and your experience level.</li>
+          <li>Check the equipment you actually have (bodyweight alone is fine).</li>
+          <li>Optional: mark injuries so those moves are avoided.</li>
+          <li>Tap <strong>Create my plan</strong>. Scroll down to see each week and day.</li>
+          <li>When you’re ready, tap <strong>Start this workout</strong> to open the runner.</li>
+        </ol>
+        <p class="mt-4 text-sm text-gray-600">
+          You do <em>not</em> need an account to generate a plan. Sign in only if you want to save plans and history.
+        </p>
+      </section>
+
+      <section id="equipment" class="bg-white rounded-xl shadow p-6 scroll-mt-20">
+        <h2 class="text-xl font-bold text-blue-900 mb-3">Equipment &amp; injuries</h2>
+        <p class="mb-3">
+          WorkOut only suggests exercises that match <strong>all</strong> of the equipment you selected.
+          If something needs a bench and you didn’t check “bench,” it won’t appear.
+        </p>
+        <p class="mb-3">
+          Injury boxes remove moves that commonly stress that area (for example shoulder issues skip overhead pressing).
+          This is a helpful filter, not medical advice — if something hurts, stop and talk to a professional.
+        </p>
+        <p class="text-sm text-gray-600">
+          Tip: after you sign in, open <strong>Preferences</strong> to remember your default gear for next time.
+        </p>
+      </section>
+
+      <section id="splits" class="bg-white rounded-xl shadow p-6 scroll-mt-20">
+        <h2 class="text-xl font-bold text-blue-900 mb-3">Workout styles (splits)</h2>
+        <p class="mb-3">A “split” is simply <em>how you divide training across the week</em>.</p>
+        <ul class="space-y-3">
+          <li><strong>Full body</strong> — each session works most of the body. Great if you train 2–3 days a week.</li>
+          <li><strong>Upper / lower</strong> — one day for upper body, one for legs. Nice balance at about 4 days a week.</li>
+          <li><strong>Push / pull / legs</strong> — push days (chest, shoulders, triceps), pull days (back, biceps), leg days. Popular for muscle building when you can train often.</li>
+          <li><strong>Bro split (body part)</strong> — one main body part per day (chest day, back day, and so on). Fun and focused; usually works best with 4–5 training days.</li>
+        </ul>
+        <p class="mt-3 text-sm text-gray-600">There’s no single “best” style — pick the one you’ll stick with.</p>
+      </section>
+
+      <section id="progression" class="bg-white rounded-xl shadow p-6 scroll-mt-20">
+        <h2 class="text-xl font-bold text-blue-900 mb-3">How plans get harder (progression)</h2>
+        <p class="mb-3">
+          Your body improves when training is challenging <em>and</em> you recover. WorkOut can change each week automatically:
+        </p>
+        <ul class="space-y-3 mb-3">
+          <li>
+            <strong>Steady progress (recommended)</strong> —
+            Weeks gradually get a bit harder (more reps or sets). About every fourth week is lighter so you can recover.
+          </li>
+          <li>
+            <strong>Wave</strong> —
+            One week emphasizes more volume (more sets), the next emphasizes harder effort. Alternating can feel fresher.
+          </li>
+          <li>
+            <strong>Blocks</strong> —
+            A “build” phase, then a harder “push” phase, then recovery. Works especially well for longer plans (6–12 weeks).
+          </li>
+          <li>
+            <strong>Keep it the same</strong> —
+            Difficulty stays similar week to week. Simple if you prefer not to think about periodization.
+          </li>
+        </ul>
+        <p class="mb-2">
+          On each exercise you’ll see a short tip (for example “add a little weight if last week felt easy”).
+          You don’t need fancy apps — just try to do a bit more over time when form is solid.
+        </p>
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-950">
+          <strong>Recovery weeks are intentional.</strong> They are not “slacking.” Lighter weeks help you come back stronger and reduce burnout.
+        </div>
+      </section>
+
+      <section id="runner" class="bg-white rounded-xl shadow p-6 scroll-mt-20">
+        <h2 class="text-xl font-bold text-blue-900 mb-3">Running a workout</h2>
+        <ol class="list-decimal pl-5 space-y-2 mb-3">
+          <li>Open <strong>Run</strong> (or tap Start workout from a plan).</li>
+          <li>Pick the day you’re doing.</li>
+          <li>Optional toggles: music, voice cues, motion-sensor rep counting.</li>
+          <li>Tap <strong>Start workout</strong>. Follow the current exercise, mark sets complete, rest when prompted.</li>
+          <li>At the end, sign in and <strong>Save session</strong> if you want it in History.</li>
+        </ol>
+        <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+          <li><strong>Fullscreen</strong> and screen wake lock help in the gym.</li>
+          <li><strong>Aa</strong> toggles high contrast for bright rooms.</li>
+          <li>If you leave mid-workout, you can usually <strong>Resume</strong> from where you left off.</li>
+          <li>Motion sensors work best with the phone in a pocket or armband; you can always tap +/− for reps.</li>
+        </ul>
+      </section>
+
+      <section id="account" class="bg-white rounded-xl shadow p-6 scroll-mt-20">
+        <h2 class="text-xl font-bold text-blue-900 mb-3">Account, history &amp; favorites</h2>
+        <ul class="space-y-2">
+          <li><strong>Sign in / register</strong> — saves plans and completed workouts to your account.</li>
+          <li><strong>History</strong> — past sessions, totals, a streak counter, and simple charts.</li>
+          <li><strong>Favorites (★)</strong> — star exercises you like; the planner prefers them when building new plans.</li>
+          <li><strong>Preferences</strong> — default equipment and runner options (music, voice, volume).</li>
+        </ul>
+      </section>
+
+      <section id="faq" class="bg-white rounded-xl shadow p-6 scroll-mt-20">
+        <h2 class="text-xl font-bold text-blue-900 mb-3">Common questions</h2>
+        <dl class="space-y-4">
+          <div>
+            <dt class="font-semibold">I’m a complete beginner. Where do I start?</dt>
+            <dd class="text-gray-700 mt-1">Full body, 2–3 days, 20–30 minutes, beginner level, steady progress. Keep weights light until movements feel smooth.</dd>
+          </div>
+          <div>
+            <dt class="font-semibold">Can I change a plan after it’s generated?</dt>
+            <dd class="text-gray-700 mt-1">Yes. On the plan view you can add or remove exercises and turn days into rest (or the reverse).</dd>
+          </div>
+          <div>
+            <dt class="font-semibold">Why is a recovery week lighter?</dt>
+            <dd class="text-gray-700 mt-1">Your body adapts during rest as well as during hard training. Planned easy weeks help long-term progress.</dd>
+          </div>
+          <div>
+            <dt class="font-semibold">Do I need special equipment?</dt>
+            <dd class="text-gray-700 mt-1">No. Bodyweight-only plans work. More equipment just unlocks more exercise variety.</dd>
+          </div>
+          <div>
+            <dt class="font-semibold">Is this medical advice?</dt>
+            <dd class="text-gray-700 mt-1">No. WorkOut is a planning tool. If you have health conditions or pain, check with a qualified professional before starting.</dd>
+          </div>
+        </dl>
+      </section>
+
+      <p class="text-center text-sm text-gray-500 pb-4">
+        Still stuck? Create a short plan and press Start — the app is designed to be learned by using it.
+        <br />
+        <a href="/" class="text-blue-700 font-semibold hover:underline">Back to planner</a>
+      </p>
+    </article>
+  </div>
+
+  <nav id="bottomNav" class="bottom-nav no-print" aria-label="Main">
+    <a href="/" class="bottom-nav__item" data-nav="planner">
+      <span class="bottom-nav__icon" aria-hidden="true">📋</span>
+      <span>Planner</span>
+    </a>
+    <a href="/history.html" class="bottom-nav__item" data-nav="history">
+      <span class="bottom-nav__icon" aria-hidden="true">📈</span>
+      <span>History</span>
+    </a>
+    <a href="/workout.html" class="bottom-nav__item" data-nav="run">
+      <span class="bottom-nav__icon" aria-hidden="true">▶</span>
+      <span>Run</span>
+    </a>
+    <a href="/help.html" class="bottom-nav__item" data-nav="help">
+      <span class="bottom-nav__icon" aria-hidden="true">❓</span>
+      <span>Help</span>
+    </a>
+    <a href="/?open=account" class="bottom-nav__item" data-nav="account">
+      <span class="bottom-nav__icon" aria-hidden="true">👤</span>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <script src="js/site.js"></script>
+</body>
+</html>

@@ -14,6 +14,10 @@ public class PlanRequestValidator : AbstractValidator<PlanRequest>
         RuleFor(x => x.Equipment).NotEmpty().WithMessage("At least one equipment option is required.");
         RuleFor(x => x.Goal).NotEmpty().MaximumLength(50);
         RuleFor(x => x.Level).NotEmpty().MaximumLength(50);
+        RuleFor(x => x.Progression)
+            .Must(p => string.IsNullOrWhiteSpace(p) ||
+                       new[] { "none", "linear", "wave", "block" }.Contains(p.ToLowerInvariant()))
+            .WithMessage("Progression must be none, linear, wave, or block.");
     }
 }
 

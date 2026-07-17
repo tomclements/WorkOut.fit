@@ -37,8 +37,9 @@
     const page =
       path.endsWith('history.html') ? 'history'
         : path.endsWith('workout.html') ? 'run'
-          : path.endsWith('admin.html') ? 'admin'
-            : 'planner';
+          : path.endsWith('help.html') ? 'help'
+            : path.endsWith('admin.html') ? 'admin'
+              : 'planner';
 
     document.querySelectorAll('[data-nav]').forEach((el) => {
       const isActive = el.getAttribute('data-nav') === page;

@@ -66,6 +66,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         var selectedEquipment = req.Equipment ?? new List<string>();
         string split = string.IsNullOrWhiteSpace(req.Split) ? InferSplit(req.Goal) : req.Split.ToLowerInvariant();
         string goal = NormalizeGoal(req.Goal);
+        string progression = NormalizeProgression(req.Progression);
         int userLevelNum = LevelToNum(req.Level);
         var favoriteIds = new HashSet<string>(req.FavoriteExerciseIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
 
@@ -86,6 +87,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
         for (int w = 1; w <= weeks; w++)
         {
+            var mods = GetWeekProgression(progression, w, weeks, goal);
             var workoutDays = new List<DayPlan>();
             for (int i = 0; i < workoutIndices.Length; i++)
             {
@@ -93,7 +95,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 var (focusLabel, slotOrder) = GetSessionTemplate(split, dayIdx, i, effectiveDays);
                 var session = BuildSession(dayIdx, w, i + 1, targetTime, selectedEquipment,
                     userLevelNum, goal, split, focusLabel, slotOrder, exercises, recentUses, favoriteIds,
-                    req.IncludeWarmup, req.IncludeCooldown, req.Restrictions);
+                    req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, mods);
 
                 recentUses.Add(new HashSet<string>(session.Exercises.Select(e => e.Id)));
                 if (recentUses.Count > 2) recentUses.RemoveAt(0);
@@ -117,21 +119,37 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                         Type = "rest",
                         DayIndex = d,
                         Day = DayNames[d],
-                        Note = "Rest / mobility"
+                        Note = mods.Phase == "deload"
+                            ? "Rest / light mobility — recovery week"
+                            : "Rest / mobility"
                     });
                 }
             }
 
-            plan.Add(new WeekPlan { Week = w, Days = fullDays });
+            plan.Add(new WeekPlan
+            {
+                Week = w,
+                Phase = mods.Phase,
+                PhaseLabel = mods.PhaseLabel,
+                FocusNote = mods.FocusNote,
+                Days = fullDays
+            });
         }
 
-        return new PlanResponse { Criteria = req, Plan = plan, GeneratedAt = DateTime.UtcNow.ToString("O") };
+        req.Progression = progression;
+        return new PlanResponse
+        {
+            Criteria = req,
+            Plan = plan,
+            GeneratedAt = DateTime.UtcNow.ToString("O"),
+            ProgressionSummary = BuildProgressionSummary(progression, weeks, goal)
+        };
     }
 
     private DayPlan BuildSession(int dayIdx, int week, int dayNumber, int targetTime,
         List<string> equipment, int userLevelNum, string goal, string split, string focusLabel, List<string> slotOrder,
         List<Exercise> allExercises, List<HashSet<string>> recentUses, HashSet<string> favoriteIds, bool includeWarmup, bool includeCooldown,
-        List<string> restrictions)
+        List<string> restrictions, WeekProgression mods)
     {
         var pool = allExercises
             .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions))
@@ -173,9 +191,9 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             if (!candidates.Any()) continue;
 
             var ex = candidates.First();
-            int sets = ComputeSets(ex, goal, userLevelNum, week, isBro);
-            string reps = ComputeReps(ex, goal, week);
-            int rest = ComputeRest(ex, goal);
+            int sets = ComputeSets(ex, goal, userLevelNum, isBro, mods);
+            string reps = ComputeReps(ex, goal, mods);
+            int rest = ComputeRest(ex, goal, mods);
             int exerciseDuration = sets * (ex.WorkDuration + rest) + transition;
 
             // Bro split tolerates slightly fuller sessions (high per-muscle volume)
@@ -200,7 +218,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 WorkDuration = ex.WorkDuration,
                 IsTimeBased = ex.IsTimeBased,
                 Primary = ex.Primary,
-                Progression = ProgressionHint(goal, week, isBro),
+                Progression = ProgressionHint(goal, week, isBro, mods),
                 DemoUrl = ex.DemoUrl,
                 ImageUrl = ex.ImageUrl
             });
@@ -263,19 +281,171 @@ public class WorkoutPlannerService : IWorkoutPlannerService
     private static string Capitalize(string s) =>
         string.IsNullOrEmpty(s) ? s : char.ToUpperInvariant(s[0]) + s[1..];
 
-    private static int ComputeSets(Exercise ex, string goal, int userLevelNum, int week, bool broSplit = false)
+    private sealed record WeekProgression(
+        string Phase,
+        string PhaseLabel,
+        string FocusNote,
+        int SetDelta,
+        int RepDelta,
+        int RestDelta);
+
+    private static string NormalizeProgression(string? progression) => progression?.ToLowerInvariant() switch
+    {
+        "none" or "flat" or "off" => "none",
+        "wave" or "undulating" or "daily undulating" => "wave",
+        "block" or "periodized" or "periodization" => "block",
+        "linear" or "progressive" or "standard" => "linear",
+        _ => "linear"
+    };
+
+    /// <summary>
+    /// Maps each week to a training phase with set/rep/rest modifiers.
+    /// </summary>
+    private static WeekProgression GetWeekProgression(string progression, int week, int totalWeeks, string goal)
+    {
+        if (progression == "none" || totalWeeks <= 1)
+        {
+            return new WeekProgression(
+                "base",
+                "Steady week",
+                "Keep effort consistent. Focus on solid form rather than chasing numbers.",
+                0, 0, 0);
+        }
+
+        if (progression == "wave")
+        {
+            // Alternate volume (odd) and intensity (even); final week deload if 4+ weeks
+            if (totalWeeks >= 4 && week == totalWeeks)
+                return DeloadWeek(goal);
+
+            bool volumeWeek = week % 2 == 1;
+            if (volumeWeek)
+            {
+                return new WeekProgression(
+                    "volume",
+                    "Volume week",
+                    "More sets, moderate weight. Leave 2–3 reps in reserve on most sets.",
+                    SetDelta: 1,
+                    RepDelta: goal == "strength" ? 1 : 2,
+                    RestDelta: -5);
+            }
+
+            return new WeekProgression(
+                "intensity",
+                "Intensity week",
+                "Slightly fewer reps, push closer to your limit (about 1 rep left in the tank). Rest a bit longer.",
+                SetDelta: 0,
+                RepDelta: goal == "strength" ? -1 : 0,
+                RestDelta: 15);
+        }
+
+        if (progression == "block")
+        {
+            // Thirds: accumulate → intensify → peak/deload
+            double t = (double)week / totalWeeks;
+            if (t <= 0.4)
+            {
+                int build = Math.Min(2, (week - 1) / Math.Max(1, totalWeeks / 4));
+                return new WeekProgression(
+                    "build",
+                    "Build block",
+                    "Accumulate work capacity: more volume, controlled effort. Master technique.",
+                    SetDelta: 1 + build / 2,
+                    RepDelta: 1 + build,
+                    RestDelta: 0);
+            }
+            if (t <= 0.75)
+            {
+                return new WeekProgression(
+                    "peak",
+                    "Intensify block",
+                    "Heavier relative effort, slightly lower reps. Progress load when form stays crisp.",
+                    SetDelta: goal == "strength" ? 1 : 0,
+                    RepDelta: goal == "strength" ? -1 : 0,
+                    RestDelta: 20);
+            }
+            if (week == totalWeeks || t > 0.9)
+                return DeloadWeek(goal);
+
+            return new WeekProgression(
+                "peak",
+                "Peak week",
+                "Quality over quantity. Hit strong sets, then stop before form breaks down.",
+                SetDelta: 0,
+                RepDelta: goal == "endurance" || goal == "fat-loss" ? 1 : -1,
+                RestDelta: 25);
+        }
+
+        // linear (default): ramp up; deload every 4th week and on the final week of 5+ week plans
+        bool isDeload = (week > 1 && week % 4 == 0) || (totalWeeks >= 5 && week == totalWeeks);
+        if (isDeload)
+            return DeloadWeek(goal);
+
+        int step = week - 1 - (week / 4); // don't count deload weeks as hard progression steps
+        step = Math.Max(0, step);
+        string label = week == 1 ? "Foundation week" : "Build week";
+        string note = week == 1
+            ? "Establish baseline weights you can control. Leave 2–3 reps in reserve."
+            : "Nudge difficulty: add a little weight, an extra rep, or keep the same load feeling smoother.";
+
+        return new WeekProgression(
+            week == 1 ? "base" : "build",
+            label,
+            note,
+            SetDelta: Math.Min(2, step / 2 + ((goal is "strength" or "hypertrophy") && step > 0 ? 1 : 0)),
+            RepDelta: Math.Min(3, step),
+            RestDelta: goal == "strength" ? Math.Min(20, step * 5) : 0);
+    }
+
+    private static WeekProgression DeloadWeek(string goal) =>
+        new(
+            "deload",
+            "Recovery (deload)",
+            "Reduce volume and effort (~60% of a hard week). Sleep, mobility, and easy movement count. Come back fresh next week.",
+            SetDelta: -1,
+            RepDelta: goal == "strength" ? 1 : -1,
+            RestDelta: 10);
+
+    private static string BuildProgressionSummary(string progression, int weeks, string goal)
+    {
+        string goalWord = goal switch
+        {
+            "strength" => "getting stronger",
+            "hypertrophy" => "building muscle",
+            "endurance" => "building endurance",
+            "fat-loss" => "fat loss and conditioning",
+            _ => "your goal"
+        };
+
+        return progression switch
+        {
+            "none" =>
+                $"Steady plan for {weeks} week{(weeks == 1 ? "" : "s")} focused on {goalWord}. Difficulty stays similar each week so you can practice consistency.",
+            "wave" =>
+                $"Wave progression for {weeks} week{(weeks == 1 ? "" : "s")}: alternate higher-volume and higher-intensity weeks for {goalWord}." +
+                (weeks >= 4 ? " The last week is a lighter recovery week." : ""),
+            "block" =>
+                $"Block periodization for {weeks} week{(weeks == 1 ? "" : "s")}: build capacity first, then intensify, then ease off. Tuned for {goalWord}.",
+            _ =>
+                $"Linear progression for {weeks} week{(weeks == 1 ? "" : "s")}: gradually harder training for {goalWord}, with planned recovery (deload) weeks so you don’t burn out."
+        };
+    }
+
+    private static int ComputeSets(Exercise ex, string goal, int userLevelNum, bool broSplit, WeekProgression mods)
     {
         int sets = ex.BaseSets;
         if (goal == "strength") sets += 1;
         if (goal == "endurance" || goal == "fat-loss") sets = Math.Max(2, sets - 1);
         // Bro split: higher per-session volume for the trained body part
-        if (broSplit && (goal == "hypertrophy" || goal == "strength")) sets += 1;
-        if (userLevelNum >= 3) sets += 1;
-        if (week > 1 && (goal == "strength" || goal == "hypertrophy")) sets = Math.Min(6, sets + 1);
-        return Math.Clamp(sets, 1, broSplit ? 6 : 5);
+        if (broSplit && (goal == "hypertrophy" || goal == "strength") && mods.Phase != "deload") sets += 1;
+        if (userLevelNum >= 3 && mods.Phase != "deload") sets += 1;
+        sets += mods.SetDelta;
+        int maxSets = broSplit ? 6 : 5;
+        if (mods.Phase == "deload") maxSets = 4;
+        return Math.Clamp(sets, 1, maxSets);
     }
 
-    private static string ComputeReps(Exercise ex, string goal, int week)
+    private static string ComputeReps(Exercise ex, string goal, WeekProgression mods)
     {
         int min = ex.RepsMin;
         int max = ex.RepsMax;
@@ -297,35 +467,44 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 break;
         }
 
-        int add = Math.Min(4, week - 1);
-        min += add;
-        max += add;
+        min = Math.Max(1, min + mods.RepDelta);
+        max = Math.Max(min + 1, max + mods.RepDelta);
 
         return ex.IsTimeBased ? $"{min}-{max} sec" : $"{min}-{max}";
     }
 
-    private static int ComputeRest(Exercise ex, string goal)
+    private static int ComputeRest(Exercise ex, string goal, WeekProgression mods)
     {
         int r = ex.RestSec;
         if (goal == "strength") r += 30;
         else if (goal == "endurance" || goal == "fat-loss") r = Math.Max(20, r - 30);
         else if (goal == "hypertrophy") r = Math.Max(30, r - 15);
+        r += mods.RestDelta;
         return Math.Clamp(r, 20, 300);
     }
 
-    private static string ProgressionHint(string goal, int week, bool broSplit = false)
+    private static string ProgressionHint(string goal, int week, bool broSplit, WeekProgression mods)
     {
-        if (week == 1)
+        if (mods.Phase == "deload")
+            return "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.";
+
+        if (week == 1 || mods.Phase == "base")
             return broSplit
-                ? "Body-part day: push high quality volume on this muscle group; leave 1–2 reps in reserve."
+                ? "Body-part day: quality volume on this muscle group; leave 1–2 reps in reserve."
                 : "Learn the movement; use a weight you can control with good form.";
+
+        if (mods.Phase is "intensity" or "peak")
+            return goal == "strength"
+                ? "Intensity focus: if last week felt solid, add a small amount of weight. Rest fully between hard sets."
+                : "Push quality sets near the top of the rep range, but stop if form slips.";
+
         if (goal == "strength")
-            return "If you completed all sets last week, add a small amount of weight.";
+            return "If you completed all sets last week cleanly, add a small amount of weight.";
         if (goal == "endurance" || goal == "fat-loss")
-            return "Aim for the top of the rep range or reduce rest slightly.";
+            return "Aim for the top of the rep range or keep rest short while staying controlled.";
         if (broSplit)
             return "Chase a strong pump with controlled form; add reps or a small load when the top of the range feels easy.";
-        return "Add reps, sets, or weight when the top of the range feels easy.";
+        return "Add reps, a set, or a little weight when the top of the range feels easy.";
     }
 
     /// <summary>

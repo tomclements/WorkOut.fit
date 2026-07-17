@@ -20,6 +20,7 @@
           <p class="text-gray-600 mt-1">Build and run workout plans that fit your schedule, goals, and equipment.</p>
         </div>
         <div class="flex items-center gap-3">
+          <a href="/help.html" class="text-sm text-blue-600 hover:underline font-medium">Help</a>
           <a id="preferencesLink" href="#" class="hidden text-sm text-blue-600 hover:underline font-medium">Preferences</a>
           <a id="historyLink" href="/history.html" class="hidden md:inline text-sm text-blue-600 hover:underline font-medium">History</a>
           <a id="adminLink" href="/admin.html" class="hidden text-sm text-blue-600 hover:underline font-medium">Admin</a>
@@ -81,6 +82,7 @@
       <h2 class="text-xl font-semibold text-blue-900 mb-2">Welcome</h2>
       <p class="text-gray-700 mb-4">
         Sign in to save your plans, track your workouts, and see your progress. You can also create a plan below without signing in.
+        New here? Read the <a href="/help.html" class="text-blue-700 font-semibold hover:underline">simple help guide</a>.
       </p>
       <button id="welcomeSignInBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Sign in / Register</button>
     </section>
@@ -225,6 +227,19 @@
           </select>
         </div>
 
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="progression">How the plan gets harder</label>
+          <select id="progression" class="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+            <option value="linear" selected>Steady progress (recommended)</option>
+            <option value="wave">Wave — alternate easier/harder weeks</option>
+            <option value="block">Blocks — build, then push, then recover</option>
+            <option value="none">Keep it the same each week</option>
+          </select>
+          <p id="progressionHint" class="text-xs text-gray-500 mt-1">
+            Each week gets a little harder, with planned lighter “recovery” weeks so you can keep improving without burning out.
+          </p>
+        </div>
+
         <div class="flex flex-col justify-center gap-2">
           <label class="inline-flex items-center">
             <input id="includeWarmup" type="checkbox" checked class="rounded text-blue-600" />
@@ -335,6 +350,10 @@
     <a href="/workout.html" class="bottom-nav__item" data-nav="run">
       <span class="bottom-nav__icon" aria-hidden="true">▶</span>
       <span>Run</span>
+    </a>
+    <a href="/help.html" class="bottom-nav__item" data-nav="help">
+      <span class="bottom-nav__icon" aria-hidden="true">❓</span>
+      <span>Help</span>
     </a>
     <a href="#" id="bottomNavAccount" class="bottom-nav__item" data-nav="account">
       <span class="bottom-nav__icon" aria-hidden="true">👤</span>

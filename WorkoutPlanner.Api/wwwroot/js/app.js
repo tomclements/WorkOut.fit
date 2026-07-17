@@ -105,6 +105,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   document.getElementById('split').addEventListener('change', onSplitChange);
   onSplitChange();
+  const progressionEl = document.getElementById('progression');
+  if (progressionEl) {
+    progressionEl.addEventListener('change', () => {
+      const hint = document.getElementById('progressionHint');
+      if (hint) hint.textContent = PROGRESSION_HINTS[progressionEl.value] || PROGRESSION_HINTS.linear;
+    });
+  }
 
   // Auth modal
   document.getElementById('openAuthBtn').addEventListener('click', openAuthModal);
@@ -212,9 +219,17 @@ function getCriteria() {
     level: document.getElementById('level').value,
     includeWarmup: document.getElementById('includeWarmup').checked,
     includeCooldown: document.getElementById('includeCooldown').checked,
-    favoriteExerciseIds: favoriteExerciseIds.slice()
+    favoriteExerciseIds: favoriteExerciseIds.slice(),
+    progression: document.getElementById('progression')?.value || 'linear'
   };
 }
+
+const PROGRESSION_HINTS = {
+  linear: 'Each week gets a little harder, with planned lighter “recovery” weeks so you can keep improving without burning out.',
+  wave: 'Volume weeks (more sets) alternate with intensity weeks (harder effort). Great if you like variety.',
+  block: 'A “build” phase, then a harder “push” phase, then recovery. Best for plans of 6+ weeks.',
+  none: 'Same style of workouts every week — simple and consistent, with less automatic change.'
+};
 
 async function loadFavorites() {
   favoriteExerciseIds = [];
@@ -802,6 +817,12 @@ function renderPlan(result) {
 
   const summary = document.createElement('div');
   summary.className = 'mb-6';
+  const progressionLabel = ({
+    linear: 'Steady progress',
+    wave: 'Wave progression',
+    block: 'Block periodization',
+    none: 'Steady (no ramp)'
+  })[result.criteria.progression] || capitalize(result.criteria.progression || 'linear');
   summary.innerHTML = `
     <h2 class="text-2xl font-bold mb-2">Your ${result.criteria.weeks}-week plan</h2>
     <p class="text-gray-700">
@@ -809,16 +830,25 @@ function renderPlan(result) {
       • ${capitalize(result.criteria.split || 'full-body')} split
       • ${capitalize(result.criteria.goal)}
       • ${capitalize(result.criteria.level)}
+      • ${progressionLabel}
     </p>
-    <p class="text-sm text-gray-500 mt-1">Use the buttons on each day to add or remove exercises and to switch a day between workout and rest.</p>
+    ${result.progressionSummary ? `<p class="text-sm text-blue-900 bg-blue-50 border border-blue-100 rounded-lg p-3 mt-3">${escapeHtml(result.progressionSummary)}</p>` : ''}
+    <p class="text-sm text-gray-500 mt-2">Use the buttons on each day to add or remove exercises and to switch a day between workout and rest. <a href="/help.html#progression" class="text-blue-600 hover:underline">How progression works</a></p>
   `;
   container.appendChild(summary);
 
   result.plan.forEach((week, weekIndex) => {
     const weekEl = document.createElement('section');
     weekEl.className = 'mb-8';
+    const phaseBadge = week.phaseLabel
+      ? `<span class="ml-2 text-xs font-semibold px-2 py-1 rounded-full ${week.phase === 'deload' ? 'bg-amber-100 text-amber-900' : 'bg-blue-100 text-blue-900'}">${escapeHtml(week.phaseLabel)}</span>`
+      : '';
+    const focusNote = week.focusNote
+      ? `<p class="text-sm text-gray-600 mb-3">${escapeHtml(week.focusNote)}</p>`
+      : '';
     weekEl.innerHTML = `
-      <h3 class="text-xl font-semibold mb-3 border-b pb-1">Week ${week.week}</h3>
+      <h3 class="text-xl font-semibold mb-1 border-b pb-1 flex flex-wrap items-center gap-1">Week ${week.week}${phaseBadge}</h3>
+      ${focusNote}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 days-grid"></div>
     `;
     const grid = weekEl.querySelector('.days-grid');

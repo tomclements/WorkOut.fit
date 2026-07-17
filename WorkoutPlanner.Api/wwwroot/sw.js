@@ -1,9 +1,10 @@
-const CACHE_NAME = 'workout-v5';
+const CACHE_NAME = 'workout-v6';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/workout.html',
   '/history.html',
+  '/help.html',
   '/admin.html',
   '/css/styles.css',
   '/css/admin.css',
