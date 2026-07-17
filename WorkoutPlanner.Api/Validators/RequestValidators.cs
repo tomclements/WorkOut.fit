@@ -9,6 +9,7 @@ public class PlanRequestValidator : AbstractValidator<PlanRequest>
     {
         RuleFor(x => x.Weeks).InclusiveBetween(1, 12);
         RuleFor(x => x.DaysPerWeek).InclusiveBetween(1, 7);
+        RuleForEach(x => x.WorkoutDays).InclusiveBetween(0, 6);
         RuleFor(x => x.SessionMinutes).InclusiveBetween(5, 90);
         RuleFor(x => x.Equipment).NotEmpty().WithMessage("At least one equipment option is required.");
         RuleFor(x => x.Goal).NotEmpty().MaximumLength(50);

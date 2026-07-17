@@ -153,6 +153,20 @@
           <input id="daysPerWeek" type="range" min="1" max="7" value="5" class="w-full" />
         </div>
 
+        <div class="md:col-span-2 lg:col-span-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Workout days</label>
+          <div id="daySelector" class="flex flex-wrap gap-3">
+            <label class="inline-flex items-center"><input type="checkbox" name="workoutDay" value="0" class="rounded text-blue-600" checked /><span class="ml-2 text-sm">Mon</span></label>
+            <label class="inline-flex items-center"><input type="checkbox" name="workoutDay" value="1" class="rounded text-blue-600" checked /><span class="ml-2 text-sm">Tue</span></label>
+            <label class="inline-flex items-center"><input type="checkbox" name="workoutDay" value="2" class="rounded text-blue-600" checked /><span class="ml-2 text-sm">Wed</span></label>
+            <label class="inline-flex items-center"><input type="checkbox" name="workoutDay" value="3" class="rounded text-blue-600" checked /><span class="ml-2 text-sm">Thu</span></label>
+            <label class="inline-flex items-center"><input type="checkbox" name="workoutDay" value="4" class="rounded text-blue-600" checked /><span class="ml-2 text-sm">Fri</span></label>
+            <label class="inline-flex items-center"><input type="checkbox" name="workoutDay" value="5" class="rounded text-blue-600" /><span class="ml-2 text-sm">Sat</span></label>
+            <label class="inline-flex items-center"><input type="checkbox" name="workoutDay" value="6" class="rounded text-blue-600" /><span class="ml-2 text-sm">Sun</span></label>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Pick the days you want to train. The slider sets how many days are selected.</p>
+        </div>
+
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" for="sessionMinutes">Session length: <span id="minutesLabel">20</span> min</label>
           <input id="sessionMinutes" type="range" min="5" max="90" step="5" value="20" class="w-full" />

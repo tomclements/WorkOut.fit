@@ -59,6 +59,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('input[type=range]').forEach(input => {
     input.addEventListener('input', updateRangeLabel);
   });
+  document.getElementById('daysPerWeek').addEventListener('input', syncDaySelectorFromSlider);
+  document.querySelectorAll('input[name="workoutDay"]').forEach(cb => {
+    cb.addEventListener('change', syncSliderFromDaySelector);
+  });
 
   // Auth modal
   document.getElementById('openAuthBtn').addEventListener('click', openAuthModal);
@@ -91,12 +95,29 @@ function updateRangeLabel(e) {
   if (label) label.textContent = input.value;
 }
 
+function syncDaySelectorFromSlider() {
+  const count = parseInt(document.getElementById('daysPerWeek').value, 10);
+  const checkboxes = document.querySelectorAll('input[name="workoutDay"]');
+  checkboxes.forEach((cb, idx) => {
+    cb.checked = idx < count;
+  });
+  updateRangeLabel({ target: document.getElementById('daysPerWeek') });
+}
+
+function syncSliderFromDaySelector() {
+  const checked = document.querySelectorAll('input[name="workoutDay"]:checked').length;
+  const slider = document.getElementById('daysPerWeek');
+  slider.value = checked;
+  updateRangeLabel({ target: slider });
+}
+
 function getCriteria() {
   const equipment = Array.from(document.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value);
   const restrictions = Array.from(document.querySelectorAll('input[name="restrictions"]:checked')).map(cb => cb.value);
   return {
     weeks: parseInt(document.getElementById('weeks').value, 10),
     daysPerWeek: parseInt(document.getElementById('daysPerWeek').value, 10),
+    workoutDays: Array.from(document.querySelectorAll('input[name="workoutDay"]:checked')).map(cb => parseInt(cb.value, 10)).sort((a, b) => a - b),
     sessionMinutes: parseInt(document.getElementById('sessionMinutes').value, 10),
     equipment,
     restrictions,
@@ -529,7 +550,7 @@ function renderPlan(result) {
   summary.innerHTML = `
     <h2 class="text-2xl font-bold mb-2">Your ${result.criteria.weeks}-week plan</h2>
     <p class="text-gray-700">
-      ${result.criteria.daysPerWeek} days/week • ${result.criteria.sessionMinutes} min sessions
+      ${formatWorkoutDays(result.criteria.workoutDays, result.criteria.daysPerWeek)} • ${result.criteria.sessionMinutes} min sessions
       • ${capitalize(result.criteria.split || 'full-body')} split
       • ${capitalize(result.criteria.goal)}
       • ${capitalize(result.criteria.level)}
@@ -744,6 +765,14 @@ function loadDefaults() {
 function capitalize(s) {
   if (!s) return s;
   return s.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function formatWorkoutDays(workoutDays, daysPerWeek) {
+  const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  if (workoutDays && workoutDays.length > 0) {
+    return workoutDays.map(d => dayNames[d]).join(', ');
+  }
+  return `${daysPerWeek} days/week`;
 }
 
 function escapeHtml(str) {

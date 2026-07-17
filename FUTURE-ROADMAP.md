@@ -67,10 +67,13 @@ Give admins a one-click way to pull the latest public-domain exercise data from 
 4. **Split selection** ✅ Done
    - Users can now pick a workout split (full body, upper/lower, push/pull/legs, bro split) when generating a plan.
    - The generator uses the split to schedule days and select exercises. Full body draws from all exercise types.
-5. **Export / share plans**
+5. **Day-of-week selection** ✅ Done
+   - Users can pick specific days (Mon–Sun) for workouts instead of only a day count.
+   - The generator schedules workouts on those days and rests on the others.
+6. **Export / share plans**
    - Export generated plans as PDF or shareable public read-only link.
    - Import plans from JSON backup.
-6. **Accessibility pass**
+7. **Accessibility pass**
    - ARIA labels, focus management for the runner, keyboard-only navigation, high-contrast mode.
 
 ---

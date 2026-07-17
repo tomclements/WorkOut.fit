@@ -39,7 +39,9 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         string goal = NormalizeGoal(req.Goal);
         int userLevelNum = LevelToNum(req.Level);
 
-        var workoutIndices = DayPatterns[daysPerWeek];
+        var workoutIndices = req.WorkoutDays?.Count > 0
+            ? req.WorkoutDays.Distinct().OrderBy(d => d).Where(d => d >= 0 && d <= 6).ToArray()
+            : DayPatterns[daysPerWeek];
         int reserved = (req.IncludeWarmup ? 3 : 0) + (req.IncludeCooldown ? 2 : 0);
         int targetTime = Math.Max(5, sessionMinutes - reserved) * 60;
 

@@ -4,6 +4,7 @@ public class PlanRequest
 {
     public int Weeks { get; set; } = 4;
     public int DaysPerWeek { get; set; } = 3;
+    public List<int> WorkoutDays { get; set; } = new();
     public int SessionMinutes { get; set; } = 30;
     public List<string> Equipment { get; set; } = new();
     public string Split { get; set; } = "full-body";
