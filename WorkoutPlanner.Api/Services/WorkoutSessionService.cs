@@ -54,7 +54,8 @@ public class WorkoutSessionService : IWorkoutSessionService
                 s.CompletedAt,
                 s.DurationSeconds,
                 ExerciseCount = s.Exercises.Count,
-                TotalSets = s.Exercises.Sum(e => e.Sets.Count)
+                TotalSets = s.Exercises.Sum(e => e.Sets.Count),
+                TotalReps = s.Exercises.Sum(e => e.Sets.Sum(set => set.Reps))
             })
             .ToListAsync();
     }

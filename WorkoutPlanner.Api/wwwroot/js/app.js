@@ -10,6 +10,7 @@ const welcomeSection = document.getElementById('welcomeSection');
 const dashboardSection = document.getElementById('dashboardSection');
 const plannerSection = document.getElementById('plannerSection');
 const adminLink = document.getElementById('adminLink');
+const historyLink = document.getElementById('historyLink');
 const togglePlannerBtn = document.getElementById('togglePlannerBtn');
 const closePlannerBtn = document.getElementById('closePlannerBtn');
 const savedPlansTable = document.getElementById('savedPlansTable');
@@ -339,6 +340,8 @@ function showLoggedIn(email, roles) {
   `;
   document.getElementById('logoutBtn').addEventListener('click', logout);
 
+  historyLink.classList.remove('hidden');
+
   if (roles.includes('Admin')) {
     adminLink.classList.remove('hidden');
   } else {
@@ -363,6 +366,7 @@ function showLoggedOut() {
   document.getElementById('openAuthBtn').addEventListener('click', openAuthModal);
 
   adminLink.classList.add('hidden');
+  historyLink.classList.add('hidden');
   welcomeSection.classList.remove('hidden');
   dashboardSection.classList.add('hidden');
   plannerSection.classList.remove('hidden');
