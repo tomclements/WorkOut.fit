@@ -55,9 +55,9 @@ Give admins a one-click way to pull the latest public-domain exercise data from 
 
 ## 2. Short-term improvements (high value, low risk)
 
-1. **Session history dashboard**
-   - New page `/history.html` (or section on index) listing saved workout sessions.
-   - Show date, duration, total sets/reps, and a simple trend chart (e.g., Chart.js or a small custom SVG chart).
+1. **Session history dashboard** ✅ Done
+   - New page `/history.html` lists saved workout sessions.
+   - Shows date, duration, total sets/reps, and a per-exercise detail view.
 2. **User profile & preferences**
    - Default equipment selection, preferred music source, default voice setting.
    - Store in a `UserPreference` table linked to Identity.
@@ -116,8 +116,7 @@ Give admins a one-click way to pull the latest public-domain exercise data from 
 If you want to continue, I’d recommend this order:
 
 1. **Admin refresh-from-source interface** (covered in section 1).
-2. **Session history dashboard**.
-3. **User preferences** (default equipment, music, voice).
-4. **External music integration** (Spotify/Apple Music links first, full SDK later).
+2. **User preferences** (default equipment, music, voice).
+3. **External music integration** (Spotify/Apple Music links first, full SDK later).
 
 Tell me which one you want to build next.
