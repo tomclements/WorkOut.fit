@@ -67,6 +67,7 @@ Give admins a one-click way to pull the latest public-domain exercise data from 
 4. **Split selection** ✅ Done
    - Users can now pick a workout split (full body, upper/lower, push/pull/legs, bro split) when generating a plan.
    - The generator uses the split to schedule days and select exercises. Full body draws from all exercise types.
+   - **Bro split** uses true body-part days (chest / back / legs / shoulders / arms) matched via `primary`/`secondary` muscles, higher per-session volume, 4–5 day templates, and an in-UI frequency note vs PPL/upper-lower.
 5. **Day-of-week selection** ✅ Done
    - Users can pick specific days (Mon–Sun) for workouts instead of only a day count.
    - The generator schedules workouts on those days and rests on the others.
@@ -113,6 +114,14 @@ Give admins a one-click way to pull the latest public-domain exercise data from 
    - Localize the UI and exercise names/instructions.
 
 ---
+
+## Sprint A (site polish) ✅ Done
+
+- `GET /health` with database connectivity check
+- Shared bottom nav (Planner · History · Run · Account) — hidden during active runner sessions
+- Success toasts for plan/session/preference saves
+- Empty dashboard + history onboarding copy for new users
+- Runner mobile polish: larger timers/targets, high-contrast mode, clearer sensor UX, fullscreen + wake lock already present
 
 ## Suggested next sprint
 

@@ -197,4 +197,130 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
 
         Assert.All(exercises, e => Assert.False(string.IsNullOrWhiteSpace(e.DemoUrl)));
     }
+
+    [Fact]
+    public async Task GeneratePlan_BroSplit_UsesBodyPartFocusLabels()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 5,
+            WorkoutDays = new List<int> { 0, 1, 2, 3, 4 },
+            SessionMinutes = 45,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "barbell", "pull-up-bar" },
+            Split = "bro-split",
+            Goal = "hypertrophy",
+            Level = "intermediate"
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var workouts = result!.Plan
+            .SelectMany(w => w.Days)
+            .Where(d => d.Type == "workout")
+            .OrderBy(d => d.DayIndex)
+            .ToList();
+
+        Assert.Equal(5, workouts.Count);
+        Assert.Equal("Chest", workouts[0].Focus);
+        Assert.Equal("Back", workouts[1].Focus);
+        Assert.Equal("Legs", workouts[2].Focus);
+        Assert.Equal("Shoulders", workouts[3].Focus);
+        Assert.Equal("Arms", workouts[4].Focus);
+        Assert.All(workouts, d => Assert.NotEmpty(d.Exercises));
+    }
+
+    [Fact]
+    public async Task GeneratePlan_BroSplit_ChestDayTargetsChest()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 5,
+            WorkoutDays = new List<int> { 0, 1, 2, 3, 4 },
+            SessionMinutes = 45,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "barbell", "pull-up-bar" },
+            Split = "bro-split",
+            Goal = "hypertrophy",
+            Level = "intermediate"
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var chestDay = result!.Plan
+            .SelectMany(w => w.Days)
+            .First(d => d.Type == "workout" && d.Focus == "Chest");
+
+        // Most chest-day exercises should list chest as a primary or secondary muscle
+        var withChest = chestDay.Exercises.Count(e =>
+            e.Primary.Any(p => p.Equals("chest", StringComparison.OrdinalIgnoreCase)));
+        Assert.True(withChest >= Math.Max(1, chestDay.Exercises.Count / 2),
+            $"Expected majority chest-focused exercises, got {withChest}/{chestDay.Exercises.Count}");
+    }
+
+    [Fact]
+    public async Task GeneratePlan_BroSplit_FourDay_CombinesShouldersAndArms()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 4,
+            WorkoutDays = new List<int> { 0, 1, 2, 3 },
+            SessionMinutes = 40,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "barbell" },
+            Split = "bro-split",
+            Goal = "hypertrophy",
+            Level = "beginner"
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var focuses = result!.Plan
+            .SelectMany(w => w.Days)
+            .Where(d => d.Type == "workout")
+            .Select(d => d.Focus)
+            .ToList();
+
+        Assert.Contains("Chest", focuses);
+        Assert.Contains("Back", focuses);
+        Assert.Contains("Legs", focuses);
+        Assert.Contains("Shoulders & arms", focuses);
+    }
+
+    [Theory]
+    [InlineData("bro-split")]
+    [InlineData("ppl")]
+    [InlineData("upper-lower")]
+    public async Task GeneratePlan_SplitVariants_ReturnWorkouts(string split)
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 5,
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench" },
+            Split = split,
+            Goal = "hypertrophy",
+            Level = "beginner"
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var workouts = result!.Plan.SelectMany(w => w.Days).Where(d => d.Type == "workout").ToList();
+        Assert.NotEmpty(workouts);
+        Assert.All(workouts, d => Assert.NotEmpty(d.Exercises));
+        Assert.Equal(split, result.Criteria.Split);
+    }
 }

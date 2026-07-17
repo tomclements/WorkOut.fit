@@ -11,7 +11,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body class="bg-gray-50 text-gray-900 min-h-screen">
+<body class="bg-gray-50 text-gray-900 min-h-screen has-bottom-nav">
   <div class="max-w-6xl mx-auto px-4 py-8">
     <header class="mb-8">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -20,7 +20,8 @@
           <p class="text-gray-600 mt-1">Build and run workout plans that fit your schedule, goals, and equipment.</p>
         </div>
         <div class="flex items-center gap-3">
-          <a id="historyLink" href="/history.html" class="hidden text-sm text-blue-600 hover:underline font-medium">History</a>
+          <a id="preferencesLink" href="#" class="hidden text-sm text-blue-600 hover:underline font-medium">Preferences</a>
+          <a id="historyLink" href="/history.html" class="hidden md:inline text-sm text-blue-600 hover:underline font-medium">History</a>
           <a id="adminLink" href="/admin.html" class="hidden text-sm text-blue-600 hover:underline font-medium">Admin</a>
           <div id="authSection" class="flex items-center gap-3">
             <button id="openAuthBtn" class="text-sm bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-semibold py-2 px-4 rounded-md transition">Sign in / Register</button>
@@ -87,6 +88,23 @@
     <!-- Dashboard for logged-in users -->
     <section id="dashboardSection" class="hidden mb-8">
       <h2 class="text-xl font-semibold mb-4">Your dashboard</h2>
+
+      <div id="dashboardEmptyState" class="empty-state mb-6 hidden">
+        <h3>Welcome — let's get your first win</h3>
+        <p>
+          You don't have saved plans or completed workouts yet. Generate a plan that fits your gear and schedule,
+          then run it from your phone. Progress will show up here automatically.
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" id="emptyStateCreateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">
+            Create your first plan
+          </button>
+          <a href="/workout.html" class="inline-flex items-center bg-white border border-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-md hover:bg-blue-50 transition">
+            Open runner
+          </a>
+        </div>
+      </div>
+
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow p-4 text-center">
           <div id="statPlans" class="text-3xl font-bold text-blue-700">0</div>
@@ -178,8 +196,14 @@
             <option value="full-body" selected>Full body</option>
             <option value="upper-lower">Upper / Lower</option>
             <option value="ppl">Push / Pull / Legs</option>
-            <option value="bro-split">Bro split</option>
+            <option value="bro-split">Bro split (body part)</option>
           </select>
+          <p id="splitHint" class="text-xs text-gray-500 mt-1">Full body hits every major area each session — great for 2–3 days/week.</p>
+          <p id="broSplitNote" class="hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded mt-2 p-2">
+            <strong>Bro split:</strong> one body part per day (chest, back, legs, shoulders, arms) with higher volume.
+            Each muscle is typically trained once per week. Research often favors ~2×/week frequency (e.g. PPL or upper/lower) for growth —
+            use bro split if you enjoy focused “pump” days and recover well. Best with <strong>4–5 training days</strong> and a muscle-building goal.
+          </p>
         </div>
 
         <div>
@@ -247,6 +271,42 @@
     </section>
   </div>
 
+  <section id="preferencesModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-4">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Preferences</h2>
+        <button id="closePreferencesModal" class="text-gray-500 hover:text-gray-700 text-xl leading-none">&times;</button>
+      </div>
+      <div class="mb-4">
+        <span class="block text-sm font-medium text-gray-700 mb-2">Default equipment</span>
+        <div id="prefEquipmentContainer" class="flex flex-wrap gap-3"></div>
+      </div>
+      <div class="grid grid-cols-3 gap-3 mb-4">
+        <label class="flex flex-col items-center border rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+          <span class="text-sm font-medium mb-1">Music</span>
+          <input id="prefMusic" type="checkbox" class="rounded text-blue-600" />
+        </label>
+        <label class="flex flex-col items-center border rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+          <span class="text-sm font-medium mb-1">Voice</span>
+          <input id="prefVoice" type="checkbox" class="rounded text-blue-600" />
+        </label>
+        <label class="flex flex-col items-center border rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+          <span class="text-sm font-medium mb-1">Motion</span>
+          <input id="prefMotion" type="checkbox" class="rounded text-blue-600" />
+        </label>
+      </div>
+      <div class="mb-4">
+        <label class="flex items-center justify-between text-sm text-gray-700 mb-1">
+          <span>Default music volume</span>
+          <span id="prefVolumeValue">20%</span>
+        </label>
+        <input id="prefVolume" type="range" min="0" max="100" value="20" class="w-full" />
+      </div>
+      <div id="prefStatus" class="text-sm hidden"></div>
+      <button id="savePreferencesBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Save preferences</button>
+    </div>
+  </section>
+
   <section id="exercisePickerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
       <div class="flex justify-between items-center mb-4">
@@ -259,6 +319,26 @@
     </div>
   </section>
 
+  <nav id="bottomNav" class="bottom-nav no-print" aria-label="Main">
+    <a href="/" class="bottom-nav__item" data-nav="planner">
+      <span class="bottom-nav__icon" aria-hidden="true">📋</span>
+      <span>Planner</span>
+    </a>
+    <a href="/history.html" class="bottom-nav__item" data-nav="history">
+      <span class="bottom-nav__icon" aria-hidden="true">📈</span>
+      <span>History</span>
+    </a>
+    <a href="/workout.html" class="bottom-nav__item" data-nav="run">
+      <span class="bottom-nav__icon" aria-hidden="true">▶</span>
+      <span>Run</span>
+    </a>
+    <a href="#" id="bottomNavAccount" class="bottom-nav__item" data-nav="account">
+      <span class="bottom-nav__icon" aria-hidden="true">👤</span>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <script src="js/site.js"></script>
   <script src="js/app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

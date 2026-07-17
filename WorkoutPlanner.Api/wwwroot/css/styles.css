@@ -5,7 +5,8 @@
   }
 
   .no-print,
-  #planForm {
+  #planForm,
+  .bottom-nav {
     display: none !important;
   }
 
@@ -20,5 +21,145 @@
   .days-grid > div {
     break-inside: avoid;
     margin-bottom: 1rem;
+  }
+}
+
+/* Room for fixed bottom nav on mobile */
+body.has-bottom-nav {
+  padding-bottom: 5.5rem;
+}
+
+/* ---------- Bottom navigation ---------- */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  gap: 0.25rem;
+  padding: 0.4rem 0.5rem calc(0.4rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.bottom-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-height: 3.25rem;
+  padding: 0.35rem 0.25rem;
+  border-radius: 0.65rem;
+  color: #4b5563;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-decoration: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav__item:active {
+  background: #f3f4f6;
+}
+
+.bottom-nav__icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.bottom-nav__item--active {
+  color: #1e3a8a;
+  background: #eff6ff;
+}
+
+body.workout-active .bottom-nav {
+  display: none !important;
+}
+
+body.workout-active {
+  padding-bottom: 0;
+}
+
+/* ---------- Toasts ---------- */
+.site-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 5.75rem;
+  transform: translateX(-50%);
+  z-index: 60;
+  max-width: min(92vw, 24rem);
+  padding: 0.75rem 1.1rem;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.site-toast.hidden {
+  display: none;
+}
+
+.site-toast--success {
+  background: #065f46;
+  color: #ecfdf5;
+}
+
+.site-toast--error {
+  background: #991b1b;
+  color: #fef2f2;
+}
+
+.site-toast--info {
+  background: #1e3a8a;
+  color: #eff6ff;
+}
+
+body.workout-active .site-toast {
+  bottom: 1.5rem;
+}
+
+/* ---------- Empty / onboarding ---------- */
+.empty-state {
+  background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+  border: 1px dashed #93c5fd;
+  border-radius: 0.9rem;
+  padding: 1.25rem 1.35rem;
+}
+
+.empty-state h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 0.35rem;
+}
+
+.empty-state p {
+  color: #4b5563;
+  font-size: 0.9rem;
+  margin-bottom: 0.85rem;
+}
+
+/* Desktop: bottom nav still useful but can sit more compact */
+@media (min-width: 768px) {
+  .bottom-nav {
+    max-width: 28rem;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0.75rem;
+    border-radius: 1rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  .site-toast {
+    bottom: 6.5rem;
   }
 }

@@ -25,6 +25,12 @@ dotnet test --verbosity normal
 
 ## Automated test coverage
 
+### 0. Health (`HealthTests.cs`)
+
+| # | Test case | What it verifies |
+|---|---|---|
+| 0.1 | `Health_ReturnsHealthy_WhenDatabaseAvailable` | `/health` returns 200 with `status: healthy` when the database is reachable. |
+
 ### 1. Plan generation (`PlanGenerationTests.cs`)
 
 | # | Test case | What it verifies |
@@ -36,6 +42,10 @@ dotnet test --verbosity normal
 | 1.5 | `GeneratePlan_ShoulderRestriction_ExcludesOverheadPress` | Selecting a shoulder restriction removes shoulder-aggravating exercises while still producing a non-empty plan. |
 | 1.6 | `GeneratePlan_NoMatchingExercises_ReturnsBadRequest` | If the selected equipment does not match any exercise, the API returns a clear 400 error. |
 | 1.7 | `GeneratePlan_ExercisesHaveDemoLinks` | Every exercise returned by the generator has a non-empty demo URL. |
+| 1.8 | `GeneratePlan_BroSplit_UsesBodyPartFocusLabels` | 5-day bro split labels days Chest / Back / Legs / Shoulders / Arms. |
+| 1.9 | `GeneratePlan_BroSplit_ChestDayTargetsChest` | Chest day exercises are majority chest-primary. |
+| 1.10 | `GeneratePlan_BroSplit_FourDay_CombinesShouldersAndArms` | 4-day bro template ends with Shoulders & arms. |
+| 1.11 | `GeneratePlan_SplitVariants_ReturnWorkouts` | bro-split, ppl, and upper-lower each return non-empty workout days. |
 
 ### 2. Authentication (`AuthTests.cs`)
 

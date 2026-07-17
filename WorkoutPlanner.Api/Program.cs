@@ -163,12 +163,14 @@ app.UseAuthorization();
 app.UseRateLimiter();
 
 // Endpoint modules
+app.MapHealthEndpoints();
 app.MapWorkoutEndpoints();
 app.MapAuthEndpoints();
 app.MapPlanEndpoints();
 app.MapRunnerEndpoints();
 app.MapAdminEndpoints();
 app.MapDashboardEndpoints();
+app.MapUserEndpoints();
 
 app.Run();
 

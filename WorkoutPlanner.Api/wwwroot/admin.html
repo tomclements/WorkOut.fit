@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - WorkOut</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/admin.css" />
 </head>
-<body class="bg-gray-50 text-gray-900 min-h-screen">
+<body class="bg-gray-50 text-gray-900 min-h-screen has-bottom-nav">
   <div class="max-w-6xl mx-auto px-4 py-8">
     <header class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
@@ -201,6 +202,26 @@
     </section>
   </div>
 
+  <nav id="bottomNav" class="bottom-nav no-print" aria-label="Main">
+    <a href="/" class="bottom-nav__item" data-nav="planner">
+      <span class="bottom-nav__icon" aria-hidden="true">📋</span>
+      <span>Planner</span>
+    </a>
+    <a href="/history.html" class="bottom-nav__item" data-nav="history">
+      <span class="bottom-nav__icon" aria-hidden="true">📈</span>
+      <span>History</span>
+    </a>
+    <a href="/workout.html" class="bottom-nav__item" data-nav="run">
+      <span class="bottom-nav__icon" aria-hidden="true">▶</span>
+      <span>Run</span>
+    </a>
+    <a href="/admin.html" class="bottom-nav__item" data-nav="admin">
+      <span class="bottom-nav__icon" aria-hidden="true">⚙</span>
+      <span>Admin</span>
+    </a>
+  </nav>
+
+  <script src="js/site.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

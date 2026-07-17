@@ -13,4 +13,5 @@ public class PlanRequest
     public bool IncludeWarmup { get; set; } = true;
     public bool IncludeCooldown { get; set; } = true;
     public List<string> Restrictions { get; set; } = new();
+    public List<string> FavoriteExerciseIds { get; set; } = new();
 }

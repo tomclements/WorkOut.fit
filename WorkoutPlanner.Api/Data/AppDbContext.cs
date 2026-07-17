@@ -16,6 +16,9 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<WorkoutSession> WorkoutSessions { get; set; } = null!;
     public DbSet<CompletedExercise> CompletedExercises { get; set; } = null!;
     public DbSet<CompletedSet> CompletedSets { get; set; } = null!;
+    public DbSet<UserPreference> UserPreferences { get; set; } = null!;
+    public DbSet<UserFavoriteExercise> UserFavoriteExercises { get; set; } = null!;
+    public DbSet<UserExerciseNote> UserExerciseNotes { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -74,6 +77,33 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
                 .WithOne()
                 .HasForeignKey(e => e.CompletedExerciseId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<UserPreference>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).HasMaxLength(450);
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.Property(e => e.DefaultEquipment)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+        });
+
+        builder.Entity<UserFavoriteExercise>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).HasMaxLength(450);
+            entity.Property(e => e.ExerciseId).HasMaxLength(100);
+            entity.HasIndex(e => new { e.UserId, e.ExerciseId }).IsUnique();
+        });
+
+        builder.Entity<UserExerciseNote>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).HasMaxLength(450);
+            entity.Property(e => e.ExerciseId).HasMaxLength(100);
+            entity.HasIndex(e => new { e.UserId, e.ExerciseId }).IsUnique();
         });
     }
 }

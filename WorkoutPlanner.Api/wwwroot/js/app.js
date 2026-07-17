@@ -5,12 +5,22 @@ let currentPlanId = null;
 let isLoginMode = true;
 let allExercises = [];
 let pickerTarget = { weekIndex: -1, dayIndex: -1 };
+let currentPreferences = {
+  defaultEquipment: ['dumbbells', 'bodyweight'],
+  defaultMusic: false,
+  defaultVoice: false,
+  defaultMotionSensor: false,
+  defaultVolume: 20
+};
+let equipmentList = [];
+let favoriteExerciseIds = [];
 
 const welcomeSection = document.getElementById('welcomeSection');
 const dashboardSection = document.getElementById('dashboardSection');
 const plannerSection = document.getElementById('plannerSection');
 const adminLink = document.getElementById('adminLink');
 const historyLink = document.getElementById('historyLink');
+const preferencesLink = document.getElementById('preferencesLink');
 const togglePlannerBtn = document.getElementById('togglePlannerBtn');
 const closePlannerBtn = document.getElementById('closePlannerBtn');
 const savedPlansTable = document.getElementById('savedPlansTable');
@@ -28,7 +38,8 @@ function formatDuration(seconds) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  loadDefaults();
+  await loadPreferences();
+  await loadFavorites();
   loadEquipment();
   await loadExternalProviders();
   await checkSession();
@@ -48,6 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     plannerSection.classList.remove('hidden');
     closePlannerBtn.classList.remove('hidden');
     togglePlannerBtn.classList.add('hidden');
+    plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   closePlannerBtn.addEventListener('click', () => {
@@ -56,6 +68,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     togglePlannerBtn.classList.remove('hidden');
   });
 
+  const emptyStateCreateBtn = document.getElementById('emptyStateCreateBtn');
+  if (emptyStateCreateBtn) {
+    emptyStateCreateBtn.addEventListener('click', () => {
+      plannerSection.classList.remove('hidden');
+      closePlannerBtn.classList.remove('hidden');
+      togglePlannerBtn.classList.add('hidden');
+      plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  const bottomNavAccount = document.getElementById('bottomNavAccount');
+  if (bottomNavAccount) {
+    bottomNavAccount.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (currentUser) openPreferencesModal();
+      else openAuthModal();
+    });
+  }
+
+  // Deep-link: /?open=account | preferences | auth
+  const openParam = new URLSearchParams(window.location.search).get('open');
+  if (openParam === 'account' || openParam === 'preferences' || openParam === 'auth') {
+    setTimeout(() => {
+      if (currentUser && (openParam === 'account' || openParam === 'preferences')) openPreferencesModal();
+      else if (!currentUser) openAuthModal();
+    }, 200);
+  }
+
   document.querySelectorAll('input[type=range]').forEach(input => {
     input.addEventListener('input', updateRangeLabel);
   });
@@ -63,6 +103,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('input[name="workoutDay"]').forEach(cb => {
     cb.addEventListener('change', syncSliderFromDaySelector);
   });
+  document.getElementById('split').addEventListener('change', onSplitChange);
+  onSplitChange();
 
   // Auth modal
   document.getElementById('openAuthBtn').addEventListener('click', openAuthModal);
@@ -81,6 +123,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('forgotEmail').addEventListener('keypress', e => {
     if (e.key === 'Enter') submitForgotPassword();
   });
+
+  document.getElementById('preferencesLink').addEventListener('click', openPreferencesModal);
+  document.getElementById('closePreferencesModal').addEventListener('click', closePreferencesModal);
+  document.getElementById('preferencesModal').addEventListener('click', e => {
+    if (e.target.id === 'preferencesModal') closePreferencesModal();
+  });
+  document.getElementById('prefVolume').addEventListener('input', e => {
+    document.getElementById('prefVolumeValue').textContent = e.target.value + '%';
+  });
+  document.getElementById('savePreferencesBtn').addEventListener('click', savePreferences);
 
   document.getElementById('closeExercisePicker').addEventListener('click', closeExercisePicker);
   document.getElementById('exercisePickerModal').addEventListener('click', e => {
@@ -109,6 +161,38 @@ function syncSliderFromDaySelector() {
   const slider = document.getElementById('daysPerWeek');
   slider.value = checked;
   updateRangeLabel({ target: slider });
+}
+
+const SPLIT_HINTS = {
+  'full-body': 'Full body hits every major area each session — great for 2–3 days/week.',
+  'upper-lower': 'Alternates upper and lower days — balanced frequency at 4 days/week.',
+  'ppl': 'Push / Pull / Legs — modern hypertrophy staple; hits muscles ~2×/week on a 6-day schedule.',
+  'bro-split': 'Classic body-part split: chest, back, legs, shoulders, arms. High volume, once-per-week per group.'
+};
+
+function onSplitChange() {
+  const split = document.getElementById('split').value;
+  const hint = document.getElementById('splitHint');
+  const broNote = document.getElementById('broSplitNote');
+  if (hint) hint.textContent = SPLIT_HINTS[split] || SPLIT_HINTS['full-body'];
+  if (broNote) {
+    broNote.classList.toggle('hidden', split !== 'bro-split');
+  }
+
+  // Nudge toward a classic 5-day bro schedule when the user picks bro split
+  // and still has the default 3-day selection.
+  if (split === 'bro-split') {
+    const daysSlider = document.getElementById('daysPerWeek');
+    const days = parseInt(daysSlider.value, 10);
+    if (days < 4) {
+      daysSlider.value = 5;
+      syncDaySelectorFromSlider();
+    }
+    const goal = document.getElementById('goal');
+    if (goal && goal.value !== 'hypertrophy' && goal.value !== 'strength') {
+      goal.value = 'hypertrophy';
+    }
+  }
 }
 
 function getCriteria() {
@@ -146,19 +230,97 @@ async function loadEquipment() {
   try {
     const response = await fetch('/api/equipment', { credentials: 'include' });
     if (!response.ok) throw new Error('Failed to load equipment');
-    const equipment = await response.json();
+    equipmentList = await response.json();
     const container = document.getElementById('equipmentContainer');
     container.innerHTML = '';
 
-    equipment.forEach(item => {
+    equipmentList.forEach(item => {
       const label = document.createElement('label');
       label.className = 'inline-flex items-center';
-      const checked = (item.id === 'dumbbells' || item.id === 'bodyweight') ? 'checked' : '';
+      const checked = currentPreferences.defaultEquipment.includes(item.id) ? 'checked' : '';
       label.innerHTML = `<input type="checkbox" name="equipment" value="${escapeHtml(item.id)}" ${checked} class="rounded text-blue-600" /><span class="ml-2 text-sm">${escapeHtml(item.name)}</span>`;
       container.appendChild(label);
     });
   } catch (err) {
     document.getElementById('equipmentContainer').innerHTML = `<span class="text-sm text-red-600">Could not load equipment: ${escapeHtml(err.message)}</span>`;
+  }
+}
+
+async function loadPreferences() {
+  try {
+    const response = await fetch('/api/user/preferences', { credentials: 'include' });
+    if (!response.ok) return;
+    const prefs = await response.json();
+    currentPreferences = {
+      defaultEquipment: prefs.defaultEquipment || ['dumbbells', 'bodyweight'],
+      defaultMusic: prefs.defaultMusic || false,
+      defaultVoice: prefs.defaultVoice || false,
+      defaultMotionSensor: prefs.defaultMotionSensor || false,
+      defaultVolume: prefs.defaultVolume ?? 20
+    };
+  } catch {
+    // leave defaults
+  }
+}
+
+function openPreferencesModal(e) {
+  if (e) e.preventDefault();
+  const container = document.getElementById('prefEquipmentContainer');
+  container.innerHTML = '';
+  equipmentList.forEach(item => {
+    const checked = currentPreferences.defaultEquipment.includes(item.id) ? 'checked' : '';
+    const label = document.createElement('label');
+    label.className = 'inline-flex items-center';
+    label.innerHTML = `<input type="checkbox" name="prefEquipment" value="${escapeHtml(item.id)}" ${checked} class="rounded text-blue-600" /><span class="ml-2 text-sm">${escapeHtml(item.name)}</span>`;
+    container.appendChild(label);
+  });
+
+  document.getElementById('prefMusic').checked = currentPreferences.defaultMusic;
+  document.getElementById('prefVoice').checked = currentPreferences.defaultVoice;
+  document.getElementById('prefMotion').checked = currentPreferences.defaultMotionSensor;
+  document.getElementById('prefVolume').value = currentPreferences.defaultVolume;
+  document.getElementById('prefVolumeValue').textContent = currentPreferences.defaultVolume + '%';
+  document.getElementById('prefStatus').classList.add('hidden');
+
+  document.getElementById('preferencesModal').classList.remove('hidden');
+}
+
+function closePreferencesModal() {
+  document.getElementById('preferencesModal').classList.add('hidden');
+}
+
+function setPrefStatus(message, isError) {
+  const el = document.getElementById('prefStatus');
+  el.textContent = message;
+  el.className = 'text-sm mt-2 ' + (isError ? 'text-red-600' : 'text-green-600');
+  el.classList.remove('hidden');
+}
+
+async function savePreferences() {
+  const equipment = Array.from(document.querySelectorAll('input[name="prefEquipment"]:checked')).map(cb => cb.value);
+  const dto = {
+    defaultEquipment: equipment,
+    defaultMusic: document.getElementById('prefMusic').checked,
+    defaultVoice: document.getElementById('prefVoice').checked,
+    defaultMotionSensor: document.getElementById('prefMotion').checked,
+    defaultVolume: parseInt(document.getElementById('prefVolume').value, 10)
+  };
+
+  try {
+    const response = await fetch('/api/user/preferences', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(dto)
+    });
+    if (!response.ok) throw new Error('Failed to save');
+    currentPreferences = { ...dto };
+    loadEquipment();
+    setPrefStatus('Preferences saved.', false);
+    if (typeof showToast === 'function') showToast('Preferences saved.', 'success');
+  } catch (err) {
+    setPrefStatus('Could not save preferences: ' + err.message, true);
+    if (typeof showToast === 'function') showToast('Could not save preferences.', 'error');
   }
 }
 
@@ -249,6 +411,8 @@ async function submitAuth() {
     const data = await response.json();
     closeAuthModal();
     showLoggedIn(data.email, data.roles || []);
+    await loadPreferences();
+    loadEquipment();
 
     const params = new URLSearchParams(window.location.search);
     const returnUrl = params.get('returnUrl');
@@ -362,6 +526,7 @@ function showLoggedIn(email, roles) {
   document.getElementById('logoutBtn').addEventListener('click', logout);
 
   historyLink.classList.remove('hidden');
+  preferencesLink.classList.remove('hidden');
 
   if (roles.includes('Admin')) {
     adminLink.classList.remove('hidden');
@@ -388,6 +553,7 @@ function showLoggedOut() {
 
   adminLink.classList.add('hidden');
   historyLink.classList.add('hidden');
+  preferencesLink.classList.add('hidden');
   welcomeSection.classList.remove('hidden');
   dashboardSection.classList.add('hidden');
   plannerSection.classList.remove('hidden');
@@ -409,10 +575,18 @@ async function loadDashboard() {
 }
 
 function renderDashboard(data) {
-  document.getElementById('statPlans').textContent = data.totalPlans || 0;
-  document.getElementById('statWorkouts').textContent = data.totalSessions || 0;
+  const totalPlans = data.totalPlans || 0;
+  const totalSessions = data.totalSessions || 0;
+  document.getElementById('statPlans').textContent = totalPlans;
+  document.getElementById('statWorkouts').textContent = totalSessions;
   document.getElementById('statMinutes').textContent = Math.floor((data.totalDurationSeconds || 0) / 60);
   document.getElementById('statSets').textContent = data.totalSets || 0;
+
+  const emptyState = document.getElementById('dashboardEmptyState');
+  if (emptyState) {
+    const isNewUser = totalPlans === 0 && totalSessions === 0;
+    emptyState.classList.toggle('hidden', !isNewUser);
+  }
 
   if (data.plans && data.plans.length) {
     const rows = data.plans.map(p => `
@@ -430,7 +604,12 @@ function renderDashboard(data) {
     `).join('');
     savedPlansTable.innerHTML = rows;
   } else {
-    savedPlansTable.innerHTML = `<p class="p-4 text-sm text-gray-500">You haven't saved any plans yet.</p>`;
+    savedPlansTable.innerHTML = `
+      <div class="p-4 text-sm text-gray-600">
+        <p class="font-medium text-gray-800 mb-1">No saved plans yet</p>
+        <p class="text-gray-500 mb-3">Create a plan below, then save it so you can re-run it anytime.</p>
+        <button type="button" class="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-md" onclick="document.getElementById('togglePlannerBtn').click()">Create a plan</button>
+      </div>`;
   }
 
   if (data.recentSessions && data.recentSessions.length) {
@@ -442,7 +621,12 @@ function renderDashboard(data) {
     `).join('');
     recentActivity.innerHTML = sessions;
   } else {
-    recentActivity.innerHTML = `<p class="p-4 text-sm text-gray-500">No workouts yet. Start a workout from one of your plans above.</p>`;
+    recentActivity.innerHTML = `
+      <div class="p-4 text-sm text-gray-600">
+        <p class="font-medium text-gray-800 mb-1">No workouts logged yet</p>
+        <p class="text-gray-500 mb-3">Finish a session in the runner and tap Save — your streak starts here.</p>
+        <a href="/workout.html" class="inline-block text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-3 rounded-md">Open runner</a>
+      </div>`;
   }
 }
 
@@ -495,9 +679,11 @@ async function saveCurrentPlan() {
     });
     if (!response.ok) throw new Error('Server error');
     setStatus('Plan saved.', false);
+    if (typeof showToast === 'function') showToast('Plan saved to your account.', 'success');
     loadDashboard();
   } catch (err) {
     setStatus(`Could not save plan: ${err.message}`);
+    if (typeof showToast === 'function') showToast(`Could not save plan: ${err.message}`, 'error');
   }
 }
 
@@ -533,8 +719,10 @@ async function generate() {
     currentPlanId = null;
     localStorage.setItem('workoutPlan', JSON.stringify(result));
     renderPlan(result);
+    if (typeof showToast === 'function') showToast('Plan ready — scroll down to review or start.', 'success');
   } catch (err) {
     setStatus(`Could not create plan: ${err.message}`);
+    if (typeof showToast === 'function') showToast(`Could not create plan: ${err.message}`, 'error');
   } finally {
     btn.textContent = originalText;
     btn.disabled = false;

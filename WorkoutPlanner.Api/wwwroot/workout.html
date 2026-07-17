@@ -9,83 +9,92 @@
   <link rel="apple-touch-icon" href="/icon.svg" />
   <title>Run WorkOut</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/workoutRunner.css" />
 </head>
-<body class="bg-gray-50 text-gray-900 min-h-screen">
+<body class="bg-gray-50 text-gray-900 min-h-screen has-bottom-nav">
   <div class="max-w-2xl mx-auto px-4 py-6">
-    <header class="flex items-center justify-between mb-6">
-      <div class="flex items-center gap-3">
-        <a href="/" class="text-blue-600 hover:underline text-sm font-medium">&larr; Planner</a>
-        <a href="/history.html" class="text-blue-600 hover:underline text-sm font-medium">History</a>
+    <header class="flex items-center justify-between mb-6 gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <a href="/" class="text-blue-600 hover:underline text-sm font-medium hidden sm:inline">&larr; Planner</a>
+        <h1 class="text-lg sm:text-xl font-bold text-blue-900 truncate">WorkOut Runner</h1>
       </div>
-      <h1 class="text-xl font-bold text-blue-900">WorkOut Runner</h1>
-      <div class="flex items-center gap-2">
-        <span id="userLabel" class="text-xs text-gray-500 hidden sm:inline"></span>
-        <button id="fullscreenBtn" class="text-sm bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-md touch-manipulation">Full</button>
+      <div class="runner-toolbar">
+        <span id="userLabel" class="text-xs text-gray-500 hidden sm:inline max-w-[8rem] truncate"></span>
+        <button id="contrastBtn" type="button" class="text-sm bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-md touch-manipulation" title="High contrast">Aa</button>
+        <button id="fullscreenBtn" type="button" class="text-sm bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-md touch-manipulation">Full</button>
       </div>
     </header>
 
     <!-- Setup -->
     <section id="setupScreen" class="runner-screen active bg-white rounded-xl shadow p-6">
-      <h2 class="text-lg font-semibold mb-4">Ready to train</h2>
+      <h2 class="text-xl font-semibold mb-4">Ready to train</h2>
 
       <div id="loadError" class="text-sm text-red-600 mb-4 hidden"></div>
 
       <div id="resumeBanner" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 hidden">
-        <div class="text-sm text-blue-800 mb-2">You have a workout in progress.</div>
-        <button id="resumeBtn" class="bg-blue-600 text-white text-sm font-semibold py-2 px-4 rounded-md">Resume</button>
-        <button id="discardBtn" class="text-blue-600 text-sm font-semibold py-2 px-4 ml-2">Discard</button>
+        <div class="text-sm text-blue-800 mb-3 font-medium">You have a workout in progress.</div>
+        <div class="flex flex-wrap gap-2">
+          <button id="resumeBtn" class="bg-blue-600 text-white text-sm font-semibold py-3 px-5 rounded-md touch-manipulation">Resume</button>
+          <button id="discardBtn" class="text-blue-700 text-sm font-semibold py-3 px-5 rounded-md border border-blue-200 touch-manipulation">Discard</button>
+        </div>
       </div>
 
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1" for="daySelect">Select workout day</label>
-        <select id="daySelect" class="w-full border border-gray-300 rounded-md p-2"></select>
+        <select id="daySelect" class="w-full border border-gray-300 rounded-md p-3 text-base"></select>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <label class="flex items-center justify-between border rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+        <label class="flex items-center justify-between border rounded-lg p-4 cursor-pointer hover:bg-gray-50 min-h-[3.5rem]">
           <span class="text-sm font-medium">Background music</span>
-          <input id="musicToggle" type="checkbox" class="rounded text-blue-600" />
+          <input id="musicToggle" type="checkbox" class="rounded text-blue-600 w-5 h-5" />
         </label>
 
-        <label class="flex items-center justify-between border rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+        <label class="flex items-center justify-between border rounded-lg p-4 cursor-pointer hover:bg-gray-50 min-h-[3.5rem]">
           <span class="text-sm font-medium">Motion-sensor reps</span>
-          <input id="motionToggle" type="checkbox" class="rounded text-blue-600" />
+          <input id="motionToggle" type="checkbox" class="rounded text-blue-600 w-5 h-5" />
         </label>
 
-        <label class="flex items-center justify-between border rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+        <label class="flex items-center justify-between border rounded-lg p-4 cursor-pointer hover:bg-gray-50 min-h-[3.5rem]">
           <span class="text-sm font-medium">Voice cues</span>
-          <input id="voiceToggle" type="checkbox" class="rounded text-blue-600" />
+          <input id="voiceToggle" type="checkbox" class="rounded text-blue-600 w-5 h-5" />
         </label>
       </div>
 
-      <button id="startBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md transition">
+      <div class="sensor-help mb-5">
+        <strong>Motion sensor tips:</strong> Works best with the phone in an armband or pocket.
+        On iPhone, tapping Start will request motion permission. If denied or flaky, use the large +/− rep buttons.
+        You can also turn the sensor on/off mid-workout.
+      </div>
+
+      <button id="startBtn" class="cta-start w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation shadow-md">
         Start workout
       </button>
 
-      <p class="text-xs text-gray-500 mt-3">
-        Motion-sensor mode works best when your phone is in an armband or pocket. Tap "Start workout" to grant sensor permission if needed.
+      <p class="text-xs text-gray-500 mt-3 text-center">
+        Screen stay-awake, fullscreen, and haptics are available during the session.
       </p>
     </section>
 
     <!-- Active exercise -->
-    <section id="activeScreen" class="runner-screen bg-white rounded-xl shadow p-6">
+    <section id="activeScreen" class="runner-screen bg-white rounded-xl shadow p-5 sm:p-6">
       <div class="mb-4">
-        <div class="flex justify-between text-xs text-gray-600 mb-1">
+        <div class="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
           <span>Workout progress</span>
           <span id="progressText">0%</span>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-2.5">
-          <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full transition-all" style="width:0%"></div>
+        <div class="w-full bg-gray-200 rounded-full h-3">
+          <div id="progressBar" class="bg-blue-600 h-3 rounded-full transition-all" style="width:0%"></div>
         </div>
       </div>
 
       <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
         <div>
-          <div id="exerciseName" class="text-2xl font-bold text-blue-900">Exercise</div>
-          <div id="exerciseMeta" class="text-sm text-gray-600"></div>
+          <div id="exerciseName" class="text-2xl sm:text-3xl font-bold text-blue-900 leading-tight">Exercise</div>
+          <div id="exerciseMeta" class="text-sm sm:text-base text-gray-600 mt-1"></div>
         </div>
-        <div id="setBadge" class="text-sm font-semibold bg-gray-100 text-gray-800 px-3 py-1 rounded-full self-start sm:self-auto"></div>
+        <div id="setBadge" class="text-sm font-semibold bg-gray-100 text-gray-800 px-3 py-2 rounded-full self-start sm:self-auto"></div>
       </div>
 
       <div id="demoLink" class="mb-4"></div>
@@ -95,23 +104,23 @@
       </div>
 
       <div id="repSection" class="flex flex-col items-center mb-6">
-        <div class="text-sm text-gray-600 mb-2">Reps completed</div>
-        <div class="flex items-center gap-6">
-          <button id="repDec" class="w-16 h-16 sm:w-14 sm:h-14 rounded-full bg-gray-200 active:bg-gray-300 text-2xl font-bold touch-manipulation">-</button>
+        <div class="text-sm sm:text-base text-gray-600 mb-3 font-medium">Reps completed</div>
+        <div class="flex items-center gap-6 sm:gap-8">
+          <button id="repDec" type="button" class="rep-btn w-16 h-16 sm:w-16 sm:h-16 rounded-full bg-gray-200 active:bg-gray-300 text-3xl font-bold touch-manipulation">−</button>
           <div id="repCount" class="rep-display text-blue-900">0</div>
-          <button id="repInc" class="w-16 h-16 sm:w-14 sm:h-14 rounded-full bg-blue-600 active:bg-blue-700 text-white text-2xl font-bold touch-manipulation">+</button>
+          <button id="repInc" type="button" class="rep-btn w-16 h-16 sm:w-16 sm:h-16 rounded-full bg-blue-600 active:bg-blue-700 text-white text-3xl font-bold touch-manipulation">+</button>
         </div>
-        <div id="sensorStatus" class="text-xs text-gray-500 mt-2 hidden">Sensor active</div>
+        <div id="sensorStatus" class="text-sm text-gray-500 mt-3 hidden min-h-[1.25rem]">Sensor active</div>
       </div>
 
-      <div class="grid grid-cols-3 gap-3 mb-4">
-        <button id="musicBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-md transition text-sm touch-manipulation">
+      <div class="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
+        <button id="musicBtn" type="button" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-lg transition text-sm touch-manipulation min-h-[3rem]">
           Music: off
         </button>
-        <button id="motionBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-md transition text-sm touch-manipulation">
+        <button id="motionBtn" type="button" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-lg transition text-sm touch-manipulation min-h-[3rem]">
           Sensor: off
         </button>
-        <button id="voiceBtn" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-md transition text-sm touch-manipulation">
+        <button id="voiceBtn" type="button" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-lg transition text-sm touch-manipulation min-h-[3rem]">
           Voice: off
         </button>
       </div>
@@ -121,19 +130,19 @@
           <span>Music volume</span>
           <span id="volumeValue">20%</span>
         </label>
-        <input id="volumeSlider" type="range" min="0" max="100" value="20" class="w-full" />
+        <input id="volumeSlider" type="range" min="0" max="100" value="20" class="w-full h-3" />
       </div>
 
-      <button id="completeSetBtn" class="w-full bg-green-600 active:bg-green-700 text-white font-bold py-4 px-6 rounded-md transition pulse touch-manipulation">
+      <button id="completeSetBtn" type="button" class="complete-set-btn w-full bg-green-600 active:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition pulse touch-manipulation">
         Complete set
       </button>
 
       <div id="pausedOverlay" class="hidden text-center mt-4">
         <div class="text-xl font-bold text-amber-600">Paused</div>
-        <button id="resumeWorkoutBtn" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md touch-manipulation">Resume</button>
+        <button id="resumeWorkoutBtn" type="button" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-md touch-manipulation">Resume</button>
       </div>
 
-      <button id="pauseBtn" class="w-full mt-3 bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-md transition touch-manipulation">
+      <button id="pauseBtn" type="button" class="w-full mt-3 bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition touch-manipulation min-h-[3rem]">
         Pause workout
       </button>
     </section>
@@ -147,20 +156,20 @@
 
       <div class="bg-white rounded-lg p-4 mb-6">
         <div class="text-xs text-gray-500 uppercase tracking-wider">Next up</div>
-        <div id="nextExerciseName" class="text-lg font-semibold text-gray-900"></div>
+        <div id="nextExerciseName" class="text-xl font-semibold text-gray-900"></div>
         <div id="nextExerciseMeta" class="text-sm text-gray-600"></div>
       </div>
 
-      <button id="skipRestBtn" class="w-full bg-blue-600 active:bg-blue-700 text-white font-semibold py-4 px-6 rounded-md transition touch-manipulation">
+      <button id="skipRestBtn" type="button" class="w-full bg-blue-600 active:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition touch-manipulation min-h-[3.5rem]">
         Skip rest
       </button>
 
       <div id="restPausedOverlay" class="hidden text-center mt-4">
         <div class="text-xl font-bold text-amber-600">Paused</div>
-        <button id="restResumeWorkoutBtn" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md touch-manipulation">Resume</button>
+        <button id="restResumeWorkoutBtn" type="button" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-md touch-manipulation">Resume</button>
       </div>
 
-      <button id="restPauseBtn" class="w-full mt-3 bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-md transition touch-manipulation">
+      <button id="restPauseBtn" type="button" class="w-full mt-3 bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition touch-manipulation min-h-[3rem]">
         Pause workout
       </button>
     </section>
@@ -172,18 +181,41 @@
       <p id="finishSummary" class="text-gray-700 mb-6"></p>
 
       <div id="saveSessionArea" class="mb-4 hidden">
-        <button id="saveSessionBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md transition">
+        <button id="saveSessionBtn" type="button" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation">
           Save session
         </button>
         <p id="saveSessionStatus" class="text-sm mt-2 hidden"></p>
       </div>
 
-      <a href="/" class="inline-block w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-md transition">
+      <a href="/" class="inline-block w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg transition">
         Back to planner
+      </a>
+      <a href="/history.html" class="inline-block w-full mt-2 text-blue-700 font-semibold py-2">
+        View history
       </a>
     </section>
   </div>
 
+  <nav id="bottomNav" class="bottom-nav no-print" aria-label="Main">
+    <a href="/" class="bottom-nav__item" data-nav="planner">
+      <span class="bottom-nav__icon" aria-hidden="true">📋</span>
+      <span>Planner</span>
+    </a>
+    <a href="/history.html" class="bottom-nav__item" data-nav="history">
+      <span class="bottom-nav__icon" aria-hidden="true">📈</span>
+      <span>History</span>
+    </a>
+    <a href="/workout.html" class="bottom-nav__item" data-nav="run">
+      <span class="bottom-nav__icon" aria-hidden="true">▶</span>
+      <span>Run</span>
+    </a>
+    <a href="/?open=account" class="bottom-nav__item" data-nav="account">
+      <span class="bottom-nav__icon" aria-hidden="true">👤</span>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <script src="js/site.js"></script>
   <script src="js/workoutRunner.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

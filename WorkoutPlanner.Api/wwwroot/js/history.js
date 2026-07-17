@@ -56,7 +56,15 @@ function renderSummary() {
 
 function renderSessions() {
   if (!sessions.length) {
-    sessionsList.innerHTML = `<p class="p-4 text-sm text-gray-500">No completed workouts yet. Start a workout from the runner to see it here.</p>`;
+    sessionsList.innerHTML = `
+      <div class="p-5 text-sm text-gray-600">
+        <p class="font-medium text-gray-800 mb-1">No completed workouts yet</p>
+        <p class="text-gray-500 mb-3">Generate a plan, open the runner, finish a session, and save it — history will show up here.</p>
+        <div class="flex flex-wrap gap-2">
+          <a href="/" class="inline-block text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-md">Go to planner</a>
+          <a href="/workout.html" class="inline-block text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-3 rounded-md">Open runner</a>
+        </div>
+      </div>`;
     return;
   }
 

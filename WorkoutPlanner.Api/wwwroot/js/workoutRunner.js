@@ -51,6 +51,7 @@ const musicBtn = document.getElementById('musicBtn');
 const motionBtn = document.getElementById('motionBtn');
 const voiceBtn = document.getElementById('voiceBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
+const contrastBtn = document.getElementById('contrastBtn');
 const progressBar = document.getElementById('progressBar');
 const progressText = document.getElementById('progressText');
 
@@ -72,6 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   motionCounter = new MotionRepCounter(onMotionRep);
 
   await checkAuth();
+  await loadUserPreferences();
   await loadPlan();
   checkForResumableSession();
 
@@ -86,6 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   motionBtn.addEventListener('click', toggleMotion);
   voiceBtn.addEventListener('click', toggleVoice);
   fullscreenBtn.addEventListener('click', toggleFullscreen);
+  if (contrastBtn) contrastBtn.addEventListener('click', toggleHighContrast);
   saveSessionBtn.addEventListener('click', saveSession);
   document.getElementById('pauseBtn').addEventListener('click', () => pauseWorkout(false));
   document.getElementById('restPauseBtn').addEventListener('click', () => pauseWorkout(false));
@@ -93,6 +96,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('restResumeWorkoutBtn').addEventListener('click', resumeWorkout);
   document.getElementById('volumeSlider').addEventListener('input', onVolumeChange);
   window.addEventListener('beforeunload', handleBeforeUnload);
+
+  // Restore contrast preference
+  if (localStorage.getItem('runnerHighContrast') === '1') {
+    document.body.classList.add('high-contrast');
+  }
 
   // Keyboard shortcut: space increments reps; enter completes set
   document.addEventListener('keydown', (e) => {
@@ -115,6 +123,23 @@ async function checkAuth() {
       currentUser = data.email;
       userLabel.textContent = currentUser;
     }
+  } catch {
+    // ignore
+  }
+}
+
+async function loadUserPreferences() {
+  try {
+    const res = await fetch('/api/user/preferences', { credentials: 'include' });
+    if (!res.ok) return;
+    const prefs = await res.json();
+    musicToggle.checked = prefs.defaultMusic || false;
+    voiceToggle.checked = prefs.defaultVoice || false;
+    motionToggle.checked = prefs.defaultMotionSensor || false;
+    const volume = prefs.defaultVolume ?? 20;
+    document.getElementById('volumeSlider').value = volume;
+    document.getElementById('volumeValue').textContent = volume + '%';
+    musicEngine.setBaseVolume(volume / 100);
   } catch {
     // ignore
   }
@@ -297,8 +322,18 @@ async function startWorkout() {
   }
 
   if (motionToggle.checked) {
-    await motionCounter.start();
+    const ok = await motionCounter.start();
     updateMotionButton();
+    if (!ok) {
+      sensorStatusEl.textContent = 'Sensor unavailable — use +/− buttons for reps.';
+      sensorStatusEl.classList.remove('hidden');
+      if (typeof showToast === 'function') {
+        showToast('Motion sensor not available. Use the +/− buttons.', 'info');
+      }
+    } else {
+      sensorStatusEl.textContent = 'Sensor listening — phone in armband/pocket works best.';
+      sensorStatusEl.classList.remove('hidden');
+    }
   }
 
   voiceEnabled = voiceToggle.checked;
@@ -395,6 +430,14 @@ async function handleVisibilityChange() {
 function showScreen(screen) {
   [setupScreen, activeScreen, restScreen, finishScreen].forEach(s => s.classList.remove('active'));
   screen.classList.add('active');
+
+  // Hide bottom nav during active work/rest so controls stay reachable
+  const inSession = screen === activeScreen || screen === restScreen;
+  if (typeof setWorkoutChromeVisible === 'function') {
+    setWorkoutChromeVisible(!inSession);
+  } else {
+    document.body.classList.toggle('workout-active', inSession);
+  }
 }
 
 function currentExercise() {
@@ -608,10 +651,12 @@ async function saveSession() {
     saveSessionStatus.textContent = 'Session saved to your history.';
     saveSessionStatus.className = 'text-sm mt-2 text-green-600';
     saveSessionStatus.classList.remove('hidden');
+    if (typeof showToast === 'function') showToast('Session saved to your history.', 'success');
   } catch (err) {
     saveSessionStatus.textContent = `Could not save session: ${err.message}`;
     saveSessionStatus.className = 'text-sm mt-2 text-red-600';
     saveSessionStatus.classList.remove('hidden');
+    if (typeof showToast === 'function') showToast(`Could not save session: ${err.message}`, 'error');
   }
 }
 
@@ -634,8 +679,20 @@ function updateMusicButton() {
 async function toggleMotion() {
   if (motionCounter.isActive) {
     motionCounter.stop();
+    sensorStatusEl.textContent = 'Sensor off — tap + for each rep.';
+    sensorStatusEl.classList.remove('hidden');
   } else {
-    await motionCounter.start();
+    const ok = await motionCounter.start();
+    if (!ok) {
+      sensorStatusEl.textContent = 'Sensor permission denied or unavailable. Use +/− buttons.';
+      sensorStatusEl.classList.remove('hidden');
+      if (typeof showToast === 'function') {
+        showToast('Could not enable motion sensor. Use +/− for reps.', 'error');
+      }
+    } else {
+      sensorStatusEl.textContent = 'Sensor listening — armband or pocket preferred.';
+      sensorStatusEl.classList.remove('hidden');
+    }
   }
   updateMotionButton();
 }
@@ -686,6 +743,19 @@ function toggleFullscreen() {
     docEl.requestFullscreen().catch(() => {});
   } else {
     document.exitFullscreen().catch(() => {});
+  }
+}
+
+function toggleHighContrast() {
+  document.body.classList.toggle('high-contrast');
+  const on = document.body.classList.contains('high-contrast');
+  localStorage.setItem('runnerHighContrast', on ? '1' : '0');
+  if (contrastBtn) {
+    contrastBtn.classList.toggle('bg-blue-100', on);
+    contrastBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  if (typeof showToast === 'function') {
+    showToast(on ? 'High contrast on' : 'High contrast off', 'info', 1600);
   }
 }
 
@@ -840,24 +910,30 @@ class MotionRepCounter {
     this.handler = this.handleMotion.bind(this);
   }
 
+  /**
+   * @returns {Promise<boolean>} true if the sensor started successfully
+   */
   async start() {
-    if (this.isActive) return;
+    if (this.isActive) return true;
 
-    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+    if (typeof DeviceMotionEvent === 'undefined') {
+      return false;
+    }
+
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
       try {
         const response = await DeviceMotionEvent.requestPermission();
         if (response !== 'granted') {
-          alert('Motion sensor permission denied.');
-          return;
+          return false;
         }
-      } catch (err) {
-        alert('Could not enable motion sensor: ' + err.message);
-        return;
+      } catch {
+        return false;
       }
     }
 
     window.addEventListener('devicemotion', this.handler);
     this.isActive = true;
+    return true;
   }
 
   stop() {
