@@ -1,10 +1,11 @@
-const CACHE_NAME = 'workout-v12';
+const CACHE_NAME = 'workout-v13';
 const PRECACHE = [
   '/',
   '/index.html',
   '/workout.html',
   '/history.html',
   '/help.html',
+  '/about.html',
   '/manifest.json',
   '/icon.svg'
 ];
@@ -32,9 +33,9 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(event.request.url);
 
-  // Never cache API / health
+  // Never cache API / health / build info
   if (url.pathname.startsWith('/api/') || url.pathname === '/health') {
-    event.respondWith(fetch(event.request));
+    event.respondWith(fetch(event.request, { cache: 'no-store' }));
     return;
   }
 

@@ -174,6 +174,7 @@ app.UseRateLimiter();
 
 // Endpoint modules
 app.MapHealthEndpoints();
+app.MapBuildInfoEndpoints();
 app.MapWorkoutEndpoints();
 app.MapAuthEndpoints();
 app.MapPlanEndpoints();

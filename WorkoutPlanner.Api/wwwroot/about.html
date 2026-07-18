@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1e3a8a" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <title>About - WorkOut</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen has-bottom-nav">
+  <div class="max-w-2xl mx-auto px-4 py-8">
+    <header class="mb-8">
+      <p class="text-sm text-blue-700 font-medium mb-1"><a href="/" class="hover:underline">WorkOut</a> · About</p>
+      <h1 class="text-3xl font-extrabold tracking-tight text-blue-900">About &amp; build</h1>
+      <p class="text-gray-600 mt-2">
+        Use this page to confirm which version of the app is running (especially after a deploy).
+      </p>
+    </header>
+
+    <section class="bg-white rounded-xl shadow p-6 mb-6">
+      <h2 class="text-lg font-bold text-blue-900 mb-1">WorkOut</h2>
+      <p class="text-gray-700 text-sm mb-4">
+        Personal workout planner: generate plans for your gear and schedule, run timed sessions, and track history.
+      </p>
+      <p class="text-sm text-gray-600">
+        <a href="/help.html" class="text-blue-700 hover:underline font-medium">Help guide</a>
+        ·
+        <a href="/" class="text-blue-700 hover:underline font-medium">Planner</a>
+      </p>
+    </section>
+
+    <section class="bg-white rounded-xl shadow p-6 mb-6">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <h2 class="text-lg font-bold text-blue-900">Current build</h2>
+        <button id="refreshBuildBtn" type="button" class="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded-md">
+          Refresh
+        </button>
+      </div>
+
+      <div id="buildError" class="hidden text-sm text-red-600 mb-3"></div>
+      <div id="buildLoading" class="text-sm text-gray-500 mb-3">Loading build info…</div>
+
+      <dl id="buildDetails" class="hidden space-y-3 text-sm">
+        <div class="flex flex-col sm:flex-row sm:gap-3 border-b border-gray-100 pb-2">
+          <dt class="font-semibold text-gray-600 sm:w-36 shrink-0">Short commit</dt>
+          <dd id="buildShort" class="font-mono text-base font-bold text-blue-900">—</dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:gap-3 border-b border-gray-100 pb-2">
+          <dt class="font-semibold text-gray-600 sm:w-36 shrink-0">Full commit</dt>
+          <dd id="buildCommit" class="font-mono text-xs break-all text-gray-800">—</dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:gap-3 border-b border-gray-100 pb-2">
+          <dt class="font-semibold text-gray-600 sm:w-36 shrink-0">Branch</dt>
+          <dd id="buildBranch" class="font-mono text-gray-800">—</dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:gap-3 border-b border-gray-100 pb-2">
+          <dt class="font-semibold text-gray-600 sm:w-36 shrink-0">Message</dt>
+          <dd id="buildMessage" class="text-gray-800">—</dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:gap-3 border-b border-gray-100 pb-2">
+          <dt class="font-semibold text-gray-600 sm:w-36 shrink-0">Commit time</dt>
+          <dd id="buildCommitTime" class="text-gray-800">—</dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:gap-3 border-b border-gray-100 pb-2">
+          <dt class="font-semibold text-gray-600 sm:w-36 shrink-0">Build time (UTC)</dt>
+          <dd id="buildTime" class="text-gray-800">—</dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:gap-3 border-b border-gray-100 pb-2">
+          <dt class="font-semibold text-gray-600 sm:w-36 shrink-0">Environment</dt>
+          <dd id="buildEnv" class="text-gray-800">—</dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:gap-3">
+          <dt class="font-semibold text-gray-600 sm:w-36 shrink-0">Server time (UTC)</dt>
+          <dd id="buildServerTime" class="text-gray-800">—</dd>
+        </div>
+      </dl>
+
+      <p class="text-xs text-gray-500 mt-4">
+        Compare <strong>Short commit</strong> with GitHub
+        <code class="bg-gray-100 px-1 rounded">main</code>
+        (e.g. latest is visible in the repo history). If they don’t match, the site may still be deploying or your browser is caching an older version — try a hard refresh.
+      </p>
+    </section>
+
+    <p class="text-center text-sm text-gray-500">
+      <a href="/" class="text-blue-700 font-semibold hover:underline">Back to planner</a>
+    </p>
+  </div>
+
+  <nav id="bottomNav" class="bottom-nav no-print" aria-label="Main">
+    <a href="/" class="bottom-nav__item" data-nav="planner">
+      <span class="bottom-nav__icon" aria-hidden="true">📋</span>
+      <span>Planner</span>
+    </a>
+    <a href="/history.html" class="bottom-nav__item" data-nav="history">
+      <span class="bottom-nav__icon" aria-hidden="true">📈</span>
+      <span>History</span>
+    </a>
+    <a href="/workout.html" class="bottom-nav__item" data-nav="run">
+      <span class="bottom-nav__icon" aria-hidden="true">▶</span>
+      <span>Run</span>
+    </a>
+    <a href="/help.html" class="bottom-nav__item" data-nav="help">
+      <span class="bottom-nav__icon" aria-hidden="true">❓</span>
+      <span>Help</span>
+    </a>
+    <a href="/about.html" class="bottom-nav__item" data-nav="about">
+      <span class="bottom-nav__icon" aria-hidden="true">ℹ</span>
+      <span>About</span>
+    </a>
+  </nav>
+
+  <script src="js/site.js"></script>
+  <script src="js/about.js"></script>
+</body>
+</html>
