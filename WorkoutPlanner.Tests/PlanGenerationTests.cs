@@ -73,31 +73,48 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
-    public async Task GeneratePlan_WithBench_IncludesBenchExercises()
+    public async Task GeneratePlan_WithBench_CanIncludeBenchExercises()
     {
-        var request = new PlanRequest
+        // Selection is randomized; try several seeds until a known bench exercise appears
+        // (proves bench equipment is usable, not that one move is always chosen).
+        var benchNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            Weeks = 4,
-            DaysPerWeek = 5,
-            SessionMinutes = 20,
-            Equipment = new List<string> { "dumbbells", "bodyweight", "bench" },
-            Goal = "full-body",
-            Level = "beginner"
+            "Dumbbell Bench Press",
+            "Dumbbell Chest Fly",
+            "Dumbbell Step-Up"
         };
 
-        var response = await _client.PostAsJsonAsync("/api/plan", request);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
-        Assert.NotNull(result);
+        var found = false;
+        for (int seed = 1; seed <= 40 && !found; seed++)
+        {
+            var request = new PlanRequest
+            {
+                Weeks = 2,
+                DaysPerWeek = 5,
+                SessionMinutes = 45,
+                Equipment = new List<string> { "dumbbells", "bodyweight", "bench" },
+                Split = "full-body",
+                Goal = "hypertrophy",
+                Level = "beginner",
+                Progression = "none",
+                Seed = seed
+            };
 
-        var exerciseNames = result!.Plan
-            .SelectMany(w => w.Days)
-            .Where(d => d.Type == "workout")
-            .SelectMany(d => d.Exercises)
-            .Select(e => e.Name)
-            .ToList();
+            var response = await _client.PostAsJsonAsync("/api/plan", request);
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+            Assert.NotNull(result);
 
-        Assert.Contains("Dumbbell Bench Press", exerciseNames);
+            var names = result!.Plan
+                .SelectMany(w => w.Days)
+                .Where(d => d.Type == "workout")
+                .SelectMany(d => d.Exercises)
+                .Select(e => e.Name);
+
+            found = names.Any(n => benchNames.Contains(n));
+        }
+
+        Assert.True(found, "Expected at least one bench-required exercise across random seeds when bench is selected");
     }
 
     [Fact]
