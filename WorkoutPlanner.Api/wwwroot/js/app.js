@@ -5,12 +5,24 @@ let currentPlanId = null;
 let isLoginMode = true;
 let allExercises = [];
 let pickerTarget = { weekIndex: -1, dayIndex: -1 };
+const PLAN_DEFAULTS_KEY = 'workoutPlanFormDefaults';
+
 let currentPreferences = {
   defaultEquipment: ['dumbbells', 'bodyweight'],
   defaultMusic: false,
   defaultVoice: false,
   defaultMotionSensor: false,
-  defaultVolume: 20
+  defaultVolume: 20,
+  defaultLevel: 'beginner',
+  defaultGoal: 'hypertrophy',
+  defaultSplit: 'full-body',
+  defaultProgression: 'linear',
+  defaultWeeks: 4,
+  defaultDaysPerWeek: 5,
+  defaultSessionMinutes: 20,
+  defaultWorkoutDays: [0, 1, 2, 3, 4],
+  defaultIncludeWarmup: true,
+  defaultIncludeCooldown: true
 };
 let equipmentList = [];
 let favoriteExerciseIds = [];
@@ -38,11 +50,16 @@ function formatDuration(seconds) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Local defaults first (works for guests), then server prefs overlay when signed in
+  loadLocalPlanDefaults();
   await loadPreferences();
+  applyPlanDefaultsToForm({ skipBroNudge: true });
   await loadFavorites();
   loadEquipment();
   await loadExternalProviders();
   await checkSession();
+  // Re-apply after session in case server prefs arrived late for returning users
+  applyPlanDefaultsToForm({ skipBroNudge: true });
   handleReturnUrl();
 
   document.getElementById('generateBtn').addEventListener('click', () => generate({ reshuffle: false }));
@@ -183,7 +200,7 @@ const SPLIT_HINTS = {
   'bro-split': 'Classic body-part split: chest, back, legs, shoulders, arms. High volume, once-per-week per group.'
 };
 
-function onSplitChange() {
+function onSplitChange(options = {}) {
   const split = document.getElementById('split').value;
   const hint = document.getElementById('splitHint');
   const broNote = document.getElementById('broSplitNote');
@@ -192,8 +209,9 @@ function onSplitChange() {
     broNote.classList.toggle('hidden', split !== 'bro-split');
   }
 
-  // Nudge toward a classic 5-day bro schedule when the user picks bro split
-  // and still has the default 3-day selection.
+  // Only auto-nudge days/goal when the user actively changes split (not when restoring defaults)
+  if (options.skipBroNudge) return;
+
   if (split === 'bro-split') {
     const daysSlider = document.getElementById('daysPerWeek');
     const days = parseInt(daysSlider.value, 10);
@@ -205,6 +223,147 @@ function onSplitChange() {
     if (goal && goal.value !== 'hypertrophy' && goal.value !== 'strength') {
       goal.value = 'hypertrophy';
     }
+  }
+}
+
+function setSelectValue(id, value) {
+  const el = document.getElementById(id);
+  if (!el || value == null || value === '') return;
+  const match = Array.from(el.options).some(o => o.value === String(value));
+  if (match) el.value = String(value);
+}
+
+function setRangeValue(id, value, labelId) {
+  const el = document.getElementById(id);
+  if (!el || value == null) return;
+  el.value = value;
+  if (labelId) {
+    const label = document.getElementById(labelId);
+    if (label) label.textContent = el.value;
+  }
+}
+
+function applyPlanDefaultsToForm(options = {}) {
+  const p = currentPreferences;
+  setSelectValue('weeks', p.defaultWeeks);
+  setSelectValue('level', p.defaultLevel);
+  setSelectValue('goal', p.defaultGoal);
+  setSelectValue('split', p.defaultSplit);
+  setSelectValue('progression', p.defaultProgression);
+  setRangeValue('daysPerWeek', p.defaultDaysPerWeek, 'daysLabel');
+  setRangeValue('sessionMinutes', p.defaultSessionMinutes, 'minutesLabel');
+
+  const days = Array.isArray(p.defaultWorkoutDays) && p.defaultWorkoutDays.length
+    ? p.defaultWorkoutDays
+    : null;
+  if (days) {
+    document.querySelectorAll('input[name="workoutDay"]').forEach(cb => {
+      cb.checked = days.map(Number).includes(parseInt(cb.value, 10));
+    });
+    syncSliderFromDaySelector();
+  } else {
+    syncDaySelectorFromSlider();
+  }
+
+  const warm = document.getElementById('includeWarmup');
+  const cool = document.getElementById('includeCooldown');
+  if (warm) warm.checked = p.defaultIncludeWarmup !== false;
+  if (cool) cool.checked = p.defaultIncludeCooldown !== false;
+
+  onSplitChange({ skipBroNudge: true });
+  const prog = document.getElementById('progression');
+  const progHint = document.getElementById('progressionHint');
+  if (prog && progHint && typeof PROGRESSION_HINTS !== 'undefined') {
+    progHint.textContent = PROGRESSION_HINTS[prog.value] || PROGRESSION_HINTS.linear;
+  }
+
+  // Re-check equipment once list is loaded
+  if (equipmentList.length && p.defaultEquipment?.length) {
+    document.querySelectorAll('input[name="equipment"]').forEach(cb => {
+      cb.checked = p.defaultEquipment.includes(cb.value);
+    });
+  }
+}
+
+function loadLocalPlanDefaults() {
+  try {
+    const raw = localStorage.getItem(PLAN_DEFAULTS_KEY);
+    if (!raw) return;
+    const local = JSON.parse(raw);
+    currentPreferences = { ...currentPreferences, ...local };
+  } catch {
+    // ignore
+  }
+}
+
+function mergePreferences(prefs) {
+  if (!prefs) return;
+  currentPreferences = {
+    ...currentPreferences,
+    defaultEquipment: prefs.defaultEquipment?.length
+      ? prefs.defaultEquipment
+      : currentPreferences.defaultEquipment,
+    defaultMusic: prefs.defaultMusic ?? currentPreferences.defaultMusic,
+    defaultVoice: prefs.defaultVoice ?? currentPreferences.defaultVoice,
+    defaultMotionSensor: prefs.defaultMotionSensor ?? currentPreferences.defaultMotionSensor,
+    defaultVolume: prefs.defaultVolume ?? currentPreferences.defaultVolume,
+    defaultLevel: prefs.defaultLevel || currentPreferences.defaultLevel,
+    defaultGoal: prefs.defaultGoal || currentPreferences.defaultGoal,
+    defaultSplit: prefs.defaultSplit || currentPreferences.defaultSplit,
+    defaultProgression: prefs.defaultProgression || currentPreferences.defaultProgression,
+    defaultWeeks: prefs.defaultWeeks || currentPreferences.defaultWeeks,
+    defaultDaysPerWeek: prefs.defaultDaysPerWeek || currentPreferences.defaultDaysPerWeek,
+    defaultSessionMinutes: prefs.defaultSessionMinutes || currentPreferences.defaultSessionMinutes,
+    defaultWorkoutDays: Array.isArray(prefs.defaultWorkoutDays) && prefs.defaultWorkoutDays.length
+      ? prefs.defaultWorkoutDays
+      : currentPreferences.defaultWorkoutDays,
+    defaultIncludeWarmup: prefs.defaultIncludeWarmup ?? currentPreferences.defaultIncludeWarmup,
+    defaultIncludeCooldown: prefs.defaultIncludeCooldown ?? currentPreferences.defaultIncludeCooldown
+  };
+}
+
+/** Persist current form choices as the user's next-visit defaults. */
+async function savePlanFormDefaults(criteria) {
+  const planDefaults = {
+    defaultLevel: criteria.level,
+    defaultGoal: criteria.goal,
+    defaultSplit: criteria.split,
+    defaultProgression: criteria.progression,
+    defaultWeeks: criteria.weeks,
+    defaultDaysPerWeek: criteria.daysPerWeek,
+    defaultSessionMinutes: criteria.sessionMinutes,
+    defaultWorkoutDays: criteria.workoutDays || [],
+    defaultIncludeWarmup: criteria.includeWarmup,
+    defaultIncludeCooldown: criteria.includeCooldown,
+    defaultEquipment: criteria.equipment || currentPreferences.defaultEquipment
+  };
+
+  currentPreferences = { ...currentPreferences, ...planDefaults };
+  try {
+    localStorage.setItem(PLAN_DEFAULTS_KEY, JSON.stringify(planDefaults));
+  } catch {
+    // ignore quota
+  }
+
+  if (!currentUser) return;
+
+  try {
+    const dto = {
+      defaultEquipment: currentPreferences.defaultEquipment,
+      defaultMusic: currentPreferences.defaultMusic,
+      defaultVoice: false,
+      defaultMotionSensor: false,
+      defaultVolume: currentPreferences.defaultVolume,
+      ...planDefaults
+    };
+    await fetch('/api/user/preferences', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(dto)
+    });
+  } catch {
+    // local defaults still saved
   }
 }
 
@@ -365,16 +524,30 @@ async function loadPreferences() {
     const response = await fetch('/api/user/preferences', { credentials: 'include' });
     if (!response.ok) return;
     const prefs = await response.json();
-    currentPreferences = {
-      defaultEquipment: prefs.defaultEquipment || ['dumbbells', 'bodyweight'],
-      defaultMusic: prefs.defaultMusic || false,
-      defaultVoice: prefs.defaultVoice || false,
-      defaultMotionSensor: prefs.defaultMotionSensor || false,
-      defaultVolume: prefs.defaultVolume ?? 20
-    };
+    mergePreferences(mapPrefsFromApi(prefs));
   } catch {
-    // leave defaults
+    // leave local / built-in defaults
   }
+}
+
+function mapPrefsFromApi(prefs) {
+  return {
+    defaultEquipment: prefs.defaultEquipment,
+    defaultMusic: prefs.defaultMusic,
+    defaultVoice: prefs.defaultVoice,
+    defaultMotionSensor: prefs.defaultMotionSensor,
+    defaultVolume: prefs.defaultVolume,
+    defaultLevel: prefs.defaultLevel,
+    defaultGoal: prefs.defaultGoal,
+    defaultSplit: prefs.defaultSplit,
+    defaultProgression: prefs.defaultProgression,
+    defaultWeeks: prefs.defaultWeeks,
+    defaultDaysPerWeek: prefs.defaultDaysPerWeek,
+    defaultSessionMinutes: prefs.defaultSessionMinutes,
+    defaultWorkoutDays: prefs.defaultWorkoutDays,
+    defaultIncludeWarmup: prefs.defaultIncludeWarmup,
+    defaultIncludeCooldown: prefs.defaultIncludeCooldown
+  };
 }
 
 function openPreferencesModal(e) {
@@ -413,10 +586,11 @@ function setPrefStatus(message, isError) {
 async function savePreferences() {
   const equipment = Array.from(document.querySelectorAll('input[name="prefEquipment"]:checked')).map(cb => cb.value);
   const dto = {
+    ...currentPreferences,
     defaultEquipment: equipment,
     defaultMusic: document.getElementById('prefMusic').checked,
-    defaultVoice: document.getElementById('prefVoice').checked,
-    defaultMotionSensor: document.getElementById('prefMotion').checked,
+    defaultVoice: false,
+    defaultMotionSensor: false,
     defaultVolume: parseInt(document.getElementById('prefVolume').value, 10)
   };
 
@@ -428,7 +602,22 @@ async function savePreferences() {
       body: JSON.stringify(dto)
     });
     if (!response.ok) throw new Error('Failed to save');
-    currentPreferences = { ...dto };
+    mergePreferences(dto);
+    try {
+      localStorage.setItem(PLAN_DEFAULTS_KEY, JSON.stringify({
+        defaultLevel: dto.defaultLevel,
+        defaultGoal: dto.defaultGoal,
+        defaultSplit: dto.defaultSplit,
+        defaultProgression: dto.defaultProgression,
+        defaultWeeks: dto.defaultWeeks,
+        defaultDaysPerWeek: dto.defaultDaysPerWeek,
+        defaultSessionMinutes: dto.defaultSessionMinutes,
+        defaultWorkoutDays: dto.defaultWorkoutDays,
+        defaultIncludeWarmup: dto.defaultIncludeWarmup,
+        defaultIncludeCooldown: dto.defaultIncludeCooldown,
+        defaultEquipment: dto.defaultEquipment
+      }));
+    } catch { /* ignore */ }
     loadEquipment();
     setPrefStatus('Preferences saved.', false);
     if (typeof showToast === 'function') showToast('Preferences saved.', 'success');
@@ -633,6 +822,8 @@ function showLoggedIn(email, roles) {
   currentUser = email;
   currentRoles = roles;
   loadFavorites();
+  // Load server-side plan defaults after login
+  loadPreferences().then(() => applyPlanDefaultsToForm({ skipBroNudge: true }));
   const section = document.getElementById('authSection');
   section.innerHTML = `
     <span class="text-sm text-gray-700">${escapeHtml(email)}</span>
@@ -844,6 +1035,8 @@ async function generate(options = {}) {
     currentPlan = result;
     currentPlanId = null;
     localStorage.setItem('workoutPlan', JSON.stringify(result));
+    // Remember form choices for next visit (level, goal, split, days, etc.)
+    await savePlanFormDefaults(criteria);
     renderPlan(result);
     if (regenBtn) regenBtn.classList.remove('hidden');
     if (typeof showToast === 'function') {

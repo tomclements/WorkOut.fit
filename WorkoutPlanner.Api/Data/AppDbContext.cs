@@ -88,6 +88,14 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
                 .HasConversion(
                     v => string.Join(',', v),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+            entity.Property(e => e.DefaultLevel).HasMaxLength(50);
+            entity.Property(e => e.DefaultGoal).HasMaxLength(50);
+            entity.Property(e => e.DefaultSplit).HasMaxLength(50);
+            entity.Property(e => e.DefaultProgression).HasMaxLength(50);
+            entity.Property(e => e.DefaultWorkoutDays)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => ParseWorkoutDays(v));
         });
 
         builder.Entity<UserFavoriteExercise>(entity =>
@@ -105,5 +113,17 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
             entity.Property(e => e.ExerciseId).HasMaxLength(100);
             entity.HasIndex(e => new { e.UserId, e.ExerciseId }).IsUnique();
         });
+    }
+
+    private static List<int> ParseWorkoutDays(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return new List<int>();
+        var days = new List<int>();
+        foreach (var part in value.Split(',', StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (int.TryParse(part, out var n) && n is >= 0 and <= 6)
+                days.Add(n);
+        }
+        return days;
     }
 }

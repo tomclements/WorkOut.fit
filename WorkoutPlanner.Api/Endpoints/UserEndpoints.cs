@@ -20,14 +20,7 @@ public static class UserEndpoints
 
             var dto = pref == null
                 ? new UserPreferenceDto()
-                : new UserPreferenceDto
-                {
-                    DefaultEquipment = pref.DefaultEquipment,
-                    DefaultMusic = pref.DefaultMusic,
-                    DefaultVoice = pref.DefaultVoice,
-                    DefaultMotionSensor = pref.DefaultMotionSensor,
-                    DefaultVolume = pref.DefaultVolume
-                };
+                : MapPreferenceDto(pref);
 
             return Results.Ok(dto);
         }).RequireAuthorization();
@@ -44,14 +37,9 @@ public static class UserEndpoints
                 db.UserPreferences.Add(pref);
             }
 
-            pref.DefaultEquipment = dto.DefaultEquipment ?? new List<string>();
-            pref.DefaultMusic = dto.DefaultMusic;
-            pref.DefaultVoice = dto.DefaultVoice;
-            pref.DefaultMotionSensor = dto.DefaultMotionSensor;
-            pref.DefaultVolume = Math.Clamp(dto.DefaultVolume, 0, 100);
-
+            ApplyPreferenceDto(pref, dto);
             await db.SaveChangesAsync();
-            return Results.Ok(dto);
+            return Results.Ok(MapPreferenceDto(pref));
         }).RequireAuthorization();
 
         app.MapGet("/api/user/favorites", async (ClaimsPrincipal user, AppDbContext db) =>
@@ -122,6 +110,52 @@ public static class UserEndpoints
         }).RequireAuthorization();
 
         return app;
+    }
+
+    private static UserPreferenceDto MapPreferenceDto(UserPreference pref) => new()
+    {
+        DefaultEquipment = pref.DefaultEquipment ?? new List<string>(),
+        DefaultMusic = pref.DefaultMusic,
+        DefaultVoice = pref.DefaultVoice,
+        DefaultMotionSensor = pref.DefaultMotionSensor,
+        DefaultVolume = pref.DefaultVolume,
+        DefaultLevel = string.IsNullOrWhiteSpace(pref.DefaultLevel) ? "beginner" : pref.DefaultLevel,
+        DefaultGoal = string.IsNullOrWhiteSpace(pref.DefaultGoal) ? "hypertrophy" : pref.DefaultGoal,
+        DefaultSplit = string.IsNullOrWhiteSpace(pref.DefaultSplit) ? "full-body" : pref.DefaultSplit,
+        DefaultProgression = string.IsNullOrWhiteSpace(pref.DefaultProgression) ? "linear" : pref.DefaultProgression,
+        DefaultWeeks = pref.DefaultWeeks is >= 1 and <= 12 ? pref.DefaultWeeks : 4,
+        DefaultDaysPerWeek = pref.DefaultDaysPerWeek is >= 1 and <= 7 ? pref.DefaultDaysPerWeek : 5,
+        DefaultSessionMinutes = pref.DefaultSessionMinutes is >= 5 and <= 90 ? pref.DefaultSessionMinutes : 20,
+        DefaultWorkoutDays = pref.DefaultWorkoutDays?.Where(d => d is >= 0 and <= 6).Distinct().OrderBy(d => d).ToList()
+            ?? new List<int> { 0, 1, 2, 3, 4 },
+        DefaultIncludeWarmup = pref.DefaultIncludeWarmup,
+        DefaultIncludeCooldown = pref.DefaultIncludeCooldown
+    };
+
+    private static void ApplyPreferenceDto(UserPreference pref, UserPreferenceDto dto)
+    {
+        pref.DefaultEquipment = dto.DefaultEquipment ?? new List<string>();
+        pref.DefaultMusic = dto.DefaultMusic;
+        pref.DefaultVoice = dto.DefaultVoice;
+        pref.DefaultMotionSensor = dto.DefaultMotionSensor;
+        pref.DefaultVolume = Math.Clamp(dto.DefaultVolume, 0, 100);
+
+        pref.DefaultLevel = string.IsNullOrWhiteSpace(dto.DefaultLevel) ? "beginner" : dto.DefaultLevel.Trim().ToLowerInvariant();
+        pref.DefaultGoal = string.IsNullOrWhiteSpace(dto.DefaultGoal) ? "hypertrophy" : dto.DefaultGoal.Trim().ToLowerInvariant();
+        pref.DefaultSplit = string.IsNullOrWhiteSpace(dto.DefaultSplit) ? "full-body" : dto.DefaultSplit.Trim().ToLowerInvariant();
+        pref.DefaultProgression = string.IsNullOrWhiteSpace(dto.DefaultProgression) ? "linear" : dto.DefaultProgression.Trim().ToLowerInvariant();
+        pref.DefaultWeeks = Math.Clamp(dto.DefaultWeeks <= 0 ? 4 : dto.DefaultWeeks, 1, 12);
+        pref.DefaultDaysPerWeek = Math.Clamp(dto.DefaultDaysPerWeek <= 0 ? 5 : dto.DefaultDaysPerWeek, 1, 7);
+        pref.DefaultSessionMinutes = Math.Clamp(dto.DefaultSessionMinutes <= 0 ? 20 : dto.DefaultSessionMinutes, 5, 90);
+        pref.DefaultWorkoutDays = (dto.DefaultWorkoutDays ?? new List<int>())
+            .Where(d => d is >= 0 and <= 6)
+            .Distinct()
+            .OrderBy(d => d)
+            .ToList();
+        if (pref.DefaultWorkoutDays.Count == 0)
+            pref.DefaultWorkoutDays = Enumerable.Range(0, pref.DefaultDaysPerWeek).ToList();
+        pref.DefaultIncludeWarmup = dto.DefaultIncludeWarmup;
+        pref.DefaultIncludeCooldown = dto.DefaultIncludeCooldown;
     }
 }
 
