@@ -26,6 +26,7 @@ let currentPreferences = {
 };
 let equipmentList = [];
 let favoriteExerciseIds = [];
+let dislikedExerciseIds = [];
 
 const welcomeSection = document.getElementById('welcomeSection');
 const dashboardSection = document.getElementById('dashboardSection');
@@ -167,8 +168,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.target.id === 'exercisePickerModal') closeExercisePicker();
   });
   document.getElementById('exerciseSearch').addEventListener('input', renderExerciseList);
-  const favOnly = document.getElementById('exerciseFavoritesOnly');
-  if (favOnly) favOnly.addEventListener('change', renderExerciseList);
+  const ratingFilter = document.getElementById('exerciseRatingFilter');
+  if (ratingFilter) ratingFilter.addEventListener('change', renderExerciseList);
 });
 
 function updateRangeLabel(e) {
@@ -415,6 +416,7 @@ function getCriteria(options = {}) {
     includeWarmup: document.getElementById('includeWarmup').checked,
     includeCooldown: document.getElementById('includeCooldown').checked,
     favoriteExerciseIds: favoriteExerciseIds.slice(),
+    dislikedExerciseIds: dislikedExerciseIds.slice(),
     progression: document.getElementById('progression')?.value || 'linear',
     seed,
     avoidExerciseIds
@@ -431,10 +433,19 @@ const PROGRESSION_HINTS = {
 
 async function loadFavorites() {
   favoriteExerciseIds = [];
+  dislikedExerciseIds = [];
   try {
-    const response = await fetch('/api/user/favorites', { credentials: 'include' });
-    if (!response.ok) return;
-    const ids = await response.json();
+    const response = await fetch('/api/user/ratings', { credentials: 'include' });
+    if (response.ok) {
+      const data = await response.json();
+      favoriteExerciseIds = Array.isArray(data.liked) ? data.liked : [];
+      dislikedExerciseIds = Array.isArray(data.disliked) ? data.disliked : [];
+      return;
+    }
+    // Fallback for older API
+    const favRes = await fetch('/api/user/favorites', { credentials: 'include' });
+    if (!favRes.ok) return;
+    const ids = await favRes.json();
     favoriteExerciseIds = Array.isArray(ids) ? ids : [];
   } catch {
     // anonymous / offline — keep empty
@@ -445,37 +456,66 @@ function isFavorite(exerciseId) {
   return favoriteExerciseIds.some(id => id.toLowerCase() === String(exerciseId).toLowerCase());
 }
 
-async function toggleFavorite(exerciseId, event) {
+function isDisliked(exerciseId) {
+  return dislikedExerciseIds.some(id => id.toLowerCase() === String(exerciseId).toLowerCase());
+}
+
+function getExerciseRating(exerciseId) {
+  if (isFavorite(exerciseId)) return 'like';
+  if (isDisliked(exerciseId)) return 'dislike';
+  return 'none';
+}
+
+/**
+ * Cycle or set rating: like / dislike / none.
+ * @param {string} exerciseId
+ * @param {'like'|'dislike'} desired - which button was pressed
+ */
+async function setExerciseRating(exerciseId, desired, event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
   if (!currentUser) {
-    if (typeof showToast === 'function') showToast('Sign in to save favorites.', 'info');
+    if (typeof showToast === 'function') showToast('Sign in to rank exercises you like or dislike.', 'info');
     openAuthModal();
     return;
   }
 
-  const favorited = isFavorite(exerciseId);
+  const current = getExerciseRating(exerciseId);
+  // Toggle off if pressing the active rating again
+  const next = current === desired ? 'none' : desired;
+
   try {
-    const response = await fetch(`/api/user/favorites/${encodeURIComponent(exerciseId)}`, {
-      method: favorited ? 'DELETE' : 'POST',
-      credentials: 'include'
+    const response = await fetch(`/api/user/ratings/${encodeURIComponent(exerciseId)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ rating: next })
     });
     if (!response.ok) throw new Error('Request failed');
-    if (favorited) {
-      favoriteExerciseIds = favoriteExerciseIds.filter(id => id.toLowerCase() !== exerciseId.toLowerCase());
-      if (typeof showToast === 'function') showToast('Removed from favorites.', 'info', 1800);
-    } else {
-      favoriteExerciseIds.push(exerciseId);
-      if (typeof showToast === 'function') showToast('Added to favorites.', 'success', 1800);
+
+    // Update local lists
+    favoriteExerciseIds = favoriteExerciseIds.filter(id => id.toLowerCase() !== exerciseId.toLowerCase());
+    dislikedExerciseIds = dislikedExerciseIds.filter(id => id.toLowerCase() !== exerciseId.toLowerCase());
+    if (next === 'like') favoriteExerciseIds.push(exerciseId);
+    if (next === 'dislike') dislikedExerciseIds.push(exerciseId);
+
+    if (typeof showToast === 'function') {
+      const msg = next === 'like'
+        ? 'Marked as liked — plans will prefer this.'
+        : next === 'dislike'
+          ? 'Marked as disliked — plans will avoid this when possible.'
+          : 'Rating cleared.';
+      showToast(msg, next === 'dislike' ? 'info' : 'success', 2000);
     }
+
     if (currentPlan) renderPlan(currentPlan);
     if (!document.getElementById('exercisePickerModal').classList.contains('hidden')) {
       renderExerciseList();
     }
-  } catch (err) {
-    if (typeof showToast === 'function') showToast('Could not update favorite.', 'error');
+  } catch {
+    if (typeof showToast === 'function') showToast('Could not update rating.', 'error');
   }
 }
 
@@ -486,10 +526,20 @@ function exerciseThumbHtml(imageUrl, name, sizeClass = 'ex-thumb') {
   return `<img class="${sizeClass}" src="${escapeHtml(imageUrl)}" alt="" loading="lazy" onerror="this.classList.add('ex-thumb--broken'); this.alt='';" />`;
 }
 
-function favoriteButtonHtml(exerciseId) {
-  const on = isFavorite(exerciseId);
-  return `<button type="button" class="fav-btn ${on ? 'fav-btn--on' : ''}" title="${on ? 'Remove favorite' : 'Add favorite'}"
-    onclick="toggleFavorite('${escapeHtml(exerciseId)}', event)" aria-pressed="${on}">${on ? '★' : '☆'}</button>`;
+function ratingButtonsHtml(exerciseId) {
+  const liked = isFavorite(exerciseId);
+  const disliked = isDisliked(exerciseId);
+  const id = escapeHtml(exerciseId);
+  return `<span class="rating-btns" role="group" aria-label="Exercise rating">
+    <button type="button" class="rate-btn rate-btn--like ${liked ? 'rate-btn--on' : ''}"
+      title="${liked ? 'Clear like' : 'I like this'}"
+      onclick="setExerciseRating('${id}', 'like', event)"
+      aria-pressed="${liked}">👍</button>
+    <button type="button" class="rate-btn rate-btn--dislike ${disliked ? 'rate-btn--on' : ''}"
+      title="${disliked ? 'Clear dislike' : 'I dislike this'}"
+      onclick="setExerciseRating('${id}', 'dislike', event)"
+      aria-pressed="${disliked}">👎</button>
+  </span>`;
 }
 
 function setStatus(message, isError = true) {
@@ -1128,7 +1178,7 @@ function renderPlan(result) {
               <div class="flex items-start justify-between gap-2">
                 <span class="font-medium">${escapeHtml(ex.name)}</span>
                 <div class="flex items-center gap-1 shrink-0">
-                  ${favoriteButtonHtml(ex.id)}
+                  ${ratingButtonsHtml(ex.id)}
                   ${ex.demoUrl ? `<a href="${escapeHtml(ex.demoUrl)}" target="_blank" rel="noopener" class="text-xs text-blue-600 hover:underline whitespace-nowrap">Demo</a>` : ''}
                   <button onclick="deleteExerciseFromDay(${weekIndex}, ${dayIndex}, ${exIndex})" class="text-xs text-red-600 hover:underline">Remove</button>
                 </div>
@@ -1231,7 +1281,7 @@ function closeExercisePicker() {
 
 function renderExerciseList() {
   const query = document.getElementById('exerciseSearch').value.trim().toLowerCase();
-  const favoritesOnly = document.getElementById('exerciseFavoritesOnly')?.checked;
+  const filter = document.getElementById('exerciseRatingFilter')?.value || 'all';
   const container = document.getElementById('exerciseList');
   let filtered = allExercises.filter(ex =>
     ex.name.toLowerCase().includes(query) ||
@@ -1239,34 +1289,44 @@ function renderExerciseList() {
     (ex.primary || []).some(p => p.toLowerCase().includes(query))
   );
 
-  if (favoritesOnly) {
+  if (filter === 'liked') {
     filtered = filtered.filter(ex => isFavorite(ex.id));
+  } else if (filter === 'disliked') {
+    filtered = filtered.filter(ex => isDisliked(ex.id));
+  } else if (filter === 'unrated') {
+    filtered = filtered.filter(ex => !isFavorite(ex.id) && !isDisliked(ex.id));
   }
 
-  // Favorites first
+  // Liked first, then neutral, disliked last
   filtered = filtered.slice().sort((a, b) => {
-    const af = isFavorite(a.id) ? 1 : 0;
-    const bf = isFavorite(b.id) ? 1 : 0;
-    if (af !== bf) return bf - af;
+    const rank = (ex) => (isFavorite(ex.id) ? 2 : isDisliked(ex.id) ? 0 : 1);
+    const d = rank(b) - rank(a);
+    if (d !== 0) return d;
     return a.name.localeCompare(b.name);
   });
 
   container.innerHTML = filtered.map(ex => `
-    <div class="flex items-stretch gap-2 border rounded-md p-2 hover:bg-blue-50 transition">
+    <div class="flex items-stretch gap-2 border rounded-md p-2 hover:bg-blue-50 transition ${isDisliked(ex.id) ? 'opacity-75' : ''}">
       ${exerciseThumbHtml(ex.imageUrl, ex.name, 'ex-thumb ex-thumb--sm')}
       <button type="button" onclick="selectExerciseForDay('${escapeHtml(ex.id)}')" class="flex-1 text-left min-w-0">
         <div class="font-medium flex items-center gap-1">
           ${escapeHtml(ex.name)}
-          ${isFavorite(ex.id) ? '<span class="text-amber-500 text-xs" title="Favorite">★</span>' : ''}
+          ${isFavorite(ex.id) ? '<span class="text-xs" title="Liked">👍</span>' : ''}
+          ${isDisliked(ex.id) ? '<span class="text-xs" title="Disliked">👎</span>' : ''}
         </div>
         <div class="text-xs text-gray-500 truncate">${escapeHtml(ex.slot)} • ${escapeHtml((ex.primary || []).join(', '))} • ${escapeHtml((ex.equipment || []).join(', '))}</div>
       </button>
-      ${favoriteButtonHtml(ex.id)}
+      ${ratingButtonsHtml(ex.id)}
     </div>
   `).join('');
 
   if (filtered.length === 0) {
-    container.innerHTML = `<p class="text-sm text-gray-500">${favoritesOnly ? 'No favorite exercises match. Star exercises to build your list.' : 'No exercises found.'}</p>`;
+    const emptyMsg = filter === 'liked'
+      ? 'No liked exercises match. Use 👍 on moves you enjoy.'
+      : filter === 'disliked'
+        ? 'No disliked exercises match.'
+        : 'No exercises found.';
+    container.innerHTML = `<p class="text-sm text-gray-500">${emptyMsg}</p>`;
   }
 }
 

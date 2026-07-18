@@ -14,6 +14,8 @@ public class PlanRequest
     public bool IncludeCooldown { get; set; } = true;
     public List<string> Restrictions { get; set; } = new();
     public List<string> FavoriteExerciseIds { get; set; } = new();
+    /// <summary>Exercises the user dislikes — strongly deprioritized or skipped when alternatives exist.</summary>
+    public List<string> DislikedExerciseIds { get; set; } = new();
 
     /// <summary>
     /// How the plan progresses across weeks: none, linear, wave, or block.

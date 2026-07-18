@@ -182,23 +182,43 @@ body.workout-active .site-toast {
   position: relative;
 }
 
-.fav-btn {
-  border: none;
-  background: transparent;
-  color: #9ca3af;
-  font-size: 1.15rem;
+.rating-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  flex-shrink: 0;
+}
+
+.rate-btn {
+  border: 1px solid transparent;
+  background: #f3f4f6;
+  border-radius: 0.4rem;
+  font-size: 0.95rem;
   line-height: 1;
-  padding: 0.15rem 0.25rem;
+  padding: 0.25rem 0.35rem;
   cursor: pointer;
   touch-action: manipulation;
+  opacity: 0.55;
 }
 
-.fav-btn:hover {
-  color: #f59e0b;
+.rate-btn:hover {
+  opacity: 1;
+  background: #e5e7eb;
 }
 
-.fav-btn--on {
-  color: #f59e0b;
+.rate-btn--on {
+  opacity: 1;
+  border-color: currentColor;
+}
+
+.rate-btn--like.rate-btn--on {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.rate-btn--dislike.rate-btn--on {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 .chart-card {

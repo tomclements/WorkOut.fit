@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace WorkoutPlanner.Tests;
 
@@ -14,7 +15,7 @@ public class FavoritesTests : IClassFixture<TestWebApplicationFactory>
 
     private async Task<HttpClient> CreateAuthedClientAsync(string email)
     {
-        var client = _factory.CreateClient(new Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactoryClientOptions
+        var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
         {
             HandleCookies = true,
             AllowAutoRedirect = false
@@ -27,7 +28,6 @@ public class FavoritesTests : IClassFixture<TestWebApplicationFactory>
         });
         if (register.StatusCode == HttpStatusCode.BadRequest)
         {
-            // already exists from a prior test run on shared factory DB — try login
             await client.PostAsJsonAsync("/api/auth/login", new { email, password = "TestPass1" });
         }
 
@@ -39,6 +39,14 @@ public class FavoritesTests : IClassFixture<TestWebApplicationFactory>
     {
         var client = _factory.CreateClient();
         var response = await client.GetAsync("/api/user/favorites");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Ratings_RequiresAuthentication()
+    {
+        var client = _factory.CreateClient();
+        var response = await client.GetAsync("/api/user/ratings");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
@@ -64,5 +72,78 @@ public class FavoritesTests : IClassFixture<TestWebApplicationFactory>
         var after = await client.GetFromJsonAsync<List<string>>("/api/user/favorites");
         Assert.NotNull(after);
         Assert.DoesNotContain("goblet-squat", after!);
+    }
+
+    [Fact]
+    public async Task Ratings_LikeDislikeAndClear_Works()
+    {
+        var client = await CreateAuthedClientAsync($"rate-{Guid.NewGuid():N}@example.com");
+
+        var empty = await client.GetFromJsonAsync<Dictionary<string, List<string>>>("/api/user/ratings");
+        Assert.NotNull(empty);
+        Assert.Empty(empty!["liked"] ?? new List<string>());
+        Assert.Empty(empty["disliked"] ?? new List<string>());
+
+        var like = await client.PutAsJsonAsync("/api/user/ratings/goblet-squat", new { rating = "like" });
+        like.EnsureSuccessStatusCode();
+
+        var afterLike = await client.GetFromJsonAsync<Dictionary<string, List<string>>>("/api/user/ratings");
+        Assert.Contains("goblet-squat", afterLike!["liked"]!);
+        Assert.DoesNotContain("goblet-squat", afterLike["disliked"]!);
+
+        // Switch to dislike — should move out of liked
+        var dislike = await client.PutAsJsonAsync("/api/user/ratings/goblet-squat", new { rating = "dislike" });
+        dislike.EnsureSuccessStatusCode();
+
+        var afterDislike = await client.GetFromJsonAsync<Dictionary<string, List<string>>>("/api/user/ratings");
+        Assert.DoesNotContain("goblet-squat", afterDislike!["liked"]!);
+        Assert.Contains("goblet-squat", afterDislike["disliked"]!);
+
+        // Clear
+        var clear = await client.PutAsJsonAsync("/api/user/ratings/goblet-squat", new { rating = "none" });
+        clear.EnsureSuccessStatusCode();
+
+        var afterClear = await client.GetFromJsonAsync<Dictionary<string, List<string>>>("/api/user/ratings");
+        Assert.DoesNotContain("goblet-squat", afterClear!["liked"]!);
+        Assert.DoesNotContain("goblet-squat", afterClear["disliked"]!);
+    }
+
+    [Fact]
+    public async Task GeneratePlan_RespectsDislikedExercises()
+    {
+        var client = await CreateAuthedClientAsync($"rate-plan-{Guid.NewGuid():N}@example.com");
+
+        // Dislike a common bodyweight move
+        await client.PutAsJsonAsync("/api/user/ratings/push-up", new { rating = "dislike" });
+        await client.PutAsJsonAsync("/api/user/ratings/bodyweight-squat", new { rating = "dislike" });
+
+        var ratings = await client.GetFromJsonAsync<Dictionary<string, List<string>>>("/api/user/ratings");
+        var disliked = ratings!["disliked"] ?? new List<string>();
+
+        var request = new
+        {
+            weeks = 1,
+            daysPerWeek = 3,
+            workoutDays = new[] { 0, 2, 4 },
+            sessionMinutes = 40,
+            equipment = new[] { "dumbbells", "bodyweight" },
+            split = "full-body",
+            goal = "hypertrophy",
+            level = "beginner",
+            progression = "none",
+            seed = 42,
+            dislikedExerciseIds = disliked,
+            favoriteExerciseIds = new string[] { }
+        };
+
+        var response = await client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var plan = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+        Assert.NotNull(plan);
+
+        // Parse plan days via dynamic JSON
+        var planJson = await response.Content.ReadAsStringAsync();
+        Assert.DoesNotContain("\"id\":\"push-up\"", planJson);
+        Assert.DoesNotContain("\"id\":\"bodyweight-squat\"", planJson);
     }
 }

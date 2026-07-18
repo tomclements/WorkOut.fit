@@ -70,7 +70,10 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         string progression = NormalizeProgression(req.Progression);
         int userLevelNum = LevelToNum(req.Level);
         var favoriteIds = new HashSet<string>(req.FavoriteExerciseIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+        var dislikedIds = new HashSet<string>(req.DislikedExerciseIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
         var avoidIds = new HashSet<string>(req.AvoidExerciseIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+        // Dislikes are also soft-avoided for variety / preference
+        foreach (var id in dislikedIds) avoidIds.Add(id);
 
         // Fresh seed each generation when client sends 0 / omits it
         int seed = req.Seed != 0 ? req.Seed : Random.Shared.Next(1, int.MaxValue);
@@ -103,7 +106,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 int dayIdx = workoutIndices[i];
                 var (focusLabel, slotOrder) = GetSessionTemplate(split, dayIdx, i, effectiveDays, rng);
                 var session = BuildSession(dayIdx, w, i + 1, targetTime, selectedEquipment,
-                    userLevelNum, goal, split, focusLabel, slotOrder, exercises, planWideRecent, favoriteIds,
+                    userLevelNum, goal, split, focusLabel, slotOrder, exercises, planWideRecent, favoriteIds, dislikedIds,
                     req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, mods, rng, dynamicAvoid);
 
                 foreach (var id in session.Exercises.Select(e => e.Id))
@@ -172,7 +175,8 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
     private DayPlan BuildSession(int dayIdx, int week, int dayNumber, int targetTime,
         List<string> equipment, int userLevelNum, string goal, string split, string focusLabel, List<string> slotOrder,
-        List<Exercise> allExercises, List<string> planWideRecent, HashSet<string> favoriteIds, bool includeWarmup, bool includeCooldown,
+        List<Exercise> allExercises, List<string> planWideRecent, HashSet<string> favoriteIds, HashSet<string> dislikedIds,
+        bool includeWarmup, bool includeCooldown,
         List<string> restrictions, WeekProgression mods, Random rng, HashSet<string> avoidIds)
     {
         var pool = allExercises
@@ -205,6 +209,22 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             var candidates = pool
                 .Where(e => MatchesSlot(e) && !usedToday.Contains(e.Id))
                 .ToList();
+
+            // Prefer never using disliked exercises when alternatives exist
+            var withoutDisliked = candidates.Where(e => !dislikedIds.Contains(e.Id)).ToList();
+            if (withoutDisliked.Count > 0)
+                candidates = withoutDisliked;
+
+            // Bro body-part days: stick to primary-muscle matches when we have enough options
+            if (isBro && BroFocusMuscles.ContainsKey(slot) &&
+                !slot.Equals("core", StringComparison.OrdinalIgnoreCase))
+            {
+                var primaryHits = candidates
+                    .Where(e => e.Primary.Any(p => BroFocusMuscles[slot].Contains(p)))
+                    .ToList();
+                if (primaryHits.Count >= 2)
+                    candidates = primaryHits;
+            }
 
             if (candidates.Count == 0) continue;
 
@@ -277,8 +297,8 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             var e = candidates[i];
             int w = 10;
 
-            if (favoriteIds.Contains(e.Id)) w += 8;
-            if (avoidIds.Contains(e.Id)) w -= 9;
+            if (favoriteIds.Contains(e.Id)) w += 12;
+            if (avoidIds.Contains(e.Id)) w -= 10;
             if (recentSet.Contains(e.Id)) w -= 6;
 
             // Small quality nudge — not enough to dominate randomness

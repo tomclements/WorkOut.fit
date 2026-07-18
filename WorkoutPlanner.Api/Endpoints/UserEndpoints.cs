@@ -42,6 +42,72 @@ public static class UserEndpoints
             return Results.Ok(MapPreferenceDto(pref));
         }).RequireAuthorization();
 
+        // --- Ratings (like / dislike) ---
+        app.MapGet("/api/user/ratings", async (ClaimsPrincipal user, AppDbContext db) =>
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+
+            var rows = await db.UserFavoriteExercises
+                .AsNoTracking()
+                .Where(f => f.UserId == userId)
+                .Select(f => new { f.ExerciseId, f.Rating })
+                .ToListAsync();
+
+            return Results.Ok(new ExerciseRatingsDto
+            {
+                Liked = rows.Where(r => r.Rating > 0).Select(r => r.ExerciseId).ToList(),
+                Disliked = rows.Where(r => r.Rating < 0).Select(r => r.ExerciseId).ToList()
+            });
+        }).RequireAuthorization();
+
+        app.MapPut("/api/user/ratings/{exerciseId}", async (string exerciseId, ExerciseRatingRequest body, ClaimsPrincipal user, AppDbContext db) =>
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+            if (string.IsNullOrWhiteSpace(exerciseId)) return Results.BadRequest("Exercise id required.");
+
+            var ratingKey = (body.Rating ?? "none").Trim().ToLowerInvariant();
+            int? ratingValue = ratingKey switch
+            {
+                "like" or "liked" or "favorite" or "1" or "+" => 1,
+                "dislike" or "disliked" or "-1" or "-" => -1,
+                "none" or "clear" or "neutral" or "0" => null,
+                _ => null
+            };
+
+            var existing = await db.UserFavoriteExercises
+                .FirstOrDefaultAsync(f => f.UserId == userId && f.ExerciseId == exerciseId);
+
+            if (ratingValue == null)
+            {
+                if (existing != null)
+                {
+                    db.UserFavoriteExercises.Remove(existing);
+                    await db.SaveChangesAsync();
+                }
+                return Results.Ok(new { exerciseId, rating = "none" });
+            }
+
+            if (existing == null)
+            {
+                db.UserFavoriteExercises.Add(new UserFavoriteExercise
+                {
+                    UserId = userId,
+                    ExerciseId = exerciseId,
+                    Rating = ratingValue.Value
+                });
+            }
+            else
+            {
+                existing.Rating = ratingValue.Value;
+            }
+
+            await db.SaveChangesAsync();
+            return Results.Ok(new { exerciseId, rating = ratingValue.Value > 0 ? "like" : "dislike" });
+        }).RequireAuthorization();
+
+        // Backward-compatible favorites endpoints (like only)
         app.MapGet("/api/user/favorites", async (ClaimsPrincipal user, AppDbContext db) =>
         {
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -49,7 +115,7 @@ public static class UserEndpoints
 
             var ids = await db.UserFavoriteExercises
                 .AsNoTracking()
-                .Where(f => f.UserId == userId)
+                .Where(f => f.UserId == userId && f.Rating > 0)
                 .Select(f => f.ExerciseId)
                 .ToListAsync();
             return Results.Ok(ids);
@@ -60,10 +126,22 @@ public static class UserEndpoints
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
-            if (await db.UserFavoriteExercises.AnyAsync(f => f.UserId == userId && f.ExerciseId == exerciseId))
-                return Results.Ok();
+            var existing = await db.UserFavoriteExercises
+                .FirstOrDefaultAsync(f => f.UserId == userId && f.ExerciseId == exerciseId);
+            if (existing == null)
+            {
+                db.UserFavoriteExercises.Add(new UserFavoriteExercise
+                {
+                    UserId = userId,
+                    ExerciseId = exerciseId,
+                    Rating = 1
+                });
+            }
+            else
+            {
+                existing.Rating = 1;
+            }
 
-            db.UserFavoriteExercises.Add(new UserFavoriteExercise { UserId = userId, ExerciseId = exerciseId });
             await db.SaveChangesAsync();
             return Results.Ok();
         }).RequireAuthorization();
