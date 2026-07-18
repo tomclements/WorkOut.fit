@@ -371,6 +371,83 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
+    public async Task GeneratePlan_DifferentSeeds_CanVaryExerciseMix()
+    {
+        var baseRequest = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 3,
+            WorkoutDays = new List<int> { 0, 2, 4 },
+            SessionMinutes = 35,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "barbell" },
+            Split = "full-body",
+            Goal = "hypertrophy",
+            Level = "beginner",
+            Progression = "none"
+        };
+
+        async Task<HashSet<string>> IdsForSeed(int seed)
+        {
+            var req = new PlanRequest
+            {
+                Weeks = baseRequest.Weeks,
+                DaysPerWeek = baseRequest.DaysPerWeek,
+                WorkoutDays = baseRequest.WorkoutDays.ToList(),
+                SessionMinutes = baseRequest.SessionMinutes,
+                Equipment = baseRequest.Equipment.ToList(),
+                Split = baseRequest.Split,
+                Goal = baseRequest.Goal,
+                Level = baseRequest.Level,
+                Progression = baseRequest.Progression,
+                Seed = seed
+            };
+            var response = await _client.PostAsJsonAsync("/api/plan", req);
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+            return result!.Plan
+                .SelectMany(w => w.Days)
+                .Where(d => d.Type == "workout")
+                .SelectMany(d => d.Exercises)
+                .Select(e => e.Id)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        }
+
+        var a = await IdsForSeed(11);
+        var b = await IdsForSeed(99);
+        Assert.NotEmpty(a);
+        Assert.NotEmpty(b);
+        // With a large library, different seeds should usually differ; allow rare collision by checking set equality is not required always —
+        // but with avoid + top-N random we expect difference for these seeds.
+        Assert.False(a.SetEquals(b), "Expected different seeds to produce different exercise mixes");
+    }
+
+    [Fact]
+    public async Task GeneratePlan_PreservesSplitAndGoalIndependently()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 4,
+            WorkoutDays = new List<int> { 0, 1, 3, 4 },
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench" },
+            Split = "ppl",
+            Goal = "strength",
+            Level = "intermediate",
+            Progression = "none",
+            Seed = 42
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+        Assert.Equal("ppl", result!.Criteria.Split);
+        Assert.Equal("strength", result.Criteria.Goal);
+        Assert.Equal(new[] { 0, 1, 3, 4 }, result.Criteria.WorkoutDays);
+    }
+
+    [Fact]
     public async Task GeneratePlan_Linear_DeloadHasFewerSetsThanPeakBuild()
     {
         var request = new PlanRequest

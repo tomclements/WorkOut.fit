@@ -64,11 +64,17 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         int daysPerWeek = Math.Clamp(req.DaysPerWeek, 1, 7);
         int sessionMinutes = Math.Clamp(req.SessionMinutes, 5, 90);
         var selectedEquipment = req.Equipment ?? new List<string>();
-        string split = string.IsNullOrWhiteSpace(req.Split) ? InferSplit(req.Goal) : req.Split.ToLowerInvariant();
+        // Split and goal are independent: never treat goal as a split type.
         string goal = NormalizeGoal(req.Goal);
+        string split = NormalizeSplit(req.Split);
         string progression = NormalizeProgression(req.Progression);
         int userLevelNum = LevelToNum(req.Level);
         var favoriteIds = new HashSet<string>(req.FavoriteExerciseIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+        var avoidIds = new HashSet<string>(req.AvoidExerciseIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+
+        // Fresh seed each generation when client sends 0 / omits it
+        int seed = req.Seed != 0 ? req.Seed : Random.Shared.Next(1, int.MaxValue);
+        var rng = new Random(seed);
 
         var workoutIndices = req.WorkoutDays?.Count > 0
             ? req.WorkoutDays.Distinct().OrderBy(d => d).Where(d => d >= 0 && d <= 6).ToArray()
@@ -95,7 +101,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 var (focusLabel, slotOrder) = GetSessionTemplate(split, dayIdx, i, effectiveDays);
                 var session = BuildSession(dayIdx, w, i + 1, targetTime, selectedEquipment,
                     userLevelNum, goal, split, focusLabel, slotOrder, exercises, recentUses, favoriteIds,
-                    req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, mods);
+                    req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, mods, rng, avoidIds);
 
                 recentUses.Add(new HashSet<string>(session.Exercises.Select(e => e.Id)));
                 if (recentUses.Count > 2) recentUses.RemoveAt(0);
@@ -137,6 +143,9 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         }
 
         req.Progression = progression;
+        req.Split = split;
+        req.Goal = goal;
+        req.Seed = seed;
         return new PlanResponse
         {
             Criteria = req,
@@ -149,7 +158,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
     private DayPlan BuildSession(int dayIdx, int week, int dayNumber, int targetTime,
         List<string> equipment, int userLevelNum, string goal, string split, string focusLabel, List<string> slotOrder,
         List<Exercise> allExercises, List<HashSet<string>> recentUses, HashSet<string> favoriteIds, bool includeWarmup, bool includeCooldown,
-        List<string> restrictions, WeekProgression mods)
+        List<string> restrictions, WeekProgression mods, Random rng, HashSet<string> avoidIds)
     {
         var pool = allExercises
             .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions))
@@ -182,15 +191,23 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             var candidates = pool
                 .Where(e => MatchesSlot(e) && !usedToday.Contains(e.Id))
                 .Where(e => !banned.Contains(e.Id) || pool.Count(x => MatchesSlot(x) && !usedToday.Contains(x.Id)) < 3)
-                .OrderByDescending(e => favoriteIds.Contains(e.Id))
+                .OrderByDescending(e => favoriteIds.Contains(e.Id) ? 2 : 0)
+                // Soft-avoid previously shown exercises when regenerating
+                .ThenBy(e => avoidIds.Contains(e.Id) ? 1 : 0)
                 // Prefer exercises whose primary muscles are tightly aligned with the bro focus
                 .ThenByDescending(e => isBro ? BroMuscleMatchScore(e, slot) : e.Primary.Count)
-                .ThenBy(e => e.Name)
+                // Randomize among similarly ranked options so each "Create plan" can differ
+                .ThenBy(_ => rng.Next())
                 .ToList();
 
             if (!candidates.Any()) continue;
 
-            var ex = candidates.First();
+            // Pick from the top of the ranked list so quality stays high but mix varies
+            int poolSize = Math.Clamp(candidates.Count, 1, Math.Min(8, candidates.Count));
+            var pickPool = candidates.Take(poolSize).ToList();
+            var preferred = pickPool.Where(e => !avoidIds.Contains(e.Id)).ToList();
+            if (preferred.Count == 0) preferred = pickPool;
+            var ex = preferred[rng.Next(preferred.Count)];
             int sets = ComputeSets(ex, goal, userLevelNum, isBro, mods);
             string reps = ComputeReps(ex, goal, mods);
             int rest = ComputeRest(ex, goal, mods);
@@ -602,21 +619,27 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         return (day.Item1, day.Item2.ToList());
     }
 
-    private static string InferSplit(string? goal) => goal?.ToLowerInvariant() switch
+    /// <summary>
+    /// Normalize split independently of goal. Defaults to full-body when missing/unknown.
+    /// </summary>
+    private static string NormalizeSplit(string? split) => split?.ToLowerInvariant().Trim() switch
     {
-        "upper" or "upper-lower" or "lower" => "upper-lower",
-        "ppl" or "push-pull-legs" or "push / pull / legs" => "ppl",
-        "bro" or "bro-split" or "bro split" => "bro-split",
-        "full-body" or "full body" or "total" or "total-body" or "total body" => "full-body",
+        "upper" or "upper-lower" or "lower" or "upper/lower" or "upper / lower" => "upper-lower",
+        "ppl" or "push-pull-legs" or "push / pull / legs" or "push-pull-legs" => "ppl",
+        "bro" or "bro-split" or "bro split" or "body-part" or "body part" => "bro-split",
+        "full-body" or "full body" or "total" or "total-body" or "total body" or null or "" => "full-body",
+        // Legacy clients sometimes sent split values in the goal field only; still accept known aliases.
         _ => "full-body"
     };
 
     private static string NormalizeGoal(string? goal) => goal?.ToLowerInvariant() switch
     {
         "strength" => "strength",
-        "hypertrophy" or "muscle-building" or "muscle building" => "hypertrophy",
+        "hypertrophy" or "muscle-building" or "muscle building" or "muscle" => "hypertrophy",
         "endurance" => "endurance",
         "fat-loss" or "fat loss" => "fat-loss",
+        // Never treat a split name as a training goal
+        "full-body" or "full body" or "ppl" or "upper-lower" or "bro-split" => "hypertrophy",
         _ => "hypertrophy"
     };
 }

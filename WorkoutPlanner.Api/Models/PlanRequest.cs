@@ -19,4 +19,14 @@ public class PlanRequest
     /// How the plan progresses across weeks: none, linear, wave, or block.
     /// </summary>
     public string Progression { get; set; } = "linear";
+
+    /// <summary>
+    /// Random seed for exercise selection. Different seeds produce different exercise mixes.
+    /// </summary>
+    public int Seed { get; set; }
+
+    /// <summary>
+    /// Soft-avoid these exercise IDs when regenerating (prefer alternatives).
+    /// </summary>
+    public List<string> AvoidExerciseIds { get; set; } = new();
 }

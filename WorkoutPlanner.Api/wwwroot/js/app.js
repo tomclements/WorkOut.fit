@@ -45,7 +45,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   await checkSession();
   handleReturnUrl();
 
-  document.getElementById('generateBtn').addEventListener('click', generate);
+  document.getElementById('generateBtn').addEventListener('click', () => generate({ reshuffle: false }));
+  const regenerateBtn = document.getElementById('regenerateBtn');
+  if (regenerateBtn) {
+    regenerateBtn.addEventListener('click', () => generate({ reshuffle: true }));
+  }
   document.getElementById('savePlanBtn').addEventListener('click', saveCurrentPlan);
   document.getElementById('printBtn').addEventListener('click', () => window.print());
   document.getElementById('welcomeSignInBtn').addEventListener('click', openAuthModal);
@@ -204,24 +208,53 @@ function onSplitChange() {
   }
 }
 
-function getCriteria() {
+function collectPreviousExerciseIds() {
+  if (!currentPlan || !currentPlan.plan) return [];
+  const ids = [];
+  currentPlan.plan.forEach(w => {
+    (w.days || []).forEach(d => {
+      (d.exercises || []).forEach(ex => {
+        if (ex.id) ids.push(ex.id);
+      });
+    });
+  });
+  return [...new Set(ids)];
+}
+
+function getCriteria(options = {}) {
   const equipment = Array.from(document.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value);
   const restrictions = Array.from(document.querySelectorAll('input[name="restrictions"]:checked')).map(cb => cb.value);
-  return {
+  const workoutDays = Array.from(document.querySelectorAll('input[name="workoutDay"]:checked'))
+    .map(cb => parseInt(cb.value, 10))
+    .filter(d => !Number.isNaN(d))
+    .sort((a, b) => a - b);
+
+  // New seed every generation so the mix changes even with the same form settings
+  const seed = options.seed != null
+    ? options.seed
+    : (Math.floor(Math.random() * 2147483646) + 1);
+
+  const criteria = {
     weeks: parseInt(document.getElementById('weeks').value, 10),
-    daysPerWeek: parseInt(document.getElementById('daysPerWeek').value, 10),
-    workoutDays: Array.from(document.querySelectorAll('input[name="workoutDay"]:checked')).map(cb => parseInt(cb.value, 10)).sort((a, b) => a - b),
+    daysPerWeek: workoutDays.length > 0
+      ? workoutDays.length
+      : parseInt(document.getElementById('daysPerWeek').value, 10),
+    workoutDays,
     sessionMinutes: parseInt(document.getElementById('sessionMinutes').value, 10),
     equipment,
     restrictions,
-    split: document.getElementById('split').value,
-    goal: document.getElementById('goal').value,
-    level: document.getElementById('level').value,
+    // Split and goal are separate fields — always send both explicitly
+    split: document.getElementById('split').value || 'full-body',
+    goal: document.getElementById('goal').value || 'hypertrophy',
+    level: document.getElementById('level').value || 'beginner',
     includeWarmup: document.getElementById('includeWarmup').checked,
     includeCooldown: document.getElementById('includeCooldown').checked,
     favoriteExerciseIds: favoriteExerciseIds.slice(),
-    progression: document.getElementById('progression')?.value || 'linear'
+    progression: document.getElementById('progression')?.value || 'linear',
+    seed,
+    avoidExerciseIds: options.reshuffle ? collectPreviousExerciseIds() : []
   };
+  return criteria;
 }
 
 const PROGRESSION_HINTS = {
@@ -769,19 +802,30 @@ async function saveCurrentPlan() {
   }
 }
 
-async function generate() {
+async function generate(options = {}) {
   clearStatus();
-  const criteria = getCriteria();
+  const reshuffle = !!options.reshuffle;
+  const criteria = getCriteria({ reshuffle });
 
   if (criteria.equipment.length === 0) {
     setStatus('Please select at least one equipment option.');
     return;
   }
+  if (!criteria.workoutDays || criteria.workoutDays.length === 0) {
+    setStatus('Please select at least one workout day (Mon–Sun).');
+    return;
+  }
 
   const btn = document.getElementById('generateBtn');
+  const regenBtn = document.getElementById('regenerateBtn');
   const originalText = btn.textContent;
-  btn.textContent = 'Creating...';
+  const originalRegen = regenBtn ? regenBtn.textContent : '';
+  btn.textContent = reshuffle ? 'Trying a new mix...' : 'Creating...';
   btn.disabled = true;
+  if (regenBtn) {
+    regenBtn.disabled = true;
+    if (reshuffle) regenBtn.textContent = 'Shuffling...';
+  }
 
   try {
     const response = await fetch('/api/plan', {
@@ -801,13 +845,25 @@ async function generate() {
     currentPlanId = null;
     localStorage.setItem('workoutPlan', JSON.stringify(result));
     renderPlan(result);
-    if (typeof showToast === 'function') showToast('Plan ready — scroll down to review or start.', 'success');
+    if (regenBtn) regenBtn.classList.remove('hidden');
+    if (typeof showToast === 'function') {
+      showToast(
+        reshuffle
+          ? 'New exercise mix ready — scroll down to compare.'
+          : 'Plan ready — scroll down to review or start.',
+        'success'
+      );
+    }
   } catch (err) {
     setStatus(`Could not create plan: ${err.message}`);
     if (typeof showToast === 'function') showToast(`Could not create plan: ${err.message}`, 'error');
   } finally {
     btn.textContent = originalText;
     btn.disabled = false;
+    if (regenBtn) {
+      regenBtn.disabled = false;
+      regenBtn.textContent = originalRegen || 'Try different exercises';
+    }
   }
 }
 
@@ -827,8 +883,8 @@ function renderPlan(result) {
     <h2 class="text-2xl font-bold mb-2">Your ${result.criteria.weeks}-week plan</h2>
     <p class="text-gray-700">
       ${formatWorkoutDays(result.criteria.workoutDays, result.criteria.daysPerWeek)} • ${result.criteria.sessionMinutes} min sessions
-      • ${capitalize(result.criteria.split || 'full-body')} split
-      • ${capitalize(result.criteria.goal)}
+      • <strong>Split:</strong> ${capitalize(result.criteria.split || 'full-body')}
+      • <strong>Goal:</strong> ${capitalize(result.criteria.goal)}
       • ${capitalize(result.criteria.level)}
       • ${progressionLabel}
     </p>
@@ -908,6 +964,8 @@ function renderPlan(result) {
   document.getElementById('results').classList.remove('hidden');
   startWorkoutBtn.classList.remove('hidden');
   startWorkoutBtn.href = currentPlanId ? `/workout.html?planId=${currentPlanId}` : '/workout.html';
+  const regenBtn = document.getElementById('regenerateBtn');
+  if (regenBtn) regenBtn.classList.remove('hidden');
   document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
 }
 
