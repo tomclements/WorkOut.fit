@@ -42,16 +42,25 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
-    public async Task GeneratePlan_DumbbellsOnly_DoesNotIncludeBenchExercises()
+    public async Task GeneratePlan_DumbbellsOnly_DoesNotIncludeBenchRequiredIds()
     {
+        // IDs that require bench (or pull-up bar) in the seed library
+        var forbiddenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "db-bench-press", "db-chest-fly", "db-step-up", "pull-up"
+        };
+
         var request = new PlanRequest
         {
             Weeks = 4,
             DaysPerWeek = 5,
-            SessionMinutes = 20,
+            SessionMinutes = 30,
             Equipment = new List<string> { "dumbbells", "bodyweight" },
-            Goal = "full-body",
-            Level = "beginner"
+            Split = "full-body",
+            Goal = "hypertrophy",
+            Level = "beginner",
+            Progression = "none",
+            Seed = 7
         };
 
         var response = await _client.PostAsJsonAsync("/api/plan", request);
@@ -59,29 +68,23 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
         var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
         Assert.NotNull(result);
 
-        var exerciseNames = result!.Plan
+        var exerciseIds = result!.Plan
             .SelectMany(w => w.Days)
             .Where(d => d.Type == "workout")
             .SelectMany(d => d.Exercises)
-            .Select(e => e.Name)
+            .Select(e => e.Id)
             .ToList();
 
-        Assert.DoesNotContain("Dumbbell Bench Press", exerciseNames);
-        Assert.DoesNotContain("Dumbbell Chest Fly", exerciseNames);
-        Assert.DoesNotContain("Dumbbell Step-Up", exerciseNames);
-        Assert.DoesNotContain("Pull-Up", exerciseNames);
+        Assert.DoesNotContain(exerciseIds, id => forbiddenIds.Contains(id));
     }
 
     [Fact]
-    public async Task GeneratePlan_WithBench_CanIncludeBenchExercises()
+    public async Task GeneratePlan_WithBench_CanIncludeBenchRequiredIds()
     {
-        // Selection is randomized; try several seeds until a known bench exercise appears
-        // (proves bench equipment is usable, not that one move is always chosen).
-        var benchNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        // Selection is randomized; try several seeds until a known bench-required id appears.
+        var benchIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "Dumbbell Bench Press",
-            "Dumbbell Chest Fly",
-            "Dumbbell Step-Up"
+            "db-bench-press", "db-chest-fly", "db-step-up"
         };
 
         var found = false;
@@ -105,13 +108,13 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
             var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
             Assert.NotNull(result);
 
-            var names = result!.Plan
+            var ids = result!.Plan
                 .SelectMany(w => w.Days)
                 .Where(d => d.Type == "workout")
                 .SelectMany(d => d.Exercises)
-                .Select(e => e.Name);
+                .Select(e => e.Id);
 
-            found = names.Any(n => benchNames.Contains(n));
+            found = ids.Any(id => benchIds.Contains(id));
         }
 
         Assert.True(found, "Expected at least one bench-required exercise across random seeds when bench is selected");
