@@ -89,7 +89,10 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         var exercises = await db.Exercises.AsNoTracking().ToListAsync();
 
         var plan = new List<WeekPlan>();
-        var recentUses = new List<HashSet<string>>();
+        // Soft-avoid exercises used recently in this plan so weeks don't clone each other
+        var planWideRecent = new List<string>();
+        // Merge client avoid-list (previous plan) with in-plan variety
+        var dynamicAvoid = new HashSet<string>(avoidIds, StringComparer.OrdinalIgnoreCase);
 
         for (int w = 1; w <= weeks; w++)
         {
@@ -98,13 +101,25 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             for (int i = 0; i < workoutIndices.Length; i++)
             {
                 int dayIdx = workoutIndices[i];
-                var (focusLabel, slotOrder) = GetSessionTemplate(split, dayIdx, i, effectiveDays);
+                var (focusLabel, slotOrder) = GetSessionTemplate(split, dayIdx, i, effectiveDays, rng);
                 var session = BuildSession(dayIdx, w, i + 1, targetTime, selectedEquipment,
-                    userLevelNum, goal, split, focusLabel, slotOrder, exercises, recentUses, favoriteIds,
-                    req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, mods, rng, avoidIds);
+                    userLevelNum, goal, split, focusLabel, slotOrder, exercises, planWideRecent, favoriteIds,
+                    req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, mods, rng, dynamicAvoid);
 
-                recentUses.Add(new HashSet<string>(session.Exercises.Select(e => e.Id)));
-                if (recentUses.Count > 2) recentUses.RemoveAt(0);
+                foreach (var id in session.Exercises.Select(e => e.Id))
+                {
+                    planWideRecent.Add(id);
+                    dynamicAvoid.Add(id);
+                }
+                // Keep plan-wide memory bounded so we don't exhaust the pool on long plans
+                while (planWideRecent.Count > Math.Max(12, effectiveDays * 4))
+                {
+                    var drop = planWideRecent[0];
+                    planWideRecent.RemoveAt(0);
+                    // Only drop from dynamicAvoid if it wasn't in the original client avoid list
+                    if (!avoidIds.Contains(drop) && !planWideRecent.Contains(drop))
+                        dynamicAvoid.Remove(drop);
+                }
 
                 workoutDays.Add(session);
             }
@@ -157,14 +172,13 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
     private DayPlan BuildSession(int dayIdx, int week, int dayNumber, int targetTime,
         List<string> equipment, int userLevelNum, string goal, string split, string focusLabel, List<string> slotOrder,
-        List<Exercise> allExercises, List<HashSet<string>> recentUses, HashSet<string> favoriteIds, bool includeWarmup, bool includeCooldown,
+        List<Exercise> allExercises, List<string> planWideRecent, HashSet<string> favoriteIds, bool includeWarmup, bool includeCooldown,
         List<string> restrictions, WeekProgression mods, Random rng, HashSet<string> avoidIds)
     {
         var pool = allExercises
             .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions))
             .ToList();
 
-        var banned = new HashSet<string>(recentUses.SelectMany(s => s));
         bool isBro = split == "bro-split";
         var session = new DayPlan
         {
@@ -177,7 +191,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             Exercises = new List<PlanExercise>()
         };
 
-        var usedToday = new HashSet<string>();
+        var usedToday = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         int timeUsed = 0;
         const int transition = 30;
 
@@ -190,24 +204,13 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
             var candidates = pool
                 .Where(e => MatchesSlot(e) && !usedToday.Contains(e.Id))
-                .Where(e => !banned.Contains(e.Id) || pool.Count(x => MatchesSlot(x) && !usedToday.Contains(x.Id)) < 3)
-                .OrderByDescending(e => favoriteIds.Contains(e.Id) ? 2 : 0)
-                // Soft-avoid previously shown exercises when regenerating
-                .ThenBy(e => avoidIds.Contains(e.Id) ? 1 : 0)
-                // Prefer exercises whose primary muscles are tightly aligned with the bro focus
-                .ThenByDescending(e => isBro ? BroMuscleMatchScore(e, slot) : e.Primary.Count)
-                // Randomize among similarly ranked options so each "Create plan" can differ
-                .ThenBy(_ => rng.Next())
                 .ToList();
 
-            if (!candidates.Any()) continue;
+            if (candidates.Count == 0) continue;
 
-            // Pick from the top of the ranked list so quality stays high but mix varies
-            int poolSize = Math.Clamp(candidates.Count, 1, Math.Min(8, candidates.Count));
-            var pickPool = candidates.Take(poolSize).ToList();
-            var preferred = pickPool.Where(e => !avoidIds.Contains(e.Id)).ToList();
-            if (preferred.Count == 0) preferred = pickPool;
-            var ex = preferred[rng.Next(preferred.Count)];
+            var ex = PickWeightedExercise(candidates, favoriteIds, avoidIds, planWideRecent, isBro, slot, rng);
+            if (ex == null) continue;
+
             int sets = ComputeSets(ex, goal, userLevelNum, isBro, mods);
             string reps = ComputeReps(ex, goal, mods);
             int rest = ComputeRest(ex, goal, mods);
@@ -247,6 +250,57 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             (timeUsed + (includeWarmup ? 180 : 0) + (includeCooldown ? 120 : 0)) / 60.0);
 
         return session;
+    }
+
+    /// <summary>
+    /// Weighted random pick: favorites get a boost, recently used / avoided get a penalty.
+    /// Still allows avoided items if the pool is thin so sessions never go empty.
+    /// </summary>
+    private static Exercise? PickWeightedExercise(
+        List<Exercise> candidates,
+        HashSet<string> favoriteIds,
+        HashSet<string> avoidIds,
+        List<string> planWideRecent,
+        bool isBro,
+        string slot,
+        Random rng)
+    {
+        if (candidates.Count == 0) return null;
+        if (candidates.Count == 1) return candidates[0];
+
+        var recentSet = new HashSet<string>(planWideRecent.TakeLast(24), StringComparer.OrdinalIgnoreCase);
+        var weights = new int[candidates.Count];
+        int total = 0;
+
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            var e = candidates[i];
+            int w = 10;
+
+            if (favoriteIds.Contains(e.Id)) w += 8;
+            if (avoidIds.Contains(e.Id)) w -= 9;
+            if (recentSet.Contains(e.Id)) w -= 6;
+
+            // Small quality nudge — not enough to dominate randomness
+            if (isBro)
+                w += Math.Min(3, BroMuscleMatchScore(e, slot));
+            else
+                w += Math.Min(2, e.Primary.Count);
+
+            // Keep every candidate in play at least a little
+            w = Math.Max(1, w);
+            weights[i] = w;
+            total += w;
+        }
+
+        int roll = rng.Next(total);
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            roll -= weights[i];
+            if (roll < 0) return candidates[i];
+        }
+
+        return candidates[^1];
     }
 
     private static bool MatchesBroFocus(Exercise ex, string focus)
@@ -530,28 +584,43 @@ public class WorkoutPlannerService : IWorkoutPlannerService
     /// For other splits, picks are movement slots (push, pull, legs, core, carry).
     /// </summary>
     private static (string FocusLabel, List<string> SlotOrder) GetSessionTemplate(
-        string split, int dayIdx, int workoutIndex, int daysPerWeek)
+        string split, int dayIdx, int workoutIndex, int daysPerWeek, Random? rng = null)
     {
         switch (split)
         {
             case "upper-lower":
                 return (workoutIndex % 2 == 0)
-                    ? ("Upper body", new List<string> { "push", "pull", "push", "core" })
-                    : ("Lower body", new List<string> { "legs", "legs", "core", "carry" });
+                    ? ("Upper body", ShuffleCopy(new List<string> { "push", "pull", "push", "core" }, rng))
+                    : ("Lower body", ShuffleCopy(new List<string> { "legs", "legs", "core", "carry" }, rng));
             case "ppl":
                 int r = workoutIndex % 3;
-                if (r == 0) return ("Push", new List<string> { "push", "push", "core" });
-                if (r == 1) return ("Pull", new List<string> { "pull", "pull", "core" });
-                return ("Legs", new List<string> { "legs", "legs", "core" });
+                if (r == 0) return ("Push", ShuffleCopy(new List<string> { "push", "push", "core" }, rng));
+                if (r == 1) return ("Pull", ShuffleCopy(new List<string> { "pull", "pull", "core" }, rng));
+                return ("Legs", ShuffleCopy(new List<string> { "legs", "legs", "core" }, rng));
             case "bro-split":
                 return GetBroSessionTemplate(workoutIndex, daysPerWeek);
             case "full-body":
             default:
                 var baseSlots = new List<string> { "legs", "push", "pull", "core" };
+                // Random rotation so full-body sessions don't always start with the same pattern
+                if (rng != null)
+                    return ("Full body", ShuffleCopy(baseSlots, rng));
                 int offset = (dayIdx + workoutIndex) % baseSlots.Count;
                 var rotated = baseSlots.Skip(offset).Concat(baseSlots.Take(offset)).ToList();
                 return ("Full body", rotated);
         }
+    }
+
+    private static List<string> ShuffleCopy(List<string> source, Random? rng)
+    {
+        var list = source.ToList();
+        if (rng == null || list.Count < 2) return list;
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = rng.Next(i + 1);
+            (list[i], list[j]) = (list[j], list[i]);
+        }
+        return list;
     }
 
     /// <summary>

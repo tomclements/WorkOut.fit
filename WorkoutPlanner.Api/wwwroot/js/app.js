@@ -388,10 +388,16 @@ function getCriteria(options = {}) {
     .filter(d => !Number.isNaN(d))
     .sort((a, b) => a - b);
 
-  // New seed every generation so the mix changes even with the same form settings
+  // Always a new seed so the server builds a different mix
   const seed = options.seed != null
     ? options.seed
-    : (Math.floor(Math.random() * 2147483646) + 1);
+    : ((Date.now() ^ (Math.floor(Math.random() * 1e9))) >>> 0) || 1;
+
+  // Soft-avoid the previous plan's exercises whenever we already have one
+  // (both "Create my plan" again and "Try different exercises")
+  const avoidExerciseIds = (options.reshuffle || currentPlan)
+    ? collectPreviousExerciseIds()
+    : [];
 
   const criteria = {
     weeks: parseInt(document.getElementById('weeks').value, 10),
@@ -411,7 +417,7 @@ function getCriteria(options = {}) {
     favoriteExerciseIds: favoriteExerciseIds.slice(),
     progression: document.getElementById('progression')?.value || 'linear',
     seed,
-    avoidExerciseIds: options.reshuffle ? collectPreviousExerciseIds() : []
+    avoidExerciseIds
   };
   return criteria;
 }

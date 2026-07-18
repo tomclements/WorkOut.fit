@@ -373,33 +373,21 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     [Fact]
     public async Task GeneratePlan_DifferentSeeds_CanVaryExerciseMix()
     {
-        var baseRequest = new PlanRequest
-        {
-            Weeks = 1,
-            DaysPerWeek = 3,
-            WorkoutDays = new List<int> { 0, 2, 4 },
-            SessionMinutes = 35,
-            Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "barbell" },
-            Split = "full-body",
-            Goal = "hypertrophy",
-            Level = "beginner",
-            Progression = "none"
-        };
-
-        async Task<HashSet<string>> IdsForSeed(int seed)
+        async Task<HashSet<string>> IdsForSeed(int seed, List<string>? avoid = null)
         {
             var req = new PlanRequest
             {
-                Weeks = baseRequest.Weeks,
-                DaysPerWeek = baseRequest.DaysPerWeek,
-                WorkoutDays = baseRequest.WorkoutDays.ToList(),
-                SessionMinutes = baseRequest.SessionMinutes,
-                Equipment = baseRequest.Equipment.ToList(),
-                Split = baseRequest.Split,
-                Goal = baseRequest.Goal,
-                Level = baseRequest.Level,
-                Progression = baseRequest.Progression,
-                Seed = seed
+                Weeks = 1,
+                DaysPerWeek = 3,
+                WorkoutDays = new List<int> { 0, 2, 4 },
+                SessionMinutes = 40,
+                Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "barbell", "pull-up-bar", "kettlebell", "bands" },
+                Split = "full-body",
+                Goal = "hypertrophy",
+                Level = "intermediate",
+                Progression = "none",
+                Seed = seed,
+                AvoidExerciseIds = avoid ?? new List<string>()
             };
             var response = await _client.PostAsJsonAsync("/api/plan", req);
             response.EnsureSuccessStatusCode();
@@ -413,12 +401,15 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
         }
 
         var a = await IdsForSeed(11);
-        var b = await IdsForSeed(99);
+        var b = await IdsForSeed(99, a.ToList());
         Assert.NotEmpty(a);
         Assert.NotEmpty(b);
-        // With a large library, different seeds should usually differ; allow rare collision by checking set equality is not required always —
-        // but with avoid + top-N random we expect difference for these seeds.
-        Assert.False(a.SetEquals(b), "Expected different seeds to produce different exercise mixes");
+        Assert.False(a.SetEquals(b),
+            $"Expected different exercise mixes. A={string.Join(',', a.OrderBy(x => x))} B={string.Join(',', b.OrderBy(x => x))}");
+        // With avoid list, overlap should be low
+        var overlap = a.Intersect(b, StringComparer.OrdinalIgnoreCase).Count();
+        Assert.True(overlap < a.Count,
+            $"Expected avoid list to reduce overlap; overlap={overlap}/{a.Count}");
     }
 
     [Fact]
