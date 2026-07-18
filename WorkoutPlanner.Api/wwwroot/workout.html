@@ -28,7 +28,10 @@
 
     <!-- Setup -->
     <section id="setupScreen" class="runner-screen active bg-white rounded-xl shadow p-6">
-      <h2 class="text-xl font-semibold mb-4">Ready to train</h2>
+      <h2 class="text-xl font-semibold mb-2">Ready to train</h2>
+      <p class="text-sm text-gray-600 mb-4">
+        Timer-based sets: work countdown → rest countdown → next set. Aim for the listed reps during each work interval.
+      </p>
 
       <div id="loadError" class="text-sm text-red-600 mb-4 hidden"></div>
 
@@ -45,39 +48,21 @@
         <select id="daySelect" class="w-full border border-gray-300 rounded-md p-3 text-base"></select>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-        <label class="flex items-center justify-between border rounded-lg p-4 cursor-pointer hover:bg-gray-50 min-h-[3.5rem]">
-          <span class="text-sm font-medium">Background music</span>
-          <input id="musicToggle" type="checkbox" class="rounded text-blue-600 w-5 h-5" />
-        </label>
-
-        <label class="flex items-center justify-between border rounded-lg p-4 cursor-pointer hover:bg-gray-50 min-h-[3.5rem]">
-          <span class="text-sm font-medium">Motion-sensor reps</span>
-          <input id="motionToggle" type="checkbox" class="rounded text-blue-600 w-5 h-5" />
-        </label>
-
-        <label class="flex items-center justify-between border rounded-lg p-4 cursor-pointer hover:bg-gray-50 min-h-[3.5rem]">
-          <span class="text-sm font-medium">Voice cues</span>
-          <input id="voiceToggle" type="checkbox" class="rounded text-blue-600 w-5 h-5" />
-        </label>
-      </div>
-
-      <div class="sensor-help mb-5">
-        <strong>Motion sensor tips:</strong> Works best with the phone in an armband or pocket.
-        On iPhone, tapping Start will request motion permission. If denied or flaky, use the large +/− rep buttons.
-        You can also turn the sensor on/off mid-workout.
-      </div>
+      <label class="flex items-center justify-between border rounded-lg p-4 cursor-pointer hover:bg-gray-50 min-h-[3.5rem] mb-5">
+        <span class="text-sm font-medium">Background music</span>
+        <input id="musicToggle" type="checkbox" class="rounded text-blue-600 w-5 h-5" />
+      </label>
 
       <button id="startBtn" class="cta-start w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation shadow-md">
         Start workout
       </button>
 
       <p class="text-xs text-gray-500 mt-3 text-center">
-        Screen stay-awake, fullscreen, and haptics are available during the session.
+        Screen stays awake during the session. Use fullscreen if you like. Timers auto-advance; you can skip anytime.
       </p>
     </section>
 
-    <!-- Active exercise -->
+    <!-- Active exercise (work interval) -->
     <section id="activeScreen" class="runner-screen bg-white rounded-xl shadow p-5 sm:p-6">
       <div class="mb-4">
         <div class="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
@@ -89,7 +74,7 @@
         </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-2">
         <div>
           <div id="exerciseName" class="text-2xl sm:text-3xl font-bold text-blue-900 leading-tight">Exercise</div>
           <div id="exerciseMeta" class="text-sm sm:text-base text-gray-600 mt-1"></div>
@@ -97,44 +82,36 @@
         <div id="setBadge" class="text-sm font-semibold bg-gray-100 text-gray-800 px-3 py-2 rounded-full self-start sm:self-auto"></div>
       </div>
 
-      <div id="demoLink" class="mb-4"></div>
+      <div id="demoLink" class="mb-3"></div>
 
-      <div class="flex justify-center mb-6">
-        <div id="timerDisplay" class="big-timer text-blue-700">00:00</div>
+      <div class="text-center mb-2">
+        <div class="text-xs font-semibold uppercase tracking-wider text-green-700">Work</div>
+        <div id="workCue" class="text-base sm:text-lg font-medium text-gray-800 mt-1">Aim for your target reps</div>
       </div>
 
-      <div id="repSection" class="flex flex-col items-center mb-6">
-        <div class="text-sm sm:text-base text-gray-600 mb-3 font-medium">Reps completed</div>
-        <div class="flex items-center gap-6 sm:gap-8">
-          <button id="repDec" type="button" class="rep-btn w-16 h-16 sm:w-16 sm:h-16 rounded-full bg-gray-200 active:bg-gray-300 text-3xl font-bold touch-manipulation">−</button>
-          <div id="repCount" class="rep-display text-blue-900">0</div>
-          <button id="repInc" type="button" class="rep-btn w-16 h-16 sm:w-16 sm:h-16 rounded-full bg-blue-600 active:bg-blue-700 text-white text-3xl font-bold touch-manipulation">+</button>
-        </div>
-        <div id="sensorStatus" class="text-sm text-gray-500 mt-3 hidden min-h-[1.25rem]">Sensor active</div>
+      <div class="flex justify-center mb-4">
+        <div id="timerDisplay" class="big-timer text-green-700">00:30</div>
       </div>
 
-      <div class="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
+      <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+        <div id="workProgressBar" class="bg-green-500 h-2 rounded-full transition-all" style="width:100%"></div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
         <button id="musicBtn" type="button" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-lg transition text-sm touch-manipulation min-h-[3rem]">
           Music: off
         </button>
-        <button id="motionBtn" type="button" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-lg transition text-sm touch-manipulation min-h-[3rem]">
-          Sensor: off
-        </button>
-        <button id="voiceBtn" type="button" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-lg transition text-sm touch-manipulation min-h-[3rem]">
-          Voice: off
-        </button>
+        <div class="flex flex-col justify-center px-1">
+          <label class="flex items-center justify-between text-xs text-gray-600 mb-0.5">
+            <span>Volume</span>
+            <span id="volumeValue">20%</span>
+          </label>
+          <input id="volumeSlider" type="range" min="0" max="100" value="20" class="w-full h-2" />
+        </div>
       </div>
 
-      <div class="mb-4">
-        <label class="flex items-center justify-between text-sm text-gray-700 mb-1">
-          <span>Music volume</span>
-          <span id="volumeValue">20%</span>
-        </label>
-        <input id="volumeSlider" type="range" min="0" max="100" value="20" class="w-full h-3" />
-      </div>
-
-      <button id="completeSetBtn" type="button" class="complete-set-btn w-full bg-green-600 active:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition pulse touch-manipulation">
-        Complete set
+      <button id="completeSetBtn" type="button" class="complete-set-btn w-full bg-green-600 active:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation">
+        Finish set early
       </button>
 
       <div id="pausedOverlay" class="hidden text-center mt-4">
@@ -149,9 +126,13 @@
 
     <!-- Rest -->
     <section id="restScreen" class="runner-screen rest-bg rounded-xl shadow p-6">
-      <div class="text-center mb-6">
+      <div class="text-center mb-4">
         <div class="text-sm font-semibold text-blue-800 uppercase tracking-wider mb-2">Rest</div>
         <div id="restTimer" class="big-timer text-blue-800">00:00</div>
+      </div>
+
+      <div class="w-full bg-blue-100 rounded-full h-2 mb-6">
+        <div id="restProgressBar" class="bg-blue-500 h-2 rounded-full transition-all" style="width:100%"></div>
       </div>
 
       <div class="bg-white rounded-lg p-4 mb-6">

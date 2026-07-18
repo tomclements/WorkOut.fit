@@ -8,14 +8,11 @@ let phase = 'setup'; // setup | work | rest | finish
 let startTime = null;
 let phaseStartTime = null;
 let elapsedPhaseSeconds = 0;
-let repCount = 0;
+let phaseDurationSeconds = 30;
 let timerInterval = null;
 let musicEngine = null;
-let motionCounter = null;
 let sessionSaved = false;
 let wakeLock = null;
-let voiceEnabled = false;
-let voiceInitialized = false;
 let sessionPlanName = 'Workout';
 let currentSavedPlanId = null;
 let currentSavedPlanName = null;
@@ -35,27 +32,23 @@ const resumeBanner = document.getElementById('resumeBanner');
 const resumeBtn = document.getElementById('resumeBtn');
 const discardBtn = document.getElementById('discardBtn');
 const musicToggle = document.getElementById('musicToggle');
-const motionToggle = document.getElementById('motionToggle');
-const voiceToggle = document.getElementById('voiceToggle');
 
 const exerciseNameEl = document.getElementById('exerciseName');
 const exerciseMetaEl = document.getElementById('exerciseMeta');
 const setBadgeEl = document.getElementById('setBadge');
 const demoLinkEl = document.getElementById('demoLink');
 const timerDisplayEl = document.getElementById('timerDisplay');
-const repSection = document.getElementById('repSection');
-const repCountEl = document.getElementById('repCount');
-const sensorStatusEl = document.getElementById('sensorStatus');
+const workCueEl = document.getElementById('workCue');
+const workProgressBar = document.getElementById('workProgressBar');
 const completeSetBtn = document.getElementById('completeSetBtn');
 const musicBtn = document.getElementById('musicBtn');
-const motionBtn = document.getElementById('motionBtn');
-const voiceBtn = document.getElementById('voiceBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
 const contrastBtn = document.getElementById('contrastBtn');
 const progressBar = document.getElementById('progressBar');
 const progressText = document.getElementById('progressText');
 
 const restTimerEl = document.getElementById('restTimer');
+const restProgressBar = document.getElementById('restProgressBar');
 const nextExerciseNameEl = document.getElementById('nextExerciseName');
 const nextExerciseMetaEl = document.getElementById('nextExerciseMeta');
 const skipRestBtn = document.getElementById('skipRestBtn');
@@ -70,7 +63,6 @@ const userLabel = document.getElementById('userLabel');
 
 document.addEventListener('DOMContentLoaded', async () => {
   musicEngine = new MusicEngine();
-  motionCounter = new MotionRepCounter(onMotionRep);
 
   await checkAuth();
   await loadUserPreferences();
@@ -80,13 +72,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   startBtn.addEventListener('click', startWorkout);
   resumeBtn.addEventListener('click', resumeSession);
   discardBtn.addEventListener('click', discardSession);
-  document.getElementById('repInc').addEventListener('click', () => incrementRep(1));
-  document.getElementById('repDec').addEventListener('click', () => incrementRep(-1));
-  completeSetBtn.addEventListener('click', completeSet);
+  completeSetBtn.addEventListener('click', () => completeSet(true));
   skipRestBtn.addEventListener('click', endRest);
   musicBtn.addEventListener('click', toggleMusic);
-  motionBtn.addEventListener('click', toggleMotion);
-  voiceBtn.addEventListener('click', toggleVoice);
   fullscreenBtn.addEventListener('click', toggleFullscreen);
   if (contrastBtn) contrastBtn.addEventListener('click', toggleHighContrast);
   saveSessionBtn.addEventListener('click', saveSession);
@@ -97,20 +85,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('volumeSlider').addEventListener('input', onVolumeChange);
   window.addEventListener('beforeunload', handleBeforeUnload);
 
-  // Restore contrast preference
   if (localStorage.getItem('runnerHighContrast') === '1') {
     document.body.classList.add('high-contrast');
   }
 
-  // Keyboard shortcut: space increments reps; enter completes set
+  // Space / Enter skips remaining work or rest
   document.addEventListener('keydown', (e) => {
-    if (phase !== 'work') return;
-    if (e.code === 'Space') {
+    if (e.code !== 'Space' && e.code !== 'Enter') return;
+    if (phase === 'work') {
       e.preventDefault();
-      incrementRep(1);
-    } else if (e.code === 'Enter') {
+      completeSet(true);
+    } else if (phase === 'rest') {
       e.preventDefault();
-      completeSet();
+      endRest();
     }
   });
 });
@@ -134,8 +121,6 @@ async function loadUserPreferences() {
     if (!res.ok) return;
     const prefs = await res.json();
     musicToggle.checked = prefs.defaultMusic || false;
-    voiceToggle.checked = prefs.defaultVoice || false;
-    motionToggle.checked = prefs.defaultMotionSensor || false;
     const volume = prefs.defaultVolume ?? 20;
     document.getElementById('volumeSlider').value = volume;
     document.getElementById('volumeValue').textContent = volume + '%';
@@ -194,7 +179,7 @@ function populateDaySelect() {
       hasWorkout = true;
       const option = document.createElement('option');
       option.value = JSON.stringify({ week: week.week, dayIndex: idx });
-      option.textContent = `Week ${week.week} - ${day.day} (${day.focus})`;
+      option.textContent = `Week ${week.week} - ${day.day} (${day.focus || 'Workout'})`;
       daySelect.appendChild(option);
     });
   });
@@ -218,6 +203,8 @@ function saveSessionState() {
     currentExerciseIndex,
     currentSetIndex,
     startTime,
+    phaseStartTime,
+    phaseDurationSeconds,
     sessionExercises,
     planName: currentPlan?.criteria
       ? `${currentPlan.criteria.weeks}-week ${currentPlan.criteria.goal} plan`
@@ -246,6 +233,8 @@ async function resumeSession() {
     currentSetIndex = state.currentSetIndex;
     phase = state.phase;
     startTime = state.startTime;
+    phaseStartTime = state.phaseStartTime || Date.now();
+    phaseDurationSeconds = state.phaseDurationSeconds || 30;
     sessionSaved = false;
     sessionPlanName = state.planName || 'Workout';
 
@@ -257,37 +246,19 @@ async function resumeSession() {
       updateMusicButton();
     }
 
-    if (motionToggle.checked) {
-      await motionCounter.start();
-      updateMotionButton();
-    }
-
-    voiceEnabled = voiceToggle.checked;
-    updateVoiceButton();
-
     resumeBanner.classList.add('hidden');
     clearSessionState();
 
-    showScreen(phase === 'rest' ? restScreen : activeScreen);
-    updateProgress();
     if (phase === 'rest') {
-      enterRest();
+      showScreen(restScreen);
+      const nextEx = currentExercise();
+      nextExerciseNameEl.textContent = nextEx.name;
+      nextExerciseMetaEl.textContent = setWorkLabel(nextEx);
+      restTimerEl.textContent = formatTime(Math.max(0, phaseDurationSeconds - Math.floor((Date.now() - phaseStartTime) / 1000)));
+      startTimer();
     } else {
-      // Restore current set display without resetting timer
-      const ex = currentExercise();
-      exerciseNameEl.textContent = ex.name;
-      exerciseMetaEl.textContent = `${ex.sets} sets × ${ex.repsDisplay} • ${ex.rest}s rest`;
-      setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
-      demoLinkEl.innerHTML = exerciseMediaHtml(ex);
-      repCount = ex.isTimeBased ? 0 : (ex.completedSets[currentSetIndex]?.reps || 0);
-      repCountEl.textContent = repCount;
-      if (ex.isTimeBased) {
-        repSection.classList.add('hidden');
-      } else {
-        repSection.classList.remove('hidden');
-      }
-      completeSetBtn.textContent = ex.isTimeBased ? 'Done' : 'Complete set';
-      enterWork();
+      showScreen(activeScreen);
+      enterWork(true);
     }
   } catch {
     clearSessionState();
@@ -296,6 +267,21 @@ async function resumeSession() {
 }
 
 // -------------------------- Session control --------------------------
+
+function workSeconds(ex) {
+  const d = parseInt(ex.workDuration, 10);
+  return Number.isFinite(d) && d > 0 ? d : 30;
+}
+
+function restSeconds(ex) {
+  const d = parseInt(ex.rest, 10);
+  return Number.isFinite(d) && d > 0 ? d : 45;
+}
+
+function setWorkLabel(ex) {
+  const reps = ex.repsDisplay || 'your target reps';
+  return `${ex.sets} sets · aim for ${reps} each set · ${restSeconds(ex)}s rest`;
+}
 
 async function startWorkout() {
   if (!currentPlan) return;
@@ -319,27 +305,6 @@ async function startWorkout() {
     updateMusicButton();
   }
 
-  if (motionToggle.checked) {
-    const ok = await motionCounter.start();
-    updateMotionButton();
-    if (!ok) {
-      sensorStatusEl.textContent = 'Sensor unavailable — use +/− buttons for reps.';
-      sensorStatusEl.classList.remove('hidden');
-      if (typeof showToast === 'function') {
-        showToast('Motion sensor not available. Use the +/− buttons.', 'info');
-      }
-    } else {
-      sensorStatusEl.textContent = 'Sensor listening — phone in armband/pocket works best.';
-      sensorStatusEl.classList.remove('hidden');
-    }
-  }
-
-  voiceEnabled = voiceToggle.checked;
-  updateVoiceButton();
-  if (voiceEnabled) {
-    initVoice();
-  }
-
   showScreen(activeScreen);
   enterWork();
   saveSessionState();
@@ -350,7 +315,7 @@ async function requestWakeLock() {
     try {
       wakeLock = await navigator.wakeLock.request('screen');
     } catch {
-      // Wake Lock may be denied; continue anyway
+      // denied — continue
     }
   }
 }
@@ -376,7 +341,6 @@ function pauseWorkout(auto = false) {
   pauseStartTime = Date.now();
   clearInterval(timerInterval);
   if (musicEngine.isPlaying) musicEngine.setVolume(0.05);
-  if (auto) speak('Workout paused.');
   updatePauseUI();
 }
 
@@ -389,7 +353,6 @@ function resumeWorkout() {
   autoPaused = false;
   if (musicEngine.isPlaying) musicEngine.setVolume(1.0);
   startTimer();
-  speak('Resuming workout.');
   updatePauseUI();
 }
 
@@ -429,7 +392,6 @@ function showScreen(screen) {
   [setupScreen, activeScreen, restScreen, finishScreen].forEach(s => s.classList.remove('active'));
   screen.classList.add('active');
 
-  // Hide bottom nav during active work/rest so controls stay reachable
   const inSession = screen === activeScreen || screen === restScreen;
   if (typeof setWorkoutChromeVisible === 'function') {
     setWorkoutChromeVisible(!inSession);
@@ -453,100 +415,107 @@ function exerciseMediaHtml(ex) {
   return `<div class="text-center mb-2">${img}${demo}</div>`;
 }
 
-function enterWork() {
+/** Estimate target reps for logging (midpoint of range when possible). */
+function estimateTargetReps(ex) {
+  const m = String(ex.repsDisplay || '').match(/(\d+)\s*-\s*(\d+)/);
+  if (m) return Math.round((parseInt(m[1], 10) + parseInt(m[2], 10)) / 2);
+  const n = String(ex.repsDisplay || '').match(/(\d+)/);
+  return n ? parseInt(n[1], 10) : 0;
+}
+
+function enterWork(resuming = false) {
   phase = 'work';
-  phaseStartTime = Date.now();
-  elapsedPhaseSeconds = 0;
-  repCount = 0;
-
   const ex = currentExercise();
-  exerciseNameEl.textContent = ex.name;
-  exerciseMetaEl.textContent = `${ex.sets} sets × ${ex.repsDisplay} • ${ex.rest}s rest`;
-  setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
-  demoLinkEl.innerHTML = exerciseMediaHtml(ex);
+  phaseDurationSeconds = workSeconds(ex);
 
-  if (ex.isTimeBased) {
-    repSection.classList.add('hidden');
-    timerDisplayEl.textContent = formatTime(ex.workDuration);
+  if (!resuming) {
+    phaseStartTime = Date.now();
+    elapsedPhaseSeconds = 0;
   } else {
-    repSection.classList.remove('hidden');
-    repCountEl.textContent = '0';
-    timerDisplayEl.textContent = '00:00';
+    elapsedPhaseSeconds = Math.floor((Date.now() - phaseStartTime) / 1000);
   }
 
-  completeSetBtn.textContent = ex.isTimeBased ? 'Done' : 'Complete set';
-  completeSetBtn.classList.add('pulse');
+  exerciseNameEl.textContent = ex.name;
+  exerciseMetaEl.textContent = setWorkLabel(ex);
+  setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
+  demoLinkEl.innerHTML = exerciseMediaHtml(ex);
+  workCueEl.textContent = `Aim for ${ex.repsDisplay || 'your target'} reps this set`;
 
+  const remaining = Math.max(0, phaseDurationSeconds - elapsedPhaseSeconds);
+  timerDisplayEl.textContent = formatTime(remaining);
+  updatePhaseProgressBar(workProgressBar, remaining, phaseDurationSeconds);
+
+  completeSetBtn.textContent = 'Finish set early';
   updateProgress();
-  speak(`${ex.name}. Set ${currentSetIndex + 1} of ${ex.sets}. ${ex.repsDisplay}.`);
-
   startTimer();
+  saveSessionState();
 }
 
 function startTimer() {
   clearInterval(timerInterval);
-  timerInterval = setInterval(tick, 1000);
+  timerInterval = setInterval(tick, 250);
+}
+
+function updatePhaseProgressBar(bar, remaining, total) {
+  if (!bar || !total) return;
+  const pct = Math.max(0, Math.min(100, (remaining / total) * 100));
+  bar.style.width = `${pct}%`;
 }
 
 function tick() {
+  if (isPaused) return;
   elapsedPhaseSeconds = Math.floor((Date.now() - phaseStartTime) / 1000);
-  const ex = currentExercise();
+  const remaining = Math.max(0, phaseDurationSeconds - elapsedPhaseSeconds);
 
   if (phase === 'work') {
-    if (ex.isTimeBased) {
-      const remaining = Math.max(0, ex.workDuration - elapsedPhaseSeconds);
-      timerDisplayEl.textContent = formatTime(remaining);
-      if (remaining === 0) {
-        beep(880, 0.2);
-        completeSetBtn.classList.remove('pulse');
+    timerDisplayEl.textContent = formatTime(remaining);
+    updatePhaseProgressBar(workProgressBar, remaining, phaseDurationSeconds);
+
+    if (remaining <= 3 && remaining > 0) {
+      // soft countdown ticks
+      if (elapsedPhaseSeconds !== tick._lastWorkBeep) {
+        tick._lastWorkBeep = elapsedPhaseSeconds;
+        beep(700, 0.08);
       }
-    } else {
-      timerDisplayEl.textContent = formatTime(elapsedPhaseSeconds);
+    }
+    if (remaining === 0) {
+      beep(880, 0.25);
+      if (navigator.vibrate) navigator.vibrate([40, 40, 40]);
+      completeSet(false);
     }
   } else if (phase === 'rest') {
-    const remaining = Math.max(0, ex.rest - elapsedPhaseSeconds);
     restTimerEl.textContent = formatTime(remaining);
-    if (remaining <= 5 && remaining > 0) {
-      beep(660, 0.1);
+    updatePhaseProgressBar(restProgressBar, remaining, phaseDurationSeconds);
+
+    if (remaining <= 3 && remaining > 0) {
+      if (elapsedPhaseSeconds !== tick._lastRestBeep) {
+        tick._lastRestBeep = elapsedPhaseSeconds;
+        beep(660, 0.08);
+      }
     } else if (remaining === 0) {
-      beep(880, 0.3);
+      beep(990, 0.3);
+      if (navigator.vibrate) navigator.vibrate(50);
       endRest();
     }
   }
 }
 
-function incrementRep(delta) {
-  if (isPaused) return;
-  repCount = Math.max(0, repCount + delta);
-  repCountEl.textContent = repCount;
-  if (navigator.vibrate) navigator.vibrate(30);
-  saveSessionState();
-}
-
-function onMotionRep() {
-  if (phase !== 'work' || currentExercise().isTimeBased) return;
-  incrementRep(1);
-  sensorStatusEl.textContent = `Sensor rep detected (${repCount})`;
-  sensorStatusEl.classList.remove('hidden');
-  setTimeout(() => sensorStatusEl.classList.add('hidden'), 1000);
-}
-
-function completeSet() {
+/**
+ * @param {boolean} early - user finished before the timer
+ */
+function completeSet(early = false) {
   if (isPaused || phase !== 'work') return;
   const ex = currentExercise();
-  const duration = ex.isTimeBased
-    ? Math.min(elapsedPhaseSeconds, ex.workDuration)
-    : elapsedPhaseSeconds;
-
-  if (navigator.vibrate) navigator.vibrate(50);
-
-  ex.completedSets.push({
-    reps: ex.isTimeBased ? 0 : repCount,
-    durationSeconds: duration
-  });
-  saveSessionState();
+  const duration = Math.min(elapsedPhaseSeconds, phaseDurationSeconds);
 
   clearInterval(timerInterval);
+  if (navigator.vibrate) navigator.vibrate(40);
+
+  ex.completedSets.push({
+    reps: estimateTargetReps(ex),
+    durationSeconds: Math.max(1, duration || phaseDurationSeconds)
+  });
+  saveSessionState();
 
   const isLastSet = currentSetIndex + 1 >= ex.sets;
   const isLastExercise = currentExerciseIndex + 1 >= sessionExercises.length;
@@ -571,25 +540,30 @@ function enterRest() {
   phaseStartTime = Date.now();
   elapsedPhaseSeconds = 0;
 
+  // Rest uses the exercise we're about to do (already advanced set index)
   const nextEx = currentExercise();
-  nextExerciseNameEl.textContent = nextEx.name;
-  nextExerciseMetaEl.textContent = `${nextEx.sets} sets × ${nextEx.repsDisplay}`;
-  restTimerEl.textContent = formatTime(nextEx.rest);
+  // Rest duration comes from the exercise we just finished when possible
+  const prevIdx = currentSetIndex === 0 ? currentExerciseIndex - 1 : currentExerciseIndex;
+  const restSource = sessionExercises[Math.max(0, prevIdx)] || nextEx;
+  phaseDurationSeconds = restSeconds(restSource);
 
-  musicEngine.setVolume(0.3);
+  nextExerciseNameEl.textContent = nextEx.name;
+  nextExerciseMetaEl.textContent = `Set ${currentSetIndex + 1} / ${nextEx.sets} · aim for ${nextEx.repsDisplay || 'target'} · ${workSeconds(nextEx)}s work`;
+  restTimerEl.textContent = formatTime(phaseDurationSeconds);
+  updatePhaseProgressBar(restProgressBar, phaseDurationSeconds, phaseDurationSeconds);
+
+  if (musicEngine.isPlaying) musicEngine.setVolume(0.35);
   showScreen(restScreen);
   startTimer();
   saveSessionState();
-
-  speak(`Rest. Next up: ${nextEx.name}.`);
 }
 
 function endRest() {
   if (isPaused) return;
   clearInterval(timerInterval);
-  musicEngine.setVolume(1.0);
+  if (musicEngine.isPlaying) musicEngine.setVolume(1.0);
   if (navigator.vibrate) navigator.vibrate(30);
-  speak('Go!');
+  beep(880, 0.2);
   showScreen(activeScreen);
   enterWork();
 }
@@ -598,21 +572,24 @@ function finishWorkout() {
   phase = 'finish';
   clearInterval(timerInterval);
   musicEngine.stop();
-  motionCounter.stop();
   releaseWakeLock();
   document.removeEventListener('visibilitychange', handleVisibilityChange);
   clearSessionState();
   updateProgress();
-  speak('Workout complete. Great job.');
+  beep(660, 0.15);
+  setTimeout(() => beep(880, 0.2), 180);
 
   const totalSeconds = Math.floor((Date.now() - startTime) / 1000);
   const totalSets = sessionExercises.reduce((sum, ex) => sum + ex.completedSets.length, 0);
-  const totalReps = sessionExercises.reduce((sum, ex) => sum + ex.completedSets.reduce((s, set) => s + set.reps, 0), 0);
+  const workSecondsTotal = sessionExercises.reduce(
+    (sum, ex) => sum + ex.completedSets.reduce((s, set) => s + (set.durationSeconds || 0), 0),
+    0
+  );
 
   finishSummaryEl.innerHTML = `
     Duration: <strong>${formatTime(totalSeconds)}</strong><br/>
     Sets completed: <strong>${totalSets}</strong><br/>
-    Reps completed: <strong>${totalReps}</strong>
+    Active work time: <strong>${formatTime(workSecondsTotal)}</strong>
   `;
 
   if (currentUser) {
@@ -667,7 +644,7 @@ async function saveSession() {
   }
 }
 
-// -------------------------- Music & motion toggles --------------------------
+// -------------------------- Music --------------------------
 
 function toggleMusic() {
   if (musicEngine.isPlaying) {
@@ -681,67 +658,6 @@ function toggleMusic() {
 function updateMusicButton() {
   musicBtn.textContent = musicEngine.isPlaying ? 'Music: on' : 'Music: off';
   musicBtn.classList.toggle('bg-blue-100', musicEngine.isPlaying);
-}
-
-async function toggleMotion() {
-  if (motionCounter.isActive) {
-    motionCounter.stop();
-    sensorStatusEl.textContent = 'Sensor off — tap + for each rep.';
-    sensorStatusEl.classList.remove('hidden');
-  } else {
-    const ok = await motionCounter.start();
-    if (!ok) {
-      sensorStatusEl.textContent = 'Sensor permission denied or unavailable. Use +/− buttons.';
-      sensorStatusEl.classList.remove('hidden');
-      if (typeof showToast === 'function') {
-        showToast('Could not enable motion sensor. Use +/− for reps.', 'error');
-      }
-    } else {
-      sensorStatusEl.textContent = 'Sensor listening — armband or pocket preferred.';
-      sensorStatusEl.classList.remove('hidden');
-    }
-  }
-  updateMotionButton();
-}
-
-function updateMotionButton() {
-  motionBtn.textContent = motionCounter.isActive ? 'Sensor: on' : 'Sensor: off';
-  motionBtn.classList.toggle('bg-green-100', motionCounter.isActive);
-}
-
-function toggleVoice() {
-  voiceEnabled = !voiceEnabled;
-  updateVoiceButton();
-  if (voiceEnabled) {
-    initVoice();
-  }
-}
-
-function updateVoiceButton() {
-  voiceBtn.textContent = voiceEnabled ? 'Voice: on' : 'Voice: off';
-  voiceBtn.classList.toggle('bg-purple-100', voiceEnabled);
-}
-
-function initVoice() {
-  if (voiceInitialized) return;
-  if ('speechSynthesis' in window) {
-    // Pre-load voices on some platforms
-    window.speechSynthesis.getVoices();
-    voiceInitialized = true;
-  }
-}
-
-function speak(text) {
-  if (!voiceEnabled || !('speechSynthesis' in window)) return;
-  try {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.05;
-    utterance.pitch = 1.0;
-    window.speechSynthesis.speak(utterance);
-  } catch {
-    // ignore voice errors
-  }
 }
 
 function toggleFullscreen() {
@@ -782,9 +698,10 @@ function updateProgress() {
 // -------------------------- Helpers --------------------------
 
 function formatTime(totalSeconds) {
-  const m = Math.floor(totalSeconds / 60);
-  const s = totalSeconds % 60;
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  const s = Math.max(0, Math.floor(totalSeconds));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
 }
 
 function beep(frequency = 880, duration = 0.15) {
@@ -795,10 +712,11 @@ function beep(frequency = 880, duration = 0.15) {
     osc.frequency.value = frequency;
     osc.connect(gain);
     gain.connect(ctx.destination);
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
     osc.start();
     osc.stop(ctx.currentTime + duration);
+    setTimeout(() => ctx.close().catch(() => {}), (duration + 0.05) * 1000);
   } catch {
     // ignore audio errors
   }
@@ -866,7 +784,7 @@ class MusicEngine {
   }
 
   startDrone() {
-    const droneFreqs = [130.81, 196.0]; // C3 and G3
+    const droneFreqs = [130.81, 196.0];
     droneFreqs.forEach(freq => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
@@ -897,97 +815,5 @@ class MusicEngine {
     gain.connect(this.filter);
     osc.start(now);
     osc.stop(now + 1.3);
-  }
-}
-
-// -------------------------- Motion rep counter --------------------------
-
-class MotionRepCounter {
-  constructor(onRep) {
-    this.onRep = onRep;
-    this.isActive = false;
-    this.lastRepTime = 0;
-    this.up = false;
-    this.cooldownMs = 500;
-    this.threshold = 12; // m/s^2 for acceleration without gravity
-    this.gravityThreshold = 2.5; // deviation from gravity baseline
-    this.baseline = 9.8;
-    this.movingAvg = 9.8;
-    this.alpha = 0.8;
-    this.handler = this.handleMotion.bind(this);
-  }
-
-  /**
-   * @returns {Promise<boolean>} true if the sensor started successfully
-   */
-  async start() {
-    if (this.isActive) return true;
-
-    if (typeof DeviceMotionEvent === 'undefined') {
-      return false;
-    }
-
-    if (typeof DeviceMotionEvent.requestPermission === 'function') {
-      try {
-        const response = await DeviceMotionEvent.requestPermission();
-        if (response !== 'granted') {
-          return false;
-        }
-      } catch {
-        return false;
-      }
-    }
-
-    window.addEventListener('devicemotion', this.handler);
-    this.isActive = true;
-    return true;
-  }
-
-  stop() {
-    if (!this.isActive) return;
-    window.removeEventListener('devicemotion', this.handler);
-    this.isActive = false;
-  }
-
-  handleMotion(event) {
-    const accel = event.acceleration;
-    let magnitude;
-    let usingGravity = false;
-
-    if (accel && accel.x !== null) {
-      magnitude = Math.sqrt(accel.x * accel.x + accel.y * accel.y + accel.z * accel.z);
-    } else if (event.accelerationIncludingGravity) {
-      usingGravity = true;
-      const g = event.accelerationIncludingGravity;
-      magnitude = Math.sqrt(g.x * g.x + g.y * g.y + g.z * g.z);
-    } else {
-      return;
-    }
-
-    const now = Date.now();
-
-    if (usingGravity) {
-      this.movingAvg = this.alpha * this.movingAvg + (1 - this.alpha) * magnitude;
-      const deviation = Math.abs(magnitude - this.movingAvg);
-      if (deviation > this.gravityThreshold && !this.up) {
-        this.up = true;
-      } else if (deviation < this.gravityThreshold * 0.5 && this.up) {
-        if (now - this.lastRepTime > this.cooldownMs) {
-          this.lastRepTime = now;
-          this.onRep();
-        }
-        this.up = false;
-      }
-    } else {
-      if (magnitude > this.threshold && !this.up) {
-        this.up = true;
-      } else if (magnitude < this.threshold * 0.6 && this.up) {
-        if (now - this.lastRepTime > this.cooldownMs) {
-          this.lastRepTime = now;
-          this.onRep();
-        }
-        this.up = false;
-      }
-    }
   }
 }
