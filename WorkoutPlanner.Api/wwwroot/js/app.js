@@ -534,11 +534,11 @@ function ratingButtonsHtml(exerciseId) {
     <button type="button" class="rate-btn rate-btn--like ${liked ? 'rate-btn--on' : ''}"
       title="${liked ? 'Clear like' : 'I like this'}"
       onclick="setExerciseRating('${id}', 'like', event)"
-      aria-pressed="${liked}">👍</button>
+      aria-pressed="${liked}"><span aria-hidden="true">👍</span><span class="rate-btn__label">Like</span></button>
     <button type="button" class="rate-btn rate-btn--dislike ${disliked ? 'rate-btn--on' : ''}"
       title="${disliked ? 'Clear dislike' : 'I dislike this'}"
       onclick="setExerciseRating('${id}', 'dislike', event)"
-      aria-pressed="${disliked}">👎</button>
+      aria-pressed="${disliked}"><span aria-hidden="true">👎</span><span class="rate-btn__label">Dislike</span></button>
   </span>`;
 }
 
@@ -1177,14 +1177,17 @@ function renderPlan(result) {
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between gap-2">
                 <span class="font-medium">${escapeHtml(ex.name)}</span>
-                <div class="flex items-center gap-1 shrink-0">
-                  ${ratingButtonsHtml(ex.id)}
+                <div class="flex items-center gap-2 shrink-0">
                   ${ex.demoUrl ? `<a href="${escapeHtml(ex.demoUrl)}" target="_blank" rel="noopener" class="text-xs text-blue-600 hover:underline whitespace-nowrap">Demo</a>` : ''}
                   <button onclick="deleteExerciseFromDay(${weekIndex}, ${dayIndex}, ${exIndex})" class="text-xs text-red-600 hover:underline">Remove</button>
                 </div>
               </div>
               <div class="text-sm text-gray-700">${ex.sets} sets × ${escapeHtml(ex.repsDisplay)} <span class="text-gray-500">(${ex.rest}s rest)</span></div>
-              <div class="text-xs text-gray-500">${escapeHtml((ex.primary || []).join(', '))}</div>
+              <div class="text-xs text-gray-500 mb-1.5">${escapeHtml((ex.primary || []).join(', '))}</div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs text-gray-500">Your rating:</span>
+                ${ratingButtonsHtml(ex.id)}
+              </div>
             </div>
           </li>
         `).join('');
