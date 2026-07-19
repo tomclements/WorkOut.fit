@@ -351,9 +351,17 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         return primaryHits * 10 + secondaryHits;
     }
 
+    /// <summary>
+    /// User must have every piece of equipment the exercise requires.
+    /// Empty exercise equipment is treated as bodyweight-only.
+    /// </summary>
     private static bool HasEquipment(Exercise ex, List<string> selected)
     {
-        return ex.Equipment.All(eq => selected.Contains(eq, StringComparer.OrdinalIgnoreCase));
+        if (selected == null || selected.Count == 0) return false;
+        var required = (ex.Equipment == null || ex.Equipment.Count == 0)
+            ? new List<string> { "bodyweight" }
+            : ex.Equipment;
+        return required.All(eq => selected.Contains(eq, StringComparer.OrdinalIgnoreCase));
     }
 
     private static bool IsRestricted(Exercise ex, List<string> restrictions)

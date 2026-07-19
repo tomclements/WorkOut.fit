@@ -172,6 +172,9 @@ public class ExerciseImportService : IExerciseImportService
                     continue;
                 }
 
+                // free-exercise-db often says "body only" for moves that still need a ball/bench/etc.
+                mappedEquipment = EnrichEquipmentFromName(src.Name, mappedEquipment);
+
                 // Drop unknown equipment ids (shouldn't happen after map)
                 mappedEquipment = mappedEquipment
                     .Where(eq => equipmentIds.Contains(eq))
@@ -335,6 +338,65 @@ public class ExerciseImportService : IExerciseImportService
     {
         if (equipment == null) return null;
         return EquipmentMap.TryGetValue(equipment, out var mapped) ? mapped.ToList() : null;
+    }
+
+    /// <summary>
+    /// Infer extra required equipment from the exercise name.
+    /// Source DB tags many ball/incline moves as "body only", which breaks the planner filter.
+    /// </summary>
+    public static List<string> EnrichEquipmentFromName(string name, IEnumerable<string> existing)
+    {
+        var eq = new HashSet<string>(existing, StringComparer.OrdinalIgnoreCase);
+        var n = name.ToLowerInvariant();
+
+        if (n.Contains("exercise ball") || n.Contains("stability ball") || n.Contains("swiss ball")
+            || n.Contains("physio ball") || n.Contains("bosu"))
+            eq.Add("stability-ball");
+
+        if (n.Contains("medicine ball"))
+            eq.Add("medicine-ball");
+
+        if (Regex.IsMatch(n, @"pull[ -]?up|chin[ -]?up|pullup"))
+            eq.Add("pullup-bar");
+
+        if (n.Contains("cable"))
+            eq.Add("cable");
+
+        if (n.Contains("smith") || n.Contains("leg press") || n.Contains("hack squat"))
+            eq.Add("machines");
+
+        if (n.Contains("kettlebell"))
+            eq.Add("kettlebell");
+
+        if (n.Contains("barbell") || n.Contains("ez-bar") || n.Contains("ez bar") || n.Contains("olympic bar"))
+            eq.Add("barbell");
+
+        if (n.Contains("dumbbell"))
+            eq.Add("dumbbells");
+
+        if (Regex.IsMatch(n, @"\bbands?\b"))
+            eq.Add("bands");
+
+        if (n.Contains("foam roll") || n.Contains("foam roller") || n.Contains("smr"))
+            eq.Add("foam-roller");
+
+        // Incline/decline variants usually need an elevated surface we model as "bench"
+        if (Regex.IsMatch(n, @"\b(incline|decline)\b")
+            && Regex.IsMatch(n, @"push[ -]?up|bench|press|fly|row|curl|raise|sit[ -]?up|crunch|lunge|triceps|chest"))
+        {
+            eq.Add("bench");
+        }
+
+        if (Regex.IsMatch(n, @"\bbench\b")
+            && Regex.IsMatch(n, @"press|fly|dip|pull|row|crunch|sit"))
+        {
+            eq.Add("bench");
+        }
+
+        if (eq.Count == 0)
+            eq.Add("bodyweight");
+
+        return eq.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
     }
 
     private static string BuildDemoUrl(string name) =>

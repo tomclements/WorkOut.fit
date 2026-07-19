@@ -90,6 +90,48 @@ def map_equipment(equipment: str | None) -> list[str] | None:
     return EQUIPMENT_MAP.get((equipment or "").lower())
 
 
+def enrich_equipment_from_name(name: str, equipment: list[str]) -> list[str]:
+    """Infer extra required gear from the exercise name.
+
+    free-exercise-db often tags incline push-ups / ball crunches as \"body only\".
+    """
+    eq = set(equipment or [])
+    n = name.lower()
+
+    if any(x in n for x in ("exercise ball", "stability ball", "swiss ball", "physio ball", "bosu")):
+        eq.add("stability-ball")
+    if "medicine ball" in n:
+        eq.add("medicine-ball")
+    if re.search(r"pull[ -]?up|chin[ -]?up|pullup", n):
+        eq.add("pullup-bar")
+    if "cable" in n:
+        eq.add("cable")
+    if "smith" in n or "leg press" in n or "hack squat" in n:
+        eq.add("machines")
+    if "kettlebell" in n:
+        eq.add("kettlebell")
+    if "barbell" in n or "ez-bar" in n or "ez bar" in n or "olympic bar" in n:
+        eq.add("barbell")
+    if "dumbbell" in n:
+        eq.add("dumbbells")
+    if re.search(r"\bbands?\b", n):
+        eq.add("bands")
+    if "foam roll" in n or "foam roller" in n or "smr" in n:
+        eq.add("foam-roller")
+
+    if re.search(r"\b(incline|decline)\b", n) and re.search(
+        r"push[ -]?up|bench|press|fly|row|curl|raise|sit[ -]?up|crunch|lunge|triceps|chest", n
+    ):
+        eq.add("bench")
+
+    if re.search(r"\bbench\b", n) and re.search(r"press|fly|dip|pull|row|crunch|sit", n):
+        eq.add("bench")
+
+    if not eq:
+        eq.add("bodyweight")
+    return sorted(eq)
+
+
 def build_demo_url(name: str) -> str:
     query = urllib.parse.quote(f"{name} exercise")
     return f"https://www.youtube.com/results?search_query={query}"
@@ -162,6 +204,8 @@ def import_exercises(source_path: str | None = None):
         if mapped_equipment is None:
             skipped += 1
             continue
+
+        mapped_equipment = enrich_equipment_from_name(src["name"], mapped_equipment)
 
         exercise_id = normalize_id(src["name"])
         if exercise_id in existing_ids:

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using WorkoutPlanner.Api.Models;
+using WorkoutPlanner.Api.Services;
 
 namespace WorkoutPlanner.Tests;
 
@@ -44,38 +45,65 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     [Fact]
     public async Task GeneratePlan_DumbbellsOnly_DoesNotIncludeBenchRequiredIds()
     {
-        // IDs that require bench (or pull-up bar) in the seed library
+        // IDs that require bench / pull-up bar / stability ball (not just bodyweight)
         var forbiddenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "db-bench-press", "db-chest-fly", "db-step-up", "pull-up"
+            "db-bench-press", "db-chest-fly", "db-step-up", "pull-up",
+            "incline-push-up", "incline-push-up-wide", "incline-push-up-medium",
+            "crunch-legs-on-exercise-ball", "exercise-ball-crunch"
         };
 
-        var request = new PlanRequest
+        // Several seeds — equipment filter must hold regardless of random mix
+        for (int seed = 1; seed <= 12; seed++)
         {
-            Weeks = 4,
-            DaysPerWeek = 5,
-            SessionMinutes = 30,
-            Equipment = new List<string> { "dumbbells", "bodyweight" },
-            Split = "full-body",
-            Goal = "hypertrophy",
-            Level = "beginner",
-            Progression = "none",
-            Seed = 7
-        };
+            var request = new PlanRequest
+            {
+                Weeks = 2,
+                DaysPerWeek = 5,
+                SessionMinutes = 35,
+                Equipment = new List<string> { "dumbbells", "bodyweight" },
+                Split = "full-body",
+                Goal = "hypertrophy",
+                Level = "beginner",
+                Progression = "none",
+                Seed = seed
+            };
 
-        var response = await _client.PostAsJsonAsync("/api/plan", request);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
-        Assert.NotNull(result);
+            var response = await _client.PostAsJsonAsync("/api/plan", request);
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+            Assert.NotNull(result);
 
-        var exerciseIds = result!.Plan
-            .SelectMany(w => w.Days)
-            .Where(d => d.Type == "workout")
-            .SelectMany(d => d.Exercises)
-            .Select(e => e.Id)
-            .ToList();
+            var exercises = result!.Plan
+                .SelectMany(w => w.Days)
+                .Where(d => d.Type == "workout")
+                .SelectMany(d => d.Exercises)
+                .ToList();
 
-        Assert.DoesNotContain(exerciseIds, id => forbiddenIds.Contains(id));
+            Assert.DoesNotContain(exercises, e => forbiddenIds.Contains(e.Id));
+            Assert.DoesNotContain(exercises, e =>
+                e.Name.Contains("Exercise Ball", StringComparison.OrdinalIgnoreCase)
+                && !e.Name.Contains("Medicine", StringComparison.OrdinalIgnoreCase));
+            Assert.DoesNotContain(exercises, e =>
+                e.Name.Contains("Incline Push", StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
+    [Fact]
+    public void EnrichEquipmentFromName_AddsBenchAndBallRequirements()
+    {
+        var incline = ExerciseImportService.EnrichEquipmentFromName(
+            "Incline Push-Up", new[] { "bodyweight" });
+        Assert.Contains("bench", incline);
+        Assert.Contains("bodyweight", incline);
+
+        var ball = ExerciseImportService.EnrichEquipmentFromName(
+            "Crunch - Legs On Exercise Ball", new[] { "bodyweight" });
+        Assert.Contains("stability-ball", ball);
+
+        var floor = ExerciseImportService.EnrichEquipmentFromName(
+            "Push-Up", new[] { "bodyweight" });
+        Assert.DoesNotContain("bench", floor);
     }
 
     [Fact]

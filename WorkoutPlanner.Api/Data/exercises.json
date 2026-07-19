@@ -172,6 +172,7 @@
     "id": "alternate-incline-dumbbell-curl",
     "name": "Alternate Incline Dumbbell Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -809,7 +810,8 @@
     "id": "barbell-bench-press-medium-grip",
     "name": "Barbell Bench Press - Medium Grip",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -865,7 +867,8 @@
     "id": "barbell-curls-lying-against-an-incline",
     "name": "Barbell Curls Lying Against An Incline",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -976,7 +979,8 @@
     "id": "barbell-guillotine-bench-press",
     "name": "Barbell Guillotine Bench Press",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -1005,7 +1009,8 @@
     "id": "barbell-hack-squat",
     "name": "Barbell Hack Squat",
     "equipment": [
-      "barbell"
+      "barbell",
+      "machines"
     ],
     "level": "intermediate",
     "primary": [
@@ -1062,7 +1067,8 @@
     "id": "barbell-incline-bench-press-medium-grip",
     "name": "Barbell Incline Bench Press - Medium Grip",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -1091,7 +1097,8 @@
     "id": "barbell-incline-shoulder-raise",
     "name": "Barbell Incline Shoulder Raise",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -1508,6 +1515,7 @@
     "id": "bench-dips",
     "name": "Bench Dips",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -1565,7 +1573,8 @@
     "id": "bench-press-powerlifting",
     "name": "Bench Press - Powerlifting",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -1596,7 +1605,8 @@
     "id": "bench-press-with-bands",
     "name": "Bench Press - With Bands",
     "equipment": [
-      "bands"
+      "bands",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -1625,7 +1635,8 @@
     "id": "bench-press-with-chains",
     "name": "Bench Press with Chains",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "advanced",
     "primary": [
@@ -2114,7 +2125,8 @@
     "id": "bosu-ball-cable-crunch-with-side-bends",
     "name": "Bosu Ball Cable Crunch With Side Bends",
     "equipment": [
-      "cable"
+      "cable",
+      "stability-ball"
     ],
     "level": "beginner",
     "primary": [
@@ -2218,6 +2230,7 @@
     "id": "box-squat-with-bands",
     "name": "Box Squat with Bands",
     "equipment": [
+      "bands",
       "barbell"
     ],
     "level": "advanced",
@@ -2590,6 +2603,7 @@
     "id": "cable-incline-triceps-extension",
     "name": "Cable Incline Triceps Extension",
     "equipment": [
+      "bench",
       "cable"
     ],
     "level": "beginner",
@@ -3328,7 +3342,8 @@
     "id": "chin-up",
     "name": "Chin-Up",
     "equipment": [
-      "bodyweight"
+      "bodyweight",
+      "pullup-bar"
     ],
     "level": "beginner",
     "primary": [
@@ -3624,7 +3639,8 @@
     "id": "close-grip-barbell-bench-press",
     "name": "Close-Grip Barbell Bench Press",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -3709,6 +3725,8 @@
     "id": "close-grip-ez-bar-curl-with-band",
     "name": "Close-Grip EZ-Bar Curl with Band",
     "equipment": [
+      "bands",
+      "barbell",
       "ez-bar"
     ],
     "level": "beginner",
@@ -3736,6 +3754,7 @@
     "id": "close-grip-ez-bar-press",
     "name": "Close-Grip EZ-Bar Press",
     "equipment": [
+      "barbell",
       "ez-bar"
     ],
     "level": "beginner",
@@ -3795,7 +3814,8 @@
     "id": "close-grip-push-up-off-of-a-dumbbell",
     "name": "Close-Grip Push-Up off of a Dumbbell",
     "equipment": [
-      "bodyweight"
+      "bodyweight",
+      "dumbbells"
     ],
     "level": "intermediate",
     "primary": [
@@ -4001,7 +4021,8 @@
     "id": "crunch-legs-on-exercise-ball",
     "name": "Crunch - Legs On Exercise Ball",
     "equipment": [
-      "bodyweight"
+      "bodyweight",
+      "stability-ball"
     ],
     "level": "beginner",
     "primary": [
@@ -4093,6 +4114,7 @@
     "id": "deadlift-with-bands",
     "name": "Deadlift with Bands",
     "equipment": [
+      "bands",
       "barbell"
     ],
     "level": "advanced",
@@ -4161,7 +4183,8 @@
     "id": "decline-barbell-bench-press",
     "name": "Decline Barbell Bench Press",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -4190,7 +4213,8 @@
     "id": "decline-close-grip-bench-to-skull-crusher",
     "name": "Decline Close-Grip Bench To Skull Crusher",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -4219,6 +4243,7 @@
     "id": "decline-crunch",
     "name": "Decline Crunch",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "intermediate",
@@ -4241,6 +4266,7 @@
     "id": "decline-dumbbell-bench-press",
     "name": "Decline Dumbbell Bench Press",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -4270,6 +4296,7 @@
     "id": "decline-dumbbell-flyes",
     "name": "Decline Dumbbell Flyes",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -4292,6 +4319,7 @@
     "id": "decline-dumbbell-triceps-extension",
     "name": "Decline Dumbbell Triceps Extension",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -4317,7 +4345,8 @@
     "id": "decline-ez-bar-triceps-extension",
     "name": "Decline EZ Bar Triceps Extension",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -4342,6 +4371,7 @@
     "id": "decline-oblique-crunch",
     "name": "Decline Oblique Crunch",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -4364,6 +4394,7 @@
     "id": "decline-reverse-crunch",
     "name": "Decline Reverse Crunch",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -4386,6 +4417,7 @@
     "id": "decline-smith-press",
     "name": "Decline Smith Press",
     "equipment": [
+      "bench",
       "machines"
     ],
     "level": "beginner",
@@ -4805,6 +4837,7 @@
     "id": "dumbbell-bench-press",
     "name": "Dumbbell Bench Press",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -4834,6 +4867,7 @@
     "id": "dumbbell-bench-press-with-neutral-grip",
     "name": "Dumbbell Bench Press with Neutral Grip",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -5055,6 +5089,7 @@
     "id": "dumbbell-incline-row",
     "name": "Dumbbell Incline Row",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -5086,6 +5121,7 @@
     "id": "dumbbell-incline-shoulder-raise",
     "name": "Dumbbell Incline Shoulder Raise",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -5378,6 +5414,7 @@
     "id": "dumbbell-prone-incline-curl",
     "name": "Dumbbell Prone Incline Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -5800,6 +5837,7 @@
     "id": "ez-bar-curl",
     "name": "EZ-Bar Curl",
     "equipment": [
+      "barbell",
       "ez-bar"
     ],
     "level": "beginner",
@@ -5825,6 +5863,7 @@
     "id": "ez-bar-skullcrusher",
     "name": "EZ-Bar Skullcrusher",
     "equipment": [
+      "barbell",
       "ez-bar"
     ],
     "level": "beginner",
@@ -6172,6 +6211,7 @@
     "id": "flat-bench-cable-flyes",
     "name": "Flat Bench Cable Flyes",
     "equipment": [
+      "bench",
       "cable"
     ],
     "level": "intermediate",
@@ -6194,6 +6234,7 @@
     "id": "flat-bench-leg-pull-in",
     "name": "Flat Bench Leg Pull-In",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -6238,6 +6279,7 @@
     "id": "flexor-incline-dumbbell-curls",
     "name": "Flexor Incline Dumbbell Curls",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -6530,6 +6572,7 @@
     "id": "front-incline-dumbbell-raise",
     "name": "Front Incline Dumbbell Raise",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -6937,6 +6980,7 @@
     "id": "hammer-grip-incline-db-bench-press",
     "name": "Hammer Grip Incline DB Bench Press",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -7399,7 +7443,8 @@
     "id": "incline-barbell-triceps-extension",
     "name": "Incline Barbell Triceps Extension",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -7426,7 +7471,8 @@
     "id": "incline-bench-pull",
     "name": "Incline Bench Pull",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -7453,6 +7499,7 @@
     "id": "incline-cable-chest-press",
     "name": "Incline Cable Chest Press",
     "equipment": [
+      "bench",
       "cable"
     ],
     "level": "beginner",
@@ -7482,6 +7529,7 @@
     "id": "incline-cable-flye",
     "name": "Incline Cable Flye",
     "equipment": [
+      "bench",
       "cable"
     ],
     "level": "intermediate",
@@ -7508,6 +7556,7 @@
     "id": "incline-dumbbell-bench-with-palms-facing-in",
     "name": "Incline Dumbbell Bench With Palms Facing In",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -7537,6 +7586,7 @@
     "id": "incline-dumbbell-curl",
     "name": "Incline Dumbbell Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -7562,6 +7612,7 @@
     "id": "incline-dumbbell-flyes",
     "name": "Incline Dumbbell Flyes",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -7588,6 +7639,7 @@
     "id": "incline-dumbbell-flyes-with-a-twist",
     "name": "Incline Dumbbell Flyes - With A Twist",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -7614,6 +7666,7 @@
     "id": "incline-dumbbell-press",
     "name": "Incline Dumbbell Press",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -7643,6 +7696,7 @@
     "id": "incline-hammer-curls",
     "name": "Incline Hammer Curls",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -7668,6 +7722,7 @@
     "id": "incline-inner-biceps-curl",
     "name": "Incline Inner Biceps Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -7693,6 +7748,7 @@
     "id": "incline-push-up",
     "name": "Incline Push-Up",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -7722,6 +7778,7 @@
     "id": "incline-push-up-close-grip",
     "name": "Incline Push-Up Close-Grip",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -7751,6 +7808,7 @@
     "id": "incline-push-up-medium",
     "name": "Incline Push-Up Medium",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -7781,6 +7839,7 @@
     "id": "incline-push-up-reverse-grip",
     "name": "Incline Push-Up Reverse Grip",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -7811,6 +7870,7 @@
     "id": "incline-push-up-wide",
     "name": "Incline Push-Up Wide",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -9180,6 +9240,7 @@
     "id": "leverage-decline-chest-press",
     "name": "Leverage Decline Chest Press",
     "equipment": [
+      "bench",
       "machines"
     ],
     "level": "beginner",
@@ -9233,6 +9294,7 @@
     "id": "leverage-incline-chest-press",
     "name": "Leverage Incline Chest Press",
     "equipment": [
+      "bench",
       "machines"
     ],
     "level": "beginner",
@@ -9586,6 +9648,7 @@
     "id": "lying-close-grip-barbell-triceps-press-to-chin",
     "name": "Lying Close-Grip Barbell Triceps Press To Chin",
     "equipment": [
+      "barbell",
       "ez-bar"
     ],
     "level": "intermediate",
@@ -9843,6 +9906,7 @@
     "id": "machine-bench-press",
     "name": "Machine Bench Press",
     "equipment": [
+      "bench",
       "machines"
     ],
     "level": "beginner",
@@ -10381,6 +10445,7 @@
     "id": "one-arm-dumbbell-bench-press",
     "name": "One Arm Dumbbell Bench Press",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -10600,6 +10665,7 @@
     "id": "one-arm-flat-bench-dumbbell-flye",
     "name": "One-Arm Flat Bench Dumbbell Flye",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -10644,6 +10710,7 @@
     "id": "one-arm-incline-lateral-raise",
     "name": "One-Arm Incline Lateral Raise",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -11998,7 +12065,8 @@
     "id": "pullups",
     "name": "Pullups",
     "equipment": [
-      "bodyweight"
+      "bodyweight",
+      "pullup-bar"
     ],
     "level": "beginner",
     "primary": [
@@ -12350,6 +12418,7 @@
     "id": "rack-pull-with-bands",
     "name": "Rack Pull with Bands",
     "equipment": [
+      "bands",
       "barbell"
     ],
     "level": "intermediate",
@@ -12500,7 +12569,9 @@
     "id": "reverse-band-bench-press",
     "name": "Reverse Band Bench Press",
     "equipment": [
-      "barbell"
+      "bands",
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -12532,6 +12603,7 @@
     "id": "reverse-band-box-squat",
     "name": "Reverse Band Box Squat",
     "equipment": [
+      "bands",
       "barbell"
     ],
     "level": "intermediate",
@@ -12567,6 +12639,7 @@
     "id": "reverse-band-deadlift",
     "name": "Reverse Band Deadlift",
     "equipment": [
+      "bands",
       "barbell"
     ],
     "level": "advanced",
@@ -12599,6 +12672,7 @@
     "id": "reverse-band-power-squat",
     "name": "Reverse Band Power Squat",
     "equipment": [
+      "bands",
       "barbell"
     ],
     "level": "advanced",
@@ -12630,6 +12704,7 @@
     "id": "reverse-band-sumo-deadlift",
     "name": "Reverse Band Sumo Deadlift",
     "equipment": [
+      "bands",
       "barbell"
     ],
     "level": "advanced",
@@ -12693,6 +12768,7 @@
     "id": "reverse-barbell-preacher-curls",
     "name": "Reverse Barbell Preacher Curls",
     "equipment": [
+      "barbell",
       "ez-bar"
     ],
     "level": "intermediate",
@@ -12923,7 +12999,8 @@
     "id": "reverse-triceps-bench-press",
     "name": "Reverse Triceps Bench Press",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -13517,6 +13594,7 @@
     "id": "seated-flat-bench-leg-pull-in",
     "name": "Seated Flat Bench Leg Pull-In",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -14228,7 +14306,9 @@
     "id": "smith-incline-shoulder-raise",
     "name": "Smith Incline Shoulder Raise",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench",
+      "machines"
     ],
     "level": "beginner",
     "primary": [
@@ -14280,6 +14360,7 @@
     "id": "smith-machine-bench-press",
     "name": "Smith Machine Bench Press",
     "equipment": [
+      "bench",
       "machines"
     ],
     "level": "beginner",
@@ -14363,6 +14444,7 @@
     "id": "smith-machine-close-grip-bench-press",
     "name": "Smith Machine Close-Grip Bench Press",
     "equipment": [
+      "bench",
       "machines"
     ],
     "level": "beginner",
@@ -14392,6 +14474,7 @@
     "id": "smith-machine-decline-press",
     "name": "Smith Machine Decline Press",
     "equipment": [
+      "bench",
       "machines"
     ],
     "level": "beginner",
@@ -14475,6 +14558,7 @@
     "id": "smith-machine-incline-bench-press",
     "name": "Smith Machine Incline Bench Press",
     "equipment": [
+      "bench",
       "machines"
     ],
     "level": "beginner",
@@ -15317,6 +15401,7 @@
     "id": "squat-with-bands",
     "name": "Squat with Bands",
     "equipment": [
+      "bands",
       "barbell"
     ],
     "level": "intermediate",
@@ -16125,6 +16210,7 @@
     "id": "standing-one-arm-dumbbell-curl-over-incline-bench",
     "name": "Standing One-Arm Dumbbell Curl Over Incline Bench",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -16503,7 +16589,8 @@
     "id": "straight-bar-bench-mid-rows",
     "name": "Straight Bar Bench Mid Rows",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -16531,7 +16618,8 @@
     "id": "straight-raises-on-incline-bench",
     "name": "Straight Raises on Incline Bench",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -16666,6 +16754,7 @@
     "id": "sumo-deadlift-with-bands",
     "name": "Sumo Deadlift with Bands",
     "equipment": [
+      "bands",
       "barbell"
     ],
     "level": "intermediate",
@@ -17361,7 +17450,8 @@
     "id": "v-bar-pullup",
     "name": "V-Bar Pullup",
     "equipment": [
-      "bodyweight"
+      "bodyweight",
+      "pullup-bar"
     ],
     "level": "beginner",
     "primary": [
@@ -17610,7 +17700,8 @@
     "id": "wide-grip-barbell-bench-press",
     "name": "Wide-Grip Barbell Bench Press",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -17639,7 +17730,8 @@
     "id": "wide-grip-decline-barbell-bench-press",
     "name": "Wide-Grip Decline Barbell Bench Press",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -17757,7 +17849,8 @@
     "id": "wide-grip-rear-pull-up",
     "name": "Wide-Grip Rear Pull-Up",
     "equipment": [
-      "bodyweight"
+      "bodyweight",
+      "pullup-bar"
     ],
     "level": "intermediate",
     "primary": [

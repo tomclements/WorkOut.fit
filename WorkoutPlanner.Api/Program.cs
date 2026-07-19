@@ -345,7 +345,7 @@ static async Task SeedDataAsync(IServiceProvider services)
     }
     else
     {
-        // Keep image/demo URLs in sync with the seed file without wiping curated rows
+        // Keep seed metadata in sync (images, demos, equipment requirements) without wiping curated rows
         var seedById = seedExercises.ToDictionary(e => e.Id, StringComparer.OrdinalIgnoreCase);
         var existing = await db.Exercises.ToListAsync();
         var updated = 0;
@@ -363,11 +363,28 @@ static async Task SeedDataAsync(IServiceProvider services)
                 ex.DemoUrl = seed.DemoUrl;
                 changed = true;
             }
+            // Equipment list drives the planner filter — keep it current when seed is corrected
+            if (seed.Equipment is { Count: > 0 }
+                && !EquipmentListsEqual(ex.Equipment, seed.Equipment))
+            {
+                ex.Equipment = seed.Equipment.ToList();
+                changed = true;
+            }
             if (changed) updated++;
         }
         if (updated > 0)
             await db.SaveChangesAsync();
     }
+}
+
+static bool EquipmentListsEqual(List<string>? a, List<string>? b)
+{
+    a ??= new List<string>();
+    b ??= new List<string>();
+    if (a.Count != b.Count) return false;
+    var sa = a.Select(x => x.ToLowerInvariant()).OrderBy(x => x);
+    var sb = b.Select(x => x.ToLowerInvariant()).OrderBy(x => x);
+    return sa.SequenceEqual(sb);
 }
 
 public partial class Program { }
