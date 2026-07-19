@@ -67,7 +67,7 @@
     "isTimeBased": false,
     "workDuration": 35,
     "restSec": 45,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Ab%20Wheel%20Rollout",
+    "demoUrl": "https://exrx.net/WeightExercises/RectusAbdominis/BWWheelRollout",
     "avoidFor": [
       "shoulder"
     ],
@@ -96,7 +96,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Advanced%20Kettlebell%20Windmill%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Kettlebell/KBWindmill",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Advanced_Kettlebell_Windmill/0.jpg",
     "avoidFor": [
       "knee",
@@ -123,7 +123,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Air%20Bike%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Obliques/BWAirBike",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Air_Bike/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -149,7 +149,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Alternate%20Hammer%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachioradialis/DBHammerCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Hammer_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -203,7 +203,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Alternate%20Incline%20Dumbbell%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBInclineCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Incline_Dumbbell_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -325,7 +325,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Alternating%20Hang%20Clean%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/OlympicLifts/BBHangClean",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Hang_Clean/0.jpg",
     "avoidFor": [
       "elbow",
@@ -481,7 +481,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Arnold%20Dumbbell%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/DBArnoldPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Arnold_Dumbbell_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -830,7 +830,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 120,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Barbell%20Back%20Squat",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/BBSquat",
     "avoidFor": [
       "knee"
     ],
@@ -858,7 +858,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 120,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Barbell%20Bench%20Press",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BBBenchPress",
     "avoidFor": [
       "elbow",
       "shoulder",
@@ -889,7 +889,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Bench%20Press%20-%20Medium%20Grip%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BBBenchPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg",
     "avoidFor": [
       "elbow",
@@ -919,7 +919,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -979,7 +979,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 150,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Barbell%20Deadlift",
+    "demoUrl": "https://exrx.net/WeightExercises/ErectorSpinae/BBDeadlift",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg",
     "avoidFor": [
       "knee"
@@ -1010,7 +1010,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Full%20Squat%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/BBSquat",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg",
     "avoidFor": [
       "knee",
@@ -1040,7 +1040,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Glute%20Bridge%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/GluteusMaximus/BBGluteBridge",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Glute_Bridge/0.jpg",
     "avoidFor": [
       "knee"
@@ -1070,7 +1070,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Guillotine%20Bench%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BBBenchPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Guillotine_Bench_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -1103,7 +1103,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Hack%20Squat%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/BBSquat",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hack_Squat/0.jpg",
     "avoidFor": [
       "elbow",
@@ -1135,7 +1135,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Hip%20Thrust%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/GluteusMaximus/BBHipThrust",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg",
     "avoidFor": [
       "knee"
@@ -1165,7 +1165,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Incline%20Bench%20Press%20-%20Medium%20Grip%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralClavicular/BBInclineBenchPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg",
     "avoidFor": [
       "elbow",
@@ -1226,7 +1226,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Lunge%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/BBLunge",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Lunge/0.jpg",
     "avoidFor": [
       "knee"
@@ -1321,7 +1321,7 @@
     "isTimeBased": false,
     "workDuration": 40,
     "restSec": 90,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Barbell%20Row",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidLateral/BBUprightRow",
     "avoidFor": [
       "elbow",
       "wrist"
@@ -1348,7 +1348,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Seated%20Calf%20Raise%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Soleus/BBSeatedCalfRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Seated_Calf_Raise/0.jpg",
     "avoidFor": [
       "knee"
@@ -1377,7 +1377,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Shoulder%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/BBMilitaryPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -1405,7 +1405,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Shrug%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/TrapeziusUpper/BBShrug",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shrug/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -1523,7 +1523,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Squat%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/BBSquat",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Squat/0.jpg",
     "avoidFor": [
       "knee",
@@ -1589,7 +1589,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Step%20Ups%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/BBStepUp",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/0.jpg",
     "avoidFor": [
       "knee"
@@ -1619,7 +1619,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Walking%20Lunge%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/BBLunge",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Walking_Lunge/0.jpg",
     "avoidFor": [
       "knee"
@@ -1649,7 +1649,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Bench%20Dips%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/BWBenchDip",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg",
     "avoidFor": [
       "elbow",
@@ -1811,7 +1811,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Bent%20Over%20Barbell%20Row%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/BBBentOverRow",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg",
     "avoidFor": [
       "elbow",
@@ -1840,7 +1840,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Bent%20Over%20Dumbbell%20Rear%20Delt%20Raise%20With%20Head%20On%20Bench%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidPosterior/DBRearLateralRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Dumbbell_Rear_Delt_Raise_With_Head_On_Bench/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -1964,7 +1964,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Bent%20Over%20Two-Dumbbell%20Row%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/DBBentOverRow",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Two-Dumbbell_Row/0.jpg",
     "avoidFor": [
       "elbow",
@@ -1995,7 +1995,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Bent%20Over%20Two-Dumbbell%20Row%20With%20Palms%20In%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/DBBentOverRow",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Two-Dumbbell_Row_With_Palms_In/0.jpg",
     "avoidFor": [
       "elbow",
@@ -2275,7 +2275,7 @@
     "isTimeBased": false,
     "workDuration": 35,
     "restSec": 45,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Bodyweight%20Squat",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/BWSquat",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg",
     "avoidFor": [
       "knee"
@@ -2521,7 +2521,7 @@
     "isTimeBased": false,
     "workDuration": 40,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Burpees",
+    "demoUrl": "https://exrx.net/WeightExercises/Plyometrics/BWBurpee",
     "avoidFor": [
       "elbow",
       "shoulder",
@@ -2657,7 +2657,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Crossover%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/CBStandingFly",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -2683,7 +2683,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Crunch%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/RectusAbdominis/CBCrunch",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crunch/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -2979,7 +2979,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Preacher%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachialis/BBPreacherCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Preacher_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -3032,7 +3032,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Reverse%20Crunch%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/RectusAbdominis/CBCrunch",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Reverse_Crunch/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -3138,7 +3138,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Seated%20Crunch%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/RectusAbdominis/CBCrunch",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Seated_Crunch/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -3165,7 +3165,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Seated%20Lateral%20Raise%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidLateral/DBLateralRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Seated_Lateral_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -3245,7 +3245,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Wrist%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/CBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Wrist_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -3623,7 +3623,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Chin-Up%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/LatissimusDorsi/BWChinup",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chin-Up/0.jpg",
     "avoidFor": [
       "elbow",
@@ -3905,7 +3905,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Clock%20Push-Up%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BWPushup",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/0.jpg",
     "avoidFor": [
       "elbow",
@@ -3937,7 +3937,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Close-Grip%20Barbell%20Bench%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/BBCloseGripBenchPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Barbell_Bench_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -3998,7 +3998,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Close-Grip%20EZ%20Bar%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCloseGripCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_EZ_Bar_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -4029,7 +4029,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Close-Grip%20EZ-Bar%20Curl%20with%20Band%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCloseGripCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_EZ-Bar_Curl_with_Band/0.jpg",
     "avoidFor": [
       "elbow",
@@ -4060,7 +4060,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Close-Grip%20EZ-Bar%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCloseGripCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_EZ-Bar_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -4092,7 +4092,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Close-Grip%20Front%20Lat%20Pulldown%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/LatissimusDorsi/CBCloseGripPulldown",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Front_Lat_Pulldown/0.jpg",
     "avoidFor": [
       "elbow",
@@ -4155,7 +4155,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Close-Grip%20Standing%20Barbell%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Standing_Barbell_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -4209,7 +4209,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Concentration%20Curls%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachialis/DBConcentrationCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Concentration_Curls/0.jpg",
     "avoidFor": [
       "elbow",
@@ -4238,7 +4238,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Cross%20Body%20Hammer%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachioradialis/DBCrossBodyHammerCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cross_Body_Hammer_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -4369,7 +4369,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Crunches%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/RectusAbdominis/BBCrunch",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunches/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -4522,7 +4522,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Decline%20Barbell%20Bench%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BBBenchPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Barbell_Bench_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -4611,7 +4611,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Decline%20Dumbbell%20Bench%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/DBDeclineBenchPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Dumbbell_Bench_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -4640,7 +4640,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Decline%20Dumbbell%20Flyes%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/DBFly",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Dumbbell_Flyes/0.jpg",
     "avoidFor": [],
     "force": "push",
@@ -4872,7 +4872,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dips%20-%20Triceps%20Version%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/BWTricepsDip",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips_-_Triceps_Version/0.jpg",
     "avoidFor": [
       "elbow",
@@ -5160,7 +5160,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Alternate%20Bicep%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Bicep_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -5190,7 +5190,7 @@
     "isTimeBased": false,
     "workDuration": 35,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Bench%20Press",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/DBBenchPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -5222,7 +5222,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Bench%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/DBBenchPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -5286,7 +5286,7 @@
     "isTimeBased": false,
     "workDuration": 40,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Bent-Over%20Row",
+    "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/DBBentOverRow",
     "avoidFor": [
       "elbow",
       "wrist"
@@ -5314,7 +5314,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Bicep%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bicep_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -5407,7 +5407,7 @@
     "isTimeBased": false,
     "workDuration": 35,
     "restSec": 45,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Curl",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBCurl",
     "avoidFor": [
       "elbow",
       "wrist"
@@ -5464,7 +5464,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Flyes%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/DBFly",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Flyes/0.jpg",
     "avoidFor": [],
     "force": "push",
@@ -5556,7 +5556,7 @@
     "isTimeBased": false,
     "workDuration": 40,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Lunge",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBLunge",
     "avoidFor": [
       "knee"
     ],
@@ -5585,7 +5585,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Lunges%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBLunge",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg",
     "avoidFor": [
       "knee"
@@ -5725,7 +5725,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20One-Arm%20Shoulder%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/DBShoulderPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_One-Arm_Shoulder_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -5753,7 +5753,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20One-Arm%20Triceps%20Extension%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBOneArmBentOverTricepsExtension",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_One-Arm_Triceps_Extension/0.jpg",
     "avoidFor": [
       "elbow",
@@ -5783,7 +5783,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20One-Arm%20Upright%20Row%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/DBBentOverRow",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_One-Arm_Upright_Row/0.jpg",
     "avoidFor": [
       "elbow",
@@ -5842,7 +5842,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Prone%20Incline%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBProneInclineCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Prone_Incline_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -5871,7 +5871,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Raise%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/DBFrontRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Raise/0.jpg",
     "avoidFor": [
       "elbow",
@@ -5933,7 +5933,7 @@
     "isTimeBased": false,
     "workDuration": 45,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Romanian%20Deadlift",
+    "demoUrl": "https://exrx.net/WeightExercises/Hamstrings/BBRomanianDeadlift",
     "avoidFor": [
       "knee"
     ],
@@ -6046,7 +6046,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Shoulder%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/DBShoulderPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shoulder_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -6074,7 +6074,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Shrug%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/TrapeziusUpper/DBShrug",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -6127,7 +6127,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Squat%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBSquat",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Squat/0.jpg",
     "avoidFor": [
       "knee",
@@ -6192,7 +6192,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Step%20Ups%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBStepUp",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Step_Ups/0.jpg",
     "avoidFor": [
       "knee"
@@ -6222,7 +6222,7 @@
     "isTimeBased": false,
     "workDuration": 45,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Step-Up",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBStepUp",
     "avoidFor": [
       "knee"
     ],
@@ -6301,7 +6301,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=EZ-Bar%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -6332,7 +6332,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=EZ-Bar%20Skullcrusher%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/BBLyingTricepsExtension",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Skullcrusher/0.jpg",
     "avoidFor": [
       "elbow",
@@ -6597,7 +6597,7 @@
     "isTimeBased": false,
     "workDuration": 35,
     "restSec": 45,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Face%20Pull",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidPosterior/CBFacePull",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -6781,7 +6781,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Flexor%20Incline%20Dumbbell%20Curls%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBInclineCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Flexor_Incline_Dumbbell_Curls/0.jpg",
     "avoidFor": [
       "elbow",
@@ -6987,7 +6987,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Front%20Barbell%20Squat%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/BBFrontSquat",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Barbell_Squat/0.jpg",
     "avoidFor": [
       "knee"
@@ -7070,7 +7070,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Front%20Dumbbell%20Raise%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/DBFrontRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Dumbbell_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -7097,7 +7097,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Front%20Incline%20Dumbbell%20Raise%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/DBFrontRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Incline_Dumbbell_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -7215,7 +7215,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Front%20Two-Dumbbell%20Raise%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/DBFrontRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Two-Dumbbell_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -7333,7 +7333,7 @@
     "isTimeBased": false,
     "workDuration": 40,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Goblet%20Squat",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBGobletSquat",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Goblet_Squat/0.jpg",
     "avoidFor": [
       "knee"
@@ -7482,7 +7482,7 @@
     "isTimeBased": false,
     "workDuration": 35,
     "restSec": 45,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Hammer%20Curl",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachioradialis/DBHammerCurl",
     "avoidFor": [
       "elbow",
       "wrist"
@@ -7508,7 +7508,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Hammer%20Curls%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBInclineHammerCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hammer_Curls/0.jpg",
     "avoidFor": [
       "elbow",
@@ -7569,7 +7569,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Handstand%20Push-Ups%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BWPushup",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Handstand_Push-Ups/0.jpg",
     "avoidFor": [
       "elbow",
@@ -7605,7 +7605,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Hang%20Clean%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/OlympicLifts/BBHangClean",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hang_Clean/0.jpg",
     "avoidFor": [
       "elbow",
@@ -7806,7 +7806,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Hanging%20Leg%20Raise%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/RectusAbdominis/BWHangingLegRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -7830,7 +7830,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Hanging%20Pike%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/RectusAbdominis/BWHangingPike",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Pike/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -8185,7 +8185,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Incline%20Dumbbell%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBInclineCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -8215,7 +8215,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Incline%20Dumbbell%20Flyes%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralClavicular/DBInclineFly",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Flyes/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -8274,7 +8274,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Incline%20Dumbbell%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralClavicular/DBInclineBenchPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -8303,7 +8303,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Incline%20Hammer%20Curls%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBInclineHammerCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Hammer_Curls/0.jpg",
     "avoidFor": [
       "elbow",
@@ -8331,7 +8331,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Incline%20Inner%20Biceps%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBInclineCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Inner_Biceps_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -8362,7 +8362,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Incline%20Push-Up%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BWPushup",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Push-Up/0.jpg",
     "avoidFor": [
       "elbow",
@@ -8394,7 +8394,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Incline%20Push-Up%20Close-Grip%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/BWCloseGripPushup",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Push-Up_Close-Grip/0.jpg",
     "avoidFor": [
       "elbow",
@@ -8969,7 +8969,7 @@
     "isTimeBased": false,
     "workDuration": 40,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=how+to+do+Kettlebell+Goblet+Squat",
+    "demoUrl": "https://exrx.net/WeightExercises/Kettlebell/KBGobletSquat",
     "avoidFor": [
       "knee"
     ],
@@ -9000,7 +9000,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Kettlebell%20Hang%20Clean%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/OlympicLifts/BBHangClean",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Hang_Clean/0.jpg",
     "avoidFor": [
       "knee",
@@ -9247,7 +9247,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Kettlebell%20Swing",
+    "demoUrl": "https://exrx.net/WeightExercises/Kettlebell/KBSwing",
     "avoidFor": [
       "knee"
     ],
@@ -9378,7 +9378,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Kettlebell%20Windmill%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Kettlebell/KBWindmill",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Windmill/0.jpg",
     "avoidFor": [
       "elbow",
@@ -9711,7 +9711,7 @@
     "isTimeBased": false,
     "workDuration": 35,
     "restSec": 45,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Lateral%20Raise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidLateral/DBLateralRaise",
     "avoidFor": [
       "shoulder"
     ],
@@ -9762,7 +9762,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Leg%20Extensions%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/LVLegExtension",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/0.jpg",
     "avoidFor": [
       "knee"
@@ -9817,7 +9817,7 @@
     "isTimeBased": false,
     "workDuration": 35,
     "restSec": 90,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Leg%20Press",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/LVLegPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg",
     "avoidFor": [
       "knee"
@@ -10139,7 +10139,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Low%20Cable%20Crossover%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/CBStandingFly",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Low_Cable_Crossover/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -10285,7 +10285,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Lying%20Cable%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/CBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Cable_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -10433,7 +10433,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Lying%20Dumbbell%20Tricep%20Extension%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBLyingTricepsExtension",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Dumbbell_Tricep_Extension/0.jpg",
     "avoidFor": [
       "elbow",
@@ -10489,7 +10489,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Lying%20Leg%20Curls%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Hamstrings/LVLyingLegCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/0.jpg",
     "avoidFor": [
       "knee"
@@ -10630,7 +10630,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Lying%20T-Bar%20Row%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/BBTBarRow",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_T-Bar_Row/0.jpg",
     "avoidFor": [
       "elbow",
@@ -10658,7 +10658,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Lying%20Triceps%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/BBLyingTricepsExtension",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Triceps_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -10971,7 +10971,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 45,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Mountain%20Climbers",
+    "demoUrl": "https://exrx.net/WeightExercises/Plyometrics/BWMountainClimber",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Mountain_Climbers/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -11269,7 +11269,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=One%20Arm%20Dumbbell%20Bench%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/DBBenchPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Arm_Dumbbell_Bench_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -11298,7 +11298,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=One%20Arm%20Dumbbell%20Preacher%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachialis/DBOneArmPreacherCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Arm_Dumbbell_Preacher_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -11474,7 +11474,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=One-Arm%20Dumbbell%20Row%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/DBBentOverRow",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Dumbbell_Row/0.jpg",
     "avoidFor": [
       "elbow",
@@ -11583,7 +11583,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=One-Arm%20Kettlebell%20Clean%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Kettlebell/KBOneArmSwing",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Clean/0.jpg",
     "avoidFor": [
       "knee",
@@ -11670,7 +11670,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=One-Arm%20Kettlebell%20Jerk%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Kettlebell/KBOneArmSwing",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Jerk/0.jpg",
     "avoidFor": [
       "elbow",
@@ -11795,7 +11795,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=One-Arm%20Kettlebell%20Row%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/DBBentOverRow",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Row/0.jpg",
     "avoidFor": [
       "elbow",
@@ -11829,7 +11829,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=One-Arm%20Kettlebell%20Snatch%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Kettlebell/KBOneArmSwing",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Snatch/0.jpg",
     "avoidFor": [
       "elbow",
@@ -11928,7 +11928,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=One-Arm%20Kettlebell%20Swings%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Kettlebell/KBOneArmSwing",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Swings/0.jpg",
     "avoidFor": [
       "knee",
@@ -12204,7 +12204,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Overhead%20Cable%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/CBOverheadCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Overhead_Cable_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -12531,7 +12531,7 @@
     "isTimeBased": true,
     "workDuration": 45,
     "restSec": 30,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Plank",
+    "demoUrl": "https://exrx.net/WeightExercises/RectusAbdominis/BWFrontPlank",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg",
     "avoidFor": [],
     "force": "static",
@@ -12560,7 +12560,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Plie%20Dumbbell%20Squat%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBSquat",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plie_Dumbbell_Squat/0.jpg",
     "avoidFor": [
       "knee"
@@ -12620,7 +12620,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Plyo%20Push-up%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BWPushup",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plyo_Push-up/0.jpg",
     "avoidFor": [
       "elbow",
@@ -12658,7 +12658,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Power%20Clean%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/OlympicLifts/BBPowerClean",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Power_Clean/0.jpg",
     "avoidFor": [
       "elbow",
@@ -12856,7 +12856,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Preacher%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachialis/BBPreacherCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Preacher_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -12886,7 +12886,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Preacher%20Hammer%20Dumbbell%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachioradialis/DBHammerPreacherCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Preacher_Hammer_Dumbbell_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -12980,7 +12980,7 @@
     "isTimeBased": false,
     "workDuration": 25,
     "restSec": 90,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Pull-Up",
+    "demoUrl": "https://exrx.net/WeightExercises/LatissimusDorsi/BWPullup",
     "avoidFor": [
       "elbow",
       "wrist"
@@ -13010,7 +13010,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Pullups%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/LatissimusDorsi/BWPullup",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg",
     "avoidFor": [
       "elbow",
@@ -13040,7 +13040,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Push%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/OlympicLifts/BBPushPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -13138,7 +13138,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 45,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Push-Up",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BWPushup",
     "avoidFor": [
       "elbow",
       "shoulder",
@@ -13169,7 +13169,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Push-Up%20Wide%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BWPushup",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push-Up_Wide/0.jpg",
     "avoidFor": [
       "elbow",
@@ -13729,7 +13729,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Reverse%20Barbell%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Barbell_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -13789,7 +13789,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Reverse%20Cable%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/CBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Cable_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -14097,7 +14097,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Romanian%20Deadlift%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Hamstrings/BBRomanianDeadlift",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg",
     "avoidFor": [
       "knee",
@@ -14182,7 +14182,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Rope%20Straight-Arm%20Pulldown%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/LatissimusDorsi/CBStraightArmPulldown",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rope_Straight-Arm_Pulldown/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -14207,7 +14207,7 @@
     "isTimeBased": false,
     "workDuration": 40,
     "restSec": 30,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Russian%20Twist",
+    "demoUrl": "https://exrx.net/WeightExercises/Obliques/BWRussianTwist",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Russian_Twist/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -14263,7 +14263,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Barbell%20Military%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/BBMilitaryPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Barbell_Military_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -14317,7 +14317,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Bent-Over%20One-Arm%20Dumbbell%20Triceps%20Extension%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBOneArmBentOverTricepsExtension",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Bent-Over_One-Arm_Dumbbell_Triceps_Extension/0.jpg",
     "avoidFor": [
       "elbow",
@@ -14345,7 +14345,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Bent-Over%20Rear%20Delt%20Raise%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidPosterior/DBSeatedRearLateralRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Bent-Over_Rear_Delt_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -14372,7 +14372,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Bent-Over%20Two-Arm%20Dumbbell%20Triceps%20Extension%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBBentOverTricepsExtension",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Bent-Over_Two-Arm_Dumbbell_Triceps_Extension/0.jpg",
     "avoidFor": [
       "elbow",
@@ -14403,7 +14403,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Cable%20Rows%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/CBSeatedRow",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg",
     "avoidFor": [
       "elbow",
@@ -14461,7 +14461,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Calf%20Raise%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Soleus/BBSeatedCalfRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Calf_Raise/0.jpg",
     "avoidFor": [
       "knee"
@@ -14516,7 +14516,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Dumbbell%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Dumbbell_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -14544,7 +14544,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Dumbbell%20Inner%20Biceps%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Dumbbell_Inner_Biceps_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -14630,7 +14630,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Dumbbell%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/DBShoulderPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Dumbbell_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -14713,7 +14713,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Leg%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Hamstrings/LVSeatedLegCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg",
     "avoidFor": [
       "knee"
@@ -14908,7 +14908,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Side%20Lateral%20Raise%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidLateral/DBLateralRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Side_Lateral_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -14935,7 +14935,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Triceps%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBSeatedTricepsExtension",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Triceps_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -15082,7 +15082,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Side%20Bridge%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Obliques/BWSidePlank",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -15132,7 +15132,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Side%20Lateral%20Raise%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidLateral/DBLateralRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -15187,7 +15187,7 @@
     "isTimeBased": true,
     "workDuration": 30,
     "restSec": 30,
-    "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Side%20Plank",
+    "demoUrl": "https://exrx.net/WeightExercises/Obliques/BWSidePlank",
     "avoidFor": [],
     "force": "unknown",
     "mechanic": "unknown"
@@ -16372,7 +16372,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Spider%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachialis/BBSpiderCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Spider_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -16824,7 +16824,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Bent-Over%20One-Arm%20Dumbbell%20Triceps%20Extension%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBOneArmBentOverTricepsExtension",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Bent-Over_One-Arm_Dumbbell_Triceps_Extension/0.jpg",
     "avoidFor": [
       "elbow",
@@ -16852,7 +16852,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Bent-Over%20Two-Arm%20Dumbbell%20Triceps%20Extension%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBBentOverTricepsExtension",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Bent-Over_Two-Arm_Dumbbell_Triceps_Extension/0.jpg",
     "avoidFor": [
       "elbow",
@@ -16879,7 +16879,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Biceps%20Cable%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/CBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Biceps_Cable_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -17023,7 +17023,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Calf%20Raises%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Gastrocnemius/BBStandingCalfRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/0.jpg",
     "avoidFor": [
       "knee"
@@ -17051,7 +17051,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Concentration%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachialis/DBConcentrationCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Concentration_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -17136,7 +17136,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Dumbbell%20Reverse%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Dumbbell_Reverse_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -17273,7 +17273,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Inner-Biceps%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBInclineCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Inner-Biceps_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -17505,7 +17505,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Standing%20One-Arm%20Dumbbell%20Triceps%20Extension%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBOneArmBentOverTricepsExtension",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_One-Arm_Dumbbell_Triceps_Extension/0.jpg",
     "avoidFor": [
       "elbow",
@@ -17825,7 +17825,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Stiff-Legged%20Barbell%20Deadlift%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Hamstrings/BBStiffLegDeadlift",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Stiff-Legged_Barbell_Deadlift/0.jpg",
     "avoidFor": [
       "knee",
@@ -17855,7 +17855,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Stiff-Legged%20Dumbbell%20Deadlift%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Hamstrings/BBStiffLegDeadlift",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Stiff-Legged_Dumbbell_Deadlift/0.jpg",
     "avoidFor": [
       "knee",
@@ -17975,7 +17975,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Straight-Arm%20Pulldown%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/LatissimusDorsi/CBStraightArmPulldown",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Straight-Arm_Pulldown/0.jpg",
     "avoidFor": [],
     "force": "pull",
@@ -18230,7 +18230,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=T-Bar%20Row%20with%20Handle%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/BBTBarRow",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/T-Bar_Row_with_Handle/0.jpg",
     "avoidFor": [
       "elbow",
@@ -18345,7 +18345,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Tricep%20Dumbbell%20Kickback%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBKickback",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Tricep_Dumbbell_Kickback/0.jpg",
     "avoidFor": [
       "elbow",
@@ -18399,7 +18399,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Triceps%20Pushdown%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/CBPushdown",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg",
     "avoidFor": [
       "elbow",
@@ -18426,7 +18426,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Triceps%20Pushdown%20-%20Rope%20Attachment%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/CBPushdownRope",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown_-_Rope_Attachment/0.jpg",
     "avoidFor": [
       "elbow",
@@ -18453,7 +18453,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Triceps%20Pushdown%20-%20V-Bar%20Attachment%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Triceps/CBPushdown",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown_-_V-Bar_Attachment/0.jpg",
     "avoidFor": [
       "elbow",
@@ -18505,7 +18505,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Two-Arm%20Dumbbell%20Preacher%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachialis/DBPreacherCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Two-Arm_Dumbbell_Preacher_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -18538,7 +18538,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Two-Arm%20Kettlebell%20Clean%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Kettlebell/KBSwing",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Two-Arm_Kettlebell_Clean/0.jpg",
     "avoidFor": [
       "knee",
@@ -18570,7 +18570,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Two-Arm%20Kettlebell%20Jerk%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Kettlebell/KBSwing",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Two-Arm_Kettlebell_Jerk/0.jpg",
     "avoidFor": [
       "elbow",
@@ -18632,7 +18632,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Two-Arm%20Kettlebell%20Row%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Kettlebell/KBSwing",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Two-Arm_Kettlebell_Row/0.jpg",
     "avoidFor": [
       "elbow",
@@ -18693,7 +18693,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Upright%20Barbell%20Row%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/DeltoidLateral/BBUprightRow",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upright_Barbell_Row/0.jpg",
     "avoidFor": [
       "shoulder"
@@ -18812,7 +18812,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=V-Bar%20Pullup%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/LatissimusDorsi/BWNeutralGripPullup",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/V-Bar_Pullup/0.jpg",
     "avoidFor": [
       "elbow",
@@ -19079,7 +19079,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Wide-Grip%20Barbell%20Bench%20Press%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BBBenchPress",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Barbell_Bench_Press/0.jpg",
     "avoidFor": [
       "elbow",
@@ -19175,7 +19175,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Wide-Grip%20Lat%20Pulldown%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/LatissimusDorsi/CBFrontPulldown",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/0.jpg",
     "avoidFor": [
       "elbow",
@@ -19240,7 +19240,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Wide-Grip%20Rear%20Pull-Up%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/LatissimusDorsi/BWPullup",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Rear_Pull-Up/0.jpg",
     "avoidFor": [
       "elbow",
@@ -19268,7 +19268,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Wide-Grip%20Standing%20Barbell%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Standing_Barbell_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -19378,7 +19378,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Zottman%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachialis/DBZottmanPreacherCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Zottman_Curl/0.jpg",
     "avoidFor": [
       "elbow",
@@ -19408,7 +19408,7 @@
     "isTimeBased": false,
     "workDuration": 30,
     "restSec": 60,
-    "demoUrl": "https://www.youtube.com/results?search_query=Zottman%20Preacher%20Curl%20exercise",
+    "demoUrl": "https://exrx.net/WeightExercises/Brachialis/DBZottmanPreacherCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Zottman_Preacher_Curl/0.jpg",
     "avoidFor": [
       "elbow",

@@ -358,10 +358,18 @@ static async Task SeedDataAsync(IServiceProvider services)
                 ex.ImageUrl = seed.ImageUrl;
                 changed = true;
             }
-            if (!string.IsNullOrWhiteSpace(seed.DemoUrl) && string.IsNullOrWhiteSpace(ex.DemoUrl))
+            // Prefer seed demo URLs (e.g. ExRx form pages) over empty or generic search links
+            if (!string.IsNullOrWhiteSpace(seed.DemoUrl) && ex.DemoUrl != seed.DemoUrl)
             {
-                ex.DemoUrl = seed.DemoUrl;
-                changed = true;
+                var seedIsExRx = seed.DemoUrl.Contains("exrx.net", StringComparison.OrdinalIgnoreCase);
+                var currentIsGenericSearch = string.IsNullOrWhiteSpace(ex.DemoUrl)
+                    || ex.DemoUrl.Contains("youtube.com/results", StringComparison.OrdinalIgnoreCase)
+                    || ex.DemoUrl.Contains("search_query=", StringComparison.OrdinalIgnoreCase);
+                if (seedIsExRx || currentIsGenericSearch || string.IsNullOrWhiteSpace(ex.DemoUrl))
+                {
+                    ex.DemoUrl = seed.DemoUrl;
+                    changed = true;
+                }
             }
             // Equipment list drives the planner filter — keep it current when seed is corrected
             if (seed.Equipment is { Count: > 0 }

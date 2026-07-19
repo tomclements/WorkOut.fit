@@ -534,7 +534,7 @@ function currentExercise() {
   return sessionExercises[currentExerciseIndex];
 }
 
-/** free-exercise-db often has 0.jpg + 1.jpg — flip them for an in-app demo. */
+/** free-exercise-db often has 0.jpg + 1.jpg — flip them as a JS fallback. */
 function demoImageUrls(ex) {
   const primary = ex?.imageUrl || '';
   if (!primary) return [];
@@ -547,9 +547,19 @@ function demoImageUrls(ex) {
   return urls;
 }
 
+/** Prebuilt animated WebP from scripts/build-exercise-webps.py */
+function demoWebpUrl(ex) {
+  if (!ex?.id) return null;
+  if (ex.demoAnimUrl) return ex.demoAnimUrl;
+  // Mobility catalog ids are not in free-exercise-db
+  if (String(ex.id).startsWith('wu-') || String(ex.id).startsWith('cd-')) return null;
+  return `/demos/${encodeURIComponent(ex.id)}.webp`;
+}
+
 function exerciseMediaHtml(ex, options = {}) {
   const compact = !!options.compact;
   const urls = demoImageUrls(ex);
+  const webp = demoWebpUrl(ex);
   const cue = ex.progression && isMobilityExercise(ex)
     ? `<div class="demo-caption">${escapeHtmlRunner(ex.progression)}</div>`
     : (ex.primary && ex.primary.length
@@ -557,7 +567,15 @@ function exerciseMediaHtml(ex, options = {}) {
       : '');
 
   let frame;
-  if (urls.length) {
+  if (webp) {
+    // Prefer animated WebP; on error fall back to still flip via onDemoWebpError
+    const stills = urls.map(u => encodeURIComponent(u)).join('|');
+    frame = `<div class="demo-frame demo-frame--anim" data-demo-flip="0" data-stills="${stills}">
+      <img src="${webp}" alt="${escapeHtmlRunner(ex.name || 'Exercise demo')}" loading="eager"
+        class="demo-frame__visible demo-frame__anim"
+        onerror="if (window.onDemoWebpError) window.onDemoWebpError(this);" />
+    </div>`;
+  } else if (urls.length) {
     const imgs = urls.map((src, i) =>
       `<img src="${src}" alt="${escapeHtmlRunner(ex.name || 'Exercise demo')}" loading="eager" class="${i === 0 ? 'demo-frame__visible' : ''}" data-demo-idx="${i}" onerror="this.dataset.broken='1'; if (window.onDemoImgError) window.onDemoImgError(this);" />`
     ).join('');
@@ -567,13 +585,21 @@ function exerciseMediaHtml(ex, options = {}) {
   }
 
   const actions = [];
-  if (ex.demoUrl) {
-    actions.push(`<a href="${ex.demoUrl}" target="_blank" rel="noopener">Video search</a>`);
+  const demo = ex.demoUrl || '';
+  const isExRx = /exrx\.net/i.test(demo);
+  if (demo) {
+    actions.push(
+      isExRx
+        ? `<a href="${demo}" target="_blank" rel="noopener">ExRx form page</a>`
+        : `<a href="${demo}" target="_blank" rel="noopener">Video search</a>`
+    );
   }
-  // Prefer direct how-to search even without stored demoUrl
-  if (!ex.demoUrl && ex.name) {
+  if (ex.name) {
     const q = encodeURIComponent(ex.name + ' exercise form');
-    actions.push(`<a href="https://www.youtube.com/results?search_query=${q}" target="_blank" rel="noopener">Video search</a>`);
+    const yt = `https://www.youtube.com/results?search_query=${q}`;
+    if (!demo || isExRx) {
+      actions.push(`<a href="${yt}" target="_blank" rel="noopener">YouTube</a>`);
+    }
   }
 
   return `
@@ -603,6 +629,27 @@ window.onDemoImgError = function onDemoImgError(img) {
   }
   // Keep flipping only valid frames
   imgs[0].classList.add('demo-frame__visible');
+  startDemoFlip(frame);
+};
+
+/** Animated WebP missing → fall back to free-exercise-db still flip. */
+window.onDemoWebpError = function onDemoWebpError(img) {
+  const frame = img.closest('.demo-frame');
+  if (!frame) return;
+  const raw = frame.getAttribute('data-stills') || '';
+  const stills = raw.split('|').map(s => {
+    try { return decodeURIComponent(s); } catch { return s; }
+  }).filter(Boolean);
+  if (!stills.length) {
+    frame.classList.add('demo-frame--placeholder');
+    frame.innerHTML = '🏋️';
+    return;
+  }
+  frame.classList.remove('demo-frame--anim');
+  frame.dataset.demoFlip = stills.length > 1 ? '1' : '0';
+  frame.innerHTML = stills.map((src, i) =>
+    `<img src="${src}" alt="" loading="eager" class="${i === 0 ? 'demo-frame__visible' : ''}" data-demo-idx="${i}" onerror="this.dataset.broken='1'; if (window.onDemoImgError) window.onDemoImgError(this);" />`
+  ).join('');
   startDemoFlip(frame);
 };
 

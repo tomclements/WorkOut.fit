@@ -1218,7 +1218,7 @@ function renderPlan(result) {
               <div class="flex items-start justify-between gap-2">
                 <span class="font-medium flex flex-wrap items-center gap-1.5">${phaseBadge}${escapeHtml(ex.name)}</span>
                 <div class="flex items-center gap-2 shrink-0">
-                  ${ex.demoUrl ? `<a href="${escapeHtml(ex.demoUrl)}" target="_blank" rel="noopener" class="text-xs text-blue-600 hover:underline whitespace-nowrap">Demo</a>` : ''}
+                  ${ex.demoUrl ? `<a href="${escapeHtml(ex.demoUrl)}" target="_blank" rel="noopener" class="text-xs text-blue-600 hover:underline whitespace-nowrap">${/exrx\.net/i.test(ex.demoUrl) ? 'ExRx' : 'Demo'}</a>` : ''}
                   <button onclick="deleteExerciseFromDay(${weekIndex}, ${dayIndex}, ${exIndex})" class="text-xs text-red-600 hover:underline">Remove</button>
                 </div>
               </div>

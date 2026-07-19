@@ -260,7 +260,7 @@ public class ExerciseImportService : IExerciseImportService
             IsTimeBased = false,
             WorkDuration = 30,
             RestSec = 60,
-            DemoUrl = BuildDemoUrl(src.Name),
+            DemoUrl = BuildDemoUrl(id, src.Name),
             ImageUrl = BuildImageUrl(src.Images),
             AvoidFor = MapAvoidFor(primary, secondary, src.Category ?? "")
         };
@@ -299,8 +299,10 @@ public class ExerciseImportService : IExerciseImportService
     public static List<string> EnrichEquipmentFromName(string name, IEnumerable<string> existing) =>
         ExerciseTaxonomy.EnrichEquipmentFromName(name, existing);
 
-    private static string BuildDemoUrl(string name) =>
-        "https://www.youtube.com/results?search_query=" + Uri.EscapeDataString(name + " exercise");
+    /// <summary>Prefer curated ExRx form pages; fall back to YouTube search.</summary>
+    private static string BuildDemoUrl(string id, string name) =>
+        ExRxCatalog.GetUrl(id, name)
+        ?? ("https://www.youtube.com/results?search_query=" + Uri.EscapeDataString(name + " exercise"));
 
     private static string? BuildImageUrl(List<string>? images)
     {

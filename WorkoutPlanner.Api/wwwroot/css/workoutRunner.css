@@ -158,6 +158,13 @@ body.high-contrast #backToPlanner {
   opacity: 1;
 }
 
+/* Single animated WebP (prebuilt from 0/1 stills) — no JS flip needed */
+.demo-frame--anim img.demo-frame__anim {
+  opacity: 1;
+  position: absolute;
+  inset: 0;
+}
+
 .demo-frame--placeholder {
   display: flex;
   align-items: center;

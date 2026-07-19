@@ -261,7 +261,9 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 IsTimeBased = ex.IsTimeBased,
                 Primary = ex.Primary,
                 Progression = ProgressionHint(goal, week, isBro, mods),
-                DemoUrl = ex.DemoUrl,
+                DemoUrl = !string.IsNullOrWhiteSpace(ex.DemoUrl)
+                    ? ex.DemoUrl
+                    : ExRxCatalog.GetUrl(ex.Id, ex.Name),
                 ImageUrl = ex.ImageUrl
             });
             usedToday.Add(ex.Id);
