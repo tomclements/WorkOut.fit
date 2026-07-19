@@ -166,11 +166,37 @@ using (var scope = app.Services.CreateScope())
 
 await SeedDataAsync(app.Services);
 
-app.UseDefaultFiles();
-app.UseStaticFiles();
+var webRoot = app.Environment.WebRootPath
+    ?? Path.Combine(app.Environment.ContentRootPath, "wwwroot");
+if (!Directory.Exists(webRoot))
+{
+    // Docker / publish safety: ensure wwwroot exists next to the app
+    var fallback = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+    if (Directory.Exists(fallback))
+        webRoot = fallback;
+}
+
+app.UseDefaultFiles(new DefaultFilesOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(webRoot)
+});
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(webRoot),
+    RequestPath = ""
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
+
+// Explicit HTML routes so pages never 404 if static middleware path is wrong
+MapHtmlPage(app, webRoot, "/about.html", "about.html");
+MapHtmlPage(app, webRoot, "/about", "about.html");
+MapHtmlPage(app, webRoot, "/help.html", "help.html");
+MapHtmlPage(app, webRoot, "/help", "help.html");
+MapHtmlPage(app, webRoot, "/history.html", "history.html");
+MapHtmlPage(app, webRoot, "/workout.html", "workout.html");
+MapHtmlPage(app, webRoot, "/admin.html", "admin.html");
 
 // Endpoint modules
 app.MapHealthEndpoints();
@@ -184,6 +210,28 @@ app.MapDashboardEndpoints();
 app.MapUserEndpoints();
 
 app.Run();
+
+static void MapHtmlPage(WebApplication app, string webRoot, string route, string fileName)
+{
+    app.MapGet(route, () =>
+    {
+        var path = Path.Combine(webRoot, fileName);
+        if (!File.Exists(path))
+        {
+            return Results.Json(new
+            {
+                error = "page_not_found",
+                file = fileName,
+                webRoot,
+                exists = Directory.Exists(webRoot),
+                files = Directory.Exists(webRoot)
+                    ? Directory.GetFiles(webRoot).Select(Path.GetFileName).ToArray()
+                    : Array.Empty<string>()
+            }, statusCode: StatusCodes.Status404NotFound);
+        }
+        return Results.File(path, "text/html; charset=utf-8");
+    }).AllowAnonymous();
+}
 
 static string NormalizeConnectionString(string cs)
 {

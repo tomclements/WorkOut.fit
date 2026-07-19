@@ -21,6 +21,10 @@ async function loadBuildInfo() {
     document.getElementById('buildTime').textContent = formatMaybeDate(data.buildTimeUtc);
     document.getElementById('buildEnv').textContent = data.environment || '—';
     document.getElementById('buildServerTime').textContent = formatMaybeDate(data.serverTimeUtc);
+    const hasAbout = document.getElementById('buildHasAbout');
+    if (hasAbout) hasAbout.textContent = data.hasAboutHtml === true ? 'yes' : 'no';
+    const www = document.getElementById('buildWwwFiles');
+    if (www) www.textContent = Array.isArray(data.wwwRootFiles) ? data.wwwRootFiles.join(', ') : '—';
 
     // Highlight short commit for easy compare
     document.title = `About · ${data.shortCommit || 'build'} · WorkOut`;

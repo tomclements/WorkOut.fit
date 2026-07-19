@@ -63,6 +63,18 @@ public static class BuildInfoEndpoints
             ?? TryGetAssemblyBuildTime(assembly)
             ?? DateTime.UtcNow;
 
+        var webRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+        if (!Directory.Exists(webRoot))
+            webRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
+        string[] wwwFiles = Array.Empty<string>();
+        try
+        {
+            if (Directory.Exists(webRoot))
+                wwwFiles = Directory.GetFiles(webRoot).Select(Path.GetFileName).Where(f => f != null).Cast<string>().OrderBy(f => f).ToArray();
+        }
+        catch { /* ignore */ }
+
         return new BuildInfo
         {
             App = "WorkOut",
@@ -76,7 +88,10 @@ public static class BuildInfoEndpoints
             Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
                 ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                 ?? "Production",
-            ServerTimeUtc = DateTime.UtcNow.ToString("o")
+            ServerTimeUtc = DateTime.UtcNow.ToString("o"),
+            WebRoot = webRoot,
+            HasAboutHtml = File.Exists(Path.Combine(webRoot, "about.html")),
+            WwwRootFiles = wwwFiles
         };
     }
 
@@ -186,4 +201,7 @@ public class BuildInfo
     public string BuildTimeUtc { get; set; } = "";
     public string Environment { get; set; } = "";
     public string ServerTimeUtc { get; set; } = "";
+    public string? WebRoot { get; set; }
+    public bool HasAboutHtml { get; set; }
+    public string[] WwwRootFiles { get; set; } = Array.Empty<string>();
 }
