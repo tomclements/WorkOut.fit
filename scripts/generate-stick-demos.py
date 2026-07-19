@@ -129,21 +129,18 @@ def stick_rdl_side(t: float) -> Image.Image:
     # --- Fixed foot ---
     ankle = (W * 0.42, floor_y - 3)
 
-    # Standing hip (above ankle with soft knee)
-    hip0_x = ankle[0] + 4
-    hip0_y = floor_y - SHIN - THIGH + 14
+    # Standing hip (above ankle with soft knee so thigh and shin read as two parts)
+    hip0_x = ankle[0] + 2
+    hip0_y = floor_y - SHIN - THIGH + 20
 
     # Hips travel BACK (to the right, +x) as we hinge
-    hip_back = HEAD * 2.35 * t
-    hip_drop = HEAD * 0.4 * t
+    hip_back = HEAD * 2.4 * t
+    hip_drop = HEAD * 0.35 * t
     hip = (hip0_x + hip_back, hip0_y + hip_drop)
 
-    # Knee: soft bend, between hip and ankle, slightly forward (left) of the hip-ankle line
-    # Use geometry: place knee so thigh≈THIGH, shin≈SHIN
-    # Simple approach: interpolate standing knee → slightly more bent
-    knee0 = (ankle[0] + 10, floor_y - SHIN + 4)
-    # At hinge, knee stays roughly over mid-foot with more bend
-    knee1 = (ankle[0] + 18 + hip_back * 0.15, floor_y - SHIN * 0.88)
+    # Knee clearly forward of the hip–ankle line (soft knees, not locked)
+    knee0 = (ankle[0] + 28, floor_y - SHIN + 12)
+    knee1 = (ankle[0] + 34 + hip_back * 0.12, floor_y - SHIN * 0.9)
     knee = (lerp(knee0[0], knee1[0], t), lerp(knee0[1], knee1[1], t))
 
     # Torso lean: 0 upright → ~80° from vertical (forward = left)
