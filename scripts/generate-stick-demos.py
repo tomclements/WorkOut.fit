@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Generate original stick-figure exercise demos as animated WebP (public domain).
 
-These are original drawings — not derived from third-party photos/video.
+Side-view figure with human proportions:
+  head, torso, upper arm + forearm + hand, thigh + shin + foot.
 """
 
 from __future__ import annotations
@@ -14,160 +15,213 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "WorkoutPlanner.Api" / "wwwroot" / "demos"
 
-# Canvas
-W, H = 480, 480
+W, H = 560, 560
 BG = (248, 250, 252)
 INK = (30, 41, 59)
 ACCENT = (37, 99, 235)
-FLOOR = (203, 213, 225)
-DURATION_MS = 90  # per frame
+MUTED = (148, 163, 184)
+FLOOR_C = (203, 213, 225)
+DURATION_MS = 65
+
+# 8-head side-view proportions
+HEAD = 36.0
+NECK = HEAD * 0.25
+TORSO = HEAD * 2.55       # hip joint → shoulder joint
+UPPER_ARM = HEAD * 1.5
+FOREARM = HEAD * 1.3
+HAND = HEAD * 0.5
+THIGH = HEAD * 2.1
+SHIN = HEAD * 2.05
+FOOT = HEAD * 1.0
 
 
-def new_canvas():
+def lerp(a, b, t):
+    return a + (b - a) * t
+
+
+def ease(t):
+    return 0.5 - 0.5 * math.cos(math.pi * max(0.0, min(1.0, t)))
+
+
+def joint(d, p, r=5, color=INK):
+    d.ellipse([p[0] - r, p[1] - r, p[0] + r, p[1] + r], fill=color)
+
+
+def seg(d, a, b, width=9, color=INK):
+    d.line([a, b], fill=color, width=width)
+    joint(d, a, r=max(4, width // 2), color=color)
+    joint(d, b, r=max(4, width // 2), color=color)
+
+
+def draw_head(d, c, face_left=True):
+    r = HEAD * 0.47
+    d.ellipse([c[0] - r, c[1] - r, c[0] + r, c[1] + r], outline=INK, width=4, fill=(255, 255, 255))
+    # face direction (nose)
+    dir_x = -1 if face_left else 1
+    nose = (c[0] + dir_x * (r + 5), c[1] + 1)
+    d.line([(c[0] + dir_x * r * 0.3, c[1]), nose], fill=INK, width=3)
+    # eye
+    eye = (c[0] + dir_x * r * 0.25, c[1] - r * 0.15)
+    joint(d, eye, r=2, color=INK)
+
+
+def draw_foot(d, ankle, face_left=True):
+    dir_x = -1 if face_left else 1
+    toe = (ankle[0] + dir_x * FOOT, ankle[1] + 3)
+    heel = (ankle[0] - dir_x * FOOT * 0.3, ankle[1] + 3)
+    seg(d, heel, toe, width=8)
+    joint(d, ankle, r=5)
+
+
+def draw_db(d, hand):
+    """Side-view dumbbell at hand."""
+    a = (hand[0] - 14, hand[1])
+    b = (hand[0] + 14, hand[1])
+    d.line([a, b], fill=ACCENT, width=5)
+    for end in (a, b):
+        d.ellipse([end[0] - 5, end[1] - 13, end[0] + 5, end[1] + 13], fill=ACCENT)
+    joint(d, hand, r=6)
+
+
+def two_bone_ik(shoulder, hand, len1, len2, bend_sign=1.0):
+    """Place elbow for arm with fixed lengths. bend_sign: +1 or -1 for side of bend."""
+    dx = hand[0] - shoulder[0]
+    dy = hand[1] - shoulder[1]
+    dist = math.hypot(dx, dy)
+    max_reach = (len1 + len2) * 0.995
+    if dist < 1e-3:
+        return ((shoulder[0] + len1, shoulder[1]), hand)
+    if dist > max_reach:
+        # stretch hand toward shoulder
+        s = max_reach / dist
+        hand = (shoulder[0] + dx * s, shoulder[1] + dy * s)
+        dx, dy = hand[0] - shoulder[0], hand[1] - shoulder[1]
+        dist = max_reach
+
+    # distance from shoulder to elbow projection on shoulder-hand axis
+    # cos law
+    cos_a = (len1 * len1 + dist * dist - len2 * len2) / (2 * len1 * dist)
+    cos_a = max(-1.0, min(1.0, cos_a))
+    a = math.acos(cos_a)
+    base = math.atan2(dy, dx)
+    # bend posterior (behind the body) for side-view hanging arm
+    ang = base + bend_sign * a
+    elbow = (
+        shoulder[0] + math.cos(ang) * len1,
+        shoulder[1] + math.sin(ang) * len1,
+    )
+    return elbow, hand
+
+
+def stick_rdl_side(t: float) -> Image.Image:
+    """
+    t=0 stand, t=1 bottom of RDL.
+    Side view facing left. Hips go back (+x). Hands drop straight down
+    from upper thigh to mid-shin.
+    """
     im = Image.new("RGB", (W, H), BG)
     d = ImageDraw.Draw(im)
-    # floor line
-    d.line([(40, H - 70), (W - 40, H - 70)], fill=FLOOR, width=4)
-    return im, d
+    floor_y = H - 72
+    d.line([(40, floor_y), (W - 40, floor_y)], fill=FLOOR_C, width=4)
 
+    t = max(0.0, min(1.0, t))
 
-def limb(d: ImageDraw.ImageDraw, a, b, width=8, color=INK):
-    d.line([a, b], fill=color, width=width)
-    # rounded joints
-    r = max(3, width // 2 + 1)
-    for p in (a, b):
-        d.ellipse([p[0] - r, p[1] - r, p[0] + r, p[1] + r], fill=color)
+    # --- Fixed foot ---
+    ankle = (W * 0.42, floor_y - 3)
 
+    # Standing hip (above ankle with soft knee)
+    hip0_x = ankle[0] + 4
+    hip0_y = floor_y - SHIN - THIGH + 14
 
-def circle(d, c, r, color=INK, fill=None):
-    x, y = c
-    d.ellipse([x - r, y - r, x + r, y + r], outline=color, width=4, fill=fill)
+    # Hips travel BACK (to the right, +x) as we hinge
+    hip_back = HEAD * 2.35 * t
+    hip_drop = HEAD * 0.4 * t
+    hip = (hip0_x + hip_back, hip0_y + hip_drop)
 
+    # Knee: soft bend, between hip and ankle, slightly forward (left) of the hip-ankle line
+    # Use geometry: place knee so thigh≈THIGH, shin≈SHIN
+    # Simple approach: interpolate standing knee → slightly more bent
+    knee0 = (ankle[0] + 10, floor_y - SHIN + 4)
+    # At hinge, knee stays roughly over mid-foot with more bend
+    knee1 = (ankle[0] + 18 + hip_back * 0.15, floor_y - SHIN * 0.88)
+    knee = (lerp(knee0[0], knee1[0], t), lerp(knee0[1], knee1[1], t))
 
-def draw_dumbbell(d, center, angle_deg, scale=1.0):
-    """Small dumbbell at center, bar along angle."""
-    ang = math.radians(angle_deg)
-    ux, uy = math.cos(ang), math.sin(ang)
-    # perpendicular
-    px, py = -uy, ux
-    half = 22 * scale
-    head = 10 * scale
-    # bar
-    a = (center[0] - ux * half, center[1] - uy * half)
-    b = (center[0] + ux * half, center[1] + uy * half)
-    limb(d, a, b, width=5, color=ACCENT)
-    for end in (a, b):
-        # plate
-        d.ellipse(
-            [end[0] - head * 0.55, end[1] - head,
-             end[0] + head * 0.55, end[1] + head],
-            fill=ACCENT,
-        )
-
-
-def stick_rdl(hinge_deg: float) -> Image.Image:
-    """
-    Stick figure Dumbbell Romanian Deadlift (original drawing).
-    hinge_deg: 0 = upright, ~60 = bottom of hinge (torso toward horizontal).
-    Side-ish 3/4 view: left leg slightly back for depth, DBs track along thighs.
-    """
-    im, d = new_canvas()
-    hinge = math.radians(hinge_deg)
-
-    # Stance
-    ankle_l = (W // 2 - 32, H - 78)
-    ankle_r = (W // 2 + 32, H - 78)
-    knee_l = (ankle_l[0] + 4, ankle_l[1] - 72)
-    knee_r = (ankle_r[0] - 4, ankle_r[1] - 72)
-
-    # Hip drifts back as hinge increases (RDL pattern)
-    hip = (
-        W // 2 - math.sin(hinge) * 48,
-        H - 198 + math.sin(hinge) * 12,
-    )
-
-    # Soft knees track slightly forward relative to hip
-    knee_l = (hip[0] - 26 + math.sin(hinge) * 10, hip[1] + 78)
-    knee_r = (hip[0] + 26 + math.sin(hinge) * 10, hip[1] + 78)
-    ankle_l = (knee_l[0] - 4, H - 78)
-    ankle_r = (knee_r[0] + 4, H - 78)
-
-    torso_len = 100
-    # Flat back: shoulder is hip + length at angle from vertical
+    # Torso lean: 0 upright → ~80° from vertical (forward = left)
+    lean = math.radians(lerp(0, 80, t))
     shoulder = (
-        hip[0] + math.sin(hinge) * torso_len,
-        hip[1] - math.cos(hinge) * torso_len,
+        hip[0] - math.sin(lean) * TORSO,
+        hip[1] - math.cos(lean) * TORSO,
     )
-    head_r = 22
     head = (
-        shoulder[0] + math.sin(hinge) * (head_r + 10),
-        shoulder[1] - math.cos(hinge) * (head_r + 10),
+        shoulder[0] - math.sin(lean) * (NECK + HEAD * 0.48),
+        shoulder[1] - math.cos(lean) * (NECK + HEAD * 0.48),
     )
-    circle(d, head, head_r, fill=(255, 255, 255))
 
-    limb(d, hip, shoulder, width=11)
-    limb(d, hip, knee_l, width=9)
-    limb(d, hip, knee_r, width=9)
-    limb(d, knee_l, ankle_l, width=9)
-    limb(d, knee_r, ankle_r, width=9)
-    limb(d, ankle_l, (ankle_l[0] - 20, ankle_l[1] + 3), width=7)
-    limb(d, ankle_r, (ankle_r[0] + 20, ankle_r[1] + 3), width=7)
+    # --- Hand path: straight vertical ---
+    # Upper thigh at stand (just below hip crease)
+    hand_y_top = hip0_y + THIGH * 0.12
+    # Mid-shin
+    hand_y_bot = floor_y - SHIN * 0.42
+    hand_y = lerp(hand_y_top, hand_y_bot, t)
+    # In front of the leg (left of shin)
+    hand_x = ankle[0] - 22
+    hand = (hand_x, hand_y)
 
-    # Arms long, DBs near thighs (classic RDL path)
-    # Hand offset down the thigh from hip
-    hand_dist = 95 + hinge_deg * 0.35
-    # Direction roughly along legs (down + slight forward with hinge)
-    hand_dir_x = math.sin(hinge) * 0.25
-    hand_dir_y = 1.0
-    # normalize-ish
-    mag = math.hypot(hand_dir_x, hand_dir_y) or 1
-    hand_dir_x /= mag
-    hand_dir_y /= mag
+    # Arm IK — bend elbow "back" (toward +x / posterior)
+    elbow, hand = two_bone_ik(shoulder, hand, UPPER_ARM, FOREARM, bend_sign=1.0)
 
-    hand_l = (
-        hip[0] - 18 + hand_dir_x * hand_dist * 0.15 + math.sin(hinge) * 40,
-        hip[1] + hand_dir_y * (55 + hinge_deg * 0.85),
+    # --- Draw (back-to-front) ---
+    # Leg
+    seg(d, hip, knee, width=11)
+    seg(d, knee, ankle, width=11)
+    draw_foot(d, ankle, face_left=True)
+
+    # Torso + neck + head
+    seg(d, hip, shoulder, width=13)
+    neck_end = (
+        shoulder[0] - math.sin(lean) * NECK,
+        shoulder[1] - math.cos(lean) * NECK,
     )
-    hand_r = (
-        hip[0] + 18 + hand_dir_x * hand_dist * 0.15 + math.sin(hinge) * 40,
-        hip[1] + hand_dir_y * (55 + hinge_deg * 0.85),
-    )
-    elbow_l = ((shoulder[0] * 0.35 + hand_l[0] * 0.65), (shoulder[1] * 0.35 + hand_l[1] * 0.65))
-    elbow_r = ((shoulder[0] * 0.35 + hand_r[0] * 0.65), (shoulder[1] * 0.35 + hand_r[1] * 0.65))
-    limb(d, shoulder, elbow_l, width=7)
-    limb(d, shoulder, elbow_r, width=7)
-    limb(d, elbow_l, hand_l, width=7)
-    limb(d, elbow_r, hand_r, width=7)
+    seg(d, shoulder, neck_end, width=6)
+    draw_head(d, head, face_left=True)
 
-    # Dumbbells follow hand path, bar ~horizontal
-    draw_dumbbell(d, hand_l, 5 + hinge_deg * 0.2, scale=1.05)
-    draw_dumbbell(d, hand_r, 5 + hinge_deg * 0.2, scale=1.05)
+    # Arm: upper arm, forearm, hand
+    seg(d, shoulder, elbow, width=9)
+    seg(d, elbow, hand, width=9)
+    # hand block
+    palm = (hand[0] - HAND * 0.6, hand[1] + 3)
+    seg(d, hand, palm, width=6)
+    draw_db(d, hand)
 
-    d.text((16, 16), "Dumbbell RDL (stick demo)", fill=(100, 116, 139))
-    d.text((16, 36), "hip hinge · soft knees · flat back", fill=(148, 163, 184))
-    d.text((16, H - 36), "Original diagram — not a photo", fill=(148, 163, 184))
+    # Labels
+    d.text((18, 14), "Dumbbell Romanian Deadlift", fill=(71, 85, 105))
+    d.text((18, 36), "Side view · hip hinge back · bar path straight down", fill=MUTED)
+    if t <= 0.05:
+        phase = "1  Stand — DBs at upper thighs"
+    elif t >= 0.95:
+        phase = "2  Bottom — hips back, DBs at mid-shin"
+    else:
+        phase = "2  Hinge — hips back, bar path straight down"
+    d.text((18, 58), phase, fill=ACCENT)
+    d.text((18, H - 38), "Original stick demo — not a photo", fill=MUTED)
 
     return im
 
 
-def frames_rdl(n_half: int = 10) -> list[Image.Image]:
-    """Up and down through the hinge."""
+def frames_rdl(n_half: int = 18) -> list[Image.Image]:
     frames = []
-    # 0 → max → 0
-    max_h = 62
     for i in range(n_half + 1):
-        t = i / n_half
-        # ease in-out
-        t = 0.5 - 0.5 * math.cos(math.pi * t)
-        frames.append(stick_rdl(max_h * t))
+        frames.append(stick_rdl_side(ease(i / n_half)))
+    # pause at bottom
+    frames.append(stick_rdl_side(1.0))
+    frames.append(stick_rdl_side(1.0))
+    frames.append(stick_rdl_side(1.0))
     for i in range(1, n_half + 1):
-        t = i / n_half
-        t = 0.5 - 0.5 * math.cos(math.pi * t)
-        frames.append(stick_rdl(max_h * (1 - t)))
+        frames.append(stick_rdl_side(ease(1.0 - i / n_half)))
     return frames
 
 
-def save_webp(frames: list[Image.Image], path: Path, duration: int = DURATION_MS):
+def save_webp(frames, path: Path, duration=DURATION_MS):
     path.parent.mkdir(parents=True, exist_ok=True)
     frames[0].save(
         path,
@@ -176,18 +230,23 @@ def save_webp(frames: list[Image.Image], path: Path, duration: int = DURATION_MS
         append_images=frames[1:],
         duration=duration,
         loop=0,
-        quality=80,
+        quality=84,
         method=4,
     )
     print(f"wrote {path} ({path.stat().st_size // 1024} KB, {len(frames)} frames)")
 
 
 def main():
-    # Dumbbell Romanian Deadlift (seed id)
-    frames = frames_rdl(12)
+    frames = frames_rdl(18)
     save_webp(frames, OUT / "db-romanian-deadlift.webp")
-    # Alias if catalog uses longer name
     save_webp(frames, OUT / "dumbbell-romanian-deadlift.webp")
+    frames[0].save(OUT / "_rdl_qa_stand.png")
+    # bottom ≈ after down phase
+    bottom_i = 18
+    frames[bottom_i].save(OUT / "_rdl_qa_bottom.png")
+    mid_i = 9
+    frames[mid_i].save(OUT / "_rdl_qa_mid.png")
+    print("QA:", "_rdl_qa_stand.png", "_rdl_qa_mid.png", "_rdl_qa_bottom.png")
 
 
 if __name__ == "__main__":
