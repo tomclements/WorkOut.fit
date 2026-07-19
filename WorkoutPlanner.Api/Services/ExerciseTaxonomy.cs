@@ -168,12 +168,8 @@ public static class ExerciseTaxonomy
         if (ContainsAny(n, "foam roll", "foam roller") || n.Contains("smr"))
             eq.Add("foam-roller");
 
-        // Bench / incline surface (very common under-tag in free-exercise-db)
-        if (NeedsBench(n))
-            eq.Add("bench");
-
-        // Preacher / spider often need a bench or preacher pad — model as bench
-        if (ContainsAny(n, "preacher", "spider curl"))
+        // Bench / box / pad surface (very common under-tag in free-exercise-db)
+        if (NeedsBench(n, eq))
             eq.Add("bench");
 
         if (eq.Count == 0)
@@ -182,25 +178,71 @@ public static class ExerciseTaxonomy
         return eq.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
     }
 
-    private static bool NeedsBench(string n)
+    /// <summary>
+    /// Whether the exercise needs a bench (or box / seat modeled as bench).
+    /// <paramref name="eqSoFar"/> is used so cable/machine seated work is not
+    /// forced to also list a free bench when the apparatus already has a seat.
+    /// </summary>
+    private static bool NeedsBench(string n, HashSet<string> eqSoFar)
     {
-        // Any incline/decline strength pattern
+        // Explicit floor work never needs a bench
+        if (Regex.IsMatch(n, @"\bfloor\b"))
+            return false;
+
+        // Name literally includes "bench" (squat to a bench, rollout from bench, head on bench…)
+        if (Regex.IsMatch(n, @"\bbench\b"))
+            return true;
+
+        // Platform / box patterns (we model box as bench in the equipment catalog)
+        if (Regex.IsMatch(n, @"\bbox squat\b|\bstep[ -]?ups?\b|\bhip thrust\b"))
+            return true;
+
+        // Adjustable / flat bench positions
         if (Regex.IsMatch(n, @"\b(incline|decline)\b"))
+            return true;
+
+        // Preacher pad / spider (not "spider crawl")
+        if (n.Contains("preacher") || Regex.IsMatch(n, @"spider\s*curl"))
+            return true;
+
+        // Classic bench-lying lifts even when "bench" is omitted from the name
+        if (Regex.IsMatch(n, @"pullover|skull\s*crush|french\s*press|\bjm\s*press\b"))
+            return true;
+
+        // Concentration curls are almost always braced on a thigh while seated on a bench
+        // (standing concentration curl is the exception)
+        if (Regex.IsMatch(n, @"concentration\s*curl") && !n.Contains("standing"))
+            return true;
+
+        // Seated free-weight work needs a bench/seat. Cable stacks and machines already provide one.
+        if (Regex.IsMatch(n, @"\bseated\b"))
         {
-            // Almost all incline/decline lifts need a bench or elevated pad
-            if (Regex.IsMatch(n, @"curl|press|fly|row|raise|push[ -]?up|sit[ -]?up|crunch|triceps|extension|kickback|chest|bench|prone|hammer"))
-                return true;
-            // "over incline bench", "against an incline"
-            if (n.Contains("bench") || n.Contains("incline bench"))
-                return true;
+            if (eqSoFar.Contains("cable") || eqSoFar.Contains("machines"))
+                return false;
+            if (Regex.IsMatch(n, @"cable|machine|smith|leg\s*press|hack\s*squat|pulldown"))
+                return false;
+            return true;
         }
 
-        if (Regex.IsMatch(n, @"\bbench\b") &&
-            Regex.IsMatch(n, @"press|fly|dip|pull|row|crunch|sit|curl|kickback|extension|pullover"))
-            return true;
-
-        if (ContainsAny(n, "flat bench", "on a bench", "lying on bench", "seated on bench"))
-            return true;
+        // Lying / prone / supine free-weight (or EZ-bar) work is almost always on a bench.
+        // Medicine-ball throws are usually on the floor; foam-roll / ball already have surfaces.
+        if (Regex.IsMatch(n, @"\b(lying|prone|supine)\b"))
+        {
+            if (eqSoFar.Contains("stability-ball") || eqSoFar.Contains("foam-roller"))
+                return false;
+            if (n.Contains("medicine ball") || eqSoFar.Contains("medicine-ball"))
+                return false;
+            if (Regex.IsMatch(n, @"\b(throw|slam|toss)\b"))
+                return false;
+            // Free weights / EZ bar / bands skull-style → bench
+            if (eqSoFar.Contains("dumbbells") || eqSoFar.Contains("barbell")
+                || eqSoFar.Contains("ez-bar") || eqSoFar.Contains("kettlebell")
+                || eqSoFar.Contains("bands") || eqSoFar.Contains("cable"))
+                return true;
+            // Name implies free weight even if equipment not yet tagged
+            if (Regex.IsMatch(n, @"dumbbell|barbell|ez[ -]?bar|kettlebell"))
+                return true;
+        }
 
         return false;
     }

@@ -83,21 +83,60 @@ def infer_slot(primary: list[str], force: str | None, name: str) -> str:
     return "core"
 
 
-def needs_bench(n: str) -> bool:
+def needs_bench(n: str, eq: set[str]) -> bool:
+    """Whether the exercise needs a bench (or box/seat modeled as bench).
+
+    Must stay aligned with ExerciseTaxonomy.NeedsBench in C#.
+    """
+    # Explicit floor work never needs a bench
+    if re.search(r"\bfloor\b", n):
+        return False
+
+    # Name literally includes "bench"
+    if re.search(r"\bbench\b", n):
+        return True
+
+    # Platform / box patterns (box modeled as bench in our catalog)
+    if re.search(r"\bbox squat\b|\bstep[ -]?ups?\b|\bhip thrust\b", n):
+        return True
+
+    # Adjustable / flat bench positions
     if re.search(r"\b(incline|decline)\b", n):
-        if re.search(
-            r"curl|press|fly|row|raise|push[ -]?up|sit[ -]?up|crunch|triceps|extension|kickback|chest|bench|prone|hammer",
-            n,
-        ):
-            return True
-        if "bench" in n:
-            return True
-    if re.search(r"\bbench\b", n) and re.search(
-        r"press|fly|dip|pull|row|crunch|sit|curl|kickback|extension|pullover", n
-    ):
         return True
-    if any(x in n for x in ("flat bench", "on a bench", "lying on bench", "seated on bench")):
+
+    # Preacher pad / spider curl (not "spider crawl")
+    if "preacher" in n or re.search(r"spider\s*curl", n):
         return True
+
+    # Classic bench-lying lifts even when "bench" is omitted
+    if re.search(r"pullover|skull\s*crush|french\s*press|\bjm\s*press\b", n):
+        return True
+
+    # Concentration curls (standing is the exception)
+    if re.search(r"concentration\s*curl", n) and "standing" not in n:
+        return True
+
+    # Seated free-weight work needs a bench/seat; cable/machines provide their own
+    if re.search(r"\bseated\b", n):
+        if "cable" in eq or "machines" in eq:
+            return False
+        if re.search(r"cable|machine|smith|leg\s*press|hack\s*squat|pulldown", n):
+            return False
+        return True
+
+    # Lying / prone / supine free-weight work is almost always on a bench
+    if re.search(r"\b(lying|prone|supine)\b", n):
+        if "stability-ball" in eq or "foam-roller" in eq:
+            return False
+        if "medicine ball" in n or "medicine-ball" in eq:
+            return False
+        if re.search(r"\b(throw|slam|toss)\b", n):
+            return False
+        if eq & {"dumbbells", "barbell", "ez-bar", "kettlebell", "bands", "cable"}:
+            return True
+        if re.search(r"dumbbell|barbell|ez[ -]?bar|kettlebell", n):
+            return True
+
     return False
 
 
@@ -125,9 +164,7 @@ def enrich_equipment(name: str, equipment: list[str]) -> list[str]:
         eq.add("bands")
     if "foam roll" in n or "foam roller" in n or "smr" in n:
         eq.add("foam-roller")
-    if needs_bench(n):
-        eq.add("bench")
-    if "preacher" in n or "spider curl" in n:
+    if needs_bench(n, eq):
         eq.add("bench")
 
     if not eq:

@@ -86,6 +86,91 @@ public class ExerciseDataTests
     }
 
     [Fact]
+    public void NameContainingBench_RequiresBench()
+    {
+        var exercises = LoadExercises();
+        var withBenchInName = exercises
+            .Where(e => e.Name.Contains("bench", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+        Assert.NotEmpty(withBenchInName);
+        Assert.All(withBenchInName, ex => Assert.Contains("bench", ex.Equipment));
+    }
+
+    [Fact]
+    public void DumbbellSquatToBench_RequiresBenchAndDumbbells()
+    {
+        var ex = FindExercise("Dumbbell Squat To A Bench");
+        Assert.Contains("bench", ex.Equipment);
+        Assert.Contains("dumbbells", ex.Equipment);
+    }
+
+    [Fact]
+    public void SeatedBentOverTwoArmDumbbellExtension_RequiresBenchAndDumbbells()
+    {
+        var ex = FindExercise("Seated Bent-Over Two-Arm Dumbbell Triceps Extension");
+        Assert.Contains("bench", ex.Equipment);
+        Assert.Contains("dumbbells", ex.Equipment);
+        Assert.Equal("push", ex.Slot);
+    }
+
+    [Fact]
+    public void SeatedFreeWeight_RequiresBench_StandingConcentrationDoesNot()
+    {
+        var seated = FindExercise("Seated Dumbbell Press");
+        Assert.Contains("bench", seated.Equipment);
+
+        var standing = FindExercise("Standing Concentration Curl");
+        Assert.DoesNotContain("bench", standing.Equipment);
+        Assert.Contains("dumbbells", standing.Equipment);
+    }
+
+    [Fact]
+    public void LyingDumbbellExtension_RequiresBench()
+    {
+        var ex = FindExercise("Lying Dumbbell Tricep Extension");
+        Assert.Contains("bench", ex.Equipment);
+        Assert.Contains("dumbbells", ex.Equipment);
+    }
+
+    [Fact]
+    public void StepUpsAndHipThrust_RequireBench()
+    {
+        Assert.Contains("bench", FindExercise("Dumbbell Step Ups").Equipment);
+        Assert.Contains("bench", FindExercise("Barbell Hip Thrust").Equipment);
+        Assert.Contains("bench", FindExercise("Box Squat").Equipment);
+    }
+
+    [Fact]
+    public void Taxonomy_EnrichEquipment_CoversCommonBenchPatterns()
+    {
+        Assert.Contains("bench", ExerciseTaxonomy.EnrichEquipmentFromName("Dumbbell Squat To A Bench", new[] { "dumbbells" }));
+        Assert.Contains("bench", ExerciseTaxonomy.EnrichEquipmentFromName(
+            "Seated Bent-Over Two-Arm Dumbbell Triceps Extension", new[] { "dumbbells" }));
+        Assert.Contains("bench", ExerciseTaxonomy.EnrichEquipmentFromName("Lying Dumbbell Tricep Extension", new[] { "dumbbells" }));
+        Assert.Contains("bench", ExerciseTaxonomy.EnrichEquipmentFromName("Barbell Hip Thrust", new[] { "barbell" }));
+        Assert.Contains("bench", ExerciseTaxonomy.EnrichEquipmentFromName("EZ-Bar Skullcrusher", new[] { "ez-bar", "barbell" }));
+        Assert.DoesNotContain("bench", ExerciseTaxonomy.EnrichEquipmentFromName("Standing Concentration Curl", new[] { "dumbbells" }));
+        Assert.DoesNotContain("bench", ExerciseTaxonomy.EnrichEquipmentFromName("Spider Crawl", Array.Empty<string>()));
+        Assert.DoesNotContain("bench", ExerciseTaxonomy.EnrichEquipmentFromName("Floor Press", new[] { "barbell" }));
+    }
+
+    private static List<Exercise> LoadExercises()
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "WorkoutPlanner.Api", "Data", "exercises.json");
+        return JsonSerializer.Deserialize<List<Exercise>>(
+            File.ReadAllText(path),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+    }
+
+    private static Exercise FindExercise(string name)
+    {
+        var ex = LoadExercises().FirstOrDefault(e =>
+            string.Equals(e.Name, name, StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(ex);
+        return ex!;
+    }
+
+    [Fact]
     public void AllEquipmentIds_AreKnown()
     {
         var baseDir = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "WorkoutPlanner.Api", "Data");

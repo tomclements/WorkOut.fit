@@ -724,7 +724,8 @@
     "id": "band-skull-crusher",
     "name": "Band Skull Crusher",
     "equipment": [
-      "bands"
+      "bands",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -1116,7 +1117,8 @@
     "id": "barbell-hip-thrust",
     "name": "Barbell Hip Thrust",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -1268,7 +1270,8 @@
     "id": "barbell-rollout-from-bench",
     "name": "Barbell Rollout from Bench",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -1330,7 +1333,8 @@
     "id": "barbell-seated-calf-raise",
     "name": "Barbell Seated Calf Raise",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -1532,7 +1536,8 @@
     "id": "barbell-squat-to-a-bench",
     "name": "Barbell Squat To A Bench",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "advanced",
     "primary": [
@@ -1564,7 +1569,8 @@
     "id": "barbell-step-ups",
     "name": "Barbell Step Ups",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -1657,6 +1663,7 @@
     "id": "bench-jump",
     "name": "Bench Jump",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "intermediate",
@@ -1818,6 +1825,7 @@
     "id": "bent-over-dumbbell-rear-delt-raise-with-head-on-bench",
     "name": "Bent Over Dumbbell Rear Delt Raise With Head On Bench",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -2037,7 +2045,8 @@
     "id": "bent-arm-barbell-pullover",
     "name": "Bent-Arm Barbell Pullover",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -2070,6 +2079,7 @@
     "id": "bent-arm-dumbbell-pullover",
     "name": "Bent-Arm Dumbbell Pullover",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -2357,7 +2367,8 @@
     "id": "box-squat",
     "name": "Box Squat",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -2391,7 +2402,8 @@
     "name": "Box Squat with Bands",
     "equipment": [
       "bands",
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "advanced",
     "primary": [
@@ -2425,7 +2437,8 @@
     "id": "box-squat-with-chains",
     "name": "Box Squat with Chains",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "advanced",
     "primary": [
@@ -2767,6 +2780,7 @@
     "id": "cable-incline-pushdown",
     "name": "Cable Incline Pushdown",
     "equipment": [
+      "bench",
       "cable"
     ],
     "level": "beginner",
@@ -2893,6 +2907,7 @@
     "id": "cable-lying-triceps-extension",
     "name": "Cable Lying Triceps Extension",
     "equipment": [
+      "bench",
       "cable"
     ],
     "level": "beginner",
@@ -4177,6 +4192,7 @@
     "id": "concentration-curls",
     "name": "Concentration Curls",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -5581,6 +5597,7 @@
     "id": "dumbbell-lying-one-arm-rear-lateral-raise",
     "name": "Dumbbell Lying One-Arm Rear Lateral Raise",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -5609,6 +5626,7 @@
     "id": "dumbbell-lying-pronation",
     "name": "Dumbbell Lying Pronation",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -5636,6 +5654,7 @@
     "id": "dumbbell-lying-rear-lateral-raise",
     "name": "Dumbbell Lying Rear Lateral Raise",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -5662,6 +5681,7 @@
     "id": "dumbbell-lying-supination",
     "name": "Dumbbell Lying Supination",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -5952,6 +5972,7 @@
     "id": "dumbbell-seated-box-jump",
     "name": "Dumbbell Seated Box Jump",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -5982,6 +6003,7 @@
     "id": "dumbbell-seated-one-leg-calf-raise",
     "name": "Dumbbell Seated One-Leg Calf Raise",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -6118,6 +6140,7 @@
     "id": "dumbbell-squat-to-a-bench",
     "name": "Dumbbell Squat To A Bench",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -6150,6 +6173,7 @@
     "id": "dumbbell-step-ups",
     "name": "Dumbbell Step Ups",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -6291,6 +6315,7 @@
     "name": "EZ-Bar Skullcrusher",
     "equipment": [
       "barbell",
+      "bench",
       "ez-bar"
     ],
     "level": "beginner",
@@ -6974,7 +6999,8 @@
     "id": "front-barbell-squat-to-a-bench",
     "name": "Front Barbell Squat To A Bench",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "advanced",
     "primary": [
@@ -7083,7 +7109,8 @@
     "id": "front-raise-and-pullover",
     "name": "Front Raise And Pullover",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -8656,7 +8683,8 @@
     "id": "jm-press",
     "name": "JM Press",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -9107,6 +9135,7 @@
     "id": "kettlebell-seated-press",
     "name": "Kettlebell Seated Press",
     "equipment": [
+      "bench",
       "kettlebell"
     ],
     "level": "intermediate",
@@ -10241,6 +10270,7 @@
     "id": "lying-cable-curl",
     "name": "Lying Cable Curl",
     "equipment": [
+      "bench",
       "cable"
     ],
     "level": "intermediate",
@@ -10268,7 +10298,8 @@
     "id": "lying-cambered-barbell-row",
     "name": "Lying Cambered Barbell Row",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -10299,6 +10330,7 @@
     "id": "lying-close-grip-bar-curl-on-high-pulley",
     "name": "Lying Close-Grip Bar Curl On High Pulley",
     "equipment": [
+      "bench",
       "cable"
     ],
     "level": "beginner",
@@ -10326,7 +10358,8 @@
     "id": "lying-close-grip-barbell-triceps-extension-behind-the-head",
     "name": "Lying Close-Grip Barbell Triceps Extension Behind The Head",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -10354,6 +10387,7 @@
     "name": "Lying Close-Grip Barbell Triceps Press To Chin",
     "equipment": [
       "barbell",
+      "bench",
       "ez-bar"
     ],
     "level": "intermediate",
@@ -10381,6 +10415,7 @@
     "id": "lying-dumbbell-tricep-extension",
     "name": "Lying Dumbbell Tricep Extension",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -10496,6 +10531,7 @@
     "id": "lying-one-arm-lateral-raise",
     "name": "Lying One-Arm Lateral Raise",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -10522,6 +10558,7 @@
     "id": "lying-rear-delt-raise",
     "name": "Lying Rear Delt Raise",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -10548,6 +10585,7 @@
     "id": "lying-supine-dumbbell-curl",
     "name": "Lying Supine Dumbbell Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -10605,6 +10643,7 @@
     "id": "lying-triceps-press",
     "name": "Lying Triceps Press",
     "equipment": [
+      "bench",
       "ez-bar"
     ],
     "level": "intermediate",
@@ -13528,7 +13567,8 @@
     "name": "Reverse Band Box Squat",
     "equipment": [
       "bands",
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -14206,7 +14246,8 @@
     "id": "seated-barbell-military-press",
     "name": "Seated Barbell Military Press",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -14236,7 +14277,8 @@
     "id": "seated-barbell-twist",
     "name": "Seated Barbell Twist",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -14260,6 +14302,7 @@
     "id": "seated-bent-over-one-arm-dumbbell-triceps-extension",
     "name": "Seated Bent-Over One-Arm Dumbbell Triceps Extension",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -14287,6 +14330,7 @@
     "id": "seated-bent-over-rear-delt-raise",
     "name": "Seated Bent-Over Rear Delt Raise",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -14313,6 +14357,7 @@
     "id": "seated-bent-over-two-arm-dumbbell-triceps-extension",
     "name": "Seated Bent-Over Two-Arm Dumbbell Triceps Extension",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -14428,7 +14473,8 @@
     "id": "seated-close-grip-concentration-barbell-curl",
     "name": "Seated Close-Grip Concentration Barbell Curl",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -14455,6 +14501,7 @@
     "id": "seated-dumbbell-curl",
     "name": "Seated Dumbbell Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -14482,6 +14529,7 @@
     "id": "seated-dumbbell-inner-biceps-curl",
     "name": "Seated Dumbbell Inner Biceps Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -14509,6 +14557,7 @@
     "id": "seated-dumbbell-palms-down-wrist-curl",
     "name": "Seated Dumbbell Palms-Down Wrist Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -14536,6 +14585,7 @@
     "id": "seated-dumbbell-palms-up-wrist-curl",
     "name": "Seated Dumbbell Palms-Up Wrist Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -14563,6 +14613,7 @@
     "id": "seated-dumbbell-press",
     "name": "Seated Dumbbell Press",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -14618,7 +14669,8 @@
     "id": "seated-good-mornings",
     "name": "Seated Good Mornings",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -14673,6 +14725,7 @@
     "id": "seated-leg-tucks",
     "name": "Seated Leg Tucks",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -14697,6 +14750,7 @@
     "id": "seated-one-arm-dumbbell-palms-down-wrist-curl",
     "name": "Seated One-Arm Dumbbell Palms-Down Wrist Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -14724,6 +14778,7 @@
     "id": "seated-one-arm-dumbbell-palms-up-wrist-curl",
     "name": "Seated One-Arm Dumbbell Palms-Up Wrist Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -14782,7 +14837,8 @@
     "id": "seated-palm-up-barbell-wrist-curl",
     "name": "Seated Palm-Up Barbell Wrist Curl",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -14809,7 +14865,8 @@
     "id": "seated-palms-down-barbell-wrist-curl",
     "name": "Seated Palms-Down Barbell Wrist Curl",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -14836,6 +14893,7 @@
     "id": "seated-side-lateral-raise",
     "name": "Seated Side Lateral Raise",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -14862,6 +14920,7 @@
     "id": "seated-triceps-press",
     "name": "Seated Triceps Press",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -16173,7 +16232,8 @@
     "id": "speed-box-squat",
     "name": "Speed Box Squat",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -17688,6 +17748,7 @@
     "id": "step-up-with-knee-raise",
     "name": "Step-up with Knee Raise",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -17867,6 +17928,7 @@
     "id": "straight-arm-dumbbell-pullover",
     "name": "Straight-Arm Dumbbell Pullover",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -19063,7 +19125,8 @@
     "id": "wide-grip-decline-barbell-pullover",
     "name": "Wide-Grip Decline Barbell Pullover",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
