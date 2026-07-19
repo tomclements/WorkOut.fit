@@ -411,10 +411,8 @@ async function startWorkout() {
   sessionExercises = selectedDay.exercises.map(ex => {
     const phase = (ex.phase || (ex.slot === 'warmup' || ex.slot === 'cooldown' ? ex.slot : 'work'));
     const id = ex.id || '';
-    const isMobility = phase === 'warmup' || phase === 'cooldown'
-      || id.startsWith('wu-') || id.startsWith('cd-');
     const demoAnimUrl = ex.demoAnimUrl
-      || (!isMobility && ex.imageUrl && id ? `/demos/${id}.webp` : null);
+      || (id ? `/demos/${id}.webp` : null);
     return {
       ...ex,
       phase,
@@ -555,16 +553,14 @@ function demoImageUrls(ex) {
   return urls;
 }
 
-/** Prebuilt animated WebP from scripts/build-exercise-webps.py */
+/** Prebuilt animated WebP from scripts/build-exercise-webps.py (+ mobility copies). */
 function demoWebpUrl(ex) {
   if (!ex) return null;
-  // Prefer explicit path from plan generation
+  // Prefer explicit path from plan generation (includes wu-* / cd-* demos)
   if (ex.demoAnimUrl) return ex.demoAnimUrl;
   if (!ex.id) return null;
-  // Mobility catalog ids are not in free-exercise-db
-  if (String(ex.id).startsWith('wu-') || String(ex.id).startsWith('cd-')) return null;
-  // Only attempt WebP when we have source stills (or an imageUrl that implies a demo was built)
-  if (!ex.imageUrl && !ex.demoAnimUrl) return null;
+  // Attempt WebP when we have source stills or a mobility/library id
+  if (!ex.imageUrl && !String(ex.id).startsWith('wu-') && !String(ex.id).startsWith('cd-')) return null;
   return `/demos/${encodeURIComponent(ex.id)}.webp`;
 }
 

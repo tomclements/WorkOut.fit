@@ -18,7 +18,12 @@ public static class MobilityCatalog
         /// <summary>general pulse-raiser, activate (prep), stretch (cool-down).</summary>
         string Role,
         int DurationSec,
-        string Cue);
+        string Cue,
+        /// <summary>
+        /// free-exercise-db exercise id used for stills / WebP demo (closest visual match).
+        /// Animated demo is served as /demos/{Id}.webp (copied from that source).
+        /// </summary>
+        string? SourceDemoId = null);
 
     // Normalized keys used for matching primary muscles from the exercise library
     private static readonly Dictionary<string, string> MuscleNormalize = new(StringComparer.OrdinalIgnoreCase)
@@ -57,75 +62,80 @@ public static class MobilityCatalog
     private static readonly Move[] Catalog =
     {
         // --- General pulse raisers (always first in warm-up) ---
+        // SourceDemoId = free-exercise-db exercise used for WebP/stills (closest visual match)
         new("wu-march", "March in place", "warmup", Array.Empty<string>(), "general", 40,
-            "Light pace, swing arms, raise heart rate gently"),
+            "Light pace, swing arms, raise heart rate gently", "step-up-with-knee-raise"),
         new("wu-jacks", "Jumping jacks", "warmup", Array.Empty<string>(), "general", 40,
-            "Soft landings; skip or step-jacks if joints prefer"),
+            "Soft landings; skip or step-jacks if joints prefer", "star-jump"),
         new("wu-high-knees", "High knees (easy)", "warmup", Array.Empty<string>(), "general", 35,
-            "Low intensity — just get blood moving"),
+            "Low intensity — just get blood moving", "knee-tuck-jump"),
 
         // --- Activation / dynamic prep ---
         new("wu-arm-circles", "Arm circles", "warmup", new[] { "shoulders", "chest", "back" }, "activate", 35,
-            "Small to large circles, both directions"),
+            "Small to large circles, both directions", "around-the-worlds"),
         new("wu-scap-pushup", "Scapular push-ups", "warmup", new[] { "chest", "shoulders", "triceps" }, "activate", 35,
-            "Plank or knees: spread then squeeze shoulder blades"),
+            "Plank or knees: spread then squeeze shoulder blades", "incline-push-up"),
         new("wu-band-disloc", "Open-chest arm swings", "warmup", new[] { "chest", "shoulders" }, "activate", 30,
-            "Cross-body then open wide; easy range"),
+            "Cross-body then open wide; easy range", "band-pull-apart"),
         new("wu-cat-cow", "Cat–cow", "warmup", new[] { "back", "core" }, "activate", 40,
-            "On all fours, slow spinal flexion/extension"),
+            "On all fours, slow spinal flexion/extension", "hyperextensions-with-no-hyperextension-bench"),
         new("wu-bird-dog", "Bird dog", "warmup", new[] { "back", "core", "glutes" }, "activate", 40,
-            "Opposite arm/leg, hold 2s, brace midsection"),
+            "Opposite arm/leg, hold 2s, brace midsection", "plank"),
         new("wu-dead-bug", "Dead bug", "warmup", new[] { "core" }, "activate", 40,
-            "Low back pressed to floor; slow opposite limbs"),
+            "Low back pressed to floor; slow opposite limbs", "dead-bug"),
         new("wu-hip-circles", "Standing hip circles", "warmup", new[] { "hips", "glutes", "quads", "hamstrings" }, "activate", 35,
-            "Hands on hips, slow circles each way"),
+            "Hands on hips, slow circles each way", "bodyweight-squat"),
         new("wu-leg-swings", "Leg swings", "warmup", new[] { "hamstrings", "hips", "quads", "glutes" }, "activate", 35,
-            "Front-to-back then side-to-side, controlled"),
+            "Front-to-back then side-to-side, controlled", "scissors-jump"),
         new("wu-bw-squat", "Bodyweight squat (easy)", "warmup", new[] { "quads", "glutes", "hamstrings" }, "activate", 40,
-            "Shallow to full as you warm; no load"),
+            "Shallow to full as you warm; no load", "bodyweight-squat"),
         new("wu-glute-bridge", "Glute bridge", "warmup", new[] { "glutes", "hamstrings", "core" }, "activate", 35,
-            "Squeeze glutes at top, no lower-back arch"),
+            "Squeeze glutes at top, no lower-back arch", "butt-lift-bridge"),
         new("wu-calf-raise", "Calf raises", "warmup", new[] { "calves" }, "activate", 30,
-            "Full ankle range, both feet"),
+            "Full ankle range, both feet", "standing-calf-raises"),
         new("wu-wrist-circles", "Wrist circles & open/close", "warmup", new[] { "forearms", "biceps", "triceps" }, "activate", 30,
-            "Prep elbows/wrists before curling or pressing"),
+            "Prep elbows/wrists before curling or pressing", "palms-up-barbell-wrist-curl-over-a-bench"),
         new("wu-shoulder-rolls", "Shoulder rolls", "warmup", new[] { "shoulders", "back", "neck" }, "activate", 30,
-            "Slow forward and back, relax neck"),
+            "Slow forward and back, relax neck", "front-dumbbell-raise"),
         new("wu-torso-twist", "Standing torso twists", "warmup", new[] { "core", "back" }, "activate", 30,
-            "Feet planted, gentle rotation"),
+            "Feet planted, gentle rotation", "medicine-ball-full-twist"),
 
         // --- Cool-down stretches ---
         new("cd-chest-door", "Chest doorway stretch", "cooldown", new[] { "chest", "shoulders" }, "stretch", 40,
-            "Elbow at 90°, lean gently; breathe 4–5 slow breaths"),
+            "Elbow at 90°, lean gently; breathe 4–5 slow breaths", "bodyweight-flyes"),
         new("cd-tricep-oh", "Overhead triceps stretch", "cooldown", new[] { "triceps", "shoulders" }, "stretch", 35,
-            "Elbow to ceiling, light pressure on elbow"),
+            "Elbow to ceiling, light pressure on elbow", "standing-dumbbell-triceps-extension"),
         new("cd-cross-body", "Cross-body shoulder stretch", "cooldown", new[] { "shoulders", "back" }, "stretch", 35,
-            "Arm across chest, soft shoulders"),
+            "Arm across chest, soft shoulders", "around-the-worlds"),
         new("cd-child-pose", "Child’s pose", "cooldown", new[] { "back", "shoulders", "hips" }, "stretch", 45,
-            "Hips to heels, arms reach forward, relax"),
+            "Hips to heels, arms reach forward, relax", "plank"),
         new("cd-thread-needle", "Thread the needle", "cooldown", new[] { "back", "shoulders" }, "stretch", 40,
-            "On all fours, thread arm under; both sides"),
+            "On all fours, thread arm under; both sides", "hyperextensions-with-no-hyperextension-bench"),
         new("cd-quad-stand", "Standing quad stretch", "cooldown", new[] { "quads", "hips" }, "stretch", 40,
-            "Hold ankle, knees together, tall posture"),
+            "Hold ankle, knees together, tall posture", "bodyweight-squat"),
         new("cd-ham-hinge", "Standing hamstring hinge", "cooldown", new[] { "hamstrings", "back" }, "stretch", 40,
-            "Soft knees, hinge at hips, long spine"),
+            "Soft knees, hinge at hips, long spine", "stiff-leg-barbell-good-morning"),
         new("cd-fig4", "Figure-4 glute stretch", "cooldown", new[] { "glutes", "hips" }, "stretch", 40,
-            "Seated or lying; ankle on opposite knee"),
+            "Seated or lying; ankle on opposite knee", "single-leg-glute-bridge"),
         new("cd-calf-wall", "Calf wall stretch", "cooldown", new[] { "calves" }, "stretch", 35,
-            "Back heel down, both straight and bent knee"),
+            "Back heel down, both straight and bent knee", "standing-calf-raises"),
         new("cd-hip-flexor", "Half-kneeling hip flexor stretch", "cooldown", new[] { "hips", "quads" }, "stretch", 40,
-            "Tuck pelvis, gentle forward shift"),
+            "Tuck pelvis, gentle forward shift", "kneeling-squat"),
         new("cd-cobra", "Prone press-up / cobra", "cooldown", new[] { "core", "back" }, "stretch", 35,
-            "Gentle extension, hips stay down"),
+            "Gentle extension, hips stay down", "reverse-hyperextension"),
         new("cd-knees-chest", "Knees to chest", "cooldown", new[] { "core", "back", "glutes" }, "stretch", 40,
-            "Supine hug knees, rock gently"),
+            "Supine hug knees, rock gently", "bent-knee-hip-raise"),
         new("cd-forearm-stretch", "Forearm flexor/extensor stretch", "cooldown", new[] { "forearms", "biceps" }, "stretch", 30,
-            "Arm straight, gentle palm up then palm down"),
+            "Arm straight, gentle palm up then palm down", "palms-up-barbell-wrist-curl-over-a-bench"),
         new("cd-neck-side", "Neck side stretch", "cooldown", new[] { "neck", "shoulders" }, "stretch", 30,
-            "Ear toward shoulder, no force"),
+            "Ear toward shoulder, no force", "isometric-neck-exercise-sides"),
         new("cd-breathe", "Box breathing (easy)", "cooldown", Array.Empty<string>(), "stretch", 40,
-            "In 4 · hold 4 · out 4 · hold 4 — downshift nervous system"),
+            "In 4 · hold 4 · out 4 · hold 4 — downshift nervous system", "plank"),
     };
+
+    /// <summary>free-exercise-db image base for still fallbacks.</summary>
+    private const string FedbImageBase =
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
 
     public static IReadOnlyList<string> NormalizeMuscles(IEnumerable<string>? primaries)
     {
@@ -275,20 +285,80 @@ public static class MobilityCatalog
         return result;
     }
 
-    private static PlanExercise ToPlanExercise(Move m, string phase) => new()
+    private static PlanExercise ToPlanExercise(Move m, string phase)
     {
-        Id = m.Id,
-        Name = m.Name,
-        Slot = phase,
-        Phase = phase,
-        Sets = 1,
-        RepsDisplay = $"{m.DurationSec}s",
-        Rest = 10,
-        WorkDuration = m.DurationSec,
-        IsTimeBased = true,
-        Primary = m.Targets.Length > 0 ? m.Targets.ToList() : new List<string> { "full body" },
-        Progression = m.Cue,
-        DemoUrl = "https://www.youtube.com/results?search_query=" +
-                  Uri.EscapeDataString(m.Name + " exercise mobility")
+        var (imageUrl, demoAnimUrl) = ResolveMedia(m);
+        return new PlanExercise
+        {
+            Id = m.Id,
+            Name = m.Name,
+            Slot = phase,
+            Phase = phase,
+            Sets = 1,
+            RepsDisplay = $"{m.DurationSec}s",
+            Rest = 10,
+            WorkDuration = m.DurationSec,
+            IsTimeBased = true,
+            Primary = m.Targets.Length > 0 ? m.Targets.ToList() : new List<string> { "full body" },
+            Progression = m.Cue,
+            DemoUrl = "https://www.youtube.com/results?search_query=" +
+                      Uri.EscapeDataString(m.Name + " exercise mobility"),
+            ImageUrl = imageUrl,
+            DemoAnimUrl = demoAnimUrl
+        };
+    }
+
+    /// <summary>
+    /// WebP is stored under the mobility id (/demos/wu-jacks.webp) after
+    /// <c>scripts/build-mobility-webps.py</c> copies from the source exercise demo.
+    /// Stills fall back to the source free-exercise-db pair for JS flip if needed.
+    /// </summary>
+    private static (string? ImageUrl, string? DemoAnimUrl) ResolveMedia(Move m)
+    {
+        if (string.IsNullOrWhiteSpace(m.SourceDemoId))
+            return (null, null);
+
+        // Prefer known folder names for stills (id uses hyphens; FEDB folders use underscores)
+        if (SourceImageFolders.TryGetValue(m.SourceDemoId, out var folder))
+        {
+            return (
+                FedbImageBase + folder + "/0.jpg",
+                $"/demos/{m.Id}.webp"
+            );
+        }
+
+        // Fallback: only WebP path
+        return (null, $"/demos/{m.Id}.webp");
+    }
+
+    /// <summary>
+    /// free-exercise-db folder names for SourceDemoId values (must match image paths).
+    /// </summary>
+    private static readonly Dictionary<string, string> SourceImageFolders = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["step-up-with-knee-raise"] = "Step-up_with_Knee_Raise",
+        ["star-jump"] = "Star_Jump",
+        ["knee-tuck-jump"] = "Knee_Tuck_Jump",
+        ["around-the-worlds"] = "Around_The_Worlds",
+        ["incline-push-up"] = "Incline_Push-Up",
+        ["band-pull-apart"] = "Band_Pull_Apart",
+        ["hyperextensions-with-no-hyperextension-bench"] = "Hyperextensions_With_No_Hyperextension_Bench",
+        ["plank"] = "Plank",
+        ["dead-bug"] = "Dead_Bug",
+        ["bodyweight-squat"] = "Bodyweight_Squat",
+        ["scissors-jump"] = "Scissors_Jump",
+        ["butt-lift-bridge"] = "Butt_Lift_Bridge",
+        ["standing-calf-raises"] = "Standing_Calf_Raises",
+        ["palms-up-barbell-wrist-curl-over-a-bench"] = "Palms-Up_Barbell_Wrist_Curl_Over_A_Bench",
+        ["front-dumbbell-raise"] = "Front_Dumbbell_Raise",
+        ["medicine-ball-full-twist"] = "Medicine_Ball_Full_Twist",
+        ["bodyweight-flyes"] = "Bodyweight_Flyes",
+        ["standing-dumbbell-triceps-extension"] = "Standing_Dumbbell_Triceps_Extension",
+        ["stiff-leg-barbell-good-morning"] = "Stiff_Leg_Barbell_Good_Morning",
+        ["single-leg-glute-bridge"] = "Single_Leg_Glute_Bridge",
+        ["kneeling-squat"] = "Kneeling_Squat",
+        ["reverse-hyperextension"] = "Reverse_Hyperextension",
+        ["bent-knee-hip-raise"] = "Bent-Knee_Hip_Raise",
+        ["isometric-neck-exercise-sides"] = "Isometric_Neck_Exercise_-_Sides",
     };
 }

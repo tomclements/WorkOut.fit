@@ -15,30 +15,69 @@
     abdominals: 'core', core: 'core', obliques: 'core', neck: 'neck'
   };
 
+  // FEDB folder for still flip fallback (must match free-exercise-db paths)
+  const FEDB = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+  const SOURCE_FOLDERS = {
+    'step-up-with-knee-raise': 'Step-up_with_Knee_Raise',
+    'star-jump': 'Star_Jump',
+    'knee-tuck-jump': 'Knee_Tuck_Jump',
+    'around-the-worlds': 'Around_The_Worlds',
+    'incline-push-up': 'Incline_Push-Up',
+    'band-pull-apart': 'Band_Pull_Apart',
+    'hyperextensions-with-no-hyperextension-bench': 'Hyperextensions_With_No_Hyperextension_Bench',
+    'plank': 'Plank',
+    'dead-bug': 'Dead_Bug',
+    'bodyweight-squat': 'Bodyweight_Squat',
+    'scissors-jump': 'Scissors_Jump',
+    'butt-lift-bridge': 'Butt_Lift_Bridge',
+    'standing-calf-raises': 'Standing_Calf_Raises',
+    'palms-up-barbell-wrist-curl-over-a-bench': 'Palms-Up_Barbell_Wrist_Curl_Over_A_Bench',
+    'front-dumbbell-raise': 'Front_Dumbbell_Raise',
+    'medicine-ball-full-twist': 'Medicine_Ball_Full_Twist',
+    'bodyweight-flyes': 'Bodyweight_Flyes',
+    'standing-dumbbell-triceps-extension': 'Standing_Dumbbell_Triceps_Extension',
+    'stiff-leg-barbell-good-morning': 'Stiff_Leg_Barbell_Good_Morning',
+    'single-leg-glute-bridge': 'Single_Leg_Glute_Bridge',
+    'kneeling-squat': 'Kneeling_Squat',
+    'reverse-hyperextension': 'Reverse_Hyperextension',
+    'bent-knee-hip-raise': 'Bent-Knee_Hip_Raise',
+    'isometric-neck-exercise-sides': 'Isometric_Neck_Exercise_-_Sides'
+  };
+
+  // Keep SourceDemoId aligned with MobilityCatalog.cs
   const CATALOG = [
-    { id: 'wu-march', name: 'March in place', phase: 'warmup', role: 'general', targets: [], duration: 40, cue: 'Light pace, swing arms, raise heart rate gently' },
-    { id: 'wu-jacks', name: 'Jumping jacks', phase: 'warmup', role: 'general', targets: [], duration: 40, cue: 'Soft landings; step-jacks if needed' },
-    { id: 'wu-arm-circles', name: 'Arm circles', phase: 'warmup', role: 'activate', targets: ['shoulders', 'chest', 'back'], duration: 35, cue: 'Small to large circles, both directions' },
-    { id: 'wu-scap-pushup', name: 'Scapular push-ups', phase: 'warmup', role: 'activate', targets: ['chest', 'shoulders', 'triceps'], duration: 35, cue: 'Plank or knees: spread then squeeze shoulder blades' },
-    { id: 'wu-cat-cow', name: 'Cat–cow', phase: 'warmup', role: 'activate', targets: ['back', 'core'], duration: 40, cue: 'On all fours, slow spinal flexion/extension' },
-    { id: 'wu-bird-dog', name: 'Bird dog', phase: 'warmup', role: 'activate', targets: ['back', 'core', 'glutes'], duration: 40, cue: 'Opposite arm/leg, brace midsection' },
-    { id: 'wu-dead-bug', name: 'Dead bug', phase: 'warmup', role: 'activate', targets: ['core'], duration: 40, cue: 'Low back pressed to floor; slow opposite limbs' },
-    { id: 'wu-hip-circles', name: 'Standing hip circles', phase: 'warmup', role: 'activate', targets: ['hips', 'glutes', 'quads', 'hamstrings'], duration: 35, cue: 'Hands on hips, slow circles each way' },
-    { id: 'wu-leg-swings', name: 'Leg swings', phase: 'warmup', role: 'activate', targets: ['hamstrings', 'hips', 'quads', 'glutes'], duration: 35, cue: 'Front-to-back then side-to-side' },
-    { id: 'wu-bw-squat', name: 'Bodyweight squat (easy)', phase: 'warmup', role: 'activate', targets: ['quads', 'glutes', 'hamstrings'], duration: 40, cue: 'Easy depth, no load' },
-    { id: 'wu-glute-bridge', name: 'Glute bridge', phase: 'warmup', role: 'activate', targets: ['glutes', 'hamstrings', 'core'], duration: 35, cue: 'Squeeze glutes at top' },
-    { id: 'wu-shoulder-rolls', name: 'Shoulder rolls', phase: 'warmup', role: 'activate', targets: ['shoulders', 'back', 'neck'], duration: 30, cue: 'Slow forward and back' },
-    { id: 'wu-wrist-circles', name: 'Wrist circles', phase: 'warmup', role: 'activate', targets: ['forearms', 'biceps', 'triceps'], duration: 30, cue: 'Prep elbows and wrists' },
-    { id: 'cd-chest-door', name: 'Chest doorway stretch', phase: 'cooldown', role: 'stretch', targets: ['chest', 'shoulders'], duration: 40, cue: 'Elbow at 90°, lean gently' },
-    { id: 'cd-cross-body', name: 'Cross-body shoulder stretch', phase: 'cooldown', role: 'stretch', targets: ['shoulders', 'back'], duration: 35, cue: 'Arm across chest' },
-    { id: 'cd-child-pose', name: "Child's pose", phase: 'cooldown', role: 'stretch', targets: ['back', 'shoulders', 'hips'], duration: 45, cue: 'Hips to heels, arms reach forward' },
-    { id: 'cd-quad-stand', name: 'Standing quad stretch', phase: 'cooldown', role: 'stretch', targets: ['quads', 'hips'], duration: 40, cue: 'Hold ankle, tall posture' },
-    { id: 'cd-ham-hinge', name: 'Standing hamstring hinge', phase: 'cooldown', role: 'stretch', targets: ['hamstrings', 'back'], duration: 40, cue: 'Soft knees, hinge at hips' },
-    { id: 'cd-fig4', name: 'Figure-4 glute stretch', phase: 'cooldown', role: 'stretch', targets: ['glutes', 'hips'], duration: 40, cue: 'Ankle on opposite knee' },
-    { id: 'cd-hip-flexor', name: 'Half-kneeling hip flexor stretch', phase: 'cooldown', role: 'stretch', targets: ['hips', 'quads'], duration: 40, cue: 'Tuck pelvis, gentle forward shift' },
-    { id: 'cd-knees-chest', name: 'Knees to chest', phase: 'cooldown', role: 'stretch', targets: ['core', 'back', 'glutes'], duration: 40, cue: 'Supine hug knees' },
-    { id: 'cd-forearm-stretch', name: 'Forearm stretch', phase: 'cooldown', role: 'stretch', targets: ['forearms', 'biceps'], duration: 30, cue: 'Gentle palm up then palm down' },
-    { id: 'cd-breathe', name: 'Box breathing (easy)', phase: 'cooldown', role: 'stretch', targets: [], duration: 40, cue: 'In 4 · hold 4 · out 4 · hold 4' }
+    { id: 'wu-march', name: 'March in place', phase: 'warmup', role: 'general', targets: [], duration: 40, cue: 'Light pace, swing arms, raise heart rate gently', sourceDemoId: 'step-up-with-knee-raise' },
+    { id: 'wu-jacks', name: 'Jumping jacks', phase: 'warmup', role: 'general', targets: [], duration: 40, cue: 'Soft landings; step-jacks if needed', sourceDemoId: 'star-jump' },
+    { id: 'wu-high-knees', name: 'High knees (easy)', phase: 'warmup', role: 'general', targets: [], duration: 35, cue: 'Low intensity — just get blood moving', sourceDemoId: 'knee-tuck-jump' },
+    { id: 'wu-arm-circles', name: 'Arm circles', phase: 'warmup', role: 'activate', targets: ['shoulders', 'chest', 'back'], duration: 35, cue: 'Small to large circles, both directions', sourceDemoId: 'around-the-worlds' },
+    { id: 'wu-scap-pushup', name: 'Scapular push-ups', phase: 'warmup', role: 'activate', targets: ['chest', 'shoulders', 'triceps'], duration: 35, cue: 'Plank or knees: spread then squeeze shoulder blades', sourceDemoId: 'incline-push-up' },
+    { id: 'wu-band-disloc', name: 'Open-chest arm swings', phase: 'warmup', role: 'activate', targets: ['chest', 'shoulders'], duration: 30, cue: 'Cross-body then open wide; easy range', sourceDemoId: 'band-pull-apart' },
+    { id: 'wu-cat-cow', name: 'Cat–cow', phase: 'warmup', role: 'activate', targets: ['back', 'core'], duration: 40, cue: 'On all fours, slow spinal flexion/extension', sourceDemoId: 'hyperextensions-with-no-hyperextension-bench' },
+    { id: 'wu-bird-dog', name: 'Bird dog', phase: 'warmup', role: 'activate', targets: ['back', 'core', 'glutes'], duration: 40, cue: 'Opposite arm/leg, brace midsection', sourceDemoId: 'plank' },
+    { id: 'wu-dead-bug', name: 'Dead bug', phase: 'warmup', role: 'activate', targets: ['core'], duration: 40, cue: 'Low back pressed to floor; slow opposite limbs', sourceDemoId: 'dead-bug' },
+    { id: 'wu-hip-circles', name: 'Standing hip circles', phase: 'warmup', role: 'activate', targets: ['hips', 'glutes', 'quads', 'hamstrings'], duration: 35, cue: 'Hands on hips, slow circles each way', sourceDemoId: 'bodyweight-squat' },
+    { id: 'wu-leg-swings', name: 'Leg swings', phase: 'warmup', role: 'activate', targets: ['hamstrings', 'hips', 'quads', 'glutes'], duration: 35, cue: 'Front-to-back then side-to-side', sourceDemoId: 'scissors-jump' },
+    { id: 'wu-bw-squat', name: 'Bodyweight squat (easy)', phase: 'warmup', role: 'activate', targets: ['quads', 'glutes', 'hamstrings'], duration: 40, cue: 'Easy depth, no load', sourceDemoId: 'bodyweight-squat' },
+    { id: 'wu-glute-bridge', name: 'Glute bridge', phase: 'warmup', role: 'activate', targets: ['glutes', 'hamstrings', 'core'], duration: 35, cue: 'Squeeze glutes at top', sourceDemoId: 'butt-lift-bridge' },
+    { id: 'wu-calf-raise', name: 'Calf raises', phase: 'warmup', role: 'activate', targets: ['calves'], duration: 30, cue: 'Full ankle range, both feet', sourceDemoId: 'standing-calf-raises' },
+    { id: 'wu-wrist-circles', name: 'Wrist circles', phase: 'warmup', role: 'activate', targets: ['forearms', 'biceps', 'triceps'], duration: 30, cue: 'Prep elbows and wrists', sourceDemoId: 'palms-up-barbell-wrist-curl-over-a-bench' },
+    { id: 'wu-shoulder-rolls', name: 'Shoulder rolls', phase: 'warmup', role: 'activate', targets: ['shoulders', 'back', 'neck'], duration: 30, cue: 'Slow forward and back', sourceDemoId: 'front-dumbbell-raise' },
+    { id: 'wu-torso-twist', name: 'Standing torso twists', phase: 'warmup', role: 'activate', targets: ['core', 'back'], duration: 30, cue: 'Feet planted, gentle rotation', sourceDemoId: 'medicine-ball-full-twist' },
+    { id: 'cd-chest-door', name: 'Chest doorway stretch', phase: 'cooldown', role: 'stretch', targets: ['chest', 'shoulders'], duration: 40, cue: 'Elbow at 90°, lean gently', sourceDemoId: 'bodyweight-flyes' },
+    { id: 'cd-tricep-oh', name: 'Overhead triceps stretch', phase: 'cooldown', role: 'stretch', targets: ['triceps', 'shoulders'], duration: 35, cue: 'Elbow to ceiling, light pressure on elbow', sourceDemoId: 'standing-dumbbell-triceps-extension' },
+    { id: 'cd-cross-body', name: 'Cross-body shoulder stretch', phase: 'cooldown', role: 'stretch', targets: ['shoulders', 'back'], duration: 35, cue: 'Arm across chest', sourceDemoId: 'around-the-worlds' },
+    { id: 'cd-child-pose', name: "Child's pose", phase: 'cooldown', role: 'stretch', targets: ['back', 'shoulders', 'hips'], duration: 45, cue: 'Hips to heels, arms reach forward', sourceDemoId: 'plank' },
+    { id: 'cd-thread-needle', name: 'Thread the needle', phase: 'cooldown', role: 'stretch', targets: ['back', 'shoulders'], duration: 40, cue: 'On all fours, thread arm under; both sides', sourceDemoId: 'hyperextensions-with-no-hyperextension-bench' },
+    { id: 'cd-quad-stand', name: 'Standing quad stretch', phase: 'cooldown', role: 'stretch', targets: ['quads', 'hips'], duration: 40, cue: 'Hold ankle, tall posture', sourceDemoId: 'bodyweight-squat' },
+    { id: 'cd-ham-hinge', name: 'Standing hamstring hinge', phase: 'cooldown', role: 'stretch', targets: ['hamstrings', 'back'], duration: 40, cue: 'Soft knees, hinge at hips', sourceDemoId: 'stiff-leg-barbell-good-morning' },
+    { id: 'cd-fig4', name: 'Figure-4 glute stretch', phase: 'cooldown', role: 'stretch', targets: ['glutes', 'hips'], duration: 40, cue: 'Ankle on opposite knee', sourceDemoId: 'single-leg-glute-bridge' },
+    { id: 'cd-calf-wall', name: 'Calf wall stretch', phase: 'cooldown', role: 'stretch', targets: ['calves'], duration: 35, cue: 'Back heel down, both straight and bent knee', sourceDemoId: 'standing-calf-raises' },
+    { id: 'cd-hip-flexor', name: 'Half-kneeling hip flexor stretch', phase: 'cooldown', role: 'stretch', targets: ['hips', 'quads'], duration: 40, cue: 'Tuck pelvis, gentle forward shift', sourceDemoId: 'kneeling-squat' },
+    { id: 'cd-cobra', name: 'Prone press-up / cobra', phase: 'cooldown', role: 'stretch', targets: ['core', 'back'], duration: 35, cue: 'Gentle extension, hips stay down', sourceDemoId: 'reverse-hyperextension' },
+    { id: 'cd-knees-chest', name: 'Knees to chest', phase: 'cooldown', role: 'stretch', targets: ['core', 'back', 'glutes'], duration: 40, cue: 'Supine hug knees', sourceDemoId: 'bent-knee-hip-raise' },
+    { id: 'cd-forearm-stretch', name: 'Forearm stretch', phase: 'cooldown', role: 'stretch', targets: ['forearms', 'biceps'], duration: 30, cue: 'Gentle palm up then palm down', sourceDemoId: 'palms-up-barbell-wrist-curl-over-a-bench' },
+    { id: 'cd-neck-side', name: 'Neck side stretch', phase: 'cooldown', role: 'stretch', targets: ['neck', 'shoulders'], duration: 30, cue: 'Ear toward shoulder, no force', sourceDemoId: 'isometric-neck-exercise-sides' },
+    { id: 'cd-breathe', name: 'Box breathing (easy)', phase: 'cooldown', role: 'stretch', targets: [], duration: 40, cue: 'In 4 · hold 4 · out 4 · hold 4', sourceDemoId: 'plank' }
   ];
 
   function normalizeMuscle(m) {
@@ -71,6 +110,8 @@
   }
 
   function toPlanExercise(m) {
+    const folder = m.sourceDemoId ? SOURCE_FOLDERS[m.sourceDemoId] : null;
+    const imageUrl = folder ? `${FEDB}${folder}/0.jpg` : null;
     return {
       id: m.id,
       name: m.name,
@@ -84,7 +125,9 @@
       primary: m.targets && m.targets.length ? m.targets.slice() : ['full body'],
       progression: m.cue,
       demoUrl: 'https://www.youtube.com/results?search_query=' + encodeURIComponent(m.name + ' exercise mobility'),
-      imageUrl: null
+      imageUrl,
+      // Animated WebP copied under mobility id (scripts/build-mobility-webps.py)
+      demoAnimUrl: `/demos/${m.id}.webp`
     };
   }
 
