@@ -4,12 +4,14 @@ let selectedDay = null;
 let sessionExercises = [];
 let currentExerciseIndex = 0;
 let currentSetIndex = 0;
-let phase = 'setup'; // setup | work | rest | finish
+let phase = 'setup'; // setup | preview | work | rest | finish
 let startTime = null;
 let phaseStartTime = null;
 let elapsedPhaseSeconds = 0;
 let phaseDurationSeconds = 30;
 let timerInterval = null;
+let demoFlipInterval = null;
+const PREVIEW_SECONDS = 8;
 let musicEngine = null;
 let sessionSaved = false;
 let wakeLock = null;
@@ -56,7 +58,12 @@ const restTimerEl = document.getElementById('restTimer');
 const restProgressBar = document.getElementById('restProgressBar');
 const nextExerciseNameEl = document.getElementById('nextExerciseName');
 const nextExerciseMetaEl = document.getElementById('nextExerciseMeta');
+const nextDemoEl = document.getElementById('nextDemo');
 const skipRestBtn = document.getElementById('skipRestBtn');
+const workTimerBlock = document.getElementById('workTimerBlock');
+const previewBlock = document.getElementById('previewBlock');
+const previewCountdownEl = document.getElementById('previewCountdown');
+const startSetBtn = document.getElementById('startSetBtn');
 
 const finishSummaryEl = document.getElementById('finishSummary');
 const saveSessionArea = document.getElementById('saveSessionArea');
@@ -80,6 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   discardBtn.addEventListener('click', discardSession);
   completeSetBtn.addEventListener('click', () => completeSet(true));
   skipRestBtn.addEventListener('click', endRest);
+  if (startSetBtn) startSetBtn.addEventListener('click', beginSetFromPreview);
   if (musicBtn) musicBtn.addEventListener('click', toggleMusic);
   if (musicStyleSelect) musicStyleSelect.addEventListener('change', onMusicStyleChange);
   if (musicStyleActive) musicStyleActive.addEventListener('change', onMusicStyleActiveChange);
@@ -104,10 +112,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (themeMeta) themeMeta.setAttribute('content', '#0b0f14');
   }
 
-  // Space / Enter skips remaining work or rest
+  // Space / Enter: start set from preview, skip work/rest otherwise
   document.addEventListener('keydown', (e) => {
     if (e.code !== 'Space' && e.code !== 'Enter') return;
-    if (phase === 'work') {
+    if (phase === 'preview') {
+      e.preventDefault();
+      beginSetFromPreview();
+    } else if (phase === 'work') {
       e.preventDefault();
       completeSet(true);
     } else if (phase === 'rest') {
@@ -282,7 +293,7 @@ function checkForResumableSession() {
 }
 
 function saveSessionState() {
-  if (phase !== 'work' && phase !== 'rest') return;
+  if (phase !== 'work' && phase !== 'rest' && phase !== 'preview') return;
   const state = {
     phase,
     currentExerciseIndex,
@@ -339,8 +350,15 @@ async function resumeSession() {
       const nextEx = currentExercise();
       nextExerciseNameEl.textContent = nextEx.name;
       nextExerciseMetaEl.textContent = setWorkLabel(nextEx);
+      if (nextDemoEl) {
+        nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
+        startDemoFlip(nextDemoEl);
+      }
       restTimerEl.textContent = formatTime(Math.max(0, phaseDurationSeconds - Math.floor((Date.now() - phaseStartTime) / 1000)));
       startTimer();
+    } else if (phase === 'preview') {
+      showScreen(activeScreen);
+      showMovePreview();
     } else {
       showScreen(activeScreen);
       enterWork(true);
@@ -435,14 +453,14 @@ function releaseWakeLock() {
 }
 
 function handleBeforeUnload(e) {
-  if (phase === 'work' || phase === 'rest') {
+  if (phase === 'work' || phase === 'rest' || phase === 'preview') {
     e.preventDefault();
     e.returnValue = '';
   }
 }
 
 function pauseWorkout(auto = false) {
-  if (isPaused || (phase !== 'work' && phase !== 'rest')) return;
+  if (isPaused || (phase !== 'work' && phase !== 'rest' && phase !== 'preview')) return;
   isPaused = true;
   autoPaused = auto;
   pauseStartTime = Date.now();
@@ -493,6 +511,9 @@ async function handleVisibilityChange() {
     } else if (phase !== 'setup' && phase !== 'finish') {
       await requestWakeLock();
     }
+    // Restart demo flip after tab focus (timers may throttle)
+    if (phase === 'work' || phase === 'preview') startDemoFlip(demoLinkEl);
+    if (phase === 'rest') startDemoFlip(nextDemoEl);
   }
 }
 
@@ -501,6 +522,7 @@ function showScreen(screen) {
   screen.classList.add('active');
 
   const inSession = screen === activeScreen || screen === restScreen;
+  // Keep demo flip alive when returning to a screen that has media
   if (typeof setWorkoutChromeVisible === 'function') {
     setWorkoutChromeVisible(!inSession);
   } else {
@@ -512,15 +534,113 @@ function currentExercise() {
   return sessionExercises[currentExerciseIndex];
 }
 
-function exerciseMediaHtml(ex) {
-  const img = ex.imageUrl
-    ? `<img class="ex-thumb ex-thumb--lg mx-auto mb-2" src="${ex.imageUrl}" alt="" loading="lazy" onerror="this.style.display='none'" />`
-    : '';
-  const demo = ex.demoUrl
-    ? `<a href="${ex.demoUrl}" target="_blank" rel="noopener" class="text-sm text-blue-600 hover:underline">Watch demo</a>`
-    : '';
-  if (!img && !demo) return '';
-  return `<div class="text-center mb-2">${img}${demo}</div>`;
+/** free-exercise-db often has 0.jpg + 1.jpg — flip them for an in-app demo. */
+function demoImageUrls(ex) {
+  const primary = ex?.imageUrl || '';
+  if (!primary) return [];
+  const urls = [primary];
+  if (/\/0\.(jpe?g|png|webp)(\?|$)/i.test(primary)) {
+    urls.push(primary.replace(/\/0\.(jpe?g|png|webp)/i, '/1.$1'));
+  } else if (/\/1\.(jpe?g|png|webp)(\?|$)/i.test(primary)) {
+    urls.push(primary.replace(/\/1\.(jpe?g|png|webp)/i, '/0.$1'));
+  }
+  return urls;
+}
+
+function exerciseMediaHtml(ex, options = {}) {
+  const compact = !!options.compact;
+  const urls = demoImageUrls(ex);
+  const cue = ex.progression && isMobilityExercise(ex)
+    ? `<div class="demo-caption">${escapeHtmlRunner(ex.progression)}</div>`
+    : (ex.primary && ex.primary.length
+      ? `<div class="demo-caption">${escapeHtmlRunner((ex.primary || []).join(' · '))}</div>`
+      : '');
+
+  let frame;
+  if (urls.length) {
+    const imgs = urls.map((src, i) =>
+      `<img src="${src}" alt="${escapeHtmlRunner(ex.name || 'Exercise demo')}" loading="eager" class="${i === 0 ? 'demo-frame__visible' : ''}" data-demo-idx="${i}" onerror="this.dataset.broken='1'; if (window.onDemoImgError) window.onDemoImgError(this);" />`
+    ).join('');
+    frame = `<div class="demo-frame" data-demo-flip="${urls.length > 1 ? '1' : '0'}">${imgs}</div>`;
+  } else {
+    frame = `<div class="demo-frame demo-frame--placeholder" aria-hidden="true">🏋️</div>`;
+  }
+
+  const actions = [];
+  if (ex.demoUrl) {
+    actions.push(`<a href="${ex.demoUrl}" target="_blank" rel="noopener">Video search</a>`);
+  }
+  // Prefer direct how-to search even without stored demoUrl
+  if (!ex.demoUrl && ex.name) {
+    const q = encodeURIComponent(ex.name + ' exercise form');
+    actions.push(`<a href="https://www.youtube.com/results?search_query=${q}" target="_blank" rel="noopener">Video search</a>`);
+  }
+
+  return `
+    <div class="demo-panel${compact ? ' demo-panel--rest' : ''}">
+      ${frame}
+      ${cue}
+      ${actions.length ? `<div class="demo-actions">${actions.join('')}</div>` : ''}
+    </div>`;
+}
+
+function escapeHtmlRunner(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+window.onDemoImgError = function onDemoImgError(img) {
+  const frame = img.closest('.demo-frame');
+  if (!frame) return;
+  const imgs = [...frame.querySelectorAll('img')].filter(el => el.dataset.broken !== '1');
+  if (!imgs.length) {
+    frame.classList.add('demo-frame--placeholder');
+    frame.innerHTML = '🏋️';
+    return;
+  }
+  // Keep flipping only valid frames
+  imgs[0].classList.add('demo-frame__visible');
+  startDemoFlip(frame);
+};
+
+function stopDemoFlip() {
+  if (demoFlipInterval) {
+    clearInterval(demoFlipInterval);
+    demoFlipInterval = null;
+  }
+}
+
+function startDemoFlip(root) {
+  stopDemoFlip();
+  const frames = root
+    ? [root]
+    : [...document.querySelectorAll('.demo-frame[data-demo-flip="1"]')];
+  const flippers = frames.filter(f => f && f.dataset.demoFlip === '1');
+  if (!flippers.length) return;
+
+  demoFlipInterval = setInterval(() => {
+    flippers.forEach(frame => {
+      const imgs = [...frame.querySelectorAll('img')].filter(el => el.dataset.broken !== '1');
+      if (imgs.length < 2) return;
+      const active = imgs.findIndex(el => el.classList.contains('demo-frame__visible'));
+      const next = (active + 1) % imgs.length;
+      imgs.forEach((el, i) => el.classList.toggle('demo-frame__visible', i === next));
+    });
+  }, 900);
+}
+
+function setWorkChromeMode(mode) {
+  // mode: 'preview' | 'work'
+  const isPreview = mode === 'preview';
+  if (workTimerBlock) workTimerBlock.classList.toggle('hidden', isPreview);
+  if (previewBlock) previewBlock.classList.toggle('hidden', !isPreview);
+  if (completeSetBtn) completeSetBtn.classList.toggle('hidden', isPreview);
+  if (document.getElementById('pauseBtn')) {
+    document.getElementById('pauseBtn').classList.toggle('hidden', isPreview);
+  }
 }
 
 /** Estimate target reps for logging (midpoint of range when possible). */
@@ -531,18 +651,7 @@ function estimateTargetReps(ex) {
   return n ? parseInt(n[1], 10) : 0;
 }
 
-function enterWork(resuming = false) {
-  phase = 'work';
-  const ex = currentExercise();
-  phaseDurationSeconds = workSeconds(ex);
-
-  if (!resuming) {
-    phaseStartTime = Date.now();
-    elapsedPhaseSeconds = 0;
-  } else {
-    elapsedPhaseSeconds = Math.floor((Date.now() - phaseStartTime) / 1000);
-  }
-
+function fillExerciseHeader(ex) {
   exerciseNameEl.textContent = ex.name;
   exerciseMetaEl.textContent = setWorkLabel(ex);
   // Must not shadow global `phase` (setup|work|rest|finish) — that broke the timer.
@@ -569,7 +678,77 @@ function enterWork(resuming = false) {
     workCueEl.textContent = `Aim for ${ex.repsDisplay || 'your target'} reps this set`;
     completeSetBtn.textContent = 'Finish set early';
   }
-  demoLinkEl.innerHTML = exerciseMediaHtml(ex);
+  if (demoLinkEl) {
+    demoLinkEl.innerHTML = exerciseMediaHtml(ex);
+    startDemoFlip(demoLinkEl);
+  }
+}
+
+/**
+ * Before the first set of each new move, show a short in-runner demo
+ * so form is clear without leaving the app.
+ */
+function shouldPreviewMove(ex, resuming) {
+  if (resuming) return false;
+  if (currentSetIndex !== 0) return false;
+  // Always preview new exercises (even without images — cue text still helps)
+  return !!ex;
+}
+
+function showMovePreview() {
+  const ex = currentExercise();
+  phase = 'preview';
+  clearInterval(timerInterval);
+  isPaused = false;
+  fillExerciseHeader(ex);
+  setWorkChromeMode('preview');
+
+  const phaseLabelEl = document.getElementById('workPhaseLabel');
+  if (phaseLabelEl) {
+    phaseLabelEl.textContent = 'Demo';
+    phaseLabelEl.className = 'text-xs font-semibold uppercase tracking-wider text-blue-700';
+  }
+  workCueEl.textContent = isMobilityExercise(ex)
+    ? (ex.progression || 'Watch the movement, then begin')
+    : `Get set for ${ex.repsDisplay || 'your target'} reps`;
+  setBadgeEl.textContent = 'Next move';
+
+  phaseDurationSeconds = PREVIEW_SECONDS;
+  phaseStartTime = Date.now();
+  elapsedPhaseSeconds = 0;
+  if (previewCountdownEl) previewCountdownEl.textContent = String(PREVIEW_SECONDS);
+
+  updateProgress();
+  startTimer();
+  saveSessionState();
+}
+
+function beginSetFromPreview() {
+  if (phase !== 'preview') return;
+  clearInterval(timerInterval);
+  beep(880, 0.12);
+  enterWork(false, { skipPreview: true });
+}
+
+function enterWork(resuming = false, options = {}) {
+  const ex = currentExercise();
+  if (shouldPreviewMove(ex, resuming) && !options.skipPreview) {
+    showMovePreview();
+    return;
+  }
+
+  phase = 'work';
+  phaseDurationSeconds = workSeconds(ex);
+  setWorkChromeMode('work');
+
+  if (!resuming || options.skipPreview) {
+    phaseStartTime = Date.now();
+    elapsedPhaseSeconds = 0;
+  } else {
+    elapsedPhaseSeconds = Math.floor((Date.now() - phaseStartTime) / 1000);
+  }
+
+  fillExerciseHeader(ex);
 
   const remaining = Math.max(0, phaseDurationSeconds - elapsedPhaseSeconds);
   timerDisplayEl.textContent = formatTime(remaining);
@@ -596,7 +775,12 @@ function tick() {
   elapsedPhaseSeconds = Math.floor((Date.now() - phaseStartTime) / 1000);
   const remaining = Math.max(0, phaseDurationSeconds - elapsedPhaseSeconds);
 
-  if (phase === 'work') {
+  if (phase === 'preview') {
+    if (previewCountdownEl) previewCountdownEl.textContent = String(remaining);
+    if (remaining === 0) {
+      beginSetFromPreview();
+    }
+  } else if (phase === 'work') {
     timerDisplayEl.textContent = formatTime(remaining);
     updatePhaseProgressBar(workProgressBar, remaining, phaseDurationSeconds);
 
@@ -634,6 +818,7 @@ function tick() {
  */
 function completeSet(early = false) {
   if (isPaused || phase !== 'work') return;
+  stopDemoFlip();
   const ex = currentExercise();
   const duration = Math.min(elapsedPhaseSeconds, phaseDurationSeconds);
 
@@ -668,6 +853,7 @@ function enterRest() {
   phase = 'rest';
   phaseStartTime = Date.now();
   elapsedPhaseSeconds = 0;
+  stopDemoFlip();
 
   // Rest uses the exercise we're about to do (already advanced set index)
   const nextEx = currentExercise();
@@ -684,6 +870,11 @@ function enterRest() {
       : `Next cool-down · ${workSeconds(nextEx)}s`;
   } else {
     nextExerciseMetaEl.textContent = `Set ${currentSetIndex + 1} / ${nextEx.sets} · aim for ${nextEx.repsDisplay || 'target'} · ${workSeconds(nextEx)}s work`;
+  }
+  if (nextDemoEl) {
+    // Show demo of the *next* move during rest so you're ready
+    nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
+    startDemoFlip(nextDemoEl);
   }
   restTimerEl.textContent = formatTime(phaseDurationSeconds);
   updatePhaseProgressBar(restProgressBar, phaseDurationSeconds, phaseDurationSeconds);
@@ -707,6 +898,7 @@ function endRest() {
 function finishWorkout() {
   phase = 'finish';
   clearInterval(timerInterval);
+  stopDemoFlip();
   musicEngine.stop();
   releaseWakeLock();
   document.removeEventListener('visibilitychange', handleVisibilityChange);

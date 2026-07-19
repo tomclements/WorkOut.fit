@@ -101,19 +101,29 @@
         <div id="setBadge" class="text-sm font-semibold bg-gray-100 text-gray-800 px-3 py-2 rounded-full self-start sm:self-auto"></div>
       </div>
 
-      <div id="demoLink" class="mb-3"></div>
+      <!-- In-runner demo (animated stills + optional video link) -->
+      <div id="demoLink" class="demo-panel mb-4"></div>
 
       <div class="text-center mb-2">
         <div id="workPhaseLabel" class="text-xs font-semibold uppercase tracking-wider text-green-700">Work</div>
         <div id="workCue" class="text-base sm:text-lg font-medium text-gray-800 mt-1">Aim for your target reps</div>
       </div>
 
-      <div class="flex justify-center mb-4">
-        <div id="timerDisplay" class="big-timer text-green-700">00:30</div>
+      <div id="workTimerBlock">
+        <div class="flex justify-center mb-4">
+          <div id="timerDisplay" class="big-timer text-green-700">00:30</div>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+          <div id="workProgressBar" class="bg-green-500 h-2 rounded-full transition-all" style="width:100%"></div>
+        </div>
       </div>
 
-      <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
-        <div id="workProgressBar" class="bg-green-500 h-2 rounded-full transition-all" style="width:100%"></div>
+      <div id="previewBlock" class="hidden text-center mb-4">
+        <p class="text-sm text-gray-600 mb-2">Watch the demo, then go when ready.</p>
+        <div id="previewCountdown" class="text-3xl font-bold text-blue-800 tabular-nums mb-3">8</div>
+        <button id="startSetBtn" type="button" class="w-full bg-green-600 active:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation min-h-[3.5rem]">
+          Start set
+        </button>
       </div>
 
       <div class="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
@@ -165,7 +175,8 @@
       </div>
 
       <div class="bg-white rounded-lg p-4 mb-6">
-        <div class="text-xs text-gray-500 uppercase tracking-wider">Next up</div>
+        <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Next up — demo</div>
+        <div id="nextDemo" class="demo-panel demo-panel--rest mb-3"></div>
         <div id="nextExerciseName" class="text-xl font-semibold text-gray-900"></div>
         <div id="nextExerciseMeta" class="text-sm text-gray-600"></div>
       </div>
