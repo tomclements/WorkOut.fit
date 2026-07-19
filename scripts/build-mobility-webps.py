@@ -52,6 +52,25 @@ SOURCE_MAP = {
 }
 
 
+def refresh_index():
+    import json
+
+    ids = sorted(p.stem for p in DEMOS.glob("*.webp") if not p.name.startswith("_"))
+    (DEMOS / "index.json").write_text(
+        json.dumps(
+            {
+                "format": "webp",
+                "pathPattern": "/demos/{id}.webp",
+                "count": len(ids),
+                "ids": ids,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    print(f"updated index.json ({len(ids)} demos)")
+
+
 def main():
     DEMOS.mkdir(parents=True, exist_ok=True)
     ok = miss = 0
@@ -66,6 +85,7 @@ def main():
         print(f"  {mob_id} ← {src_id} ({dst.stat().st_size // 1024} KB)")
         ok += 1
     print(f"Done: {ok} copied, {miss} missing sources")
+    refresh_index()
 
 
 if __name__ == "__main__":

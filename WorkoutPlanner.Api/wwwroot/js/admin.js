@@ -1,5 +1,7 @@
 let equipmentList = [];
 let exercisesList = [];
+/** @type {Set<string>} exercise ids that have /demos/{id}.webp on the server */
+let webpDemoIds = new Set();
 
 document.addEventListener('DOMContentLoaded', () => {
   checkAdmin();
@@ -11,16 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('exerciseForm').addEventListener('submit', saveExercise);
   document.getElementById('exCancelBtn').addEventListener('click', resetExerciseForm);
   document.getElementById('exId').addEventListener('input', () => {
-    updateExerciseWebpPreview(
-      document.getElementById('exId').value.trim(),
-      document.getElementById('exImageUrl').value.trim()
-    );
+    updateExerciseWebpPreview(document.getElementById('exId').value.trim());
   });
   document.getElementById('exImageUrl').addEventListener('input', () => {
-    updateExerciseWebpPreview(
-      document.getElementById('exId').value.trim(),
-      document.getElementById('exImageUrl').value.trim()
-    );
+    updateExerciseWebpPreview(document.getElementById('exId').value.trim());
   });
 
   document.getElementById('equipmentForm').addEventListener('submit', saveEquipment);
@@ -36,7 +32,13 @@ async function checkAdmin() {
     if (response.ok) {
       document.getElementById('loginSection').classList.add('hidden');
       document.getElementById('adminSection').classList.remove('hidden');
-      await Promise.all([loadEquipment(), loadExercises(), loadUsers(), loadLibraryStats()]);
+      await Promise.all([
+        loadEquipment(),
+        loadWebpDemoIndex(),
+        loadExercises(),
+        loadUsers(),
+        loadLibraryStats()
+      ]);
       return;
     }
   } catch { }
@@ -70,9 +72,27 @@ async function loadEquipment() {
   renderExerciseEquipmentCheckboxes();
 }
 
+async function loadWebpDemoIndex() {
+  webpDemoIds = new Set();
+  try {
+    const res = await fetch('/demos/index.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    (data.ids || []).forEach(id => webpDemoIds.add(id));
+  } catch {
+    // index missing — table will fall back to probing is less ideal; leave empty
+  }
+}
+
+function hasWebpDemo(id) {
+  return !!(id && webpDemoIds.has(id));
+}
+
 async function loadExercises() {
   const response = await fetch('/api/admin/exercises', { credentials: 'include' });
   exercisesList = await response.json();
+  // Ensure index is loaded before rendering WebP column
+  if (webpDemoIds.size === 0) await loadWebpDemoIndex();
   renderExercisesTable();
 }
 
@@ -236,7 +256,8 @@ function renderExercisesTable() {
   const tbody = document.getElementById('exercisesTableBody');
   tbody.innerHTML = exercisesList.map(ex => {
     const webp = exerciseWebpPath(ex.id);
-    const hasImage = !!(ex.imageUrl);
+    // Use demos/index.json — stick demos exist without imageUrl
+    const hasWebp = hasWebpDemo(ex.id);
     return `
     <tr>
       <td class="p-3 font-medium">${escapeHtml(ex.name)}</td>
@@ -246,9 +267,9 @@ function renderExercisesTable() {
       <td class="p-3">${ex.baseSets} × ${escapeHtml(ex.isTimeBased ? ex.repsMin + '-' + ex.repsMax + ' sec' : ex.repsMin + '-' + ex.repsMax)}</td>
       <td class="p-3">${escapeHtml((ex.avoidFor || []).join(', '))}</td>
       <td class="p-3">${ex.demoUrl ? `<a href="${escapeHtml(ex.demoUrl)}" target="_blank" rel="noopener" class="text-blue-600 hover:underline">${/exrx\.net/i.test(ex.demoUrl || '') ? 'ExRx' : 'Demo'}</a>` : '-'}</td>
-      <td class="p-3">${hasImage
+      <td class="p-3">${hasWebp
         ? `<a href="${webp}" target="_blank" rel="noopener" class="text-blue-600 hover:underline" title="${webp}">WebP</a>`
-        : '<span class="text-gray-400">—</span>'}</td>
+        : '<span class="text-gray-400" title="No file in /demos">—</span>'}</td>
       <td class="p-3 flex gap-2">
         <button onclick="editExercise('${escapeHtml(ex.id)}')" class="text-blue-600 hover:underline">Edit</button>
         <button onclick="deleteExercise('${escapeHtml(ex.id)}')" class="text-red-600 hover:underline">Delete</button>
@@ -311,7 +332,7 @@ async function saveExercise(e) {
   }
 }
 
-function updateExerciseWebpPreview(id, imageUrl) {
+function updateExerciseWebpPreview(id) {
   const link = document.getElementById('exWebpDemoLink');
   const status = document.getElementById('exWebpDemoStatus');
   const preview = document.getElementById('exWebpDemoPreview');
@@ -330,29 +351,36 @@ function updateExerciseWebpPreview(id, imageUrl) {
   link.href = path;
   link.textContent = path;
 
-  if (!imageUrl) {
-    status.textContent = 'No source image — WebP not generated for this id';
-    status.className = 'ml-2 text-xs text-amber-700';
-    preview.classList.add('hidden');
-    preview.removeAttribute('src');
+  // Prefer demos/index.json (includes stick demos with no imageUrl)
+  if (hasWebpDemo(id)) {
+    status.textContent = 'Available — used in runner';
+    status.className = 'ml-2 text-xs text-green-700';
+    preview.src = path + '?t=' + Date.now();
+    preview.classList.remove('hidden');
+    preview.onerror = () => {
+      status.textContent = 'In index but file failed to load — redeploy demos';
+      status.className = 'ml-2 text-xs text-amber-700';
+      preview.classList.add('hidden');
+    };
     return;
   }
 
+  // Not in index — still probe (index may be stale)
   status.textContent = 'Checking…';
   status.className = 'ml-2 text-xs text-gray-500';
   preview.classList.add('hidden');
 
-  // Probe whether the built file is deployed
   const probe = new Image();
   probe.onload = () => {
+    webpDemoIds.add(id);
     status.textContent = 'Available — used in runner';
     status.className = 'ml-2 text-xs text-green-700';
     preview.src = path + '?t=' + Date.now();
     preview.classList.remove('hidden');
   };
   probe.onerror = () => {
-    status.textContent = 'File missing (run scripts/build-exercise-webps.py or redeploy demos)';
-    status.className = 'ml-2 text-xs text-red-600';
+    status.textContent = 'No WebP for this id (FEDB stills, mobility copy, or stick demo)';
+    status.className = 'ml-2 text-xs text-gray-500';
     preview.classList.add('hidden');
     preview.removeAttribute('src');
   };
@@ -380,7 +408,7 @@ function editExercise(id) {
   document.getElementById('exImageUrl').value = ex.imageUrl || '';
   document.getElementById('exAvoidFor').value = (ex.avoidFor || []).join(', ');
   setSelectedEquipment(ex.equipment || []);
-  updateExerciseWebpPreview(ex.id, ex.imageUrl);
+  updateExerciseWebpPreview(ex.id);
 
   const demoHint = document.getElementById('exDemoUrlHint');
   if (demoHint) {
@@ -403,7 +431,7 @@ function resetExerciseForm() {
   document.getElementById('exerciseFormTitle').textContent = 'Add exercise';
   document.getElementById('exCancelBtn').classList.add('hidden');
   setSelectedEquipment([]);
-  updateExerciseWebpPreview('', null);
+  updateExerciseWebpPreview('');
   const demoHint = document.getElementById('exDemoUrlHint');
   if (demoHint) demoHint.classList.add('hidden');
 }
