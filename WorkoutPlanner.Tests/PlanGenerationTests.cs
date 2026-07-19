@@ -92,18 +92,28 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     [Fact]
     public void EnrichEquipmentFromName_AddsBenchAndBallRequirements()
     {
-        var incline = ExerciseImportService.EnrichEquipmentFromName(
+        var incline = ExerciseTaxonomy.EnrichEquipmentFromName(
             "Incline Push-Up", new[] { "bodyweight" });
         Assert.Contains("bench", incline);
         Assert.Contains("bodyweight", incline);
 
-        var ball = ExerciseImportService.EnrichEquipmentFromName(
+        var curl = ExerciseTaxonomy.EnrichEquipmentFromName(
+            "Incline Dumbbell Curl", new[] { "dumbbells" });
+        Assert.Contains("bench", curl);
+        Assert.Contains("dumbbells", curl);
+
+        var ball = ExerciseTaxonomy.EnrichEquipmentFromName(
             "Crunch - Legs On Exercise Ball", new[] { "bodyweight" });
         Assert.Contains("stability-ball", ball);
 
-        var floor = ExerciseImportService.EnrichEquipmentFromName(
+        var floor = ExerciseTaxonomy.EnrichEquipmentFromName(
             "Push-Up", new[] { "bodyweight" });
         Assert.DoesNotContain("bench", floor);
+
+        Assert.Equal("pull", ExerciseTaxonomy.InferSlot(new[] { "biceps" }, "pull", "Incline Dumbbell Curl"));
+        Assert.Equal("legs", ExerciseTaxonomy.InferSlot(new[] { "legs", "chest", "core" }, null, "Burpees"));
+        Assert.Equal("core", ExerciseTaxonomy.InferSlot(new[] { "core", "shoulders", "legs" }, null, "Mountain Climbers"));
+        Assert.Equal("carry", ExerciseTaxonomy.InferSlot(new[] { "grip" }, null, "Farmer's Carry"));
     }
 
     [Fact]

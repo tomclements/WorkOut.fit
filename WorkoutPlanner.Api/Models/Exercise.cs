@@ -8,7 +8,12 @@ public class Exercise
     public string Level { get; set; } = "beginner";
     public List<string> Primary { get; set; } = new();
     public List<string> Secondary { get; set; } = new();
-    public string Slot { get; set; } = "total";
+    /// <summary>Movement pattern for scheduling: push, pull, legs, core, or carry.</summary>
+    public string Slot { get; set; } = "push";
+    /// <summary>push | pull | static | unknown (from free-exercise-db force).</summary>
+    public string Force { get; set; } = "unknown";
+    /// <summary>compound | isolation | unknown.</summary>
+    public string Mechanic { get; set; } = "unknown";
     public int BaseSets { get; set; } = 3;
     public int RepsMin { get; set; } = 8;
     public int RepsMax { get; set; } = 12;

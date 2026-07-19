@@ -19,7 +19,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=3/4%20Sit-Up%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/3_4_Sit-Up/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "ab-crunch-machine",
@@ -41,7 +43,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Ab%20Crunch%20Machine%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "ab-wheel-rollout",
@@ -66,7 +70,9 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Ab%20Wheel%20Rollout",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "advanced-kettlebell-windmill",
@@ -95,7 +101,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "air-bike",
@@ -117,7 +125,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Air%20Bike%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Air_Bike/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "alternate-hammer-curl",
@@ -144,7 +154,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "alternate-heel-touchers",
@@ -166,7 +178,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Alternate%20Heel%20Touchers%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Heel_Touchers/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "alternate-incline-dumbbell-curl",
@@ -194,7 +208,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "alternating-cable-shoulder-press",
@@ -222,7 +238,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "alternating-deltoid-raise",
@@ -246,7 +264,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Deltoid_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "alternating-floor-press",
@@ -276,7 +296,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "alternating-hang-clean",
@@ -310,7 +332,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "alternating-kettlebell-press",
@@ -338,7 +362,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "alternating-kettlebell-row",
@@ -366,7 +392,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "alternating-renegade-row",
@@ -397,7 +425,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "anti-gravity-press",
@@ -427,7 +457,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "arnold-dumbbell-press",
@@ -455,7 +487,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "around-the-worlds",
@@ -481,7 +515,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Around_The_Worlds/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "back-flyes-with-bands",
@@ -510,7 +546,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "backward-medicine-ball-throw",
@@ -534,7 +572,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Backward_Medicine_Ball_Throw/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "ball-leg-curl",
@@ -561,7 +601,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ball_Leg_Curl/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "band-good-morning",
@@ -589,7 +631,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "band-good-morning-pull-through",
@@ -617,7 +661,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "band-hip-adductions",
@@ -641,7 +687,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Hip_Adductions/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "band-pull-apart",
@@ -668,7 +716,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Pull_Apart/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "band-skull-crusher",
@@ -693,7 +743,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "barbell-ab-rollout",
@@ -721,7 +773,9 @@
     "avoidFor": [
       "lower-back",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-ab-rollout-on-knees",
@@ -749,7 +803,9 @@
     "avoidFor": [
       "lower-back",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-back-squat",
@@ -776,7 +832,9 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Barbell%20Back%20Squat",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "barbell-bench-press",
@@ -804,7 +862,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "barbell-bench-press-medium-grip",
@@ -834,7 +894,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-curl",
@@ -861,7 +923,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "barbell-curls-lying-against-an-incline",
@@ -887,7 +951,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "barbell-deadlift",
@@ -905,7 +971,7 @@
       "legs",
       "core"
     ],
-    "slot": "legs",
+    "slot": "pull",
     "baseSets": 3,
     "repsMin": 4,
     "repsMax": 6,
@@ -916,7 +982,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-full-squat",
@@ -946,7 +1014,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-glute-bridge",
@@ -973,7 +1043,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Glute_Bridge/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-guillotine-bench-press",
@@ -1003,7 +1075,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-hack-squat",
@@ -1034,7 +1108,9 @@
       "elbow",
       "knee",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-hip-thrust",
@@ -1061,7 +1137,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-incline-bench-press-medium-grip",
@@ -1091,7 +1169,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-incline-shoulder-raise",
@@ -1118,7 +1198,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Shoulder_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-lunge",
@@ -1146,7 +1228,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Lunge/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-rear-delt-row",
@@ -1176,7 +1260,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-rollout-from-bench",
@@ -1206,7 +1292,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-row",
@@ -1234,7 +1322,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "barbell-seated-calf-raise",
@@ -1258,7 +1348,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Seated_Calf_Raise/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "barbell-shoulder-press",
@@ -1287,7 +1379,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-shrug",
@@ -1309,7 +1403,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Shrug%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shrug/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "barbell-shrug-behind-the-back",
@@ -1337,7 +1433,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "barbell-side-bend",
@@ -1363,7 +1461,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Bend/0.jpg",
     "avoidFor": [
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "barbell-side-split-squat",
@@ -1392,7 +1492,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-squat",
@@ -1422,7 +1524,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-squat-to-a-bench",
@@ -1452,7 +1556,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-step-ups",
@@ -1481,7 +1587,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "barbell-walking-lunge",
@@ -1509,7 +1617,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Walking_Lunge/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "bench-dips",
@@ -1539,7 +1649,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "bench-jump",
@@ -1567,7 +1679,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Jump/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "bench-press-powerlifting",
@@ -1599,7 +1713,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "bench-press-with-bands",
@@ -1629,7 +1745,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "bench-press-with-chains",
@@ -1660,7 +1778,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "bent-over-barbell-row",
@@ -1690,7 +1810,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "bent-over-dumbbell-rear-delt-raise-with-head-on-bench",
@@ -1714,7 +1836,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Dumbbell_Rear_Delt_Raise_With_Head_On_Bench/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "bent-over-low-pulley-side-lateral",
@@ -1743,7 +1867,9 @@
     "avoidFor": [
       "lower-back",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "bent-over-one-arm-long-bar-row",
@@ -1774,7 +1900,9 @@
       "elbow",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "bent-over-two-arm-long-bar-row",
@@ -1802,7 +1930,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "bent-over-two-dumbbell-row",
@@ -1832,7 +1962,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "bent-over-two-dumbbell-row-with-palms-in",
@@ -1860,7 +1992,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "bent-press",
@@ -1895,7 +2029,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "bent-arm-barbell-pullover",
@@ -1926,7 +2062,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "bent-arm-dumbbell-pullover",
@@ -1956,7 +2094,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "bent-knee-hip-raise",
@@ -1978,7 +2118,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Bent-Knee%20Hip%20Raise%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent-Knee_Hip_Raise/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "board-press",
@@ -2009,7 +2151,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "body-tricep-press",
@@ -2034,7 +2178,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "body-up",
@@ -2062,7 +2208,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "bodyweight-flyes",
@@ -2092,7 +2240,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "bodyweight-squat",
@@ -2119,7 +2269,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "bosu-ball-cable-crunch-with-side-bends",
@@ -2142,7 +2294,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Bosu%20Ball%20Cable%20Crunch%20With%20Side%20Bends%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bosu_Ball_Cable_Crunch_With_Side_Bends/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "bottoms-up",
@@ -2164,7 +2318,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Bottoms%20Up%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bottoms_Up/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "bottoms-up-clean-from-the-hang-position",
@@ -2180,7 +2336,7 @@
       "biceps",
       "shoulders"
     ],
-    "slot": "pull",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -2193,7 +2349,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "box-squat",
@@ -2224,7 +2382,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "box-squat-with-bands",
@@ -2257,7 +2417,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "box-squat-with-chains",
@@ -2289,7 +2451,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "bradford-rocky-presses",
@@ -2317,7 +2481,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "burpees",
@@ -2335,7 +2501,7 @@
       "shoulders",
       "triceps"
     ],
-    "slot": "total",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -2347,7 +2513,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "butt-lift-bridge",
@@ -2373,7 +2541,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butt_Lift_Bridge/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "butt-ups",
@@ -2395,7 +2565,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Butt-Ups%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butt-Ups/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "butterfly",
@@ -2417,7 +2589,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Butterfly%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butterfly/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-chest-press",
@@ -2446,7 +2620,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "cable-crossover",
@@ -2472,7 +2648,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-crunch",
@@ -2494,7 +2672,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-deadlifts",
@@ -2526,7 +2706,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "cable-hammer-curls-rope-attachment",
@@ -2551,7 +2733,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-hip-adduction",
@@ -2575,7 +2759,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Hip_Adduction/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-incline-pushdown",
@@ -2597,7 +2783,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Incline%20Pushdown%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Incline_Pushdown/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-incline-triceps-extension",
@@ -2623,7 +2811,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-internal-rotation",
@@ -2647,7 +2837,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Internal_Rotation/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "cable-iron-cross",
@@ -2669,7 +2861,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Iron%20Cross%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Iron_Cross/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-judo-flip",
@@ -2691,7 +2885,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Judo%20Flip%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Judo_Flip/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "cable-lying-triceps-extension",
@@ -2716,7 +2912,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-one-arm-tricep-extension",
@@ -2741,12 +2939,15 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-preacher-curl",
     "name": "Cable Preacher Curl",
     "equipment": [
+      "bench",
       "cable"
     ],
     "level": "beginner",
@@ -2768,7 +2969,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-rear-delt-fly",
@@ -2792,7 +2995,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Rear_Delt_Fly/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-reverse-crunch",
@@ -2814,7 +3019,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Reverse%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Reverse_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-rope-overhead-triceps-extension",
@@ -2839,7 +3046,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-rope-rear-delt-rows",
@@ -2868,7 +3077,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "cable-russian-twists",
@@ -2890,7 +3101,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Russian%20Twists%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Russian_Twists/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "cable-seated-crunch",
@@ -2912,7 +3125,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Seated%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Seated_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-seated-lateral-raise",
@@ -2939,7 +3154,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Seated_Lateral_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-shoulder-press",
@@ -2967,7 +3184,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "cable-shrugs",
@@ -2989,7 +3208,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Shrugs%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Shrugs/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cable-wrist-curl",
@@ -3014,7 +3235,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "calf-press",
@@ -3038,7 +3261,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Press/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "calf-press-on-the-leg-press-machine",
@@ -3062,7 +3287,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Press_On_The_Leg_Press_Machine/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "calf-raise-on-a-dumbbell",
@@ -3086,7 +3313,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Raise_On_A_Dumbbell/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "calf-raises-with-bands",
@@ -3110,7 +3339,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Raises_-_With_Bands/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "calf-machine-shoulder-shrug",
@@ -3132,7 +3363,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Calf-Machine%20Shoulder%20Shrug%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf-Machine_Shoulder_Shrug/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "car-drivers",
@@ -3160,7 +3393,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "catch-and-overhead-throw",
@@ -3188,7 +3423,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Catch_and_Overhead_Throw/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "chair-squat",
@@ -3216,7 +3453,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chair_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "chest-push-multiple-response",
@@ -3246,7 +3485,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "chest-push-single-response",
@@ -3276,7 +3517,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "chest-push-from-3-point-stance",
@@ -3306,7 +3549,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "chest-push-with-run-release",
@@ -3336,7 +3581,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "chin-up",
@@ -3366,7 +3613,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "clean",
@@ -3402,7 +3651,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "clean-deadlift",
@@ -3436,7 +3687,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "clean-pull",
@@ -3469,7 +3722,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "clean-shrug",
@@ -3485,7 +3740,7 @@
       "forearms",
       "shoulders"
     ],
-    "slot": "pull",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -3498,7 +3753,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "clean-and-jerk",
@@ -3519,7 +3776,7 @@
       "traps",
       "triceps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -3534,7 +3791,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "clean-and-press",
@@ -3558,7 +3817,7 @@
       "traps",
       "triceps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -3573,7 +3832,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "clean-from-blocks",
@@ -3604,7 +3865,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "clock-push-up",
@@ -3633,7 +3896,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "close-grip-barbell-bench-press",
@@ -3663,7 +3928,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "close-grip-dumbbell-press",
@@ -3692,7 +3959,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "close-grip-ez-bar-curl",
@@ -3719,7 +3988,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "close-grip-ez-bar-curl-with-band",
@@ -3748,7 +4019,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "close-grip-ez-bar-press",
@@ -3778,7 +4051,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "close-grip-front-lat-pulldown",
@@ -3808,7 +4083,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "close-grip-push-up-off-of-a-dumbbell",
@@ -3839,7 +4116,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "close-grip-standing-barbell-curl",
@@ -3866,7 +4145,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cocoons",
@@ -3888,7 +4169,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Cocoons%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cocoons/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "concentration-curls",
@@ -3915,7 +4198,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cross-body-hammer-curl",
@@ -3942,7 +4227,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cross-over-with-bands",
@@ -3971,7 +4258,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "cross-body-crunch",
@@ -3993,7 +4282,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Cross-Body%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cross-Body_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "crunch-hands-overhead",
@@ -4015,7 +4306,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Crunch%20-%20Hands%20Overhead%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunch_-_Hands_Overhead/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "crunch-legs-on-exercise-ball",
@@ -4038,7 +4331,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Crunch%20-%20Legs%20On%20Exercise%20Ball%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunch_-_Legs_On_Exercise_Ball/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "crunches",
@@ -4060,7 +4355,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Crunches%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunches/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "cuban-press",
@@ -4086,7 +4383,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cuban_Press/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "dead-bug",
@@ -4108,7 +4407,9 @@
     "restSec": 30,
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dead%20Bug",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dead_Bug/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "deadlift-with-bands",
@@ -4143,7 +4444,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "deadlift-with-chains",
@@ -4177,7 +4480,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "decline-barbell-bench-press",
@@ -4207,7 +4512,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "decline-close-grip-bench-to-skull-crusher",
@@ -4237,7 +4544,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "decline-crunch",
@@ -4260,7 +4569,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Decline%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "decline-dumbbell-bench-press",
@@ -4290,7 +4601,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "decline-dumbbell-flyes",
@@ -4313,7 +4626,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Decline%20Dumbbell%20Flyes%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Dumbbell_Flyes/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "decline-dumbbell-triceps-extension",
@@ -4339,7 +4654,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "decline-ez-bar-triceps-extension",
@@ -4365,7 +4682,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "decline-oblique-crunch",
@@ -4388,7 +4707,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Decline%20Oblique%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Oblique_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "decline-reverse-crunch",
@@ -4411,7 +4732,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Decline%20Reverse%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Reverse_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "decline-smith-press",
@@ -4441,7 +4764,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "deficit-deadlift",
@@ -4475,7 +4800,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "dip-machine",
@@ -4504,7 +4831,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "dips-triceps-version",
@@ -4533,7 +4862,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "double-kettlebell-alternating-hang-clean",
@@ -4568,7 +4899,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "double-kettlebell-jerk",
@@ -4585,7 +4918,7 @@
       "quadriceps",
       "triceps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -4599,7 +4932,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "double-kettlebell-push-press",
@@ -4630,7 +4965,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "double-kettlebell-snatch",
@@ -4647,7 +4984,7 @@
       "hamstrings",
       "quadriceps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -4659,7 +4996,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "double-kettlebell-windmill",
@@ -4691,7 +5030,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "unknown"
   },
   {
     "id": "double-leg-butt-kick",
@@ -4721,7 +5062,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Double_Leg_Butt_Kick/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "downward-facing-balance",
@@ -4748,7 +5091,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Downward_Facing_Balance/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "static",
+    "mechanic": "isolation"
   },
   {
     "id": "drag-curl",
@@ -4775,7 +5120,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-alternate-bicep-curl",
@@ -4802,14 +5149,16 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "db-bench-press",
     "name": "Dumbbell Bench Press",
     "equipment": [
-      "dumbbells",
-      "bench"
+      "bench",
+      "dumbbells"
     ],
     "level": "beginner",
     "primary": [
@@ -4831,7 +5180,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-bench-press",
@@ -4861,7 +5212,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-bench-press-with-neutral-grip",
@@ -4891,7 +5244,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "db-bent-over-row",
@@ -4919,7 +5274,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "dumbbell-bicep-curl",
@@ -4946,14 +5303,16 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "db-chest-fly",
     "name": "Dumbbell Chest Fly",
     "equipment": [
-      "dumbbells",
-      "bench"
+      "bench",
+      "dumbbells"
     ],
     "level": "intermediate",
     "primary": [
@@ -4972,7 +5331,9 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Chest%20Fly",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "dumbbell-clean",
@@ -5008,7 +5369,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "db-curl",
@@ -5032,7 +5395,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "dumbbell-floor-press",
@@ -5061,7 +5426,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-flyes",
@@ -5083,7 +5450,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Flyes%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Flyes/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "dumbbell-incline-row",
@@ -5115,7 +5484,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-incline-shoulder-raise",
@@ -5144,7 +5515,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "db-lunge",
@@ -5170,7 +5543,9 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Lunge",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "dumbbell-lunges",
@@ -5198,7 +5573,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-lying-one-arm-rear-lateral-raise",
@@ -5224,7 +5601,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lying_One-Arm_Rear_Lateral_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "dumbbell-lying-pronation",
@@ -5249,7 +5628,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "dumbbell-lying-rear-lateral-raise",
@@ -5273,7 +5654,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lying_Rear_Lateral_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "dumbbell-lying-supination",
@@ -5298,7 +5681,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "dumbbell-one-arm-shoulder-press",
@@ -5326,7 +5711,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-one-arm-triceps-extension",
@@ -5351,7 +5738,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "dumbbell-one-arm-upright-row",
@@ -5380,7 +5769,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "db-overhead-press",
@@ -5408,7 +5799,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "dumbbell-prone-incline-curl",
@@ -5434,7 +5827,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "dumbbell-raise",
@@ -5462,7 +5857,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-rear-lunge",
@@ -5490,7 +5887,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Rear_Lunge/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "db-romanian-deadlift",
@@ -5517,7 +5916,9 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Romanian%20Deadlift",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "dumbbell-scaption",
@@ -5543,7 +5944,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Scaption/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "dumbbell-seated-box-jump",
@@ -5571,7 +5974,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Seated_Box_Jump/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-seated-one-leg-calf-raise",
@@ -5595,7 +6000,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Seated_One-Leg_Calf_Raise/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "dumbbell-shoulder-press",
@@ -5623,7 +6030,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-shrug",
@@ -5645,7 +6054,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Shrug%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "dumbbell-side-bend",
@@ -5667,7 +6078,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Side%20Bend%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Side_Bend/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "dumbbell-squat",
@@ -5697,7 +6110,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-squat-to-a-bench",
@@ -5727,7 +6142,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "dumbbell-step-ups",
@@ -5755,14 +6172,16 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Step_Ups/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "db-step-up",
     "name": "Dumbbell Step-Up",
     "equipment": [
-      "dumbbells",
-      "bench"
+      "bench",
+      "dumbbells"
     ],
     "level": "intermediate",
     "primary": [
@@ -5782,7 +6201,9 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Step-Up",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "dumbbell-tricep-extension-pronated-grip",
@@ -5807,7 +6228,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "db-triceps-extension",
@@ -5831,7 +6254,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "ez-bar-curl",
@@ -5857,7 +6282,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "ez-bar-skullcrusher",
@@ -5885,7 +6312,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "elbow-to-knee",
@@ -5907,7 +6336,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Elbow%20to%20Knee%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elbow_to_Knee/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "elevated-back-lunge",
@@ -5934,7 +6365,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elevated_Back_Lunge/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "elevated-cable-rows",
@@ -5959,7 +6392,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Elevated%20Cable%20Rows%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elevated_Cable_Rows/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "exercise-ball-crunch",
@@ -5981,7 +6416,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Exercise%20Ball%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Exercise_Ball_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "exercise-ball-pull-in",
@@ -6003,7 +6440,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Exercise%20Ball%20Pull-In%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Exercise_Ball_Pull-In/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "extended-range-one-arm-kettlebell-floor-press",
@@ -6032,7 +6471,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "external-rotation",
@@ -6056,7 +6497,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/External_Rotation/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "external-rotation-with-band",
@@ -6080,7 +6523,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/External_Rotation_with_Band/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "external-rotation-with-cable",
@@ -6104,7 +6549,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/External_Rotation_with_Cable/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "face-pull",
@@ -6127,7 +6574,9 @@
     "restSec": 45,
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Face%20Pull",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "farmers-carry",
@@ -6150,7 +6599,9 @@
     "workDuration": 45,
     "restSec": 30,
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Farmer%27s%20Carry",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "fast-skipping",
@@ -6180,7 +6631,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Fast_Skipping/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "finger-curls",
@@ -6205,7 +6658,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "flat-bench-cable-flyes",
@@ -6228,7 +6683,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Flat%20Bench%20Cable%20Flyes%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Flat_Bench_Cable_Flyes/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "flat-bench-leg-pull-in",
@@ -6251,12 +6708,15 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Flat%20Bench%20Leg%20Pull-In%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Flat_Bench_Leg_Pull-In/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "flat-bench-lying-leg-raise",
     "name": "Flat Bench Lying Leg Raise",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "beginner",
@@ -6273,7 +6733,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Flat%20Bench%20Lying%20Leg%20Raise%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Flat_Bench_Lying_Leg_Raise/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "flexor-incline-dumbbell-curls",
@@ -6299,7 +6761,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "floor-press",
@@ -6328,7 +6792,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "floor-press-with-chains",
@@ -6357,7 +6823,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "flutter-kicks",
@@ -6383,7 +6851,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Flutter_Kicks/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "frankenstein-squat",
@@ -6412,7 +6882,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Frankenstein_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "freehand-jump-squat",
@@ -6440,7 +6912,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Freehand_Jump_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "frog-sit-ups",
@@ -6462,7 +6936,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Frog%20Sit-Ups%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Frog_Sit-Ups/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "front-barbell-squat",
@@ -6490,7 +6966,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Barbell_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "front-barbell-squat-to-a-bench",
@@ -6518,7 +6996,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Barbell_Squat_To_A_Bench/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "front-cable-raise",
@@ -6542,7 +7022,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Cable_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "front-dumbbell-raise",
@@ -6566,7 +7048,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Dumbbell_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "front-incline-dumbbell-raise",
@@ -6591,7 +7075,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Incline_Dumbbell_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "front-raise-and-pullover",
@@ -6621,7 +7107,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "front-squat-clean-grip",
@@ -6649,7 +7137,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Squat_Clean_Grip/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "front-squats-with-two-kettlebells",
@@ -6676,7 +7166,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Squats_With_Two_Kettlebells/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "front-two-dumbbell-raise",
@@ -6700,7 +7192,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Two-Dumbbell_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "full-range-of-motion-lat-pulldown",
@@ -6730,7 +7224,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "glute-ham-raise",
@@ -6757,7 +7253,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Glute_Ham_Raise/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "glute-kickback",
@@ -6783,7 +7281,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Glute_Kickback/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "goblet-squat",
@@ -6810,7 +7310,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Goblet_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "good-morning",
@@ -6839,7 +7341,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "good-morning-off-pins",
@@ -6868,7 +7372,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "gorilla-chin-crunch",
@@ -6896,7 +7402,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "hack-squat",
@@ -6924,7 +7432,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hack_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "hammer-curl",
@@ -6949,7 +7459,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "hammer-curls",
@@ -6974,7 +7486,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "hammer-grip-incline-db-bench-press",
@@ -7004,7 +7518,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "handstand-push-ups",
@@ -7032,7 +7548,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "hang-clean",
@@ -7068,7 +7586,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "hang-clean-below-the-knees",
@@ -7104,7 +7624,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "hang-snatch",
@@ -7141,7 +7663,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "hang-snatch-below-knees",
@@ -7178,7 +7702,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "hanging-bar-good-morning",
@@ -7207,7 +7733,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "hanging-knee-raise",
@@ -7229,7 +7757,9 @@
     "workDuration": 30,
     "restSec": 45,
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Hanging%20Knee%20Raise",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "hanging-leg-raise",
@@ -7251,7 +7781,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Hanging%20Leg%20Raise%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "hanging-pike",
@@ -7273,7 +7805,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Hanging%20Pike%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Pike/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "heaving-snatch-balance",
@@ -7307,7 +7841,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "high-cable-curls",
@@ -7332,7 +7868,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "hip-extension-with-bands",
@@ -7358,7 +7896,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hip_Extension_with_Bands/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "hip-flexion-with-band",
@@ -7382,7 +7922,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hip_Flexion_with_Band/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "hip-lift-with-band",
@@ -7409,12 +7951,15 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hip_Lift_with_Band/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "hyperextensions-with-no-hyperextension-bench",
     "name": "Hyperextensions With No Hyperextension Bench",
     "equipment": [
+      "bench",
       "bodyweight"
     ],
     "level": "intermediate",
@@ -7437,7 +7982,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "incline-barbell-triceps-extension",
@@ -7465,7 +8012,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "incline-bench-pull",
@@ -7493,7 +8042,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Bench_Pull/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "incline-cable-chest-press",
@@ -7523,7 +8074,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "incline-cable-flye",
@@ -7550,7 +8103,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Cable_Flye/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "incline-dumbbell-bench-with-palms-facing-in",
@@ -7580,7 +8135,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "incline-dumbbell-curl",
@@ -7606,7 +8163,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "incline-dumbbell-flyes",
@@ -7633,7 +8192,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Flyes/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "incline-dumbbell-flyes-with-a-twist",
@@ -7660,7 +8221,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Flyes_-_With_A_Twist/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "incline-dumbbell-press",
@@ -7690,7 +8253,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "incline-hammer-curls",
@@ -7716,7 +8281,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "incline-inner-biceps-curl",
@@ -7742,7 +8309,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "isolation"
   },
   {
     "id": "incline-push-up",
@@ -7772,7 +8341,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "incline-push-up-close-grip",
@@ -7802,7 +8373,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "incline-push-up-medium",
@@ -7833,7 +8406,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "incline-push-up-reverse-grip",
@@ -7864,7 +8439,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "incline-push-up-wide",
@@ -7895,7 +8472,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "internal-rotation-with-band",
@@ -7919,7 +8498,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Internal_Rotation_with_Band/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "isolation"
   },
   {
     "id": "iron-cross",
@@ -7952,7 +8533,9 @@
       "knee",
       "lower-back",
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "isometric-chest-squeezes",
@@ -7981,7 +8564,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "static",
+    "mechanic": "compound"
   },
   {
     "id": "isometric-neck-exercise-front-and-back",
@@ -7994,7 +8579,7 @@
       "neck"
     ],
     "secondary": [],
-    "slot": "total",
+    "slot": "pull",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -8005,7 +8590,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Isometric_Neck_Exercise_-_Front_And_Back/0.jpg",
     "avoidFor": [
       "neck"
-    ]
+    ],
+    "force": "static",
+    "mechanic": "isolation"
   },
   {
     "id": "isometric-neck-exercise-sides",
@@ -8018,7 +8605,7 @@
       "neck"
     ],
     "secondary": [],
-    "slot": "total",
+    "slot": "pull",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -8029,7 +8616,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Isometric_Neck_Exercise_-_Sides/0.jpg",
     "avoidFor": [
       "neck"
-    ]
+    ],
+    "force": "static",
+    "mechanic": "isolation"
   },
   {
     "id": "isometric-wipers",
@@ -8059,7 +8648,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "jm-press",
@@ -8088,7 +8679,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "jackknife-sit-up",
@@ -8110,7 +8703,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Jackknife%20Sit-Up%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Jackknife_Sit-Up/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "janda-sit-up",
@@ -8132,7 +8727,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Janda%20Sit-Up%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Janda_Sit-Up/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "jefferson-squats",
@@ -8163,7 +8760,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "jerk-balance",
@@ -8181,7 +8780,7 @@
       "quadriceps",
       "triceps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -8195,7 +8794,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "jerk-dip-squat",
@@ -8222,7 +8823,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Jerk_Dip_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-arnold-press",
@@ -8250,7 +8853,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-dead-clean",
@@ -8281,7 +8886,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-figure-8",
@@ -8309,7 +8916,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "unknown"
   },
   {
     "id": "kettlebell-goblet-squat",
@@ -8335,7 +8944,9 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how+to+do+Kettlebell+Goblet+Squat",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "kettlebell-hang-clean",
@@ -8367,7 +8978,9 @@
       "knee",
       "lower-back",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-one-legged-deadlift",
@@ -8395,7 +9008,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-pass-between-the-legs",
@@ -8424,7 +9039,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-pirate-ships",
@@ -8450,7 +9067,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pirate_Ships/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-pistol-squat",
@@ -8480,7 +9099,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-seated-press",
@@ -8508,7 +9129,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-seesaw-press",
@@ -8536,7 +9159,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-sumo-high-pull",
@@ -8567,7 +9192,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-swing",
@@ -8594,7 +9221,9 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Kettlebell%20Swing",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "kettlebell-thruster",
@@ -8610,7 +9239,7 @@
       "quadriceps",
       "triceps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -8624,7 +9253,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-turkish-get-up-lunge-style",
@@ -8656,7 +9287,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-turkish-get-up-squat-style",
@@ -8689,7 +9322,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "kettlebell-windmill",
@@ -8721,7 +9356,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "knee-tuck-jump",
@@ -8751,7 +9388,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Knee_Tuck_Jump/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "kneeling-cable-crunch-with-alternating-oblique-twists",
@@ -8773,7 +9412,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Kneeling%20Cable%20Crunch%20With%20Alternating%20Oblique%20Twists%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Cable_Crunch_With_Alternating_Oblique_Twists/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "kneeling-cable-triceps-extension",
@@ -8798,7 +9439,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "kneeling-high-pulley-row",
@@ -8826,7 +9469,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "kneeling-jump-squat",
@@ -8854,7 +9499,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Jump_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "kneeling-single-arm-high-pulley-row",
@@ -8882,7 +9529,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "kneeling-squat",
@@ -8911,7 +9560,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "landmine-180-s",
@@ -8941,7 +9592,9 @@
       "knee",
       "lower-back",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "landmine-linear-jammer",
@@ -8975,7 +9628,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "lateral-bound",
@@ -9005,7 +9660,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lateral_Bound/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "lateral-raise",
@@ -9028,7 +9685,9 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Lateral%20Raise",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "lateral-raise-with-bands",
@@ -9052,7 +9711,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lateral_Raise_-_With_Bands/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "leg-extensions",
@@ -9076,7 +9737,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "leg-lift",
@@ -9102,7 +9765,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Lift/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "leg-press",
@@ -9127,7 +9792,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "leg-pull-in",
@@ -9149,7 +9816,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Leg%20Pull-In%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Pull-In/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "leg-over-floor-press",
@@ -9178,7 +9847,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "leverage-chest-press",
@@ -9207,7 +9878,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "leverage-deadlift",
@@ -9234,7 +9907,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Deadlift/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "leverage-decline-chest-press",
@@ -9264,7 +9939,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "leverage-high-row",
@@ -9288,7 +9965,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Leverage%20High%20Row%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_High_Row/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "leverage-incline-chest-press",
@@ -9318,7 +9997,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "leverage-iso-row",
@@ -9346,7 +10027,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "leverage-shoulder-press",
@@ -9374,7 +10057,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "leverage-shrug",
@@ -9401,7 +10086,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "low-cable-crossover",
@@ -9427,7 +10114,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Low_Cable_Crossover/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "low-cable-triceps-extension",
@@ -9452,7 +10141,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "low-pulley-row-to-neck",
@@ -9482,7 +10173,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "lunge-pass-through",
@@ -9510,7 +10203,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lunge_Pass_Through/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "lunge-sprint",
@@ -9538,7 +10233,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lunge_Sprint/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "lying-cable-curl",
@@ -9563,7 +10260,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "lying-cambered-barbell-row",
@@ -9592,7 +10291,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "lying-close-grip-bar-curl-on-high-pulley",
@@ -9617,7 +10318,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "lying-close-grip-barbell-triceps-extension-behind-the-head",
@@ -9642,7 +10345,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "lying-close-grip-barbell-triceps-press-to-chin",
@@ -9668,7 +10373,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "lying-dumbbell-tricep-extension",
@@ -9697,13 +10404,16 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "lying-high-bench-barbell-curl",
     "name": "Lying High Bench Barbell Curl",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "intermediate",
     "primary": [
@@ -9722,7 +10432,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "lying-leg-curls",
@@ -9746,7 +10458,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "lying-machine-squat",
@@ -9774,7 +10488,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Machine_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "lying-one-arm-lateral-raise",
@@ -9798,7 +10514,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_One-Arm_Lateral_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "lying-rear-delt-raise",
@@ -9822,7 +10540,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Rear_Delt_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "lying-supine-dumbbell-curl",
@@ -9847,7 +10567,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "lying-t-bar-row",
@@ -9875,7 +10597,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "lying-triceps-press",
@@ -9900,7 +10624,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "machine-bench-press",
@@ -9930,7 +10656,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "machine-bicep-curl",
@@ -9955,12 +10683,15 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "machine-preacher-curls",
     "name": "Machine Preacher Curls",
     "equipment": [
+      "bench",
       "machines"
     ],
     "level": "beginner",
@@ -9980,7 +10711,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "machine-shoulder-military-press",
@@ -10008,7 +10741,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "machine-triceps-extension",
@@ -10033,7 +10768,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "medicine-ball-chest-pass",
@@ -10062,7 +10799,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "medicine-ball-full-twist",
@@ -10088,7 +10827,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Medicine_Ball_Full_Twist/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "medicine-ball-scoop-throw",
@@ -10117,7 +10858,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "middle-back-shrug",
@@ -10139,7 +10882,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Middle%20Back%20Shrug%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Middle_Back_Shrug/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "monster-walk",
@@ -10163,7 +10908,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Monster_Walk/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "mountain-climbers",
@@ -10178,7 +10925,7 @@
       "legs"
     ],
     "secondary": [],
-    "slot": "total",
+    "slot": "core",
     "baseSets": 3,
     "repsMin": 20,
     "repsMax": 30,
@@ -10189,7 +10936,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Mountain_Climbers/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "muscle-snatch",
@@ -10223,7 +10972,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "narrow-stance-hack-squats",
@@ -10251,7 +11002,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Narrow_Stance_Hack_Squats/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "narrow-stance-leg-press",
@@ -10279,7 +11032,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Narrow_Stance_Leg_Press/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "narrow-stance-squats",
@@ -10309,7 +11064,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "natural-glute-ham-raise",
@@ -10338,7 +11095,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "neck-press",
@@ -10367,7 +11126,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "oblique-crunches",
@@ -10389,7 +11150,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Oblique%20Crunches%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Oblique_Crunches/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "oblique-crunches-on-the-floor",
@@ -10411,7 +11174,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Oblique%20Crunches%20-%20On%20The%20Floor%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Oblique_Crunches_-_On_The_Floor/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "olympic-squat",
@@ -10439,7 +11204,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Olympic_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-dumbbell-bench-press",
@@ -10469,12 +11236,15 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-dumbbell-preacher-curl",
     "name": "One Arm Dumbbell Preacher Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -10494,7 +11264,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "one-arm-floor-press",
@@ -10523,7 +11295,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-lat-pulldown",
@@ -10551,7 +11325,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-pronated-dumbbell-triceps-extension",
@@ -10576,7 +11352,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "one-arm-supinated-dumbbell-triceps-extension",
@@ -10601,7 +11379,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "one-leg-barbell-squat",
@@ -10629,7 +11409,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Leg_Barbell_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-dumbbell-row",
@@ -10659,7 +11441,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-flat-bench-dumbbell-flye",
@@ -10682,7 +11466,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=One-Arm%20Flat%20Bench%20Dumbbell%20Flye%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Flat_Bench_Dumbbell_Flye/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "one-arm-high-pulley-cable-side-bends",
@@ -10704,7 +11490,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=One-Arm%20High-Pulley%20Cable%20Side%20Bends%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_High-Pulley_Cable_Side_Bends/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "one-arm-incline-lateral-raise",
@@ -10729,7 +11517,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Incline_Lateral_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "one-arm-kettlebell-clean",
@@ -10760,7 +11550,9 @@
       "knee",
       "lower-back",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-kettlebell-clean-and-jerk",
@@ -10773,7 +11565,7 @@
       "shoulders"
     ],
     "secondary": [],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -10784,7 +11576,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Clean_and_Jerk/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-kettlebell-floor-press",
@@ -10811,7 +11605,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-kettlebell-jerk",
@@ -10828,7 +11624,7 @@
       "quadriceps",
       "triceps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -10842,7 +11638,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-kettlebell-military-press-to-the-side",
@@ -10870,7 +11668,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-kettlebell-para-press",
@@ -10898,7 +11698,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-kettlebell-push-press",
@@ -10929,7 +11731,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-kettlebell-row",
@@ -10957,7 +11761,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-kettlebell-snatch",
@@ -10977,7 +11783,7 @@
       "traps",
       "triceps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -10992,7 +11798,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-kettlebell-split-jerk",
@@ -11010,7 +11818,7 @@
       "quadriceps",
       "triceps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -11024,7 +11832,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-kettlebell-split-snatch",
@@ -11040,7 +11850,7 @@
       "hamstrings",
       "quadriceps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -11052,7 +11862,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-kettlebell-swings",
@@ -11083,7 +11895,9 @@
       "knee",
       "lower-back",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-long-bar-row",
@@ -11111,7 +11925,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-medicine-ball-slam",
@@ -11138,7 +11954,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Medicine_Ball_Slam/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-open-palm-kettlebell-clean",
@@ -11172,7 +11990,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-overhead-kettlebell-squats",
@@ -11202,7 +12022,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-side-deadlift",
@@ -11234,7 +12056,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "one-arm-side-laterals",
@@ -11258,7 +12082,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Side_Laterals/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "one-legged-cable-kickback",
@@ -11284,7 +12110,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Legged_Cable_Kickback/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "open-palm-kettlebell-clean",
@@ -11315,7 +12143,9 @@
       "knee",
       "lower-back",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "overhead-cable-curl",
@@ -11340,7 +12170,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "overhead-slam",
@@ -11362,7 +12194,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Overhead%20Slam%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Overhead_Slam/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "overhead-squat",
@@ -11398,7 +12232,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "pallof-press",
@@ -11428,7 +12264,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "pallof-press-with-rotation",
@@ -11458,12 +12296,15 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "palms-down-dumbbell-wrist-curl-over-a-bench",
     "name": "Palms-Down Dumbbell Wrist Curl Over A Bench",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -11483,13 +12324,16 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "palms-down-wrist-curl-over-a-bench",
     "name": "Palms-Down Wrist Curl Over A Bench",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -11508,13 +12352,16 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "palms-up-barbell-wrist-curl-over-a-bench",
     "name": "Palms-Up Barbell Wrist Curl Over A Bench",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -11533,12 +12380,15 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "palms-up-dumbbell-wrist-curl-over-a-bench",
     "name": "Palms-Up Dumbbell Wrist Curl Over A Bench",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -11558,7 +12408,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "physioball-hip-bridge",
@@ -11584,7 +12436,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Physioball_Hip_Bridge/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "pin-presses",
@@ -11616,7 +12470,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "plank",
@@ -11638,7 +12494,9 @@
     "restSec": 30,
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Plank",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "static",
+    "mechanic": "isolation"
   },
   {
     "id": "plie-dumbbell-squat",
@@ -11667,7 +12525,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plie_Dumbbell_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "plyo-kettlebell-pushups",
@@ -11696,7 +12556,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "plyo-push-up",
@@ -11725,7 +12587,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "power-clean",
@@ -11763,7 +12627,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "power-clean-from-blocks",
@@ -11789,7 +12655,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Power_Clean_from_Blocks/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "power-jerk",
@@ -11823,7 +12691,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "power-partials",
@@ -11847,7 +12717,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Power_Partials/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "power-snatch",
@@ -11883,7 +12755,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "power-snatch-from-blocks",
@@ -11920,13 +12794,16 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "preacher-curl",
     "name": "Preacher Curl",
     "equipment": [
-      "barbell"
+      "barbell",
+      "bench"
     ],
     "level": "beginner",
     "primary": [
@@ -11945,12 +12822,15 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "preacher-hammer-dumbbell-curl",
     "name": "Preacher Hammer Dumbbell Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -11972,7 +12852,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "press-sit-up",
@@ -12002,7 +12884,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "pull-through",
@@ -12030,14 +12914,16 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "pull-up",
     "name": "Pull-Up",
     "equipment": [
-      "pullup-bar",
-      "bodyweight"
+      "bodyweight",
+      "pullup-bar"
     ],
     "level": "intermediate",
     "primary": [
@@ -12059,7 +12945,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "pullups",
@@ -12088,7 +12976,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "push-press",
@@ -12118,7 +13008,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "push-press-behind-the-neck",
@@ -12149,7 +13041,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "push-up-to-side-plank",
@@ -12179,7 +13073,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "push-up",
@@ -12208,7 +13104,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "push-up-wide",
@@ -12238,7 +13136,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "compound"
   },
   {
     "id": "push-ups-close-triceps-position",
@@ -12267,7 +13167,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "push-ups-with-feet-elevated",
@@ -12296,7 +13198,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "push-ups-with-feet-on-an-exercise-ball",
@@ -12325,7 +13229,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "pushups",
@@ -12354,7 +13260,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "pushups-close-and-wide-hand-positions",
@@ -12383,7 +13291,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "rack-delivery",
@@ -12412,7 +13322,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "rack-pull-with-bands",
@@ -12446,7 +13358,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "rack-pulls",
@@ -12478,7 +13392,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "renegade-row",
@@ -12507,7 +13423,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "band-row",
@@ -12534,7 +13452,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "return-push-from-stance",
@@ -12563,7 +13483,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "reverse-band-bench-press",
@@ -12597,7 +13519,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "reverse-band-box-squat",
@@ -12633,7 +13557,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "reverse-band-deadlift",
@@ -12666,7 +13592,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "reverse-band-power-squat",
@@ -12698,7 +13626,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "reverse-band-sumo-deadlift",
@@ -12735,7 +13665,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "reverse-barbell-curl",
@@ -12762,13 +13694,16 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "reverse-barbell-preacher-curls",
     "name": "Reverse Barbell Preacher Curls",
     "equipment": [
       "barbell",
+      "bench",
       "ez-bar"
     ],
     "level": "intermediate",
@@ -12790,7 +13725,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "reverse-cable-curl",
@@ -12817,7 +13754,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "reverse-crunch",
@@ -12839,7 +13778,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Reverse%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "reverse-flyes",
@@ -12863,7 +13804,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Flyes/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "reverse-flyes-with-external-rotation",
@@ -12887,7 +13830,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Flyes_With_External_Rotation/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "reverse-grip-bent-over-rows",
@@ -12917,7 +13862,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "reverse-grip-triceps-pushdown",
@@ -12942,7 +13889,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "reverse-hyperextension",
@@ -12969,7 +13918,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Hyperextension/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "unknown"
   },
   {
     "id": "reverse-machine-flyes",
@@ -12993,7 +13944,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Machine_Flyes/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "reverse-triceps-bench-press",
@@ -13023,7 +13976,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "rocket-jump",
@@ -13050,7 +14005,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rocket_Jump/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "rocking-standing-calf-raise",
@@ -13074,7 +14031,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rocking_Standing_Calf_Raise/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "romanian-deadlift",
@@ -13103,7 +14062,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "romanian-deadlift-from-deficit",
@@ -13135,7 +14096,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "rope-crunch",
@@ -13157,7 +14120,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Rope%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rope_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "rope-straight-arm-pulldown",
@@ -13179,7 +14144,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Rope%20Straight-Arm%20Pulldown%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rope_Straight-Arm_Pulldown/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "russian-twist",
@@ -13202,7 +14169,9 @@
     "restSec": 30,
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Russian%20Twist",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Russian_Twist/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "scissors-jump",
@@ -13229,7 +14198,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Scissors_Jump/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "seated-barbell-military-press",
@@ -13257,7 +14228,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "seated-barbell-twist",
@@ -13279,7 +14252,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Barbell%20Twist%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Barbell_Twist/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-bent-over-one-arm-dumbbell-triceps-extension",
@@ -13304,7 +14279,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-bent-over-rear-delt-raise",
@@ -13328,7 +14305,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Bent-Over_Rear_Delt_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-bent-over-two-arm-dumbbell-triceps-extension",
@@ -13353,7 +14332,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-cable-rows",
@@ -13383,7 +14364,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "seated-cable-shoulder-press",
@@ -13411,7 +14394,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "seated-calf-raise",
@@ -13435,7 +14420,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Calf_Raise/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-close-grip-concentration-barbell-curl",
@@ -13460,7 +14447,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-dumbbell-curl",
@@ -13485,7 +14474,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-dumbbell-inner-biceps-curl",
@@ -13510,7 +14501,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-dumbbell-palms-down-wrist-curl",
@@ -13535,7 +14528,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-dumbbell-palms-up-wrist-curl",
@@ -13560,7 +14555,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-dumbbell-press",
@@ -13588,7 +14585,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "seated-flat-bench-leg-pull-in",
@@ -13611,7 +14610,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Flat%20Bench%20Leg%20Pull-In%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Flat_Bench_Leg_Pull-In/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "seated-good-mornings",
@@ -13638,7 +14639,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "seated-leg-curl",
@@ -13662,7 +14665,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-leg-tucks",
@@ -13684,7 +14689,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Leg%20Tucks%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Tucks/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-one-arm-dumbbell-palms-down-wrist-curl",
@@ -13709,7 +14716,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-one-arm-dumbbell-palms-up-wrist-curl",
@@ -13734,7 +14743,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-one-arm-cable-pulley-rows",
@@ -13763,7 +14774,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "seated-palm-up-barbell-wrist-curl",
@@ -13788,7 +14801,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-palms-down-barbell-wrist-curl",
@@ -13813,7 +14828,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-side-lateral-raise",
@@ -13837,7 +14854,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Side_Lateral_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-triceps-press",
@@ -13862,7 +14881,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "seated-two-arm-palms-up-low-pulley-wrist-curl",
@@ -13887,7 +14908,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "see-saw-press-alternating-side-press",
@@ -13916,7 +14939,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "shotgun-row",
@@ -13944,7 +14969,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "shoulder-press-with-bands",
@@ -13972,7 +14999,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "side-bridge",
@@ -13998,7 +15027,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "static",
+    "mechanic": "unknown"
   },
   {
     "id": "side-jackknife",
@@ -14020,7 +15051,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Side%20Jackknife%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Jackknife/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "side-lateral-raise",
@@ -14044,7 +15077,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "side-laterals-to-front-raise",
@@ -14070,7 +15105,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Laterals_to_Front_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "side-plank",
@@ -14092,7 +15129,9 @@
     "workDuration": 30,
     "restSec": 30,
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Side%20Plank",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "single-dumbbell-raise",
@@ -14121,7 +15160,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "isolation"
   },
   {
     "id": "single-leg-butt-kick",
@@ -14148,7 +15189,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single_Leg_Butt_Kick/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "single-leg-glute-bridge",
@@ -14174,7 +15217,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single_Leg_Glute_Bridge/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "single-arm-cable-crossover",
@@ -14196,7 +15241,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Single-Arm%20Cable%20Crossover%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Arm_Cable_Crossover/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "single-arm-linear-jammer",
@@ -14225,7 +15272,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "single-arm-push-up",
@@ -14254,7 +15303,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "single-leg-leg-extension",
@@ -14278,7 +15329,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Leg_Leg_Extension/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "sit-up",
@@ -14300,7 +15353,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Sit-Up%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Sit-Up/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "smith-incline-shoulder-raise",
@@ -14328,7 +15383,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Incline_Shoulder_Raise/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "smith-machine-behind-the-back-shrug",
@@ -14354,7 +15411,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Behind_the_Back_Shrug/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "smith-machine-bench-press",
@@ -14384,7 +15443,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-bent-over-row",
@@ -14414,7 +15475,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-calf-raise",
@@ -14438,7 +15501,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Calf_Raise/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "smith-machine-close-grip-bench-press",
@@ -14468,7 +15533,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-decline-press",
@@ -14498,7 +15565,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "unknown",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-hang-power-clean",
@@ -14530,7 +15599,9 @@
       "knee",
       "lower-back",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-hip-raise",
@@ -14552,7 +15623,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Smith%20Machine%20Hip%20Raise%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Hip_Raise/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "smith-machine-incline-bench-press",
@@ -14582,7 +15655,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-leg-press",
@@ -14610,7 +15685,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Leg_Press/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-one-arm-upright-row",
@@ -14639,7 +15716,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-overhead-shoulder-press",
@@ -14667,7 +15746,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-pistol-squat",
@@ -14695,7 +15776,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Pistol_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-reverse-calf-raises",
@@ -14719,7 +15802,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Reverse_Calf_Raises/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "smith-machine-squat",
@@ -14749,7 +15834,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-stiff-legged-deadlift",
@@ -14777,7 +15864,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "smith-machine-upright-row",
@@ -14807,7 +15896,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "smith-single-leg-split-squat",
@@ -14835,7 +15926,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Single-Leg_Split_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "snatch",
@@ -14871,7 +15964,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "snatch-balance",
@@ -14904,7 +15999,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "snatch-deadlift",
@@ -14938,7 +16035,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "snatch-pull",
@@ -14969,7 +16068,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "snatch-shrug",
@@ -14985,7 +16086,7 @@
       "forearms",
       "shoulders"
     ],
-    "slot": "pull",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -14998,7 +16099,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "snatch-from-blocks",
@@ -15035,7 +16138,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "speed-band-overhead-triceps",
@@ -15060,7 +16165,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "speed-box-squat",
@@ -15088,7 +16195,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Speed_Box_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "speed-squats",
@@ -15118,7 +16227,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "spell-caster",
@@ -15146,7 +16257,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "spider-crawl",
@@ -15176,12 +16289,15 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "spider-curl",
     "name": "Spider Curl",
     "equipment": [
+      "bench",
       "ez-bar"
     ],
     "level": "beginner",
@@ -15201,7 +16317,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "split-clean",
@@ -15237,7 +16355,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "split-jerk",
@@ -15269,7 +16389,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "split-jump",
@@ -15297,7 +16419,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Split_Jump/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "split-snatch",
@@ -15335,7 +16459,9 @@
       "lower-back",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "split-squat-with-dumbbells",
@@ -15362,7 +16488,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Split_Squat_with_Dumbbells/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "squat-jerk",
@@ -15395,7 +16523,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "squat-with-bands",
@@ -15427,7 +16557,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "squat-with-chains",
@@ -15458,7 +16590,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "squat-with-plate-movers",
@@ -15488,7 +16622,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Squat_with_Plate_Movers/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "squats-with-bands",
@@ -15518,7 +16654,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "standing-alternating-dumbbell-press",
@@ -15546,7 +16684,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "standing-barbell-calf-raise",
@@ -15570,7 +16710,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Barbell_Calf_Raise/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-barbell-press-behind-neck",
@@ -15598,7 +16740,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "standing-bent-over-one-arm-dumbbell-triceps-extension",
@@ -15626,7 +16770,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-bent-over-two-arm-dumbbell-triceps-extension",
@@ -15651,7 +16797,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-biceps-cable-curl",
@@ -15676,7 +16824,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-bradford-press",
@@ -15704,7 +16854,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "standing-cable-chest-press",
@@ -15733,7 +16885,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "standing-cable-lift",
@@ -15759,7 +16913,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Cable_Lift/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "standing-cable-wood-chop",
@@ -15785,7 +16941,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Cable_Wood_Chop/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "standing-calf-raises",
@@ -15809,7 +16967,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-concentration-curl",
@@ -15836,7 +16996,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-dumbbell-calf-raise",
@@ -15860,7 +17022,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Dumbbell_Calf_Raise/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-dumbbell-press",
@@ -15888,7 +17052,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "standing-dumbbell-reverse-curl",
@@ -15915,7 +17081,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-dumbbell-straight-arm-front-delt-raise-above-head",
@@ -15939,7 +17107,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Dumbbell_Straight-Arm_Front_Delt_Raise_Above_Head/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-dumbbell-triceps-extension",
@@ -15964,7 +17134,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-dumbbell-upright-row",
@@ -15993,7 +17165,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "standing-front-barbell-raise-over-head",
@@ -16017,7 +17191,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Front_Barbell_Raise_Over_Head/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-inner-biceps-curl",
@@ -16042,7 +17218,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-leg-curl",
@@ -16066,7 +17244,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Leg_Curl/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-long-jump",
@@ -16094,7 +17274,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Long_Jump/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "standing-low-pulley-deltoid-raise",
@@ -16122,7 +17304,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-low-pulley-one-arm-triceps-extension",
@@ -16151,7 +17335,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-military-press",
@@ -16179,7 +17365,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "standing-one-arm-cable-curl",
@@ -16204,7 +17392,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-one-arm-dumbbell-curl-over-incline-bench",
@@ -16230,7 +17420,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-one-arm-dumbbell-triceps-extension",
@@ -16259,7 +17451,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-overhead-barbell-triceps-extension",
@@ -16287,7 +17481,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-palm-in-one-arm-dumbbell-press",
@@ -16315,7 +17511,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "standing-palms-in-dumbbell-press",
@@ -16343,7 +17541,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "standing-palms-up-barbell-behind-the-back-wrist-curl",
@@ -16368,7 +17568,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-rope-crunch",
@@ -16390,7 +17592,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Rope%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Rope_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-towel-triceps-extension",
@@ -16415,7 +17619,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "standing-two-arm-overhead-throw",
@@ -16442,7 +17648,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Two-Arm_Overhead_Throw/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "star-jump",
@@ -16472,7 +17680,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "step-up-with-knee-raise",
@@ -16499,7 +17709,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Step-up_with_Knee_Raise/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "stiff-leg-barbell-good-morning",
@@ -16527,7 +17739,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "stiff-legged-barbell-deadlift",
@@ -16555,7 +17769,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "stiff-legged-dumbbell-deadlift",
@@ -16583,7 +17799,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "straight-bar-bench-mid-rows",
@@ -16612,7 +17830,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "straight-raises-on-incline-bench",
@@ -16639,7 +17859,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Straight_Raises_on_Incline_Bench/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "straight-arm-dumbbell-pullover",
@@ -16669,7 +17891,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "straight-arm-pulldown",
@@ -16691,7 +17915,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Straight-Arm%20Pulldown%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Straight-Arm_Pulldown/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "suitcase-carry",
@@ -16713,7 +17939,9 @@
     "workDuration": 45,
     "restSec": 30,
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Suitcase%20Carry",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "unknown",
+    "mechanic": "unknown"
   },
   {
     "id": "sumo-deadlift",
@@ -16748,7 +17976,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "sumo-deadlift-with-bands",
@@ -16784,7 +18014,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "sumo-deadlift-with-chains",
@@ -16820,7 +18052,9 @@
       "knee",
       "lower-back",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "supine-chest-throw",
@@ -16849,7 +18083,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "supine-one-arm-overhead-throw",
@@ -16877,7 +18113,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Supine_One-Arm_Overhead_Throw/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "supine-two-arm-overhead-throw",
@@ -16905,7 +18143,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Supine_Two-Arm_Overhead_Throw/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "t-bar-row-with-handle",
@@ -16933,7 +18173,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "tate-press",
@@ -16962,7 +18204,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "thigh-abductor",
@@ -16988,7 +18232,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Abductor/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "thigh-adductor",
@@ -17015,7 +18261,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Adductor/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "tricep-dumbbell-kickback",
@@ -17040,7 +18288,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "triceps-overhead-extension-with-rope",
@@ -17065,7 +18315,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "triceps-pushdown",
@@ -17090,7 +18342,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "triceps-pushdown-rope-attachment",
@@ -17115,7 +18369,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "triceps-pushdown-v-bar-attachment",
@@ -17140,7 +18396,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "isolation"
   },
   {
     "id": "tuck-crunch",
@@ -17162,12 +18420,15 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Tuck%20Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Tuck_Crunch/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "two-arm-dumbbell-preacher-curl",
     "name": "Two-Arm Dumbbell Preacher Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "beginner",
@@ -17187,7 +18448,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "two-arm-kettlebell-clean",
@@ -17206,7 +18469,7 @@
       "lower back",
       "traps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -17219,7 +18482,9 @@
       "knee",
       "lower-back",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "two-arm-kettlebell-jerk",
@@ -17236,7 +18501,7 @@
       "quadriceps",
       "triceps"
     ],
-    "slot": "push",
+    "slot": "legs",
     "baseSets": 3,
     "repsMin": 8,
     "repsMax": 12,
@@ -17250,7 +18515,9 @@
       "knee",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "two-arm-kettlebell-military-press",
@@ -17278,7 +18545,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "two-arm-kettlebell-row",
@@ -17306,7 +18575,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "underhand-cable-pulldowns",
@@ -17336,7 +18607,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "upright-barbell-row",
@@ -17362,7 +18635,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upright_Barbell_Row/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "upright-cable-row",
@@ -17388,7 +18663,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upright_Cable_Row/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "upright-row-with-bands",
@@ -17414,7 +18691,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upright_Row_-_With_Bands/0.jpg",
     "avoidFor": [
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "v-bar-pulldown",
@@ -17444,7 +18723,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "v-bar-pullup",
@@ -17475,7 +18756,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "vertical-swing",
@@ -17504,7 +18787,9 @@
     "avoidFor": [
       "knee",
       "shoulder"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "weighted-ball-hyperextension",
@@ -17533,7 +18818,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "weighted-ball-side-bend",
@@ -17555,7 +18842,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Weighted%20Ball%20Side%20Bend%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Weighted_Ball_Side_Bend/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "weighted-crunches",
@@ -17577,7 +18866,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Weighted%20Crunches%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Weighted_Crunches/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "weighted-jump-squat",
@@ -17607,7 +18898,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "weighted-sissy-squat",
@@ -17635,7 +18928,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Weighted_Sissy_Squat/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "wide-stance-barbell-squat",
@@ -17665,7 +18960,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "wide-stance-stiff-legs",
@@ -17694,7 +18991,9 @@
     "avoidFor": [
       "knee",
       "lower-back"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "wide-grip-barbell-bench-press",
@@ -17724,7 +19023,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "wide-grip-decline-barbell-bench-press",
@@ -17754,7 +19055,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "wide-grip-decline-barbell-pullover",
@@ -17783,7 +19086,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "wide-grip-lat-pulldown",
@@ -17813,7 +19118,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "wide-grip-pulldown-behind-the-neck",
@@ -17843,7 +19150,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "wide-grip-rear-pull-up",
@@ -17874,7 +19183,9 @@
       "elbow",
       "shoulder",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "wide-grip-standing-barbell-curl",
@@ -17899,7 +19210,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "wind-sprints",
@@ -17921,7 +19234,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Wind%20Sprints%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wind_Sprints/0.jpg",
-    "avoidFor": []
+    "avoidFor": [],
+    "force": "pull",
+    "mechanic": "compound"
   },
   {
     "id": "wrist-rotations-with-straight-bar",
@@ -17946,7 +19261,9 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "zercher-squats",
@@ -17974,7 +19291,9 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Zercher_Squats/0.jpg",
     "avoidFor": [
       "knee"
-    ]
+    ],
+    "force": "push",
+    "mechanic": "compound"
   },
   {
     "id": "zottman-curl",
@@ -18001,12 +19320,15 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   },
   {
     "id": "zottman-preacher-curl",
     "name": "Zottman Preacher Curl",
     "equipment": [
+      "bench",
       "dumbbells"
     ],
     "level": "intermediate",
@@ -18028,6 +19350,8 @@
     "avoidFor": [
       "elbow",
       "wrist"
-    ]
+    ],
+    "force": "pull",
+    "mechanic": "isolation"
   }
 ]

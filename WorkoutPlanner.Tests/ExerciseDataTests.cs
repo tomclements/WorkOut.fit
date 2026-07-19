@@ -53,12 +53,36 @@ public class ExerciseDataTests
     [Fact]
     public void AllSlots_AreKnown()
     {
-        var known = new[] { "legs", "push", "pull", "core", "carry", "total" };
+        // "total" is retired — full-body sessions rotate across push/pull/legs/core
+        var known = new[] { "legs", "push", "pull", "core", "carry" };
         var path = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "WorkoutPlanner.Api", "Data", "exercises.json");
         var json = File.ReadAllText(path);
         var exercises = JsonSerializer.Deserialize<List<Exercise>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         Assert.All(exercises, ex => Assert.Contains(ex.Slot, known));
+        Assert.DoesNotContain(exercises, ex => ex.Slot == "total");
+    }
+
+    [Fact]
+    public void InclineDumbbellCurl_RequiresBenchAndDumbbells()
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "WorkoutPlanner.Api", "Data", "exercises.json");
+        var exercises = JsonSerializer.Deserialize<List<Exercise>>(
+            File.ReadAllText(path),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        var curls = exercises.Where(e =>
+            e.Name.Contains("Incline", StringComparison.OrdinalIgnoreCase)
+            && e.Name.Contains("Curl", StringComparison.OrdinalIgnoreCase)
+            && e.Name.Contains("Dumbbell", StringComparison.OrdinalIgnoreCase)).ToList();
+
+        Assert.NotEmpty(curls);
+        Assert.All(curls, ex =>
+        {
+            Assert.Contains("bench", ex.Equipment);
+            Assert.Contains("dumbbells", ex.Equipment);
+            Assert.Equal("pull", ex.Slot);
+        });
     }
 
     [Fact]

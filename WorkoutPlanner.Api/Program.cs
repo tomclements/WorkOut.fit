@@ -370,6 +370,21 @@ static async Task SeedDataAsync(IServiceProvider services)
                 ex.Equipment = seed.Equipment.ToList();
                 changed = true;
             }
+            if (!string.IsNullOrWhiteSpace(seed.Slot) && ex.Slot != seed.Slot)
+            {
+                ex.Slot = seed.Slot;
+                changed = true;
+            }
+            if (!string.IsNullOrWhiteSpace(seed.Force) && ex.Force != seed.Force)
+            {
+                ex.Force = seed.Force;
+                changed = true;
+            }
+            if (!string.IsNullOrWhiteSpace(seed.Mechanic) && ex.Mechanic != seed.Mechanic)
+            {
+                ex.Mechanic = seed.Mechanic;
+                changed = true;
+            }
             if (changed) updated++;
         }
         if (updated > 0)

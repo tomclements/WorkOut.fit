@@ -24,42 +24,7 @@ public class ExerciseImportService : IExerciseImportService
         "strength", "plyometrics", "powerlifting", "olympic weightlifting", "strongman"
     };
 
-    private static readonly Dictionary<string, string[]> EquipmentMap = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["body only"] = new[] { "bodyweight" },
-        ["none"] = new[] { "bodyweight" },
-        ["dumbbell"] = new[] { "dumbbells" },
-        ["barbell"] = new[] { "barbell" },
-        ["kettlebells"] = new[] { "kettlebell" },
-        ["cable"] = new[] { "cable" },
-        ["machine"] = new[] { "machines" },
-        ["bands"] = new[] { "bands" },
-        ["medicine ball"] = new[] { "medicine-ball" },
-        ["exercise ball"] = new[] { "stability-ball" },
-        ["e-z curl bar"] = new[] { "ez-bar" },
-        ["foam roll"] = new[] { "foam-roller" }
-    };
-
-    private static readonly Dictionary<string, string> SlotMap = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["chest"] = "push",
-        ["triceps"] = "push",
-        ["shoulders"] = "push",
-        ["lats"] = "pull",
-        ["biceps"] = "pull",
-        ["middle back"] = "pull",
-        ["traps"] = "pull",
-        ["forearms"] = "pull",
-        ["quadriceps"] = "legs",
-        ["hamstrings"] = "legs",
-        ["calves"] = "legs",
-        ["glutes"] = "legs",
-        ["adductors"] = "legs",
-        ["abductors"] = "legs",
-        ["abdominals"] = "core",
-        ["lower back"] = "core",
-        ["neck"] = "total"
-    };
+    // Equipment + slot maps live in ExerciseTaxonomy (single source of truth).
 
     private static readonly (string Id, string Name, string Category)[] NewEquipment =
     {
@@ -165,15 +130,15 @@ public class ExerciseImportService : IExerciseImportService
                     continue;
                 }
 
-                var mappedEquipment = MapEquipment(src.Equipment);
-                if (mappedEquipment == null)
+                var mappedEquipment = ExerciseTaxonomy.MapSourceEquipment(src.Equipment);
+                if (mappedEquipment == null && !string.Equals(src.Equipment, "other", StringComparison.OrdinalIgnoreCase))
                 {
                     result.Skipped++;
                     continue;
                 }
 
-                // free-exercise-db often says "body only" for moves that still need a ball/bench/etc.
-                mappedEquipment = EnrichEquipmentFromName(src.Name, mappedEquipment);
+                mappedEquipment ??= new List<string>();
+                mappedEquipment = ExerciseTaxonomy.EnrichEquipmentFromName(src.Name, mappedEquipment);
 
                 // Drop unknown equipment ids (shouldn't happen after map)
                 mappedEquipment = mappedEquipment
@@ -278,7 +243,7 @@ public class ExerciseImportService : IExerciseImportService
     {
         var primary = src.PrimaryMuscles ?? new List<string>();
         var secondary = src.SecondaryMuscles ?? new List<string>();
-        return new Exercise
+        var ex = new Exercise
         {
             Id = id,
             Name = src.Name,
@@ -286,7 +251,9 @@ public class ExerciseImportService : IExerciseImportService
             Level = MapLevel(src.Level),
             Primary = primary,
             Secondary = secondary,
-            Slot = MapSlot(primary),
+            Slot = ExerciseTaxonomy.InferSlot(primary, src.Force, src.Name),
+            Force = ExerciseTaxonomy.NormalizeForce(src.Force),
+            Mechanic = ExerciseTaxonomy.NormalizeMechanic(src.Mechanic),
             BaseSets = 3,
             RepsMin = 8,
             RepsMax = 12,
@@ -297,6 +264,8 @@ public class ExerciseImportService : IExerciseImportService
             ImageUrl = BuildImageUrl(src.Images),
             AvoidFor = MapAvoidFor(primary, secondary, src.Category ?? "")
         };
+        ExerciseTaxonomy.Reclassify(ex, src.Force, src.Mechanic);
+        return ex;
     }
 
     private static void Apply(Exercise target, Exercise source)
@@ -307,6 +276,8 @@ public class ExerciseImportService : IExerciseImportService
         target.Primary = source.Primary;
         target.Secondary = source.Secondary;
         target.Slot = source.Slot;
+        target.Force = source.Force;
+        target.Mechanic = source.Mechanic;
         target.DemoUrl = source.DemoUrl;
         target.ImageUrl = source.ImageUrl;
         target.AvoidFor = source.AvoidFor;
@@ -324,80 +295,9 @@ public class ExerciseImportService : IExerciseImportService
     private static string MapLevel(string? level) =>
         string.Equals(level, "expert", StringComparison.OrdinalIgnoreCase) ? "advanced" : (level ?? "beginner");
 
-    private static string MapSlot(List<string> primary)
-    {
-        foreach (var muscle in primary)
-        {
-            if (SlotMap.TryGetValue(muscle, out var slot))
-                return slot;
-        }
-        return "total";
-    }
-
-    private static List<string>? MapEquipment(string? equipment)
-    {
-        if (equipment == null) return null;
-        return EquipmentMap.TryGetValue(equipment, out var mapped) ? mapped.ToList() : null;
-    }
-
-    /// <summary>
-    /// Infer extra required equipment from the exercise name.
-    /// Source DB tags many ball/incline moves as "body only", which breaks the planner filter.
-    /// </summary>
-    public static List<string> EnrichEquipmentFromName(string name, IEnumerable<string> existing)
-    {
-        var eq = new HashSet<string>(existing, StringComparer.OrdinalIgnoreCase);
-        var n = name.ToLowerInvariant();
-
-        if (n.Contains("exercise ball") || n.Contains("stability ball") || n.Contains("swiss ball")
-            || n.Contains("physio ball") || n.Contains("bosu"))
-            eq.Add("stability-ball");
-
-        if (n.Contains("medicine ball"))
-            eq.Add("medicine-ball");
-
-        if (Regex.IsMatch(n, @"pull[ -]?up|chin[ -]?up|pullup"))
-            eq.Add("pullup-bar");
-
-        if (n.Contains("cable"))
-            eq.Add("cable");
-
-        if (n.Contains("smith") || n.Contains("leg press") || n.Contains("hack squat"))
-            eq.Add("machines");
-
-        if (n.Contains("kettlebell"))
-            eq.Add("kettlebell");
-
-        if (n.Contains("barbell") || n.Contains("ez-bar") || n.Contains("ez bar") || n.Contains("olympic bar"))
-            eq.Add("barbell");
-
-        if (n.Contains("dumbbell"))
-            eq.Add("dumbbells");
-
-        if (Regex.IsMatch(n, @"\bbands?\b"))
-            eq.Add("bands");
-
-        if (n.Contains("foam roll") || n.Contains("foam roller") || n.Contains("smr"))
-            eq.Add("foam-roller");
-
-        // Incline/decline variants usually need an elevated surface we model as "bench"
-        if (Regex.IsMatch(n, @"\b(incline|decline)\b")
-            && Regex.IsMatch(n, @"push[ -]?up|bench|press|fly|row|curl|raise|sit[ -]?up|crunch|lunge|triceps|chest"))
-        {
-            eq.Add("bench");
-        }
-
-        if (Regex.IsMatch(n, @"\bbench\b")
-            && Regex.IsMatch(n, @"press|fly|dip|pull|row|crunch|sit"))
-        {
-            eq.Add("bench");
-        }
-
-        if (eq.Count == 0)
-            eq.Add("bodyweight");
-
-        return eq.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
-    }
+    /// <summary>Back-compat wrapper — prefer <see cref="ExerciseTaxonomy.EnrichEquipmentFromName"/>.</summary>
+    public static List<string> EnrichEquipmentFromName(string name, IEnumerable<string> existing) =>
+        ExerciseTaxonomy.EnrichEquipmentFromName(name, existing);
 
     private static string BuildDemoUrl(string name) =>
         "https://www.youtube.com/results?search_query=" + Uri.EscapeDataString(name + " exercise");
@@ -440,6 +340,8 @@ public class ExerciseImportService : IExerciseImportService
         public string? Level { get; set; }
         public string? Equipment { get; set; }
         public string? Category { get; set; }
+        public string? Force { get; set; }
+        public string? Mechanic { get; set; }
         public List<string>? PrimaryMuscles { get; set; }
         public List<string>? SecondaryMuscles { get; set; }
         public List<string>? Images { get; set; }

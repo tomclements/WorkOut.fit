@@ -204,7 +204,8 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             bool MatchesSlot(Exercise e) =>
                 split == "full-body"
                 || (isBro && MatchesBroFocus(e, slot))
-                || (!isBro && (e.Slot == slot || e.Slot == "total"));
+                // Slot must match the scheduled movement pattern (no catch-all "total")
+                || (!isBro && string.Equals(e.Slot, slot, StringComparison.OrdinalIgnoreCase));
 
             var candidates = pool
                 .Where(e => MatchesSlot(e) && !usedToday.Contains(e.Id))
