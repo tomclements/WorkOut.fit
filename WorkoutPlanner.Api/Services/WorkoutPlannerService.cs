@@ -253,6 +253,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 Id = ex.Id,
                 Name = ex.Name,
                 Slot = ex.Slot,
+                Phase = "work",
                 Sets = sets,
                 RepsDisplay = reps,
                 Rest = rest,
@@ -267,8 +268,64 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             timeUsed += exerciseDuration;
         }
 
-        session.EstimatedMinutes = (int)Math.Round(
-            (timeUsed + (includeWarmup ? 180 : 0) + (includeCooldown ? 120 : 0)) / 60.0);
+        // No main lifts → empty session (do not pad with mobility alone)
+        if (session.Exercises.Count == 0)
+        {
+            session.EstimatedMinutes = 0;
+            return session;
+        }
+
+        // Muscle-aware warm-up / cool-down based on what this session actually trains
+        var rankedMuscles = MobilityCatalog.RankMuscles(session.Exercises);
+        // Bro-split: merge body-part focus tags when the work set is thin
+        if (isBro)
+        {
+            var fromFocus = new List<string>();
+            foreach (var focus in slotOrder)
+            {
+                if (BroFocusMuscles.TryGetValue(focus, out var muscles))
+                    fromFocus.AddRange(muscles);
+            }
+            if (fromFocus.Count > 0)
+            {
+                var merged = MobilityCatalog.NormalizeMuscles(fromFocus)
+                    .Concat(rankedMuscles)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+                // Prefer frequency ranking from work lifts first, then focus leftovers
+                rankedMuscles = rankedMuscles
+                    .Concat(merged.Where(m => !rankedMuscles.Contains(m, StringComparer.OrdinalIgnoreCase)))
+                    .ToList();
+            }
+        }
+
+        var ordered = new List<PlanExercise>();
+        int mobilityTime = 0;
+
+        if (includeWarmup)
+        {
+            var warmup = MobilityCatalog.BuildWarmup(rankedMuscles, rng, budgetSec: 180);
+            foreach (var m in warmup)
+            {
+                ordered.Add(m);
+                mobilityTime += m.WorkDuration + m.Rest;
+            }
+        }
+
+        ordered.AddRange(session.Exercises);
+
+        if (includeCooldown)
+        {
+            var cooldown = MobilityCatalog.BuildCooldown(rankedMuscles, rng, budgetSec: 120);
+            foreach (var m in cooldown)
+            {
+                ordered.Add(m);
+                mobilityTime += m.WorkDuration + m.Rest;
+            }
+        }
+
+        session.Exercises = ordered;
+        session.EstimatedMinutes = (int)Math.Round((timeUsed + mobilityTime) / 60.0);
 
         return session;
     }

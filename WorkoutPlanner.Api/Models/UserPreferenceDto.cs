@@ -4,9 +4,11 @@ public class UserPreferenceDto
 {
     public List<string> DefaultEquipment { get; set; } = new();
     public bool DefaultMusic { get; set; }
+    /// <summary>off | drive | focus | power | calm | device</summary>
+    public string DefaultMusicStyle { get; set; } = "drive";
     public bool DefaultVoice { get; set; }
     public bool DefaultMotionSensor { get; set; }
-    public int DefaultVolume { get; set; } = 20;
+    public int DefaultVolume { get; set; } = 35;
 
     public string DefaultLevel { get; set; } = "beginner";
     public string DefaultGoal { get; set; } = "hypertrophy";

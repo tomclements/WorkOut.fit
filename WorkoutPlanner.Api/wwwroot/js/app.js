@@ -9,10 +9,11 @@ const PLAN_DEFAULTS_KEY = 'workoutPlanFormDefaults';
 
 let currentPreferences = {
   defaultEquipment: ['dumbbells', 'bodyweight'],
-  defaultMusic: false,
+  defaultMusic: true,
+  defaultMusicStyle: 'drive',
   defaultVoice: false,
   defaultMotionSensor: false,
-  defaultVolume: 20,
+  defaultVolume: 35,
   defaultLevel: 'beginner',
   defaultGoal: 'hypertrophy',
   defaultSplit: 'full-body',
@@ -305,6 +306,7 @@ function mergePreferences(prefs) {
       ? prefs.defaultEquipment
       : currentPreferences.defaultEquipment,
     defaultMusic: prefs.defaultMusic ?? currentPreferences.defaultMusic,
+    defaultMusicStyle: prefs.defaultMusicStyle ?? currentPreferences.defaultMusicStyle,
     defaultVoice: prefs.defaultVoice ?? currentPreferences.defaultVoice,
     defaultMotionSensor: prefs.defaultMotionSensor ?? currentPreferences.defaultMotionSensor,
     defaultVolume: prefs.defaultVolume ?? currentPreferences.defaultVolume,
@@ -352,6 +354,7 @@ async function savePlanFormDefaults(criteria) {
     const dto = {
       defaultEquipment: currentPreferences.defaultEquipment,
       defaultMusic: currentPreferences.defaultMusic,
+      defaultMusicStyle: currentPreferences.defaultMusicStyle || 'drive',
       defaultVoice: false,
       defaultMotionSensor: false,
       defaultVolume: currentPreferences.defaultVolume,
@@ -590,6 +593,7 @@ function mapPrefsFromApi(prefs) {
   return {
     defaultEquipment: prefs.defaultEquipment,
     defaultMusic: prefs.defaultMusic,
+    defaultMusicStyle: prefs.defaultMusicStyle || (prefs.defaultMusic ? 'drive' : 'off'),
     defaultVoice: prefs.defaultVoice,
     defaultMotionSensor: prefs.defaultMotionSensor,
     defaultVolume: prefs.defaultVolume,
@@ -618,7 +622,10 @@ function openPreferencesModal(e) {
     container.appendChild(label);
   });
 
-  document.getElementById('prefMusic').checked = currentPreferences.defaultMusic;
+  const style = currentPreferences.defaultMusicStyle
+    || (currentPreferences.defaultMusic ? 'drive' : 'off');
+  document.getElementById('prefMusicStyle').value = style;
+  document.getElementById('prefMusic').checked = style !== 'off';
   document.getElementById('prefVoice').checked = currentPreferences.defaultVoice;
   document.getElementById('prefMotion').checked = currentPreferences.defaultMotionSensor;
   document.getElementById('prefVolume').value = currentPreferences.defaultVolume;
@@ -641,10 +648,12 @@ function setPrefStatus(message, isError) {
 
 async function savePreferences() {
   const equipment = Array.from(document.querySelectorAll('input[name="prefEquipment"]:checked')).map(cb => cb.value);
+  const musicStyle = document.getElementById('prefMusicStyle').value || 'drive';
   const dto = {
     ...currentPreferences,
     defaultEquipment: equipment,
-    defaultMusic: document.getElementById('prefMusic').checked,
+    defaultMusicStyle: musicStyle,
+    defaultMusic: musicStyle !== 'off',
     defaultVoice: false,
     defaultMotionSensor: false,
     defaultVolume: parseInt(document.getElementById('prefVolume').value, 10)
@@ -1171,27 +1180,45 @@ function renderPlan(result) {
           </div>
         `;
       } else {
-        const list = day.exercises.map((ex, exIndex) => `
-          <li class="mb-3 flex gap-3">
+        const list = day.exercises.map((ex, exIndex) => {
+          const phase = (ex.phase || 'work').toLowerCase();
+          const phaseBadge = phase === 'warmup'
+            ? '<span class="text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded">Warm-up</span>'
+            : phase === 'cooldown'
+              ? '<span class="text-[10px] font-semibold uppercase tracking-wide bg-teal-100 text-teal-900 px-1.5 py-0.5 rounded">Cool-down</span>'
+              : '';
+          const isMobility = phase === 'warmup' || phase === 'cooldown';
+          const setsLine = isMobility
+            ? `<span class="text-sm text-gray-700">${escapeHtml(ex.repsDisplay || (ex.workDuration + 's'))}</span>`
+            : `<span class="text-sm text-gray-700">${ex.sets} sets × ${escapeHtml(ex.repsDisplay)} <span class="text-gray-500">(${ex.rest}s rest)</span></span>`;
+          const rating = isMobility ? '' : `
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs text-gray-500">Your rating:</span>
+                ${ratingButtonsHtml(ex.id)}
+              </div>`;
+          const cue = isMobility && ex.progression
+            ? `<div class="text-xs text-gray-600 italic mt-0.5">${escapeHtml(ex.progression)}</div>`
+            : '';
+          return `
+          <li class="mb-3 flex gap-3 ${isMobility ? 'opacity-95' : ''}">
             ${exerciseThumbHtml(ex.imageUrl, ex.name)}
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between gap-2">
-                <span class="font-medium">${escapeHtml(ex.name)}</span>
+                <span class="font-medium flex flex-wrap items-center gap-1.5">${phaseBadge}${escapeHtml(ex.name)}</span>
                 <div class="flex items-center gap-2 shrink-0">
                   ${ex.demoUrl ? `<a href="${escapeHtml(ex.demoUrl)}" target="_blank" rel="noopener" class="text-xs text-blue-600 hover:underline whitespace-nowrap">Demo</a>` : ''}
                   <button onclick="deleteExerciseFromDay(${weekIndex}, ${dayIndex}, ${exIndex})" class="text-xs text-red-600 hover:underline">Remove</button>
                 </div>
               </div>
-              <div class="text-sm text-gray-700">${ex.sets} sets × ${escapeHtml(ex.repsDisplay)} <span class="text-gray-500">(${ex.rest}s rest)</span></div>
+              <div>${setsLine}</div>
               <div class="text-xs text-gray-500 mb-1.5">${escapeHtml((ex.primary || []).join(', '))}</div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-xs text-gray-500">Your rating:</span>
-                ${ratingButtonsHtml(ex.id)}
-              </div>
+              ${cue}
+              ${rating}
             </div>
-          </li>
-        `).join('');
+          </li>`;
+        }).join('');
 
+        const workHint = (day.exercises || []).find(e => !e.phase || e.phase === 'work');
         card.innerHTML = `
           <div class="flex justify-between items-center mb-2">
             <span class="font-bold">${day.day}</span>
@@ -1203,7 +1230,7 @@ function renderPlan(result) {
             <button onclick="openExercisePicker(${weekIndex}, ${dayIndex})" class="text-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-2 rounded">+ Add exercise</button>
             <button onclick="toggleDayType(${weekIndex}, ${dayIndex})" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-2 rounded">Make rest day</button>
           </div>
-          <div class="mt-2 text-xs text-blue-700 italic">${day.exercises[0]?.progression || ''}</div>
+          <div class="mt-2 text-xs text-blue-700 italic">${escapeHtml(workHint?.progression || '')}</div>
         `;
       }
 
@@ -1251,11 +1278,15 @@ function toggleDayType(weekIndex, dayIndex) {
 
 function recalculateDayMinutes(day) {
   if (!currentPlan || !day.exercises) return;
-  const transition = 30;
-  let timeUsed = day.exercises.reduce((sum, ex) => sum + ex.sets * (ex.workDuration + ex.rest) + transition, 0);
-  const includeWarmup = currentPlan.criteria.includeWarmup ? 180 : 0;
-  const includeCooldown = currentPlan.criteria.includeCooldown ? 120 : 0;
-  day.estimatedMinutes = Math.max(0, Math.round((timeUsed + includeWarmup + includeCooldown) / 60));
+  // Warm-up / cool-down are real timed items in the list — sum everything once.
+  const transition = 15;
+  let timeUsed = day.exercises.reduce((sum, ex) => {
+    const sets = Math.max(1, ex.sets || 1);
+    const work = ex.workDuration || 30;
+    const rest = ex.rest || 0;
+    return sum + sets * (work + rest) + transition;
+  }, 0);
+  day.estimatedMinutes = Math.max(0, Math.round(timeUsed / 60));
 }
 
 async function openExercisePicker(weekIndex, dayIndex) {

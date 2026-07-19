@@ -27,3 +27,7 @@ publish/
 WorkoutPlanner.Api/Data/backups/
 WorkoutPlanner.Api/Data/*.bak.*
 *.json.bak.*
+
+# Large optional music assets (fetch with scripts/fetch-music.py)
+WorkoutPlanner.Api/wwwroot/music/*.mp3
+

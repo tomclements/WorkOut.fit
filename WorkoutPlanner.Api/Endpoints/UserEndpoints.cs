@@ -194,6 +194,7 @@ public static class UserEndpoints
     {
         DefaultEquipment = pref.DefaultEquipment ?? new List<string>(),
         DefaultMusic = pref.DefaultMusic,
+        DefaultMusicStyle = NormalizeMusicStyle(pref.DefaultMusicStyle, pref.DefaultMusic),
         DefaultVoice = pref.DefaultVoice,
         DefaultMotionSensor = pref.DefaultMotionSensor,
         DefaultVolume = pref.DefaultVolume,
@@ -214,6 +215,9 @@ public static class UserEndpoints
     {
         pref.DefaultEquipment = dto.DefaultEquipment ?? new List<string>();
         pref.DefaultMusic = dto.DefaultMusic;
+        pref.DefaultMusicStyle = NormalizeMusicStyle(dto.DefaultMusicStyle, dto.DefaultMusic);
+        // Keep DefaultMusic in sync with style for older clients
+        pref.DefaultMusic = pref.DefaultMusicStyle is not ("off" or "");
         pref.DefaultVoice = dto.DefaultVoice;
         pref.DefaultMotionSensor = dto.DefaultMotionSensor;
         pref.DefaultVolume = Math.Clamp(dto.DefaultVolume, 0, 100);
@@ -234,6 +238,19 @@ public static class UserEndpoints
             pref.DefaultWorkoutDays = Enumerable.Range(0, pref.DefaultDaysPerWeek).ToList();
         pref.DefaultIncludeWarmup = dto.DefaultIncludeWarmup;
         pref.DefaultIncludeCooldown = dto.DefaultIncludeCooldown;
+    }
+
+    private static string NormalizeMusicStyle(string? style, bool legacyMusicOn)
+    {
+        var s = (style ?? "").Trim().ToLowerInvariant();
+        return s switch
+        {
+            "off" or "none" or "" when !legacyMusicOn => "off",
+            "off" or "none" or "" => "drive",
+            "drive" or "focus" or "power" or "calm" or "device" => s,
+            "builtin" or "built-in" or "on" => "drive",
+            _ => legacyMusicOn ? "drive" : "off"
+        };
     }
 }
 

@@ -6,9 +6,11 @@ public class UserPreference
     public string UserId { get; set; } = string.Empty;
     public List<string> DefaultEquipment { get; set; } = new();
     public bool DefaultMusic { get; set; }
+    /// <summary>off | drive | focus | power | calm | device</summary>
+    public string DefaultMusicStyle { get; set; } = "drive";
     public bool DefaultVoice { get; set; }
     public bool DefaultMotionSensor { get; set; }
-    public int DefaultVolume { get; set; } = 20;
+    public int DefaultVolume { get; set; } = 35;
 
     // Last-used planner form defaults
     public string DefaultLevel { get; set; } = "beginner";

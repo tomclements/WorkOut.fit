@@ -34,7 +34,12 @@ public static class WorkoutEndpoints
             try
             {
                 var plan = await service.GeneratePlan(request);
-                var anyWorkouts = plan.Plan.SelectMany(w => w.Days).Any(d => d.Type == "workout" && d.Exercises.Count > 0);
+                // Warm-up/cool-down alone don't count — need real training moves
+                var anyWorkouts = plan.Plan.SelectMany(w => w.Days).Any(d =>
+                    d.Type == "workout" &&
+                    d.Exercises.Any(e =>
+                        string.IsNullOrEmpty(e.Phase) ||
+                        e.Phase.Equals("work", StringComparison.OrdinalIgnoreCase)));
                 if (!anyWorkouts)
                 {
                     return Results.BadRequest(new { error = "No exercises could be generated with the selected equipment and restrictions. Try relaxing the filters." });

@@ -48,10 +48,29 @@
         <select id="daySelect" class="w-full border border-gray-300 rounded-md p-3 text-base"></select>
       </div>
 
-      <label class="flex items-center justify-between border rounded-lg p-4 cursor-pointer hover:bg-gray-50 min-h-[3.5rem] mb-5">
-        <span class="text-sm font-medium">Background music</span>
-        <input id="musicToggle" type="checkbox" class="rounded text-blue-600 w-5 h-5" />
-      </label>
+      <div class="border rounded-lg p-4 mb-4 space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <label class="text-sm font-medium" for="musicStyle">Background music</label>
+          <select id="musicStyle" class="border border-gray-300 rounded-md p-2 text-sm max-w-[60%]">
+            <option value="off">Off</option>
+            <option value="drive" selected>Drive — upbeat</option>
+            <option value="focus">Focus — steady</option>
+            <option value="power">Power — driving</option>
+            <option value="calm">Calm — soft</option>
+            <option value="device">My music (other app)</option>
+          </select>
+        </div>
+        <p id="musicStyleHint" class="text-xs text-gray-500">Built-in playlists loop instrumentals. Pick a style or use music on your phone.</p>
+        <div id="deviceMusicHint" class="hidden text-xs text-blue-900 bg-blue-50 border border-blue-100 rounded-md p-2">
+          Start Spotify, Apple Music, or YouTube Music in another app. WorkOut will only play timer beeps.
+          <div class="mt-2 flex flex-wrap gap-2">
+            <a class="underline font-medium" href="https://open.spotify.com/genre/0JQ5DAqbMKFAXlCG6QvYQ4" target="_blank" rel="noopener">Open Spotify workout</a>
+            <a class="underline font-medium" href="https://music.youtube.com/search?q=workout%20mix" target="_blank" rel="noopener">YouTube Music</a>
+          </div>
+        </div>
+        <!-- keep for prefs compatibility; hidden -->
+        <input id="musicToggle" type="checkbox" class="hidden" />
+      </div>
 
       <button id="startBtn" class="cta-start w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation shadow-md">
         Start workout
@@ -85,7 +104,7 @@
       <div id="demoLink" class="mb-3"></div>
 
       <div class="text-center mb-2">
-        <div class="text-xs font-semibold uppercase tracking-wider text-green-700">Work</div>
+        <div id="workPhaseLabel" class="text-xs font-semibold uppercase tracking-wider text-green-700">Work</div>
         <div id="workCue" class="text-base sm:text-lg font-medium text-gray-800 mt-1">Aim for your target reps</div>
       </div>
 
@@ -98,15 +117,25 @@
       </div>
 
       <div class="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
-        <button id="musicBtn" type="button" class="bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-2 rounded-lg transition text-sm touch-manipulation min-h-[3rem]">
-          Music: off
-        </button>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-gray-600" for="musicStyleActive">Music</label>
+          <select id="musicStyleActive" class="border border-gray-300 rounded-md p-2 text-sm min-h-[3rem] touch-manipulation">
+            <option value="off">Off</option>
+            <option value="drive">Drive</option>
+            <option value="focus">Focus</option>
+            <option value="power">Power</option>
+            <option value="calm">Calm</option>
+            <option value="device">My music</option>
+          </select>
+          <button id="musicBtn" type="button" class="hidden">Music</button>
+        </div>
         <div class="flex flex-col justify-center px-1">
           <label class="flex items-center justify-between text-xs text-gray-600 mb-0.5">
             <span>Volume</span>
-            <span id="volumeValue">20%</span>
+            <span id="volumeValue">35%</span>
           </label>
-          <input id="volumeSlider" type="range" min="0" max="100" value="20" class="w-full h-2" />
+          <input id="volumeSlider" type="range" min="0" max="100" value="35" class="w-full h-2" />
+          <div id="nowPlaying" class="text-[10px] text-gray-500 mt-1 truncate">—</div>
         </div>
       </div>
 

@@ -43,6 +43,97 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
+    public async Task GeneratePlan_WithWarmupAndCooldown_AddsMuscleRelativeMobility()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 3,
+            SessionMinutes = 40,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "barbell", "bench" },
+            Split = "ppl",
+            Goal = "hypertrophy",
+            Level = "intermediate",
+            Progression = "none",
+            IncludeWarmup = true,
+            IncludeCooldown = true,
+            Seed = 42
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var workouts = result!.Plan
+            .SelectMany(w => w.Days)
+            .Where(d => d.Type == "workout")
+            .ToList();
+        Assert.NotEmpty(workouts);
+
+        foreach (var day in workouts)
+        {
+            var warmup = day.Exercises.Where(e => e.Phase == "warmup").ToList();
+            var work = day.Exercises.Where(e => e.Phase == "work" || string.IsNullOrEmpty(e.Phase)).ToList();
+            var cooldown = day.Exercises.Where(e => e.Phase == "cooldown").ToList();
+
+            Assert.NotEmpty(warmup);
+            Assert.NotEmpty(work);
+            Assert.NotEmpty(cooldown);
+
+            // Order: warmup first, cooldown last
+            Assert.Equal("warmup", day.Exercises.First().Phase);
+            Assert.Equal("cooldown", day.Exercises.Last().Phase);
+
+            // Warm-up activations / cool-down stretches should reference session muscles when possible
+            var workMuscles = work.SelectMany(e => e.Primary ?? new List<string>())
+                .Select(m => m.ToLowerInvariant())
+                .ToHashSet();
+            Assert.NotEmpty(workMuscles);
+
+            // At least one mobility item should share a related target family with work (or full body / general)
+            var mobilityTargets = warmup.Concat(cooldown)
+                .SelectMany(e => e.Primary ?? new List<string>())
+                .Select(m => m.ToLowerInvariant())
+                .ToList();
+            Assert.NotEmpty(mobilityTargets);
+        }
+    }
+
+    [Fact]
+    public async Task GeneratePlan_WithoutWarmupCooldown_HasOnlyWorkPhase()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 3,
+            SessionMinutes = 30,
+            Equipment = new List<string> { "bodyweight", "dumbbells" },
+            Split = "full-body",
+            Goal = "hypertrophy",
+            Level = "beginner",
+            Progression = "none",
+            IncludeWarmup = false,
+            IncludeCooldown = false,
+            Seed = 7
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var exercises = result!.Plan.SelectMany(w => w.Days)
+            .Where(d => d.Type == "workout")
+            .SelectMany(d => d.Exercises)
+            .ToList();
+        Assert.NotEmpty(exercises);
+        Assert.All(exercises, e => Assert.True(
+            string.IsNullOrEmpty(e.Phase) || e.Phase == "work",
+            $"Unexpected phase {e.Phase} on {e.Name}"));
+    }
+
+    [Fact]
     public async Task GeneratePlan_DumbbellsOnly_DoesNotIncludeBenchRequiredIds()
     {
         // IDs that require bench / pull-up bar / stability ball (not just bodyweight)

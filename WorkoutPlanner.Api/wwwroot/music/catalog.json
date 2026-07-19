@@ -1,0 +1,81 @@
+{
+  "styles": [
+    {
+      "id": "drive",
+      "name": "Drive",
+      "description": "Upbeat electronic energy for hard sessions",
+      "tracks": [
+        {
+          "id": "drive-1",
+          "title": "Drive A",
+          "src": "/music/drive-1.mp3",
+          "fallback": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+        },
+        {
+          "id": "drive-2",
+          "title": "Drive B",
+          "src": "/music/drive-2.mp3",
+          "fallback": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+        }
+      ]
+    },
+    {
+      "id": "focus",
+      "name": "Focus",
+      "description": "Steady mid-tempo for controlled work",
+      "tracks": [
+        {
+          "id": "focus-1",
+          "title": "Focus A",
+          "src": "/music/focus-1.mp3",
+          "fallback": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
+        },
+        {
+          "id": "focus-2",
+          "title": "Focus B",
+          "src": "/music/focus-2.mp3",
+          "fallback": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3"
+        }
+      ]
+    },
+    {
+      "id": "power",
+      "name": "Power",
+      "description": "Bigger, more driving tracks for strength days",
+      "tracks": [
+        {
+          "id": "power-1",
+          "title": "Power A",
+          "src": "/music/power-1.mp3",
+          "fallback": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+        },
+        {
+          "id": "power-2",
+          "title": "Power B",
+          "src": "/music/power-2.mp3",
+          "fallback": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3"
+        }
+      ]
+    },
+    {
+      "id": "calm",
+      "name": "Calm",
+      "description": "Softer bed for recovery-style sessions",
+      "tracks": [
+        {
+          "id": "calm-1",
+          "title": "Calm A",
+          "src": "/music/calm-1.mp3",
+          "fallback": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3"
+        },
+        {
+          "id": "calm-2",
+          "title": "Calm B",
+          "src": "/music/calm-2.mp3",
+          "fallback": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3"
+        }
+      ]
+    }
+  ],
+  "credits": "Built-in playlists use demo instrumental loops (SoundHelix) as CDN fallback when local files are absent. Prefer hosting local copies under /music for offline/PWA use. See music/CREDITS.md."
+}

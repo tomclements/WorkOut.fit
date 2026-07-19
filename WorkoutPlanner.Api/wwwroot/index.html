@@ -263,11 +263,11 @@
         <div class="flex flex-col sm:flex-row gap-4">
           <label class="inline-flex items-center">
             <input id="includeWarmup" type="checkbox" checked class="rounded text-blue-600" />
-            <span class="ml-2 text-sm text-gray-700">Include 3-min warm-up</span>
+            <span class="ml-2 text-sm text-gray-700">Warm-up (~3 min, matches day’s muscles)</span>
           </label>
           <label class="inline-flex items-center">
             <input id="includeCooldown" type="checkbox" checked class="rounded text-blue-600" />
-            <span class="ml-2 text-sm text-gray-700">Include 2-min cool-down</span>
+            <span class="ml-2 text-sm text-gray-700">Cool-down (~2 min, stretches worked muscles)</span>
           </label>
         </div>
       </div>
@@ -321,10 +321,16 @@
         <div id="prefEquipmentContainer" class="flex flex-wrap gap-3"></div>
       </div>
       <div class="mb-4">
-        <label class="inline-flex items-center border rounded-lg p-3 cursor-pointer hover:bg-gray-50">
-          <input id="prefMusic" type="checkbox" class="rounded text-blue-600" />
-          <span class="ml-2 text-sm font-medium">Default background music on</span>
-        </label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="prefMusicStyle">Default workout music</label>
+        <select id="prefMusicStyle" class="w-full border border-gray-300 rounded-md p-2 text-sm">
+          <option value="off">Off</option>
+          <option value="drive" selected>Drive — upbeat</option>
+          <option value="focus">Focus — steady</option>
+          <option value="power">Power — driving</option>
+          <option value="calm">Calm — soft</option>
+          <option value="device">My music (other app)</option>
+        </select>
+        <input id="prefMusic" type="checkbox" class="hidden" />
         <!-- Voice / motion removed: runner is timer-based (beeps only) -->
         <input id="prefVoice" type="checkbox" class="hidden" />
         <input id="prefMotion" type="checkbox" class="hidden" />
@@ -332,9 +338,9 @@
       <div class="mb-4">
         <label class="flex items-center justify-between text-sm text-gray-700 mb-1">
           <span>Default music volume</span>
-          <span id="prefVolumeValue">20%</span>
+          <span id="prefVolumeValue">35%</span>
         </label>
-        <input id="prefVolume" type="range" min="0" max="100" value="20" class="w-full" />
+        <input id="prefVolume" type="range" min="0" max="100" value="35" class="w-full" />
       </div>
       <div id="prefStatus" class="text-sm hidden"></div>
       <button id="savePreferencesBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Save preferences</button>

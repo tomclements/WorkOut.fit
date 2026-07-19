@@ -5,6 +5,8 @@ public class PlanExercise
     public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Slot { get; set; } = string.Empty;
+    /// <summary>work (main lifts) | warmup | cooldown</summary>
+    public string Phase { get; set; } = "work";
     public int Sets { get; set; }
     public string RepsDisplay { get; set; } = string.Empty;
     public int Rest { get; set; }

@@ -32,6 +32,11 @@ const resumeBanner = document.getElementById('resumeBanner');
 const resumeBtn = document.getElementById('resumeBtn');
 const discardBtn = document.getElementById('discardBtn');
 const musicToggle = document.getElementById('musicToggle');
+const musicStyleSelect = document.getElementById('musicStyle');
+const musicStyleActive = document.getElementById('musicStyleActive');
+const musicStyleHint = document.getElementById('musicStyleHint');
+const deviceMusicHint = document.getElementById('deviceMusicHint');
+const nowPlayingEl = document.getElementById('nowPlaying');
 
 const exerciseNameEl = document.getElementById('exerciseName');
 const exerciseMetaEl = document.getElementById('exerciseMeta');
@@ -62,7 +67,8 @@ const userLabel = document.getElementById('userLabel');
 // -------------------------- Init --------------------------
 
 document.addEventListener('DOMContentLoaded', async () => {
-  musicEngine = new MusicEngine();
+  musicEngine = new PlaylistMusicEngine();
+  await musicEngine.loadCatalog();
 
   await checkAuth();
   await loadUserPreferences();
@@ -74,7 +80,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   discardBtn.addEventListener('click', discardSession);
   completeSetBtn.addEventListener('click', () => completeSet(true));
   skipRestBtn.addEventListener('click', endRest);
-  musicBtn.addEventListener('click', toggleMusic);
+  if (musicBtn) musicBtn.addEventListener('click', toggleMusic);
+  if (musicStyleSelect) musicStyleSelect.addEventListener('change', onMusicStyleChange);
+  if (musicStyleActive) musicStyleActive.addEventListener('change', onMusicStyleActiveChange);
   fullscreenBtn.addEventListener('click', toggleFullscreen);
   if (contrastBtn) contrastBtn.addEventListener('click', toggleHighContrast);
   saveSessionBtn.addEventListener('click', saveSession);
@@ -117,17 +125,75 @@ async function checkAuth() {
 
 async function loadUserPreferences() {
   try {
-    const res = await fetch('/api/user/preferences', { credentials: 'include' });
-    if (!res.ok) return;
-    const prefs = await res.json();
-    musicToggle.checked = prefs.defaultMusic || false;
-    const volume = prefs.defaultVolume ?? 20;
+    let style = localStorage.getItem('runnerMusicStyle') || '';
+    let volume = parseInt(localStorage.getItem('runnerMusicVolume') || '', 10);
+
+    try {
+      const res = await fetch('/api/user/preferences', { credentials: 'include' });
+      if (res.ok) {
+        const prefs = await res.json();
+        if (prefs.defaultMusicStyle) style = prefs.defaultMusicStyle;
+        else if (prefs.defaultMusic) style = 'drive';
+        else if (!style) style = 'off';
+        if (Number.isFinite(prefs.defaultVolume)) volume = prefs.defaultVolume;
+      }
+    } catch { /* offline / signed out */ }
+
+    if (!style) style = 'drive';
+    if (!Number.isFinite(volume)) volume = 35;
+
+    setMusicStyleUI(style);
     document.getElementById('volumeSlider').value = volume;
     document.getElementById('volumeValue').textContent = volume + '%';
     musicEngine.setBaseVolume(volume / 100);
+    musicEngine.setStyle(style);
   } catch {
     // ignore
   }
+}
+
+function setMusicStyleUI(style) {
+  const s = style || 'off';
+  if (musicStyleSelect) musicStyleSelect.value = s;
+  if (musicStyleActive) musicStyleActive.value = s;
+  if (musicToggle) musicToggle.checked = s !== 'off' && s !== 'device';
+  if (deviceMusicHint) deviceMusicHint.classList.toggle('hidden', s !== 'device');
+  if (musicStyleHint) {
+    musicStyleHint.textContent = s === 'device'
+      ? 'Use your own app for music — we only play beeps.'
+      : s === 'off'
+        ? 'Music off. You can turn a style on during the session.'
+        : 'Built-in playlist will start when you begin the workout.';
+  }
+}
+
+function onMusicStyleChange() {
+  const style = musicStyleSelect?.value || 'off';
+  setMusicStyleUI(style);
+  musicEngine.setStyle(style);
+  try { localStorage.setItem('runnerMusicStyle', style); } catch { /* ignore */ }
+}
+
+function onMusicStyleActiveChange() {
+  const style = musicStyleActive?.value || 'off';
+  setMusicStyleUI(style);
+  musicEngine.setStyle(style);
+  if (style === 'off' || style === 'device') {
+    musicEngine.stop();
+  } else if (phase === 'work' || phase === 'rest') {
+    musicEngine.start();
+  }
+  updateMusicButton();
+  try { localStorage.setItem('runnerMusicStyle', style); } catch { /* ignore */ }
+}
+
+function currentMusicStyle() {
+  return musicStyleActive?.value || musicStyleSelect?.value || 'off';
+}
+
+function shouldAutoStartMusic() {
+  const s = currentMusicStyle();
+  return s !== 'off' && s !== 'device';
 }
 
 async function loadPlan() {
@@ -241,7 +307,7 @@ async function resumeSession() {
     await requestWakeLock();
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    if (musicToggle.checked) {
+    if (shouldAutoStartMusic()) {
       musicEngine.start();
       updateMusicButton();
     }
@@ -279,8 +345,22 @@ function restSeconds(ex) {
 }
 
 function setWorkLabel(ex) {
+  const phase = (ex.phase || 'work').toLowerCase();
+  if (phase === 'warmup' || phase === 'cooldown') {
+    const muscles = (ex.primary || []).filter(Boolean).join(', ');
+    return muscles ? `Targets: ${muscles}` : (phase === 'warmup' ? 'Prep movement' : 'Recovery stretch');
+  }
   const reps = ex.repsDisplay || 'your target reps';
   return `${ex.sets} sets · aim for ${reps} each set · ${restSeconds(ex)}s rest`;
+}
+
+function exercisePhase(ex) {
+  return (ex?.phase || 'work').toLowerCase();
+}
+
+function isMobilityExercise(ex) {
+  const p = exercisePhase(ex);
+  return p === 'warmup' || p === 'cooldown';
 }
 
 async function startWorkout() {
@@ -300,7 +380,7 @@ async function startWorkout() {
   await requestWakeLock();
   document.addEventListener('visibilitychange', handleVisibilityChange);
 
-  if (musicToggle.checked) {
+  if (shouldAutoStartMusic()) {
     musicEngine.start();
     updateMusicButton();
   }
@@ -372,6 +452,7 @@ function onVolumeChange(e) {
   const value = parseInt(e.target.value, 10);
   document.getElementById('volumeValue').textContent = value + '%';
   if (musicEngine) musicEngine.setBaseVolume(value / 100);
+  try { localStorage.setItem('runnerMusicVolume', String(value)); } catch { /* ignore */ }
 }
 
 async function handleVisibilityChange() {
@@ -437,15 +518,35 @@ function enterWork(resuming = false) {
 
   exerciseNameEl.textContent = ex.name;
   exerciseMetaEl.textContent = setWorkLabel(ex);
-  setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
+  const phase = exercisePhase(ex);
+  const phaseLabelEl = document.getElementById('workPhaseLabel');
+  if (phaseLabelEl) {
+    if (phase === 'warmup') {
+      phaseLabelEl.textContent = 'Warm-up';
+      phaseLabelEl.className = 'text-xs font-semibold uppercase tracking-wider text-amber-700';
+    } else if (phase === 'cooldown') {
+      phaseLabelEl.textContent = 'Cool-down';
+      phaseLabelEl.className = 'text-xs font-semibold uppercase tracking-wider text-teal-700';
+    } else {
+      phaseLabelEl.textContent = 'Work';
+      phaseLabelEl.className = 'text-xs font-semibold uppercase tracking-wider text-green-700';
+    }
+  }
+  if (isMobilityExercise(ex)) {
+    setBadgeEl.textContent = phase === 'warmup' ? 'Warm-up' : 'Cool-down';
+    workCueEl.textContent = ex.progression || (phase === 'warmup' ? 'Move easily — prepare the muscles' : 'Breathe and ease tension');
+    completeSetBtn.textContent = 'Done with this move';
+  } else {
+    setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
+    workCueEl.textContent = `Aim for ${ex.repsDisplay || 'your target'} reps this set`;
+    completeSetBtn.textContent = 'Finish set early';
+  }
   demoLinkEl.innerHTML = exerciseMediaHtml(ex);
-  workCueEl.textContent = `Aim for ${ex.repsDisplay || 'your target'} reps this set`;
 
   const remaining = Math.max(0, phaseDurationSeconds - elapsedPhaseSeconds);
   timerDisplayEl.textContent = formatTime(remaining);
   updatePhaseProgressBar(workProgressBar, remaining, phaseDurationSeconds);
 
-  completeSetBtn.textContent = 'Finish set early';
   updateProgress();
   startTimer();
   saveSessionState();
@@ -548,7 +649,14 @@ function enterRest() {
   phaseDurationSeconds = restSeconds(restSource);
 
   nextExerciseNameEl.textContent = nextEx.name;
-  nextExerciseMetaEl.textContent = `Set ${currentSetIndex + 1} / ${nextEx.sets} · aim for ${nextEx.repsDisplay || 'target'} · ${workSeconds(nextEx)}s work`;
+  if (isMobilityExercise(nextEx)) {
+    const p = exercisePhase(nextEx);
+    nextExerciseMetaEl.textContent = p === 'warmup'
+      ? `Next warm-up · ${workSeconds(nextEx)}s`
+      : `Next cool-down · ${workSeconds(nextEx)}s`;
+  } else {
+    nextExerciseMetaEl.textContent = `Set ${currentSetIndex + 1} / ${nextEx.sets} · aim for ${nextEx.repsDisplay || 'target'} · ${workSeconds(nextEx)}s work`;
+  }
   restTimerEl.textContent = formatTime(phaseDurationSeconds);
   updatePhaseProgressBar(restProgressBar, phaseDurationSeconds, phaseDurationSeconds);
 
@@ -649,15 +757,22 @@ async function saveSession() {
 function toggleMusic() {
   if (musicEngine.isPlaying) {
     musicEngine.stop();
-  } else {
+  } else if (shouldAutoStartMusic()) {
     musicEngine.start();
   }
   updateMusicButton();
 }
 
 function updateMusicButton() {
-  musicBtn.textContent = musicEngine.isPlaying ? 'Music: on' : 'Music: off';
-  musicBtn.classList.toggle('bg-blue-100', musicEngine.isPlaying);
+  if (nowPlayingEl) {
+    if (currentMusicStyle() === 'device') {
+      nowPlayingEl.textContent = 'Using your own music app';
+    } else if (musicEngine.isPlaying) {
+      nowPlayingEl.textContent = musicEngine.nowPlayingLabel() || 'Playing…';
+    } else {
+      nowPlayingEl.textContent = currentMusicStyle() === 'off' ? 'Music off' : 'Music paused';
+    }
+  }
 }
 
 function toggleFullscreen() {
@@ -722,98 +837,136 @@ function beep(frequency = 880, duration = 0.15) {
   }
 }
 
-// -------------------------- Music engine --------------------------
+// -------------------------- Music engine (playlist) --------------------------
 
-class MusicEngine {
+class PlaylistMusicEngine {
   constructor() {
-    this.ctx = null;
+    this.audio = new Audio();
+    this.audio.preload = 'auto';
+    this.audio.loop = false;
     this.isPlaying = false;
-    this.baseVolume = 0.20;
+    this.baseVolume = 0.35;
     this.currentVolume = 1.0;
-    this.interval = null;
-    this.droneNodes = [];
-    this.pentatonic = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25, 587.33];
+    this.style = 'drive';
+    this.catalog = { styles: [] };
+    this.queue = [];
+    this.trackIndex = 0;
+    this._usingFallback = false;
+
+    this.audio.addEventListener('ended', () => this.nextTrack());
+    this.audio.addEventListener('error', () => this._onError());
+  }
+
+  async loadCatalog() {
+    try {
+      const res = await fetch('/music/catalog.json?t=' + Date.now(), { cache: 'no-store' });
+      if (res.ok) this.catalog = await res.json();
+    } catch {
+      this.catalog = { styles: [] };
+    }
+  }
+
+  setStyle(style) {
+    const next = (style || 'off').toLowerCase();
+    const changed = next !== this.style;
+    this.style = next;
+    this._buildQueue();
+    if (changed && this.isPlaying) {
+      this.stop();
+      if (this._canPlayBuiltIn()) this.start();
+    }
+  }
+
+  _canPlayBuiltIn() {
+    return this.style !== 'off' && this.style !== 'device' && this.queue.length > 0;
+  }
+
+  _buildQueue() {
+    const style = (this.catalog.styles || []).find(s => s.id === this.style);
+    this.queue = style?.tracks ? style.tracks.slice() : [];
+    // light shuffle
+    for (let i = this.queue.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.queue[i], this.queue[j]] = [this.queue[j], this.queue[i]];
+    }
+    this.trackIndex = 0;
+    this._usingFallback = false;
   }
 
   start() {
-    if (this.isPlaying) return;
-    try {
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-      this.masterGain = this.ctx.createGain();
-      this.masterGain.gain.value = this.baseVolume;
-      this.masterGain.connect(this.ctx.destination);
-
-      this.filter = this.ctx.createBiquadFilter();
-      this.filter.type = 'lowpass';
-      this.filter.frequency.value = 1200;
-      this.filter.connect(this.masterGain);
-
-      this.startDrone();
-      this.interval = setInterval(() => this.playRandomNote(), 500);
-      this.isPlaying = true;
-    } catch {
-      // ignore
+    if (!this._canPlayBuiltIn()) {
+      this.isPlaying = false;
+      return;
     }
+    if (this.queue.length === 0) this._buildQueue();
+    this._playCurrent();
+  }
+
+  _playCurrent() {
+    if (!this.queue.length) {
+      this.isPlaying = false;
+      return;
+    }
+    const track = this.queue[this.trackIndex % this.queue.length];
+    const src = this._usingFallback && track.fallback ? track.fallback : track.src;
+    this.audio.src = src;
+    this.audio.volume = Math.max(0, Math.min(1, this.baseVolume * this.currentVolume));
+    this.audio.play().then(() => {
+      this.isPlaying = true;
+      updateMusicButton();
+    }).catch(() => {
+      // Autoplay blocked or file missing — try fallback once
+      if (!this._usingFallback && track.fallback) {
+        this._usingFallback = true;
+        this._playCurrent();
+      } else {
+        this.isPlaying = false;
+        updateMusicButton();
+      }
+    });
+  }
+
+  _onError() {
+    const track = this.queue[this.trackIndex % this.queue.length];
+    if (!this._usingFallback && track?.fallback) {
+      this._usingFallback = true;
+      this._playCurrent();
+      return;
+    }
+    this.nextTrack();
+  }
+
+  nextTrack() {
+    if (!this.queue.length) return;
+    this.trackIndex = (this.trackIndex + 1) % this.queue.length;
+    this._usingFallback = false;
+    if (this.isPlaying || !this.audio.paused) this._playCurrent();
   }
 
   stop() {
-    if (!this.isPlaying) return;
-    clearInterval(this.interval);
-    this.droneNodes.forEach(n => {
-      try { n.osc.stop(); } catch { }
-    });
-    this.droneNodes = [];
-    if (this.ctx && this.ctx.state !== 'closed') {
-      this.ctx.close();
-    }
+    try {
+      this.audio.pause();
+      this.audio.removeAttribute('src');
+      this.audio.load();
+    } catch { /* ignore */ }
     this.isPlaying = false;
+    updateMusicButton();
   }
 
   setVolume(scale) {
     this.currentVolume = Math.max(0, Math.min(1, scale));
-    if (this.masterGain) {
-      this.masterGain.gain.setTargetAtTime(this.baseVolume * this.currentVolume, this.ctx.currentTime, 0.1);
-    }
+    this.audio.volume = Math.max(0, Math.min(1, this.baseVolume * this.currentVolume));
   }
 
   setBaseVolume(vol) {
     this.baseVolume = Math.max(0, Math.min(1, vol));
-    if (this.masterGain) {
-      this.masterGain.gain.setTargetAtTime(this.baseVolume * this.currentVolume, this.ctx.currentTime, 0.1);
-    }
+    this.audio.volume = Math.max(0, Math.min(1, this.baseVolume * this.currentVolume));
   }
 
-  startDrone() {
-    const droneFreqs = [130.81, 196.0];
-    droneFreqs.forEach(freq => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      gain.gain.value = 0.05;
-      osc.connect(gain);
-      gain.connect(this.filter);
-      osc.start();
-      this.droneNodes.push({ osc, gain });
-    });
-  }
-
-  playRandomNote() {
-    if (!this.ctx) return;
-    const freq = this.pentatonic[Math.floor(Math.random() * this.pentatonic.length)];
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.value = freq;
-
-    const now = this.ctx.currentTime;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.04, now + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
-
-    osc.connect(gain);
-    gain.connect(this.filter);
-    osc.start(now);
-    osc.stop(now + 1.3);
+  nowPlayingLabel() {
+    if (!this.queue.length) return '';
+    const track = this.queue[this.trackIndex % this.queue.length];
+    const style = (this.catalog.styles || []).find(s => s.id === this.style);
+    return `${style?.name || this.style}: ${track.title || track.id}`;
   }
 }
