@@ -57,34 +57,7 @@
     document.body.classList.toggle('workout-active', !visible);
   };
 
-  /** Show short commit in the header if an element with id=buildBadge exists. */
-  async function fillBuildBadge() {
-    const el = document.getElementById('buildBadge');
-    if (!el) return;
-    try {
-      const res = await fetch('/api/build?t=' + Date.now(), { cache: 'no-store' });
-      if (!res.ok) return;
-      const data = await res.json();
-      const short = data.shortCommit || data.commit || '';
-      if (!short || short === 'unknown') {
-        el.textContent = 'build ?';
-        el.title = 'Build info unavailable';
-        return;
-      }
-      el.textContent = short;
-      el.title = [
-        data.commitMessage || '',
-        data.branch ? 'branch: ' + data.branch : '',
-        data.commit || ''
-      ].filter(Boolean).join('\n');
-      el.href = '/about.html';
-    } catch {
-      el.textContent = 'build ?';
-    }
-  }
-
   document.addEventListener('DOMContentLoaded', () => {
     markActiveNav();
-    fillBuildBadge();
   });
 })();
