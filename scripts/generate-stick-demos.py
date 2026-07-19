@@ -126,24 +126,35 @@ def stick_rdl_side(t: float) -> Image.Image:
 
     t = max(0.0, min(1.0, t))
 
-    # --- Fixed foot ---
-    ankle = (W * 0.42, floor_y - 3)
+    # --- Fixed foot (facing left: toes point -x / forward) ---
+    ankle = (W * 0.48, floor_y - 3)
 
-    # Standing hip (above ankle with soft knee so thigh and shin read as two parts)
-    hip0_x = ankle[0] + 2
-    hip0_y = floor_y - SHIN - THIGH + 20
+    # Soft knee bend: knee stays slightly *forward* of the hip–ankle line
+    # (toward the toes). Never behind the line = no hyperextension.
+    # Stand: almost straight (~5–8°). Bottom of RDL: only a bit more (~12–18°).
+    knee_fwd0 = 10   # px toward front (left) at stand
+    knee_fwd1 = 18   # slightly more bend as weights lower
+    knee_fwd = lerp(knee_fwd0, knee_fwd1, t)
 
-    # Hips travel BACK (to the right, +x) as we hinge
-    hip_back = HEAD * 2.4 * t
-    hip_drop = HEAD * 0.35 * t
+    # Shin almost vertical; knee a bit forward of ankle
+    knee = (
+        ankle[0] - knee_fwd,
+        floor_y - SHIN + lerp(2, 8, t),
+    )
+
+    # Standing hip roughly above knee/ankle, slight soft stack
+    hip0_x = knee[0] + 4   # hip a touch behind knee (natural soft stack)
+    hip0_y = knee[1] - THIGH + 6
+
+    # Hips travel BACK (+x, away from toes) as we hinge — main RDL motion
+    hip_back = HEAD * 2.35 * t
+    hip_drop = HEAD * 0.32 * t
     hip = (hip0_x + hip_back, hip0_y + hip_drop)
 
-    # Knee clearly forward of the hip–ankle line (soft knees, not locked)
-    knee0 = (ankle[0] + 28, floor_y - SHIN + 12)
-    knee1 = (ankle[0] + 34 + hip_back * 0.12, floor_y - SHIN * 0.9)
-    knee = (lerp(knee0[0], knee1[0], t), lerp(knee0[1], knee1[1], t))
+    # Keep knee mostly fixed over midfoot; tiny forward drift only
+    knee = (ankle[0] - knee_fwd, knee[1])
 
-    # Torso lean: 0 upright → ~80° from vertical (forward = left)
+    # Torso lean: 0 upright → ~80° from vertical (forward = left / toward face)
     lean = math.radians(lerp(0, 80, t))
     shoulder = (
         hip[0] - math.sin(lean) * TORSO,
@@ -160,8 +171,8 @@ def stick_rdl_side(t: float) -> Image.Image:
     # Mid-shin
     hand_y_bot = floor_y - SHIN * 0.42
     hand_y = lerp(hand_y_top, hand_y_bot, t)
-    # In front of the leg (left of shin)
-    hand_x = ankle[0] - 22
+    # In front of the leg (toward toes / left of shin)
+    hand_x = ankle[0] - 24
     hand = (hand_x, hand_y)
 
     # Arm IK — bend elbow "back" (toward +x / posterior)
