@@ -233,17 +233,30 @@ def save_webp(frames, path: Path, duration=DURATION_MS):
     print(f"wrote {path} ({path.stat().st_size // 1024} KB, {len(frames)} frames)")
 
 
+def refresh_index():
+    import json
+
+    ids = sorted(p.stem for p in OUT.glob("*.webp") if not p.name.startswith("_"))
+    (OUT / "index.json").write_text(
+        json.dumps(
+            {
+                "format": "webp",
+                "pathPattern": "/demos/{id}.webp",
+                "count": len(ids),
+                "ids": ids,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    print(f"updated index.json ({len(ids)} demos)")
+
+
 def main():
     frames = frames_rdl(18)
     save_webp(frames, OUT / "db-romanian-deadlift.webp")
     save_webp(frames, OUT / "dumbbell-romanian-deadlift.webp")
-    frames[0].save(OUT / "_rdl_qa_stand.png")
-    # bottom ≈ after down phase
-    bottom_i = 18
-    frames[bottom_i].save(OUT / "_rdl_qa_bottom.png")
-    mid_i = 9
-    frames[mid_i].save(OUT / "_rdl_qa_mid.png")
-    print("QA:", "_rdl_qa_stand.png", "_rdl_qa_mid.png", "_rdl_qa_bottom.png")
+    refresh_index()
 
 
 if __name__ == "__main__":
