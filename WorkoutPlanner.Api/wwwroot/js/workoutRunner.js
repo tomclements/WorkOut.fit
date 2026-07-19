@@ -525,13 +525,14 @@ function enterWork(resuming = false) {
 
   exerciseNameEl.textContent = ex.name;
   exerciseMetaEl.textContent = setWorkLabel(ex);
-  const phase = exercisePhase(ex);
+  // Must not shadow global `phase` (setup|work|rest|finish) — that broke the timer.
+  const movePhase = exercisePhase(ex);
   const phaseLabelEl = document.getElementById('workPhaseLabel');
   if (phaseLabelEl) {
-    if (phase === 'warmup') {
+    if (movePhase === 'warmup') {
       phaseLabelEl.textContent = 'Warm-up';
       phaseLabelEl.className = 'text-xs font-semibold uppercase tracking-wider text-amber-700';
-    } else if (phase === 'cooldown') {
+    } else if (movePhase === 'cooldown') {
       phaseLabelEl.textContent = 'Cool-down';
       phaseLabelEl.className = 'text-xs font-semibold uppercase tracking-wider text-teal-700';
     } else {
@@ -540,8 +541,8 @@ function enterWork(resuming = false) {
     }
   }
   if (isMobilityExercise(ex)) {
-    setBadgeEl.textContent = phase === 'warmup' ? 'Warm-up' : 'Cool-down';
-    workCueEl.textContent = ex.progression || (phase === 'warmup' ? 'Move easily — prepare the muscles' : 'Breathe and ease tension');
+    setBadgeEl.textContent = movePhase === 'warmup' ? 'Warm-up' : 'Cool-down';
+    workCueEl.textContent = ex.progression || (movePhase === 'warmup' ? 'Move easily — prepare the muscles' : 'Breathe and ease tension');
     completeSetBtn.textContent = 'Done with this move';
   } else {
     setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
