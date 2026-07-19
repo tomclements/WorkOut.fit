@@ -386,6 +386,12 @@ body.high-contrast .bg-teal-100 {
   border-color: #0d9488 !important;
 }
 
+body.high-contrast .text-amber-800,
+body.high-contrast .text-blue-800,
+body.high-contrast .text-teal-800 {
+  color: var(--dm-text) !important;
+}
+
 body.high-contrast .bg-red-50,
 body.high-contrast .bg-red-100 {
   background: var(--dm-danger-bg) !important;

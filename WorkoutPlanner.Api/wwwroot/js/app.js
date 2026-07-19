@@ -1097,6 +1097,9 @@ async function generate(options = {}) {
     }
 
     const result = await response.json();
+    if (typeof WorkoutMobility !== 'undefined') {
+      WorkoutMobility.ensurePlanMobility(result);
+    }
     currentPlan = result;
     currentPlanId = null;
     localStorage.setItem('workoutPlan', JSON.stringify(result));
@@ -1129,6 +1132,11 @@ function renderPlan(result) {
   const container = document.getElementById('planOutput');
   container.innerHTML = '';
 
+  // Backfill warm-up / cool-down for plans generated before mobility, or if server omitted them
+  if (typeof WorkoutMobility !== 'undefined' && WorkoutMobility.ensurePlanMobility(result)) {
+    try { localStorage.setItem('workoutPlan', JSON.stringify(result)); } catch { /* ignore */ }
+  }
+
   const summary = document.createElement('div');
   summary.className = 'mb-6';
   const progressionLabel = ({
@@ -1137,6 +1145,9 @@ function renderPlan(result) {
     block: 'Block periodization',
     none: 'Steady (no ramp)'
   })[result.criteria.progression] || capitalize(result.criteria.progression || 'linear');
+  const mobilityNote = (result.criteria.includeWarmup !== false || result.criteria.includeCooldown !== false)
+    ? `<p class="text-sm text-amber-900 bg-amber-50 border border-amber-100 rounded-lg p-3 mt-3">Each workout day includes a short <strong>warm-up</strong> and/or <strong>cool-down</strong> matched to the muscles trained that day (shown with badges at the top and bottom of the list).</p>`
+    : '';
   summary.innerHTML = `
     <h2 class="text-2xl font-bold mb-2">Your ${result.criteria.weeks}-week plan</h2>
     <p class="text-gray-700">
@@ -1147,6 +1158,7 @@ function renderPlan(result) {
       • ${progressionLabel}
     </p>
     ${result.progressionSummary ? `<p class="text-sm text-blue-900 bg-blue-50 border border-blue-100 rounded-lg p-3 mt-3">${escapeHtml(result.progressionSummary)}</p>` : ''}
+    ${mobilityNote}
     <p class="text-sm text-gray-500 mt-2">Use the buttons on each day to add or remove exercises and to switch a day between workout and rest. <a href="/help.html#progression" class="text-blue-600 hover:underline">How progression works</a></p>
   `;
   container.appendChild(summary);
@@ -1180,7 +1192,7 @@ function renderPlan(result) {
           </div>
         `;
       } else {
-        const list = day.exercises.map((ex, exIndex) => {
+        const renderEx = (ex, exIndex) => {
           const phase = (ex.phase || 'work').toLowerCase();
           const phaseBadge = phase === 'warmup'
             ? '<span class="text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded">Warm-up</span>'
@@ -1216,16 +1228,39 @@ function renderPlan(result) {
               ${rating}
             </div>
           </li>`;
-        }).join('');
+        };
 
-        const workHint = (day.exercises || []).find(e => !e.phase || e.phase === 'work');
+        const split = typeof WorkoutMobility !== 'undefined'
+          ? WorkoutMobility.splitByPhase(day.exercises)
+          : { warm: [], work: day.exercises || [], cool: [] };
+        // Indices in full day.exercises array for remove buttons
+        const indexOf = (ex) => day.exercises.indexOf(ex);
+
+        let listHtml = '';
+        if (split.warm.length) {
+          listHtml += `<li class="list-none mb-2 mt-1"><div class="text-xs font-bold uppercase tracking-wide text-amber-800 bg-amber-50 border border-amber-100 rounded px-2 py-1">Warm-up</div></li>`;
+          listHtml += split.warm.map(ex => renderEx(ex, indexOf(ex))).join('');
+        }
+        if (split.work.length) {
+          listHtml += `<li class="list-none mb-2 mt-2"><div class="text-xs font-bold uppercase tracking-wide text-blue-800 bg-blue-50 border border-blue-100 rounded px-2 py-1">Main work</div></li>`;
+          listHtml += split.work.map(ex => renderEx(ex, indexOf(ex))).join('');
+        }
+        if (split.cool.length) {
+          listHtml += `<li class="list-none mb-2 mt-2"><div class="text-xs font-bold uppercase tracking-wide text-teal-800 bg-teal-50 border border-teal-100 rounded px-2 py-1">Cool-down</div></li>`;
+          listHtml += split.cool.map(ex => renderEx(ex, indexOf(ex))).join('');
+        }
+
+        const workHint = split.work[0];
+        const mobilitySummary = typeof WorkoutMobility !== 'undefined'
+          ? WorkoutMobility.dayMobilitySummary(day)
+          : '';
         card.innerHTML = `
           <div class="flex justify-between items-center mb-2">
             <span class="font-bold">${day.day}</span>
             <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${day.focus || 'Workout'}</span>
           </div>
-          <div class="text-sm text-gray-600 mb-2">~${day.estimatedMinutes} min</div>
-          <ul class="text-sm">${list}</ul>
+          <div class="text-sm text-gray-600 mb-1">~${day.estimatedMinutes} min${mobilitySummary ? ` · ${escapeHtml(mobilitySummary)}` : ''}</div>
+          <ul class="text-sm">${listHtml}</ul>
           <div class="mt-3 flex flex-wrap gap-2">
             <button onclick="openExercisePicker(${weekIndex}, ${dayIndex})" class="text-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-2 rounded">+ Add exercise</button>
             <button onclick="toggleDayType(${weekIndex}, ${dayIndex})" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-2 rounded">Make rest day</button>

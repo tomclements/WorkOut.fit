@@ -232,6 +232,15 @@ async function loadPlan() {
     }
   }
 
+  // Inject warm-up / cool-down if this plan was saved without them
+  if (typeof WorkoutMobility !== 'undefined' && currentPlan) {
+    if (WorkoutMobility.ensurePlanMobility(currentPlan)) {
+      try {
+        if (!planId) localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
+      } catch { /* ignore */ }
+    }
+  }
+
   populateDaySelect();
 }
 
@@ -252,7 +261,10 @@ function populateDaySelect() {
       hasWorkout = true;
       const option = document.createElement('option');
       option.value = JSON.stringify({ week: week.week, dayIndex: idx });
-      option.textContent = `Week ${week.week} - ${day.day} (${day.focus || 'Workout'})`;
+      const summary = typeof WorkoutMobility !== 'undefined'
+        ? WorkoutMobility.dayMobilitySummary(day)
+        : '';
+      option.textContent = `Week ${week.week} - ${day.day} (${day.focus || 'Workout'})${summary ? ' · ' + summary : ''}`;
       daySelect.appendChild(option);
     });
   });
@@ -375,7 +387,15 @@ async function startWorkout() {
 
   const selection = JSON.parse(daySelect.value);
   selectedDay = currentPlan.plan.find(w => w.week === selection.week).days[selection.dayIndex];
-  sessionExercises = selectedDay.exercises.map(ex => ({ ...ex, completedSets: [] }));
+  if (typeof WorkoutMobility !== 'undefined') {
+    WorkoutMobility.ensureDayMobility(selectedDay, currentPlan.criteria || {});
+  }
+  sessionExercises = selectedDay.exercises.map(ex => ({
+    ...ex,
+    // Normalize phase so warm-up labels always work
+    phase: (ex.phase || (ex.slot === 'warmup' || ex.slot === 'cooldown' ? ex.slot : 'work')),
+    completedSets: []
+  }));
   currentExerciseIndex = 0;
   currentSetIndex = 0;
   phase = 'work';
