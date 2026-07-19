@@ -87,6 +87,11 @@ button, a {
   }
 }
 
+/* Keep planner link readable on dark mode (utility may be remapped already). */
+body.high-contrast #backToPlanner {
+  color: #93c5fd !important;
+}
+
 /* High contrast / dark theme rules live in styles.css (site-wide). */
 
 .sensor-help {
