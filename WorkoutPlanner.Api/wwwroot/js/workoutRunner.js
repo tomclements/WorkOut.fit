@@ -95,6 +95,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (localStorage.getItem('runnerHighContrast') === '1') {
     document.body.classList.add('high-contrast');
+    if (contrastBtn) {
+      contrastBtn.classList.add('bg-blue-100');
+      contrastBtn.setAttribute('aria-pressed', 'true');
+      contrastBtn.title = 'Dark mode on (tap for light)';
+    }
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) themeMeta.setAttribute('content', '#0b0f14');
   }
 
   // Space / Enter skips remaining work or rest
@@ -791,9 +798,13 @@ function toggleHighContrast() {
   if (contrastBtn) {
     contrastBtn.classList.toggle('bg-blue-100', on);
     contrastBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    contrastBtn.title = on ? 'Dark mode on (tap for light)' : 'Dark / high-contrast mode';
   }
+  // Keep browser chrome in sync when possible
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) themeMeta.setAttribute('content', on ? '#0b0f14' : '#1e3a8a');
   if (typeof showToast === 'function') {
-    showToast(on ? 'High contrast on' : 'High contrast off', 'info', 1600);
+    showToast(on ? 'Dark mode on' : 'Dark mode off', 'info', 1600);
   }
 }
 

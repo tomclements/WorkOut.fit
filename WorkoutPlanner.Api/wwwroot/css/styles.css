@@ -1,3 +1,8 @@
+/* Prefer light form chrome unless dark theme class is on (avoids half-dark OS bleed). */
+html {
+  color-scheme: light;
+}
+
 /* Print-friendly plan output */
 @media print {
   body {
@@ -265,3 +270,395 @@ body.workout-active .site-toast {
     bottom: 6.5rem;
   }
 }
+
+/* ==========================================================================
+   Dark / high-contrast theme (body.high-contrast — runner "Aa" button)
+   Goal: never pair light text with a light surface. All pastel cards, badges,
+   inputs, and gray utilities are remapped to a coherent dark palette.
+   ========================================================================== */
+
+body.high-contrast {
+  --dm-bg: #0b0f14;
+  --dm-surface: #151b23;
+  --dm-surface-2: #1c2430;
+  --dm-elevated: #243041;
+  --dm-border: #3d4a5c;
+  --dm-text: #f3f4f6;
+  --dm-muted: #c5ccd6;
+  --dm-faint: #9aa3b2;
+  --dm-link: #93c5fd;
+  --dm-link-hover: #bfdbfe;
+  --dm-accent: #3b82f6;
+  --dm-accent-text: #ffffff;
+  --dm-success: #4ade80;
+  --dm-success-bg: #14532d;
+  --dm-warn: #fbbf24;
+  --dm-warn-bg: #78350f;
+  --dm-danger: #fca5a5;
+  --dm-danger-bg: #7f1d1d;
+  --dm-info-bg: #1e3a5f;
+  --dm-teal-bg: #134e4a;
+  --dm-teal-text: #99f6e4;
+
+  background: var(--dm-bg) !important;
+  color: var(--dm-text) !important;
+  color-scheme: dark;
+}
+
+/* ---- Page surfaces (cards, panels, rest screen) ---- */
+body.high-contrast .bg-white,
+body.high-contrast .bg-gray-50,
+body.high-contrast .bg-gray-100,
+body.high-contrast .bg-gray-200,
+body.high-contrast .bg-gray-300,
+body.high-contrast .runner-screen,
+body.high-contrast .rest-bg,
+body.high-contrast .chart-card,
+body.high-contrast .empty-state,
+body.high-contrast .sensor-help {
+  background: var(--dm-surface) !important;
+  color: var(--dm-text) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.high-contrast .rest-bg {
+  background: linear-gradient(135deg, #152033 0%, #1a2740 100%) !important;
+}
+
+body.high-contrast .empty-state {
+  background: linear-gradient(135deg, #152033 0%, #151b23 100%) !important;
+  border-style: dashed !important;
+  border-color: #3b82f6 !important;
+}
+
+body.high-contrast .empty-state h3 {
+  color: var(--dm-link) !important;
+}
+
+body.high-contrast .empty-state p {
+  color: var(--dm-muted) !important;
+}
+
+/* Slightly elevated / muted chips (was light gray buttons) */
+body.high-contrast .bg-gray-100,
+body.high-contrast .bg-gray-200,
+body.high-contrast button.bg-gray-100,
+body.high-contrast button.bg-gray-200 {
+  background: var(--dm-elevated) !important;
+  color: var(--dm-text) !important;
+}
+
+body.high-contrast .hover\:bg-gray-50:hover,
+body.high-contrast .hover\:bg-gray-100:hover,
+body.high-contrast .hover\:bg-gray-300:hover,
+body.high-contrast .active\:bg-gray-200:active,
+body.high-contrast .active\:bg-gray-300:active {
+  background: var(--dm-elevated) !important;
+  color: var(--dm-text) !important;
+}
+
+/* ---- Pastel info / badge surfaces → dark solid + light text ---- */
+body.high-contrast .bg-blue-50,
+body.high-contrast .bg-blue-100 {
+  background: var(--dm-info-bg) !important;
+  color: var(--dm-link) !important;
+  border-color: #2563eb !important;
+}
+
+body.high-contrast .bg-amber-50,
+body.high-contrast .bg-amber-100 {
+  background: var(--dm-warn-bg) !important;
+  color: #fde68a !important;
+  border-color: #d97706 !important;
+}
+
+body.high-contrast .bg-green-50,
+body.high-contrast .bg-green-100 {
+  background: var(--dm-success-bg) !important;
+  color: #bbf7d0 !important;
+  border-color: #16a34a !important;
+}
+
+body.high-contrast .bg-teal-50,
+body.high-contrast .bg-teal-100 {
+  background: var(--dm-teal-bg) !important;
+  color: var(--dm-teal-text) !important;
+  border-color: #0d9488 !important;
+}
+
+body.high-contrast .bg-red-50,
+body.high-contrast .bg-red-100 {
+  background: var(--dm-danger-bg) !important;
+  color: #fecaca !important;
+  border-color: #dc2626 !important;
+}
+
+body.high-contrast .streak-badge {
+  background: var(--dm-warn-bg) !important;
+  color: #fde68a !important;
+  border-color: #d97706 !important;
+}
+
+/* ---- Primary action buttons (keep strong contrast) ---- */
+body.high-contrast .bg-blue-500,
+body.high-contrast .bg-blue-600,
+body.high-contrast .bg-blue-700,
+body.high-contrast .bg-blue-800,
+body.high-contrast .bg-green-500,
+body.high-contrast .bg-green-600,
+body.high-contrast .bg-green-700,
+body.high-contrast .bg-indigo-600,
+body.high-contrast .bg-indigo-700,
+body.high-contrast .bg-purple-600,
+body.high-contrast .bg-purple-700 {
+  color: var(--dm-accent-text) !important;
+}
+
+body.high-contrast .bg-blue-600,
+body.high-contrast .hover\:bg-blue-700:hover,
+body.high-contrast .active\:bg-blue-800:active {
+  background: #2563eb !important;
+  color: #fff !important;
+}
+
+body.high-contrast .bg-green-600,
+body.high-contrast .hover\:bg-green-700:hover,
+body.high-contrast .active\:bg-green-700:active {
+  background: #16a34a !important;
+  color: #fff !important;
+}
+
+body.high-contrast .text-white {
+  color: #ffffff !important;
+}
+
+/* ---- Text: all light-on-dark readable colors ---- */
+body.high-contrast .text-gray-900,
+body.high-contrast .text-gray-800,
+body.high-contrast .text-gray-700 {
+  color: var(--dm-text) !important;
+}
+
+body.high-contrast .text-gray-600,
+body.high-contrast .text-gray-500 {
+  color: var(--dm-muted) !important;
+}
+
+body.high-contrast .text-blue-900,
+body.high-contrast .text-blue-800,
+body.high-contrast .text-blue-700 {
+  color: var(--dm-link) !important;
+}
+
+body.high-contrast .text-blue-600,
+body.high-contrast a.text-blue-600,
+body.high-contrast .hover\:underline {
+  color: var(--dm-link) !important;
+}
+
+body.high-contrast a:hover,
+body.high-contrast .text-blue-600:hover {
+  color: var(--dm-link-hover) !important;
+}
+
+body.high-contrast .text-green-600,
+body.high-contrast .text-green-700 {
+  color: var(--dm-success) !important;
+}
+
+body.high-contrast .text-amber-600,
+body.high-contrast .text-amber-700,
+body.high-contrast .text-amber-900,
+body.high-contrast .text-amber-950 {
+  color: var(--dm-warn) !important;
+}
+
+body.high-contrast .text-teal-700,
+body.high-contrast .text-teal-900 {
+  color: var(--dm-teal-text) !important;
+}
+
+body.high-contrast .text-red-600,
+body.high-contrast .text-red-700 {
+  color: var(--dm-danger) !important;
+}
+
+body.high-contrast .text-indigo-700 {
+  color: #a5b4fc !important;
+}
+
+/* ---- Borders ---- */
+body.high-contrast .border,
+body.high-contrast .border-gray-100,
+body.high-contrast .border-gray-200,
+body.high-contrast .border-gray-300,
+body.high-contrast .border-blue-100,
+body.high-contrast .border-blue-200,
+body.high-contrast .border-green-200,
+body.high-contrast .border-amber-200,
+body.high-contrast .border-red-200,
+body.high-contrast .border-t,
+body.high-contrast .border-b {
+  border-color: var(--dm-border) !important;
+}
+
+body.high-contrast .border-blue-600 {
+  border-color: #3b82f6 !important;
+}
+
+/* ---- Form controls ---- */
+body.high-contrast input,
+body.high-contrast select,
+body.high-contrast textarea,
+body.high-contrast input[type="text"],
+body.high-contrast input[type="email"],
+body.high-contrast input[type="password"],
+body.high-contrast input[type="number"],
+body.high-contrast input[type="search"] {
+  background: var(--dm-surface-2) !important;
+  color: var(--dm-text) !important;
+  border-color: var(--dm-border) !important;
+  color-scheme: dark;
+}
+
+body.high-contrast input::placeholder,
+body.high-contrast textarea::placeholder {
+  color: var(--dm-faint) !important;
+  opacity: 1;
+}
+
+body.high-contrast option {
+  background: var(--dm-surface-2);
+  color: var(--dm-text);
+}
+
+body.high-contrast input[type="range"] {
+  accent-color: var(--dm-accent);
+}
+
+body.high-contrast input[type="checkbox"],
+body.high-contrast input[type="radio"] {
+  accent-color: var(--dm-accent);
+  background-color: var(--dm-surface-2);
+  border-color: var(--dm-border);
+}
+
+/* ---- Progress track (fill colors stay vivid on purpose) ---- */
+body.high-contrast .bg-gray-200.rounded-full,
+body.high-contrast .w-full.bg-gray-200 {
+  background: var(--dm-elevated) !important;
+}
+
+/* ---- Timers / runner specifics ---- */
+body.high-contrast .big-timer,
+body.high-contrast .rep-display {
+  color: var(--dm-text) !important;
+}
+
+body.high-contrast .big-timer.text-green-700,
+body.high-contrast #timerDisplay {
+  color: var(--dm-success) !important;
+}
+
+/* ---- Bottom nav ---- */
+body.high-contrast .bottom-nav {
+  background: rgba(15, 20, 28, 0.96) !important;
+  border-color: var(--dm-border) !important;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.45);
+}
+
+body.high-contrast .bottom-nav__item {
+  color: var(--dm-muted) !important;
+}
+
+body.high-contrast .bottom-nav__item:active {
+  background: var(--dm-elevated) !important;
+}
+
+body.high-contrast .bottom-nav__item--active {
+  color: var(--dm-link) !important;
+  background: var(--dm-info-bg) !important;
+}
+
+/* ---- Rating / misc components ---- */
+body.high-contrast .rate-btn {
+  background: var(--dm-surface-2) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text) !important;
+}
+
+body.high-contrast .rate-btn:hover {
+  background: var(--dm-elevated) !important;
+  border-color: var(--dm-faint) !important;
+}
+
+body.high-contrast .rate-btn--like.rate-btn--on {
+  background: var(--dm-success-bg) !important;
+  border-color: #16a34a !important;
+  color: #bbf7d0 !important;
+}
+
+body.high-contrast .rate-btn--dislike.rate-btn--on {
+  background: var(--dm-danger-bg) !important;
+  border-color: #dc2626 !important;
+  color: #fecaca !important;
+}
+
+body.high-contrast .ex-thumb,
+body.high-contrast .ex-thumb--placeholder {
+  background: var(--dm-elevated) !important;
+  border: 1px solid var(--dm-border);
+}
+
+body.high-contrast .ex-thumb--lg {
+  border: 1px solid var(--dm-border);
+  box-shadow: none;
+}
+
+/* ---- Tables / admin ---- */
+body.high-contrast table,
+body.high-contrast th,
+body.high-contrast td {
+  color: var(--dm-text) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.high-contrast .active-tab {
+  color: var(--dm-link) !important;
+  border-bottom-color: var(--dm-accent) !important;
+}
+
+/* Utility spans that only have text-sm / font-* with no color inherit body color.
+   Cover leftover slate utilities if any appear later: */
+body.high-contrast .text-slate-500,
+body.high-contrast .text-slate-600,
+body.high-contrast .text-slate-700 {
+  color: var(--dm-muted) !important;
+}
+
+/* Selection */
+body.high-contrast ::selection {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+/* Inline status / code-ish monospace on about page */
+body.high-contrast .font-mono {
+  color: inherit;
+}
+
+/* Dividers that use a white chip over a border (auth "Or continue with") */
+body.high-contrast .relative span.bg-white {
+  background: var(--dm-surface) !important;
+  color: var(--dm-muted) !important;
+}
+
+/* Plan day cards and similar bordered boxes without explicit bg keep dark page bg + light text */
+body.high-contrast .shadow,
+body.high-contrast .shadow-sm,
+body.high-contrast .shadow-md,
+body.high-contrast .shadow-lg {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Fixed: muted links that are only text-sm without color utility still inherit light text */
