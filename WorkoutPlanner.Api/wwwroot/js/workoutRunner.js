@@ -553,14 +553,12 @@ function demoImageUrls(ex) {
   return urls;
 }
 
-/** Prebuilt animated WebP from scripts/build-exercise-webps.py (+ mobility copies). */
+/** Prebuilt animated WebP (FEDB stills, mobility copies, or stick demos). */
 function demoWebpUrl(ex) {
   if (!ex) return null;
-  // Prefer explicit path from plan generation (includes wu-* / cd-* demos)
   if (ex.demoAnimUrl) return ex.demoAnimUrl;
   if (!ex.id) return null;
-  // Attempt WebP when we have source stills or a mobility/library id
-  if (!ex.imageUrl && !String(ex.id).startsWith('wu-') && !String(ex.id).startsWith('cd-')) return null;
+  // Always try /demos/{id}.webp — onerror falls back to still flip / placeholder
   return `/demos/${encodeURIComponent(ex.id)}.webp`;
 }
 
