@@ -408,12 +408,20 @@ async function startWorkout() {
   if (typeof WorkoutMobility !== 'undefined') {
     WorkoutMobility.ensureDayMobility(selectedDay, currentPlan.criteria || {});
   }
-  sessionExercises = selectedDay.exercises.map(ex => ({
-    ...ex,
-    // Normalize phase so warm-up labels always work
-    phase: (ex.phase || (ex.slot === 'warmup' || ex.slot === 'cooldown' ? ex.slot : 'work')),
-    completedSets: []
-  }));
+  sessionExercises = selectedDay.exercises.map(ex => {
+    const phase = (ex.phase || (ex.slot === 'warmup' || ex.slot === 'cooldown' ? ex.slot : 'work'));
+    const id = ex.id || '';
+    const isMobility = phase === 'warmup' || phase === 'cooldown'
+      || id.startsWith('wu-') || id.startsWith('cd-');
+    const demoAnimUrl = ex.demoAnimUrl
+      || (!isMobility && ex.imageUrl && id ? `/demos/${id}.webp` : null);
+    return {
+      ...ex,
+      phase,
+      demoAnimUrl,
+      completedSets: []
+    };
+  });
   currentExerciseIndex = 0;
   currentSetIndex = 0;
   phase = 'work';
@@ -549,10 +557,14 @@ function demoImageUrls(ex) {
 
 /** Prebuilt animated WebP from scripts/build-exercise-webps.py */
 function demoWebpUrl(ex) {
-  if (!ex?.id) return null;
+  if (!ex) return null;
+  // Prefer explicit path from plan generation
   if (ex.demoAnimUrl) return ex.demoAnimUrl;
+  if (!ex.id) return null;
   // Mobility catalog ids are not in free-exercise-db
   if (String(ex.id).startsWith('wu-') || String(ex.id).startsWith('cd-')) return null;
+  // Only attempt WebP when we have source stills (or an imageUrl that implies a demo was built)
+  if (!ex.imageUrl && !ex.demoAnimUrl) return null;
   return `/demos/${encodeURIComponent(ex.id)}.webp`;
 }
 

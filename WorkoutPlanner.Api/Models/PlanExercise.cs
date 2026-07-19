@@ -16,4 +16,6 @@ public class PlanExercise
     public string Progression { get; set; } = string.Empty;
     public string? DemoUrl { get; set; }
     public string? ImageUrl { get; set; }
+    /// <summary>In-app animated demo path, e.g. /demos/{id}.webp (from free-exercise-db stills).</summary>
+    public string? DemoAnimUrl { get; set; }
 }

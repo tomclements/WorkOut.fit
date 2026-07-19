@@ -159,10 +159,18 @@ body.high-contrast #backToPlanner {
 }
 
 /* Single animated WebP (prebuilt from 0/1 stills) — no JS flip needed */
-.demo-frame--anim img.demo-frame__anim {
-  opacity: 1;
+.demo-frame--anim {
+  background: #111827;
+}
+
+.demo-frame--anim img.demo-frame__anim,
+.demo-frame--anim img.demo-frame__visible {
+  opacity: 1 !important;
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .demo-frame--placeholder {

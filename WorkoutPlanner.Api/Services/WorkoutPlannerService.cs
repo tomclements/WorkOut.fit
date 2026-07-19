@@ -264,7 +264,11 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 DemoUrl = !string.IsNullOrWhiteSpace(ex.DemoUrl)
                     ? ex.DemoUrl
                     : ExRxCatalog.GetUrl(ex.Id, ex.Name),
-                ImageUrl = ex.ImageUrl
+                ImageUrl = ex.ImageUrl,
+                // Prebuilt animated WebP when the exercise has free-exercise-db stills
+                DemoAnimUrl = !string.IsNullOrWhiteSpace(ex.ImageUrl)
+                    ? $"/demos/{ex.Id}.webp"
+                    : null
             });
             usedToday.Add(ex.Id);
             timeUsed += exerciseDuration;
