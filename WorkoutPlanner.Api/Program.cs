@@ -218,16 +218,7 @@ static void MapHtmlPage(WebApplication app, string webRoot, string route, string
         var path = Path.Combine(webRoot, fileName);
         if (!File.Exists(path))
         {
-            return Results.Json(new
-            {
-                error = "page_not_found",
-                file = fileName,
-                webRoot,
-                exists = Directory.Exists(webRoot),
-                files = Directory.Exists(webRoot)
-                    ? Directory.GetFiles(webRoot).Select(Path.GetFileName).ToArray()
-                    : Array.Empty<string>()
-            }, statusCode: StatusCodes.Status404NotFound);
+            return Results.NotFound();
         }
         return Results.File(path, "text/html; charset=utf-8");
     }).AllowAnonymous();

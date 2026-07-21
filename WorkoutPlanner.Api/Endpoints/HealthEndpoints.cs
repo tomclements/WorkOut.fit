@@ -32,13 +32,13 @@ public static class HealthEndpoints
                     timestamp = DateTime.UtcNow
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Results.Json(new
                 {
                     status = "unhealthy",
                     database = "error",
-                    detail = ex.Message,
+                    detail = "An internal error occurred.",
                     timestamp = DateTime.UtcNow
                 }, statusCode: StatusCodes.Status503ServiceUnavailable);
             }

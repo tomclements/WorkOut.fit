@@ -1,0 +1,25 @@
+{
+  "name": "workout-planner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "tailwind:build": "npx tailwindcss -i ./WorkoutPlanner.Api/wwwroot/css/tailwind.css -o ./WorkoutPlanner.Api/wwwroot/css/tailwind-compiled.css --minify",
+    "tailwind:watch": "npx tailwindcss -i ./WorkoutPlanner.Api/wwwroot/css/tailwind.css -o ./WorkoutPlanner.Api/wwwroot/css/tailwind-compiled.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomclements/WorkOut.fit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/tomclements/WorkOut.fit/issues"
+  },
+  "homepage": "https://github.com/tomclements/WorkOut.fit#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

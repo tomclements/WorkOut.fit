@@ -129,7 +129,7 @@ public static class AuthEndpoints
 
             var properties = new AuthenticationProperties { RedirectUri = redirectUri };
             return Results.Challenge(properties, new[] { provider });
-        }).AllowAnonymous();
+        }).AllowAnonymous().RequireRateLimiting("auth");
 
         app.MapGet("/api/auth/external-providers", async (IAuthenticationSchemeProvider schemeProvider) =>
         {
@@ -153,7 +153,7 @@ public static class AuthEndpoints
             var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true);
             if (signInResult.Succeeded)
             {
-                return Results.Redirect(returnUrl ?? "/");
+                return Results.Redirect(IsLocalUrl(returnUrl) ? returnUrl! : "/");
             }
 
             if (signInResult.IsLockedOut || signInResult.RequiresTwoFactor || signInResult.IsNotAllowed)
@@ -187,9 +187,18 @@ public static class AuthEndpoints
             }
 
             await signInManager.SignInAsync(user, isPersistent: true);
-            return Results.Redirect(returnUrl ?? "/");
+            return Results.Redirect(IsLocalUrl(returnUrl) ? returnUrl! : "/");
         }).AllowAnonymous();
 
         return app;
+    }
+
+    private static bool IsLocalUrl(string? url)
+    {
+        if (string.IsNullOrEmpty(url))
+            return false;
+
+        // Must start with / but not // (protocol-relative) and not contain :// (absolute URL)
+        return url.StartsWith('/') && !url.StartsWith("//") && !url.Contains("://");
     }
 }

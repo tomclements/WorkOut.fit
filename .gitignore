@@ -20,6 +20,10 @@ out/
 # Docker
 .dockerignore
 
+# Node
+node_modules/
+package-lock.json
+
 # Runtime
 publish/
 
