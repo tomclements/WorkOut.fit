@@ -1,4 +1,4 @@
-const CACHE_NAME = 'workout-v17';
+const CACHE_NAME = 'workout-v18';
 const PRECACHE = [
   '/',
   '/index.html',

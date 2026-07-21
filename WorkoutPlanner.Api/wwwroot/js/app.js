@@ -64,32 +64,36 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyPlanDefaultsToForm({ skipBroNudge: true });
   handleReturnUrl();
 
-  document.getElementById('generateBtn').addEventListener('click', () => generate({ reshuffle: false }));
+  const generateBtn = document.getElementById('generateBtn');
+  if (generateBtn) generateBtn.addEventListener('click', () => generate({ reshuffle: false }));
   const regenerateBtn = document.getElementById('regenerateBtn');
-  if (regenerateBtn) {
-    regenerateBtn.addEventListener('click', () => generate({ reshuffle: true }));
-  }
-  document.getElementById('savePlanBtn').addEventListener('click', saveCurrentPlan);
-  document.getElementById('printBtn').addEventListener('click', () => window.print());
-  document.getElementById('welcomeSignInBtn').addEventListener('click', openAuthModal);
-  startWorkoutBtn.addEventListener('click', () => {
+  if (regenerateBtn) regenerateBtn.addEventListener('click', () => generate({ reshuffle: true }));
+  const savePlanBtn = document.getElementById('savePlanBtn');
+  if (savePlanBtn) savePlanBtn.addEventListener('click', saveCurrentPlan);
+  const printBtn = document.getElementById('printBtn');
+  if (printBtn) printBtn.addEventListener('click', () => window.print());
+  const welcomeSignInBtn = document.getElementById('welcomeSignInBtn');
+  if (welcomeSignInBtn) welcomeSignInBtn.addEventListener('click', openAuthModal);
+  if (startWorkoutBtn) startWorkoutBtn.addEventListener('click', () => {
     if (currentPlan) {
       localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
     }
   });
 
-  togglePlannerBtn.addEventListener('click', () => {
-    plannerSection.classList.remove('hidden');
-    closePlannerBtn.classList.remove('hidden');
-    togglePlannerBtn.classList.add('hidden');
-    plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
+  if (togglePlannerBtn && plannerSection && closePlannerBtn) {
+    togglePlannerBtn.addEventListener('click', () => {
+      plannerSection.classList.remove('hidden');
+      closePlannerBtn.classList.remove('hidden');
+      togglePlannerBtn.classList.add('hidden');
+      plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
 
-  closePlannerBtn.addEventListener('click', () => {
-    plannerSection.classList.add('hidden');
-    closePlannerBtn.classList.add('hidden');
-    togglePlannerBtn.classList.remove('hidden');
-  });
+    closePlannerBtn.addEventListener('click', () => {
+      plannerSection.classList.add('hidden');
+      closePlannerBtn.classList.add('hidden');
+      togglePlannerBtn.classList.remove('hidden');
+    });
+  }
 
   const emptyStateCreateBtn = document.getElementById('emptyStateCreateBtn');
   if (emptyStateCreateBtn) {
@@ -122,12 +126,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('input[type=range]').forEach(input => {
     input.addEventListener('input', updateRangeLabel);
   });
-  document.getElementById('daysPerWeek').addEventListener('input', syncDaySelectorFromSlider);
+  const daysPerWeekEl = document.getElementById('daysPerWeek');
+  if (daysPerWeekEl) daysPerWeekEl.addEventListener('input', syncDaySelectorFromSlider);
   document.querySelectorAll('input[name="workoutDay"]').forEach(cb => {
     cb.addEventListener('change', syncSliderFromDaySelector);
   });
-  document.getElementById('split').addEventListener('change', onSplitChange);
-  onSplitChange();
+  const splitEl = document.getElementById('split');
+  if (splitEl) splitEl.addEventListener('change', onSplitChange);
+  if (splitEl) onSplitChange();
   const progressionEl = document.getElementById('progression');
   if (progressionEl) {
     progressionEl.addEventListener('change', () => {
@@ -137,38 +143,57 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Auth modal
-  document.getElementById('openAuthBtn').addEventListener('click', openAuthModal);
-  document.getElementById('closeAuthModal').addEventListener('click', closeAuthModal);
-  document.getElementById('authModal').addEventListener('click', e => {
+  const openAuthBtnEl = document.getElementById('openAuthBtn');
+  if (openAuthBtnEl) openAuthBtnEl.addEventListener('click', openAuthModal);
+  const closeAuthModalEl = document.getElementById('closeAuthModal');
+  if (closeAuthModalEl) closeAuthModalEl.addEventListener('click', closeAuthModal);
+  const authModalEl = document.getElementById('authModal');
+  if (authModalEl) authModalEl.addEventListener('click', e => {
     if (e.target.id === 'authModal') closeAuthModal();
   });
-  document.getElementById('authToggleBtn').addEventListener('click', toggleAuthMode);
-  document.getElementById('authSubmitBtn').addEventListener('click', submitAuth);
-  document.getElementById('authPassword').addEventListener('keypress', e => {
+  const authToggleBtn = document.getElementById('authToggleBtn');
+  if (authToggleBtn) authToggleBtn.addEventListener('click', toggleAuthMode);
+  const authSubmitBtn = document.getElementById('authSubmitBtn');
+  if (authSubmitBtn) authSubmitBtn.addEventListener('click', submitAuth);
+  const authPassword = document.getElementById('authPassword');
+  if (authPassword) authPassword.addEventListener('keypress', e => {
     if (e.key === 'Enter') submitAuth();
   });
-  document.getElementById('forgotToggleBtn').addEventListener('click', showForgotPanel);
-  document.getElementById('backToAuthBtn').addEventListener('click', showAuthPanel);
-  document.getElementById('forgotSubmitBtn').addEventListener('click', submitForgotPassword);
-  document.getElementById('forgotEmail').addEventListener('keypress', e => {
+  const forgotToggleBtn = document.getElementById('forgotToggleBtn');
+  if (forgotToggleBtn) forgotToggleBtn.addEventListener('click', showForgotPanel);
+  const backToAuthBtn = document.getElementById('backToAuthBtn');
+  if (backToAuthBtn) backToAuthBtn.addEventListener('click', showAuthPanel);
+  const forgotSubmitBtn = document.getElementById('forgotSubmitBtn');
+  if (forgotSubmitBtn) forgotSubmitBtn.addEventListener('click', submitForgotPassword);
+  const forgotEmail = document.getElementById('forgotEmail');
+  if (forgotEmail) forgotEmail.addEventListener('keypress', e => {
     if (e.key === 'Enter') submitForgotPassword();
   });
 
-  document.getElementById('preferencesLink').addEventListener('click', openPreferencesModal);
-  document.getElementById('closePreferencesModal').addEventListener('click', closePreferencesModal);
-  document.getElementById('preferencesModal').addEventListener('click', e => {
+  const preferencesLinkEl = document.getElementById('preferencesLink');
+  if (preferencesLinkEl) preferencesLinkEl.addEventListener('click', openPreferencesModal);
+  const closePreferencesModalEl = document.getElementById('closePreferencesModal');
+  if (closePreferencesModalEl) closePreferencesModalEl.addEventListener('click', closePreferencesModal);
+  const preferencesModalEl = document.getElementById('preferencesModal');
+  if (preferencesModalEl) preferencesModalEl.addEventListener('click', e => {
     if (e.target.id === 'preferencesModal') closePreferencesModal();
   });
-  document.getElementById('prefVolume').addEventListener('input', e => {
-    document.getElementById('prefVolumeValue').textContent = e.target.value + '%';
+  const prefVolume = document.getElementById('prefVolume');
+  if (prefVolume) prefVolume.addEventListener('input', e => {
+    const volLabel = document.getElementById('prefVolumeValue');
+    if (volLabel) volLabel.textContent = e.target.value + '%';
   });
-  document.getElementById('savePreferencesBtn').addEventListener('click', savePreferences);
+  const savePreferencesBtn = document.getElementById('savePreferencesBtn');
+  if (savePreferencesBtn) savePreferencesBtn.addEventListener('click', savePreferences);
 
-  document.getElementById('closeExercisePicker').addEventListener('click', closeExercisePicker);
-  document.getElementById('exercisePickerModal').addEventListener('click', e => {
+  const closeExercisePickerBtn = document.getElementById('closeExercisePicker');
+  if (closeExercisePickerBtn) closeExercisePickerBtn.addEventListener('click', closeExercisePicker);
+  const exercisePickerModalEl = document.getElementById('exercisePickerModal');
+  if (exercisePickerModalEl) exercisePickerModalEl.addEventListener('click', e => {
     if (e.target.id === 'exercisePickerModal') closeExercisePicker();
   });
-  document.getElementById('exerciseSearch').addEventListener('input', renderExerciseList);
+  const exerciseSearch = document.getElementById('exerciseSearch');
+  if (exerciseSearch) exerciseSearch.addEventListener('input', renderExerciseList);
   const ratingFilter = document.getElementById('exerciseRatingFilter');
   if (ratingFilter) ratingFilter.addEventListener('change', renderExerciseList);
 });
@@ -180,17 +205,20 @@ function updateRangeLabel(e) {
 }
 
 function syncDaySelectorFromSlider() {
-  const count = parseInt(document.getElementById('daysPerWeek').value, 10);
+  const daysPerWeekEl = document.getElementById('daysPerWeek');
+  if (!daysPerWeekEl) return;
+  const count = parseInt(daysPerWeekEl.value, 10);
   const checkboxes = document.querySelectorAll('input[name="workoutDay"]');
   checkboxes.forEach((cb, idx) => {
     cb.checked = idx < count;
   });
-  updateRangeLabel({ target: document.getElementById('daysPerWeek') });
+  updateRangeLabel({ target: daysPerWeekEl });
 }
 
 function syncSliderFromDaySelector() {
   const checked = document.querySelectorAll('input[name="workoutDay"]:checked').length;
   const slider = document.getElementById('daysPerWeek');
+  if (!slider) return;
   slider.value = checked;
   updateRangeLabel({ target: slider });
 }
@@ -203,7 +231,9 @@ const SPLIT_HINTS = {
 };
 
 function onSplitChange(options = {}) {
-  const split = document.getElementById('split').value;
+  const splitEl = document.getElementById('split');
+  if (!splitEl) return;
+  const split = splitEl.value;
   const hint = document.getElementById('splitHint');
   const broNote = document.getElementById('broSplitNote');
   if (hint) hint.textContent = SPLIT_HINTS[split] || SPLIT_HINTS['full-body'];
@@ -1092,8 +1122,23 @@ async function generate(options = {}) {
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      throw new Error(error || `Server returned ${response.status}`);
+      let msg = `Server returned ${response.status}`;
+      try {
+        const raw = await response.text();
+        try {
+          const body = JSON.parse(raw);
+          if (body.errors) {
+            msg = Object.entries(body.errors).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`).join('; ');
+          } else if (body.detail) {
+            msg = body.detail;
+          } else if (body.title) {
+            msg = body.title;
+          }
+        } catch {
+          if (raw) msg = raw;
+        }
+      } catch { /* ignore */ }
+      throw new Error(msg);
     }
 
     const result = await response.json();
