@@ -33,6 +33,12 @@ public static class WorkoutEndpoints
         {
             try
             {
+                // Guard against clients sending unsigned 32-bit seeds that overflow int
+                if (request.Seed < 0)
+                    request.Seed = unchecked((int)((uint)request.Seed & 0x7fffffff));
+                if (request.Seed == 0)
+                    request.Seed = Random.Shared.Next(1, int.MaxValue);
+
                 var plan = await service.GeneratePlan(request);
                 // Warm-up/cool-down alone don't count — need real training moves
                 var anyWorkouts = plan.Plan.SelectMany(w => w.Days).Any(d =>

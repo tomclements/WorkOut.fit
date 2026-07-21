@@ -153,21 +153,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   const authToggleBtn = document.getElementById('authToggleBtn');
   if (authToggleBtn) authToggleBtn.addEventListener('click', toggleAuthMode);
-  const authSubmitBtn = document.getElementById('authSubmitBtn');
-  if (authSubmitBtn) authSubmitBtn.addEventListener('click', submitAuth);
-  const authPassword = document.getElementById('authPassword');
-  if (authPassword) authPassword.addEventListener('keypress', e => {
-    if (e.key === 'Enter') submitAuth();
+  const authForm = document.getElementById('authForm');
+  if (authForm) authForm.addEventListener('submit', e => {
+    e.preventDefault();
+    submitAuth();
   });
   const forgotToggleBtn = document.getElementById('forgotToggleBtn');
   if (forgotToggleBtn) forgotToggleBtn.addEventListener('click', showForgotPanel);
   const backToAuthBtn = document.getElementById('backToAuthBtn');
   if (backToAuthBtn) backToAuthBtn.addEventListener('click', showAuthPanel);
-  const forgotSubmitBtn = document.getElementById('forgotSubmitBtn');
-  if (forgotSubmitBtn) forgotSubmitBtn.addEventListener('click', submitForgotPassword);
-  const forgotEmail = document.getElementById('forgotEmail');
-  if (forgotEmail) forgotEmail.addEventListener('keypress', e => {
-    if (e.key === 'Enter') submitForgotPassword();
+  const forgotForm = document.getElementById('forgotForm');
+  if (forgotForm) forgotForm.addEventListener('submit', e => {
+    e.preventDefault();
+    submitForgotPassword();
   });
 
   const preferencesLinkEl = document.getElementById('preferencesLink');
@@ -422,10 +420,11 @@ function getCriteria(options = {}) {
     .filter(d => !Number.isNaN(d))
     .sort((a, b) => a - b);
 
-  // Always a new seed so the server builds a different mix
+  // Always a new seed so the server builds a different mix.
+  // Must fit C# int (signed 32-bit): unsigned >>> 0 can exceed Int32.MaxValue and cause 400.
   const seed = options.seed != null
-    ? options.seed
-    : ((Date.now() ^ (Math.floor(Math.random() * 1e9))) >>> 0) || 1;
+    ? (Math.abs(options.seed | 0) || 1)
+    : (((Date.now() % 0x7fffffff) ^ (Math.floor(Math.random() * 1e9) % 0x7fffffff)) || 1);
 
   // Soft-avoid the previous plan's exercises whenever we already have one
   // (both "Create my plan" again and "Try different exercises")
@@ -469,6 +468,8 @@ async function loadFavorites() {
   dislikedExerciseIds = [];
   try {
     const response = await fetch('/api/user/ratings', { credentials: 'include' });
+    // 401 = guest — expected, don't fall through to a second 401
+    if (response.status === 401) return;
     if (response.ok) {
       const data = await response.json();
       favoriteExerciseIds = Array.isArray(data.liked) ? data.liked : [];
@@ -611,7 +612,8 @@ async function loadEquipment() {
 async function loadPreferences() {
   try {
     const response = await fetch('/api/user/preferences', { credentials: 'include' });
-    if (!response.ok) return;
+    // 401 = guest — expected before sign-in
+    if (response.status === 401 || !response.ok) return;
     const prefs = await response.json();
     mergePreferences(mapPrefsFromApi(prefs));
   } catch {
@@ -774,6 +776,8 @@ function toggleAuthMode() {
   document.getElementById('authSubmitBtn').textContent = isLoginMode ? 'Sign in' : 'Create account';
   document.getElementById('authToggleText').textContent = isLoginMode ? "Don't have an account?" : 'Already have an account?';
   document.getElementById('authToggleBtn').textContent = isLoginMode ? 'Register' : 'Sign in';
+  const pwd = document.getElementById('authPassword');
+  if (pwd) pwd.autocomplete = isLoginMode ? 'current-password' : 'new-password';
 }
 
 function setAuthError(message) {
@@ -874,6 +878,7 @@ async function checkSession() {
       const data = await response.json();
       showLoggedIn(data.email, data.roles || []);
     } else {
+      // 401 when signed out is normal
       showLoggedOut();
     }
   } catch {

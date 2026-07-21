@@ -40,10 +40,12 @@
         </div>
 
         <div id="authPanel">
-          <div id="authError" class="text-sm text-red-600 mb-3 hidden"></div>
-          <input id="authEmail" type="email" placeholder="Email" class="w-full border border-gray-300 rounded-md p-2 mb-3" />
-          <input id="authPassword" type="password" placeholder="Password" class="w-full border border-gray-300 rounded-md p-2 mb-4" />
-          <button id="authSubmitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Sign in</button>
+          <form id="authForm" class="space-y-0">
+            <div id="authError" class="text-sm text-red-600 mb-3 hidden"></div>
+            <input id="authEmail" name="email" type="email" autocomplete="username" placeholder="Email" class="w-full border border-gray-300 rounded-md p-2 mb-3" required />
+            <input id="authPassword" name="password" type="password" autocomplete="current-password" placeholder="Password" class="w-full border border-gray-300 rounded-md p-2 mb-4" required />
+            <button id="authSubmitBtn" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Sign in</button>
+          </form>
 
           <div id="externalLoginSection" class="hidden">
             <div class="relative my-4">
@@ -58,21 +60,23 @@
           </div>
 
           <p class="mt-4 text-sm text-center">
-            <button id="forgotToggleBtn" class="text-blue-600 hover:underline font-medium">Forgot password?</button>
+            <button type="button" id="forgotToggleBtn" class="text-blue-600 hover:underline font-medium">Forgot password?</button>
           </p>
           <p class="mt-3 text-sm text-center text-gray-600">
             <span id="authToggleText">Don't have an account?</span>
-            <button id="authToggleBtn" class="text-blue-600 hover:underline font-medium ml-1">Register</button>
+            <button type="button" id="authToggleBtn" class="text-blue-600 hover:underline font-medium ml-1">Register</button>
           </p>
         </div>
 
         <div id="forgotPanel" class="hidden">
-          <div id="forgotError" class="text-sm text-red-600 mb-3 hidden"></div>
-          <div id="forgotSuccess" class="text-sm text-green-600 mb-3 hidden"></div>
-          <input id="forgotEmail" type="email" placeholder="Email" class="w-full border border-gray-300 rounded-md p-2 mb-4" />
-          <button id="forgotSubmitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Send reset link</button>
+          <form id="forgotForm">
+            <div id="forgotError" class="text-sm text-red-600 mb-3 hidden"></div>
+            <div id="forgotSuccess" class="text-sm text-green-600 mb-3 hidden"></div>
+            <input id="forgotEmail" name="email" type="email" autocomplete="email" placeholder="Email" class="w-full border border-gray-300 rounded-md p-2 mb-4" required />
+            <button id="forgotSubmitBtn" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Send reset link</button>
+          </form>
           <p class="mt-4 text-sm text-center text-gray-600">
-            <button id="backToAuthBtn" class="text-blue-600 hover:underline font-medium">Back to sign in</button>
+            <button type="button" id="backToAuthBtn" class="text-blue-600 hover:underline font-medium">Back to sign in</button>
           </p>
         </div>
       </div>
