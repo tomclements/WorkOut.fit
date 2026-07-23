@@ -619,6 +619,111 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
             $"Expected deload week sets ({AvgSets(week4)}) <= build week sets ({AvgSets(week3)})");
     }
 
+    [Fact]
+    public async Task GeneratePlan_HybridMix_HasStrengthAndHiitDays()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 4,
+            WorkoutDays = new List<int> { 0, 1, 3, 4 },
+            SessionMinutes = 35,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench" },
+            Split = "full-body",
+            Goal = "hypertrophy",
+            Level = "beginner",
+            MixMode = "hybrid",
+            Progression = "none",
+            Seed = 42
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+        Assert.Equal("hybrid", result!.Criteria.MixMode);
+
+        var workouts = result.Plan.SelectMany(w => w.Days).Where(d => d.Type == "workout").ToList();
+        Assert.Equal(4, workouts.Count);
+        Assert.Contains(workouts, d => d.SessionStyle == "hiit");
+        Assert.Contains(workouts, d => d.SessionStyle == "strength");
+        Assert.Equal(1, workouts.Count(d => d.SessionStyle == "hiit"));
+        Assert.Equal(3, workouts.Count(d => d.SessionStyle == "strength"));
+
+        var hiit = workouts.First(d => d.SessionStyle == "hiit");
+        Assert.Contains("HIIT", hiit.Focus, StringComparison.OrdinalIgnoreCase);
+        var hiitWork = hiit.Exercises.Where(e => e.Phase == "work" || string.IsNullOrEmpty(e.Phase)).ToList();
+        Assert.NotEmpty(hiitWork);
+        Assert.All(hiitWork, e =>
+        {
+            Assert.True(e.IsTimeBased);
+            Assert.InRange(e.Rest, 10, 25);
+            Assert.InRange(e.WorkDuration, 20, 40);
+        });
+    }
+
+    [Fact]
+    public async Task GeneratePlan_StrengthMix_AllStrengthDays()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 3,
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight" },
+            Split = "full-body",
+            Goal = "strength",
+            Level = "beginner",
+            MixMode = "strength",
+            Progression = "none",
+            Seed = 3
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var workouts = result!.Plan.SelectMany(w => w.Days).Where(d => d.Type == "workout").ToList();
+        Assert.NotEmpty(workouts);
+        Assert.All(workouts, d => Assert.Equal("strength", d.SessionStyle));
+        Assert.DoesNotContain(workouts, d => d.SessionStyle == "hiit");
+    }
+
+    [Fact]
+    public async Task GeneratePlan_ConditioningMix_MajorityHiit()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 5,
+            WorkoutDays = new List<int> { 0, 1, 2, 3, 4 },
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight" },
+            Split = "full-body",
+            Goal = "fat-loss",
+            Level = "beginner",
+            MixMode = "conditioning",
+            Progression = "none",
+            Seed = 11
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+        Assert.Equal("conditioning", result!.Criteria.MixMode);
+
+        var workouts = result.Plan.SelectMany(w => w.Days).Where(d => d.Type == "workout").ToList();
+        Assert.Equal(5, workouts.Count);
+        int hiit = workouts.Count(d => d.SessionStyle == "hiit");
+        int strength = workouts.Count(d => d.SessionStyle == "strength");
+        Assert.True(hiit >= strength, $"Expected majority HIIT, got hiit={hiit} strength={strength}");
+        Assert.Equal(2, strength);
+        Assert.Equal(3, hiit);
+        Assert.Contains("HIIT", result.ProgressionSummary, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Theory]
     [InlineData("bro-split")]
     [InlineData("ppl")]

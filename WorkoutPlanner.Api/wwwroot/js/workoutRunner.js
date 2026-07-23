@@ -275,7 +275,8 @@ function populateDaySelect() {
       const summary = typeof WorkoutMobility !== 'undefined'
         ? WorkoutMobility.dayMobilitySummary(day)
         : '';
-      option.textContent = `Week ${week.week} - ${day.day} (${day.focus || 'Workout'})${summary ? ' · ' + summary : ''}`;
+      const styleTag = day.sessionStyle === 'hiit' ? 'HIIT · ' : (day.sessionStyle === 'strength' ? 'Strength · ' : '');
+      option.textContent = `Week ${week.week} - ${day.day} (${styleTag}${day.focus || 'Workout'})${summary ? ' · ' + summary : ''}`;
       daySelect.appendChild(option);
     });
   });
@@ -386,6 +387,9 @@ function setWorkLabel(ex) {
   if (phase === 'warmup' || phase === 'cooldown') {
     const muscles = (ex.primary || []).filter(Boolean).join(', ');
     return muscles ? `Targets: ${muscles}` : (phase === 'warmup' ? 'Prep movement' : 'Recovery stretch');
+  }
+  if (selectedDay?.sessionStyle === 'hiit' && phase === 'work') {
+    return `${ex.sets} rounds · ${ex.repsDisplay || workSeconds(ex) + 's'} work · ${restSeconds(ex)}s rest`;
   }
   const reps = ex.repsDisplay || 'your target reps';
   return `${ex.sets} sets · aim for ${reps} each set · ${restSeconds(ex)}s rest`;
@@ -922,7 +926,8 @@ function enterRest() {
       ? `Next warm-up · ${workSeconds(nextEx)}s`
       : `Next cool-down · ${workSeconds(nextEx)}s`;
   } else {
-    nextExerciseMetaEl.textContent = `Set ${currentSetIndex + 1} / ${nextEx.sets} · aim for ${nextEx.repsDisplay || 'target'} · ${workSeconds(nextEx)}s work`;
+    const unit = selectedDay?.sessionStyle === 'hiit' ? 'Round' : 'Set';
+    nextExerciseMetaEl.textContent = `${unit} ${currentSetIndex + 1} / ${nextEx.sets} · ${nextEx.repsDisplay || 'target'} · ${workSeconds(nextEx)}s work`;
   }
   if (nextDemoEl) {
     // Show demo of the *next* move during rest so you're ready

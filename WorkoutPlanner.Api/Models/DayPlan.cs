@@ -6,6 +6,8 @@ public class DayPlan
     public int DayIndex { get; set; }
     public string Day { get; set; } = string.Empty;
     public string Focus { get; set; } = string.Empty;
+    /// <summary>strength | hiit | empty for rest days.</summary>
+    public string SessionStyle { get; set; } = string.Empty;
     public int EstimatedMinutes { get; set; }
     public List<PlanExercise> Exercises { get; set; } = new();
     public string Note { get; set; } = string.Empty;

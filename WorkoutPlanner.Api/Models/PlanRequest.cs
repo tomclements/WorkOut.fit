@@ -23,6 +23,12 @@ public class PlanRequest
     public string Progression { get; set; } = "linear";
 
     /// <summary>
+    /// How strength and HIIT are mixed across the plan (separate days, never same day):
+    /// strength (default), hybrid, or conditioning.
+    /// </summary>
+    public string MixMode { get; set; } = "strength";
+
+    /// <summary>
     /// Random seed for exercise selection. Different seeds produce different exercise mixes.
     /// </summary>
     public int Seed { get; set; }

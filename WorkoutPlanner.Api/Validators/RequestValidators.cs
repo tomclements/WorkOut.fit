@@ -18,6 +18,11 @@ public class PlanRequestValidator : AbstractValidator<PlanRequest>
             .Must(p => string.IsNullOrWhiteSpace(p) ||
                        new[] { "none", "linear", "wave", "block" }.Contains(p.ToLowerInvariant()))
             .WithMessage("Progression must be none, linear, wave, or block.");
+        RuleFor(x => x.MixMode)
+            .Must(m => string.IsNullOrWhiteSpace(m) ||
+                       new[] { "strength", "hybrid", "conditioning", "hiit", "strength-only", "mixed" }
+                           .Contains(m.ToLowerInvariant()))
+            .WithMessage("Mix mode must be strength, hybrid, or conditioning.");
     }
 }
 

@@ -134,6 +134,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const splitEl = document.getElementById('split');
   if (splitEl) splitEl.addEventListener('change', onSplitChange);
   if (splitEl) onSplitChange();
+  const mixModeEl = document.getElementById('mixMode');
+  if (mixModeEl) {
+    mixModeEl.addEventListener('change', () => {
+      const hint = document.getElementById('mixModeHint');
+      if (hint) hint.textContent = MIX_MODE_HINTS[mixModeEl.value] || MIX_MODE_HINTS.strength;
+    });
+  }
   const progressionEl = document.getElementById('progression');
   if (progressionEl) {
     progressionEl.addEventListener('change', () => {
@@ -450,6 +457,7 @@ function getCriteria(options = {}) {
     favoriteExerciseIds: favoriteExerciseIds.slice(),
     dislikedExerciseIds: dislikedExerciseIds.slice(),
     progression: document.getElementById('progression')?.value || 'linear',
+    mixMode: document.getElementById('mixMode')?.value || 'strength',
     seed,
     avoidExerciseIds
   };
@@ -461,6 +469,12 @@ const PROGRESSION_HINTS = {
   wave: 'Volume weeks (more sets) alternate with intensity weeks (harder effort). Great if you like variety.',
   block: 'A “build” phase, then a harder “push” phase, then recovery. Best for plans of 6+ weeks.',
   none: 'Same style of workouts every week — simple and consistent, with less automatic change.'
+};
+
+const MIX_MODE_HINTS = {
+  strength: 'All training days are strength-style lifts with normal rest. Choose Hybrid to add interval days.',
+  hybrid: 'Most days are strength; 1–2 days per week are full-body HIIT (short work, short rest). Never on the same day.',
+  conditioning: 'Most days are HIIT intervals; 1–2 days stay strength for muscle and joints. Separate days only.'
 };
 
 async function loadFavorites() {
@@ -1195,6 +1209,11 @@ function renderPlan(result) {
     block: 'Block periodization',
     none: 'Steady (no ramp)'
   })[result.criteria.progression] || capitalize(result.criteria.progression || 'linear');
+  const mixLabel = ({
+    strength: 'Strength only',
+    hybrid: 'Hybrid (strength + HIIT days)',
+    conditioning: 'Conditioning-focused'
+  })[result.criteria.mixMode] || 'Strength only';
   const mobilityNote = (result.criteria.includeWarmup !== false || result.criteria.includeCooldown !== false)
     ? `<p class="text-sm text-amber-900 bg-amber-50 border border-amber-100 rounded-lg p-3 mt-3">Each workout day includes a short <strong>warm-up</strong> and/or <strong>cool-down</strong> matched to the muscles trained that day (shown with badges at the top and bottom of the list).</p>`
     : '';
@@ -1204,12 +1223,13 @@ function renderPlan(result) {
       ${formatWorkoutDays(result.criteria.workoutDays, result.criteria.daysPerWeek)} • ${result.criteria.sessionMinutes} min sessions
       • <strong>Split:</strong> ${capitalize(result.criteria.split || 'full-body')}
       • <strong>Goal:</strong> ${capitalize(result.criteria.goal)}
+      • <strong>Mix:</strong> ${mixLabel}
       • ${capitalize(result.criteria.level)}
       • ${progressionLabel}
     </p>
     ${result.progressionSummary ? `<p class="text-sm text-blue-900 bg-blue-50 border border-blue-100 rounded-lg p-3 mt-3">${escapeHtml(result.progressionSummary)}</p>` : ''}
     ${mobilityNote}
-    <p class="text-sm text-gray-500 mt-2">Use the buttons on each day to add or remove exercises and to switch a day between workout and rest. <a href="/help.html#progression" class="text-blue-600 hover:underline">How progression works</a></p>
+    <p class="text-sm text-gray-500 mt-2">Use the buttons on each day to add or remove exercises and to switch a day between workout and rest. <a href="/help.html#mix" class="text-blue-600 hover:underline">Strength + HIIT mix</a> · <a href="/help.html#progression" class="text-blue-600 hover:underline">How progression works</a></p>
   `;
   container.appendChild(summary);
 
@@ -1250,9 +1270,12 @@ function renderPlan(result) {
               ? '<span class="text-[10px] font-semibold uppercase tracking-wide bg-teal-100 text-teal-900 px-1.5 py-0.5 rounded">Cool-down</span>'
               : '';
           const isMobility = phase === 'warmup' || phase === 'cooldown';
+          const isHiitWork = !isMobility && day.sessionStyle === 'hiit';
           const setsLine = isMobility
             ? `<span class="text-sm text-gray-700">${escapeHtml(ex.repsDisplay || (ex.workDuration + 's'))}</span>`
-            : `<span class="text-sm text-gray-700">${ex.sets} sets × ${escapeHtml(ex.repsDisplay)} <span class="text-gray-500">(${ex.rest}s rest)</span></span>`;
+            : isHiitWork
+              ? `<span class="text-sm text-gray-700">${ex.sets} rounds × ${escapeHtml(ex.repsDisplay || (ex.workDuration + 's'))} <span class="text-gray-500">(${ex.rest}s rest)</span></span>`
+              : `<span class="text-sm text-gray-700">${ex.sets} sets × ${escapeHtml(ex.repsDisplay)} <span class="text-gray-500">(${ex.rest}s rest)</span></span>`;
           const rating = isMobility ? '' : `
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-xs text-gray-500">Your rating:</span>
@@ -1295,7 +1318,11 @@ function renderPlan(result) {
           listHtml += split.warm.map(ex => renderEx(ex, indexOf(ex))).join('');
         }
         if (split.work.length) {
-          listHtml += `<li class="list-none mb-2 mt-2"><div class="text-xs font-bold uppercase tracking-wide text-blue-800 bg-blue-50 border border-blue-100 rounded px-2 py-1">Main work</div></li>`;
+          const workLabel = day.sessionStyle === 'hiit' ? 'HIIT intervals' : 'Main work';
+          const workLabelClass = day.sessionStyle === 'hiit'
+            ? 'text-xs font-bold uppercase tracking-wide text-rose-800 bg-rose-50 border border-rose-100 rounded px-2 py-1'
+            : 'text-xs font-bold uppercase tracking-wide text-blue-800 bg-blue-50 border border-blue-100 rounded px-2 py-1';
+          listHtml += `<li class="list-none mb-2 mt-2"><div class="${workLabelClass}">${workLabel}</div></li>`;
           listHtml += split.work.map(ex => renderEx(ex, indexOf(ex))).join('');
         }
         if (split.cool.length) {
@@ -1307,18 +1334,31 @@ function renderPlan(result) {
         const mobilitySummary = typeof WorkoutMobility !== 'undefined'
           ? WorkoutMobility.dayMobilitySummary(day)
           : '';
+        const isHiitDay = day.sessionStyle === 'hiit';
+        const styleBadge = isHiitDay
+          ? `<span class="text-xs bg-rose-100 text-rose-900 px-2 py-1 rounded font-semibold">HIIT</span>`
+          : `<span class="text-xs bg-indigo-100 text-indigo-900 px-2 py-1 rounded font-semibold">Strength</span>`;
+        const focusBadge = isHiitDay
+          ? `<span class="text-xs bg-rose-50 text-rose-800 px-2 py-1 rounded">${escapeHtml(day.focus || 'HIIT')}</span>`
+          : `<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${escapeHtml(day.focus || 'Workout')}</span>`;
+        const cardBg = isHiitDay ? 'bg-rose-50/40' : 'bg-white';
+        card.className = 'border rounded-lg p-4 shadow-sm ' + cardBg;
         card.innerHTML = `
-          <div class="flex justify-between items-center mb-2">
+          <div class="flex justify-between items-center mb-2 gap-2 flex-wrap">
             <span class="font-bold">${day.day}</span>
-            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${day.focus || 'Workout'}</span>
+            <div class="flex flex-wrap gap-1.5 items-center justify-end">
+              ${styleBadge}
+              ${focusBadge}
+            </div>
           </div>
           <div class="text-sm text-gray-600 mb-1">~${day.estimatedMinutes} min${mobilitySummary ? ` · ${escapeHtml(mobilitySummary)}` : ''}</div>
+          ${day.note ? `<p class="text-xs text-gray-600 mb-2 italic">${escapeHtml(day.note)}</p>` : ''}
           <ul class="text-sm">${listHtml}</ul>
           <div class="mt-3 flex flex-wrap gap-2">
             <button onclick="openExercisePicker(${weekIndex}, ${dayIndex})" class="text-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-2 rounded">+ Add exercise</button>
             <button onclick="toggleDayType(${weekIndex}, ${dayIndex})" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-2 rounded">Make rest day</button>
           </div>
-          <div class="mt-2 text-xs text-blue-700 italic">${escapeHtml(workHint?.progression || '')}</div>
+          <div class="mt-2 text-xs ${isHiitDay ? 'text-rose-800' : 'text-blue-700'} italic">${escapeHtml(workHint?.progression || '')}</div>
         `;
       }
 
@@ -1350,11 +1390,13 @@ function toggleDayType(weekIndex, dayIndex) {
   const day = currentPlan.plan[weekIndex].days[dayIndex];
   if (day.type === 'rest') {
     day.type = 'workout';
+    day.sessionStyle = 'strength';
     day.focus = '';
     day.exercises = [];
     day.note = '';
   } else {
     day.type = 'rest';
+    day.sessionStyle = '';
     day.focus = '';
     day.exercises = [];
     day.note = 'Rest / mobility';

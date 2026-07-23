@@ -68,6 +68,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         string goal = NormalizeGoal(req.Goal);
         string split = NormalizeSplit(req.Split);
         string progression = NormalizeProgression(req.Progression);
+        string mixMode = NormalizeMixMode(req.MixMode);
         int userLevelNum = LevelToNum(req.Level);
         var favoriteIds = new HashSet<string>(req.FavoriteExerciseIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
         var dislikedIds = new HashSet<string>(req.DislikedExerciseIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
@@ -97,17 +98,35 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         // Merge client avoid-list (previous plan) with in-plan variety
         var dynamicAvoid = new HashSet<string>(avoidIds, StringComparer.OrdinalIgnoreCase);
 
+        int hiitCount = CountHiitDays(mixMode, effectiveDays);
+        var hiitMask = AssignHiitMask(effectiveDays, hiitCount);
+        int strengthDayCount = Math.Max(1, effectiveDays - hiitCount);
+
         for (int w = 1; w <= weeks; w++)
         {
             var mods = GetWeekProgression(progression, w, weeks, goal);
             var workoutDays = new List<DayPlan>();
+            int strengthOrdinal = 0;
             for (int i = 0; i < workoutIndices.Length; i++)
             {
                 int dayIdx = workoutIndices[i];
-                var (focusLabel, slotOrder) = GetSessionTemplate(split, dayIdx, i, effectiveDays, rng);
-                var session = BuildSession(dayIdx, w, i + 1, targetTime, selectedEquipment,
-                    userLevelNum, goal, split, focusLabel, slotOrder, exercises, planWideRecent, favoriteIds, dislikedIds,
-                    req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, mods, rng, dynamicAvoid);
+                bool isHiit = i < hiitMask.Length && hiitMask[i];
+                DayPlan session;
+                if (isHiit)
+                {
+                    session = BuildHiitSession(dayIdx, w, targetTime, selectedEquipment,
+                        userLevelNum, goal, exercises, planWideRecent, favoriteIds, dislikedIds,
+                        req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, mods, rng, dynamicAvoid);
+                }
+                else
+                {
+                    var (focusLabel, slotOrder) = GetSessionTemplate(
+                        split, dayIdx, strengthOrdinal, strengthDayCount, rng);
+                    strengthOrdinal++;
+                    session = BuildSession(dayIdx, w, strengthOrdinal, targetTime, selectedEquipment,
+                        userLevelNum, goal, split, focusLabel, slotOrder, exercises, planWideRecent, favoriteIds, dislikedIds,
+                        req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, mods, rng, dynamicAvoid);
+                }
 
                 foreach (var id in session.Exercises.Select(e => e.Id))
                 {
@@ -143,6 +162,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                         Type = "rest",
                         DayIndex = d,
                         Day = DayNames[d],
+                        SessionStyle = string.Empty,
                         Note = mods.Phase == "deload"
                             ? "Rest / light mobility — recovery week"
                             : "Rest / mobility"
@@ -163,13 +183,14 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         req.Progression = progression;
         req.Split = split;
         req.Goal = goal;
+        req.MixMode = mixMode;
         req.Seed = seed;
         return new PlanResponse
         {
             Criteria = req,
             Plan = plan,
             GeneratedAt = DateTime.UtcNow.ToString("O"),
-            ProgressionSummary = BuildProgressionSummary(progression, weeks, goal)
+            ProgressionSummary = BuildProgressionSummary(progression, weeks, goal, mixMode, hiitCount, effectiveDays)
         };
     }
 
@@ -189,6 +210,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             Type = "workout",
             DayIndex = dayIdx,
             Day = DayNames[dayIdx],
+            SessionStyle = "strength",
             Focus = string.IsNullOrWhiteSpace(focusLabel)
                 ? string.Join(" / ", slotOrder.Select(Capitalize))
                 : focusLabel,
@@ -333,6 +355,231 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
         return session;
     }
+
+    /// <summary>
+    /// Full-body HIIT density day: short work intervals, short rest, separate from strength days.
+    /// </summary>
+    private DayPlan BuildHiitSession(int dayIdx, int week, int targetTime,
+        List<string> equipment, int userLevelNum, string goal,
+        List<Exercise> allExercises, List<string> planWideRecent, HashSet<string> favoriteIds, HashSet<string> dislikedIds,
+        bool includeWarmup, bool includeCooldown,
+        List<string> restrictions, WeekProgression mods, Random rng, HashSet<string> avoidIds)
+    {
+        var pool = allExercises
+            .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions))
+            .ToList();
+
+        // Prefer multi-joint / conditioning-friendly slots; fall back to full pool
+        var hiitFriendly = pool.Where(IsHiitFriendly).ToList();
+        if (hiitFriendly.Count < 4)
+            hiitFriendly = pool;
+
+        var session = new DayPlan
+        {
+            Type = "workout",
+            DayIndex = dayIdx,
+            Day = DayNames[dayIdx],
+            SessionStyle = "hiit",
+            Focus = "HIIT · Full body",
+            Note = mods.Phase == "deload"
+                ? "HIIT day (lighter): keep intervals crisp but stop well short of all-out effort."
+                : "HIIT day: hard work intervals with short rest. Keep form clean — quality over max thrash.",
+            Exercises = new List<PlanExercise>()
+        };
+
+        // Circuit slots — full body coverage, not a body-part strength day
+        var slotOrder = ShuffleCopy(
+            new List<string> { "legs", "push", "pull", "core", "legs", "carry", "core", "push" },
+            rng);
+
+        int workSec = mods.Phase == "deload" ? 25 : 30;
+        int restSec = mods.Phase == "deload" ? 20 : 15;
+        if (goal is "endurance" or "fat-loss")
+        {
+            workSec = mods.Phase == "deload" ? 30 : 35;
+            restSec = Math.Max(10, restSec - 5);
+        }
+
+        int rounds = mods.Phase == "deload" ? 3 : 4;
+        if (userLevelNum >= 3 && mods.Phase != "deload") rounds = 5;
+        rounds = Math.Clamp(rounds + Math.Min(1, mods.SetDelta), 2, 5);
+
+        var usedToday = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        int timeUsed = 0;
+        const int transition = 15;
+        int minMoves = 4;
+        int softLimit = targetTime + 45;
+        int hardSkip = targetTime + 90;
+
+        foreach (var slot in slotOrder)
+        {
+            var candidates = hiitFriendly
+                .Where(e => !usedToday.Contains(e.Id) &&
+                            string.Equals(e.Slot, slot, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            if (candidates.Count == 0)
+            {
+                candidates = hiitFriendly.Where(e => !usedToday.Contains(e.Id)).ToList();
+            }
+
+            var withoutDisliked = candidates.Where(e => !dislikedIds.Contains(e.Id)).ToList();
+            if (withoutDisliked.Count > 0)
+                candidates = withoutDisliked;
+
+            if (candidates.Count == 0) continue;
+
+            var ex = PickWeightedExercise(candidates, favoriteIds, avoidIds, planWideRecent, isBro: false, slot, rng);
+            if (ex == null) continue;
+
+            int exerciseDuration = rounds * (workSec + restSec) + transition;
+            if (timeUsed + exerciseDuration > softLimit)
+            {
+                if (session.Exercises.Count >= minMoves) break;
+                if (timeUsed + exerciseDuration > hardSkip) continue;
+            }
+
+            session.Exercises.Add(new PlanExercise
+            {
+                Id = ex.Id,
+                Name = ex.Name,
+                Slot = ex.Slot,
+                Phase = "work",
+                Sets = rounds,
+                RepsDisplay = $"{workSec}s",
+                Rest = restSec,
+                WorkDuration = workSec,
+                IsTimeBased = true,
+                Primary = ex.Primary,
+                Progression = HiitProgressionHint(week, mods),
+                DemoUrl = !string.IsNullOrWhiteSpace(ex.DemoUrl)
+                    ? ex.DemoUrl
+                    : ExRxCatalog.GetUrl(ex.Id, ex.Name),
+                ImageUrl = ex.ImageUrl,
+                DemoAnimUrl = $"/demos/{ex.Id}.webp"
+            });
+            usedToday.Add(ex.Id);
+            timeUsed += exerciseDuration;
+        }
+
+        if (session.Exercises.Count == 0)
+        {
+            session.EstimatedMinutes = 0;
+            return session;
+        }
+
+        var rankedMuscles = MobilityCatalog.RankMuscles(session.Exercises);
+        var ordered = new List<PlanExercise>();
+        int mobilityTime = 0;
+
+        if (includeWarmup)
+        {
+            // Slightly longer warm-up before intervals
+            var warmup = MobilityCatalog.BuildWarmup(rankedMuscles, rng, budgetSec: 200);
+            foreach (var m in warmup)
+            {
+                ordered.Add(m);
+                mobilityTime += m.WorkDuration + m.Rest;
+            }
+        }
+
+        ordered.AddRange(session.Exercises);
+
+        if (includeCooldown)
+        {
+            var cooldown = MobilityCatalog.BuildCooldown(rankedMuscles, rng, budgetSec: 120);
+            foreach (var m in cooldown)
+            {
+                ordered.Add(m);
+                mobilityTime += m.WorkDuration + m.Rest;
+            }
+        }
+
+        session.Exercises = ordered;
+        session.EstimatedMinutes = (int)Math.Round((timeUsed + mobilityTime) / 60.0);
+        return session;
+    }
+
+    private static bool IsHiitFriendly(Exercise e)
+    {
+        // Prefer compounds / multi-muscle and skip pure isolation heavy-lift vibes when possible
+        if (e.Primary == null || e.Primary.Count == 0) return true;
+        var slot = (e.Slot ?? "").ToLowerInvariant();
+        if (slot is "legs" or "push" or "pull" or "core" or "carry") return true;
+        // Multi-primary often means compound
+        return e.Primary.Count >= 2;
+    }
+
+    private static string HiitProgressionHint(int week, WeekProgression mods)
+    {
+        if (mods.Phase == "deload")
+            return "Deload HIIT: shorter effort (~60–70%). Stay crisp, not crushed.";
+        if (week == 1 || mods.Phase == "base")
+            return "Learn the interval pace. Finish each work bout with good form; leave a little in the tank.";
+        if (mods.Phase is "intensity" or "peak")
+            return "Push work intervals hard while form stays solid. Rest fully on the short rests — no casual chatting pace.";
+        return "When intervals feel controlled, move a bit faster or use a slightly harder variation next week.";
+    }
+
+    /// <summary>
+    /// How many of the week's training days should be HIIT (rest of days stay strength).
+    /// </summary>
+    private static int CountHiitDays(string mixMode, int workoutDays)
+    {
+        if (workoutDays <= 0) return 0;
+        return mixMode switch
+        {
+            // Majority conditioning; keep 1–2 strength days when possible
+            "conditioning" => workoutDays == 1
+                ? 1
+                : Math.Max(1, workoutDays - (workoutDays >= 5 ? 2 : 1)),
+            // Hybrid: sprinkle HIIT without drowning strength frequency
+            "hybrid" => workoutDays switch
+            {
+                1 => 0,
+                <= 4 => 1,
+                _ => 2
+            },
+            _ => 0
+        };
+    }
+
+    /// <summary>
+    /// Space HIIT days through the training week so hard sessions recover (not clustered).
+    /// </summary>
+    private static bool[] AssignHiitMask(int workoutCount, int hiitCount)
+    {
+        var mask = new bool[workoutCount];
+        if (hiitCount <= 0 || workoutCount == 0) return mask;
+        hiitCount = Math.Min(hiitCount, workoutCount);
+        if (hiitCount == workoutCount)
+        {
+            for (int i = 0; i < workoutCount; i++) mask[i] = true;
+            return mask;
+        }
+
+        for (int h = 0; h < hiitCount; h++)
+        {
+            int pos = (int)Math.Round((h + 1.0) * workoutCount / (hiitCount + 1.0)) - 1;
+            pos = Math.Clamp(pos, 0, workoutCount - 1);
+            int tries = 0;
+            while (mask[pos] && tries < workoutCount)
+            {
+                pos = (pos + 1) % workoutCount;
+                tries++;
+            }
+            mask[pos] = true;
+        }
+
+        return mask;
+    }
+
+    private static string NormalizeMixMode(string? mix) => mix?.ToLowerInvariant().Trim() switch
+    {
+        "hybrid" or "mixed" or "mix" or "strength+hiit" or "strength-hiit" => "hybrid",
+        "conditioning" or "hiit" or "cardio" or "conditioning-focused" => "conditioning",
+        "strength" or "strength-only" or "lifting" or "weights" or null or "" => "strength",
+        _ => "strength"
+    };
 
     /// <summary>
     /// Weighted random pick: favorites get a boost, recently used / avoided get a penalty.
@@ -567,7 +814,8 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             RepDelta: goal == "strength" ? 1 : -1,
             RestDelta: 10);
 
-    private static string BuildProgressionSummary(string progression, int weeks, string goal)
+    private static string BuildProgressionSummary(string progression, int weeks, string goal,
+        string mixMode = "strength", int hiitDays = 0, int workoutDays = 0)
     {
         string goalWord = goal switch
         {
@@ -578,7 +826,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             _ => "your goal"
         };
 
-        return progression switch
+        string core = progression switch
         {
             "none" =>
                 $"Steady plan for {weeks} week{(weeks == 1 ? "" : "s")} focused on {goalWord}. Difficulty stays similar each week so you can practice consistency.",
@@ -590,6 +838,19 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             _ =>
                 $"Linear progression for {weeks} week{(weeks == 1 ? "" : "s")}: gradually harder training for {goalWord}, with planned recovery (deload) weeks so you don’t burn out."
         };
+
+        if (mixMode == "hybrid" && hiitDays > 0)
+        {
+            int strengthDays = Math.Max(0, workoutDays - hiitDays);
+            core += $" Hybrid mix: about {strengthDays} strength day{(strengthDays == 1 ? "" : "s")} and {hiitDays} HIIT day{(hiitDays == 1 ? "" : "s")} per week (never stacked on the same day).";
+        }
+        else if (mixMode == "conditioning" && hiitDays > 0)
+        {
+            int strengthDays = Math.Max(0, workoutDays - hiitDays);
+            core += $" Conditioning-focused: mostly HIIT ({hiitDays}/week) with {strengthDays} strength day{(strengthDays == 1 ? "" : "s")} for muscle and joints.";
+        }
+
+        return core;
     }
 
     private static int ComputeSets(Exercise ex, string goal, int userLevelNum, bool broSplit, WeekProgression mods)
