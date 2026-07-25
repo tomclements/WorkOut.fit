@@ -197,6 +197,8 @@ MapHtmlPage(app, webRoot, "/help", "help.html");
 MapHtmlPage(app, webRoot, "/history.html", "history.html");
 MapHtmlPage(app, webRoot, "/workout.html", "workout.html");
 MapHtmlPage(app, webRoot, "/admin.html", "admin.html");
+MapHtmlPage(app, webRoot, "/feedback.html", "feedback.html");
+MapHtmlPage(app, webRoot, "/feedback", "feedback.html");
 
 // Endpoint modules
 app.MapHealthEndpoints();

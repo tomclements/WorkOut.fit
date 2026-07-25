@@ -29,6 +29,28 @@ button, a {
   letter-spacing: -0.02em;
 }
 
+/* TV / cast-friendly: huge timer, less chrome for AirPlay screen mirror */
+body.tv-mode .big-timer {
+  font-size: clamp(5rem, 18vw, 9rem);
+}
+body.tv-mode #exerciseName {
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+}
+body.tv-mode .demo-panel {
+  max-height: 28vh;
+}
+body.tv-mode .bottom-nav,
+body.tv-mode #backToPlanner {
+  display: none !important;
+}
+body.tv-mode .runner-toolbar #userLabel {
+  display: none;
+}
+body.tv-mode #activeScreen,
+body.tv-mode #restScreen {
+  min-height: 70vh;
+}
+
 .rep-display {
   font-size: 3.5rem;
   font-weight: 800;

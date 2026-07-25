@@ -32,6 +32,9 @@
     }, durationMs);
   };
 
+  /** Public feedback entry (GitHub issues + draft page). */
+  window.WORKOUT_FEEDBACK_URL = '/feedback.html';
+
   function markActiveNav() {
     const path = (location.pathname || '/').replace(/\/+$/, '') || '/';
     const page =
@@ -39,8 +42,9 @@
         : path.endsWith('workout.html') ? 'run'
           : path.endsWith('help.html') ? 'help'
             : path.endsWith('about.html') ? 'about'
-              : path.endsWith('admin.html') ? 'admin'
-                : 'planner';
+              : path.endsWith('feedback.html') ? 'feedback'
+                : path.endsWith('admin.html') ? 'admin'
+                  : 'planner';
 
     document.querySelectorAll('[data-nav]').forEach((el) => {
       const isActive = el.getAttribute('data-nav') === page;

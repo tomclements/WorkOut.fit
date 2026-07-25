@@ -69,7 +69,15 @@ const finishSummaryEl = document.getElementById('finishSummary');
 const saveSessionArea = document.getElementById('saveSessionArea');
 const saveSessionBtn = document.getElementById('saveSessionBtn');
 const saveSessionStatus = document.getElementById('saveSessionStatus');
+const signInToSaveLink = document.getElementById('signInToSaveLink');
 const userLabel = document.getElementById('userLabel');
+const voiceCuesToggle = document.getElementById('voiceCuesToggle');
+const tvModeBtn = document.getElementById('tvModeBtn');
+const castModal = document.getElementById('castModal');
+
+// Shared beep AudioContext (reuse to reduce latency / garbage)
+let sharedAudioCtx = null;
+let lastSpokenSecondKey = '';
 
 // -------------------------- Init --------------------------
 
@@ -81,6 +89,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadUserPreferences();
   await loadPlan();
   checkForResumableSession();
+  initVoiceCuesToggle();
+  // Warm speech voices (Chrome loads async)
+  if (window.speechSynthesis) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  }
 
   startBtn.addEventListener('click', startWorkout);
   resumeBtn.addEventListener('click', resumeSession);
@@ -93,13 +107,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (musicStyleActive) musicStyleActive.addEventListener('change', onMusicStyleActiveChange);
   fullscreenBtn.addEventListener('click', toggleFullscreen);
   if (contrastBtn) contrastBtn.addEventListener('click', toggleHighContrast);
-  saveSessionBtn.addEventListener('click', saveSession);
+  if (tvModeBtn) tvModeBtn.addEventListener('click', openCastModal);
+  if (saveSessionBtn) saveSessionBtn.addEventListener('click', () => saveSession({ manual: true }));
   document.getElementById('pauseBtn').addEventListener('click', () => pauseWorkout(false));
   document.getElementById('restPauseBtn').addEventListener('click', () => pauseWorkout(false));
   document.getElementById('resumeWorkoutBtn').addEventListener('click', resumeWorkout);
   document.getElementById('restResumeWorkoutBtn').addEventListener('click', resumeWorkout);
   document.getElementById('volumeSlider').addEventListener('input', onVolumeChange);
   window.addEventListener('beforeunload', handleBeforeUnload);
+
+  const closeCast = () => closeCastModal();
+  document.getElementById('closeCastModal')?.addEventListener('click', closeCast);
+  document.getElementById('dismissCastModal')?.addEventListener('click', closeCast);
+  document.getElementById('enableTvModeBtn')?.addEventListener('click', () => {
+    setTvMode(true);
+    closeCastModal();
+    if (typeof showToast === 'function') {
+      showToast('TV mode on — mirror this screen with AirPlay or Cast tab.', 'info', 4500);
+    }
+  });
+  castModal?.addEventListener('click', (e) => {
+    if (e.target === castModal) closeCastModal();
+  });
 
   if (localStorage.getItem('runnerHighContrast') === '1') {
     document.body.classList.add('high-contrast');
@@ -407,6 +436,10 @@ function isMobilityExercise(ex) {
 async function startWorkout() {
   if (!currentPlan) return;
 
+  // Unlock audio / speech on user gesture
+  try { getAudioContext(); } catch { /* ignore */ }
+  if (window.speechSynthesis) window.speechSynthesis.getVoices();
+
   const selection = JSON.parse(daySelect.value);
   selectedDay = currentPlan.plan.find(w => w.week === selection.week).days[selection.dayIndex];
   if (typeof WorkoutMobility !== 'undefined') {
@@ -475,6 +508,7 @@ function pauseWorkout(auto = false) {
   autoPaused = auto;
   pauseStartTime = Date.now();
   clearInterval(timerInterval);
+  stopSpeech();
   if (musicEngine.isPlaying) musicEngine.setVolume(0.05);
   updatePauseUI();
 }
@@ -773,7 +807,10 @@ function showMovePreview() {
   phaseDurationSeconds = PREVIEW_SECONDS;
   phaseStartTime = Date.now();
   elapsedPhaseSeconds = 0;
+  lastSpokenSecondKey = '';
   if (previewCountdownEl) previewCountdownEl.textContent = String(PREVIEW_SECONDS);
+  // Soft cue that a new move is coming (countdown will speak 3-2-1)
+  speakCue('Get ready');
 
   updateProgress();
   startTimer();
@@ -783,8 +820,7 @@ function showMovePreview() {
 function beginSetFromPreview() {
   if (phase !== 'preview') return;
   clearInterval(timerInterval);
-  beep(880, 0.12);
-  enterWork(false, { skipPreview: true });
+  enterWork(false, { skipPreview: true, announce: true });
 }
 
 function enterWork(resuming = false, options = {}) {
@@ -797,10 +833,15 @@ function enterWork(resuming = false, options = {}) {
   phase = 'work';
   phaseDurationSeconds = workSeconds(ex);
   setWorkChromeMode('work');
+  lastSpokenSecondKey = '';
 
   if (!resuming || options.skipPreview) {
     phaseStartTime = Date.now();
     elapsedPhaseSeconds = 0;
+    // Announce "Work" when a work interval actually starts (not demo-only)
+    if (!resuming && options.announce !== false) {
+      announcePhase('work');
+    }
   } else {
     elapsedPhaseSeconds = Math.floor((Date.now() - phaseStartTime) / 1000);
   }
@@ -834,36 +875,23 @@ function tick() {
 
   if (phase === 'preview') {
     if (previewCountdownEl) previewCountdownEl.textContent = String(remaining);
+    maybeCountdownCue('preview', remaining);
     if (remaining === 0) {
       beginSetFromPreview();
     }
   } else if (phase === 'work') {
     timerDisplayEl.textContent = formatTime(remaining);
     updatePhaseProgressBar(workProgressBar, remaining, phaseDurationSeconds);
-
-    if (remaining <= 3 && remaining > 0) {
-      // soft countdown ticks
-      if (elapsedPhaseSeconds !== tick._lastWorkBeep) {
-        tick._lastWorkBeep = elapsedPhaseSeconds;
-        beep(700, 0.08);
-      }
-    }
+    maybeCountdownCue('work', remaining);
     if (remaining === 0) {
-      beep(880, 0.25);
       if (navigator.vibrate) navigator.vibrate([40, 40, 40]);
       completeSet(false);
     }
   } else if (phase === 'rest') {
     restTimerEl.textContent = formatTime(remaining);
     updatePhaseProgressBar(restProgressBar, remaining, phaseDurationSeconds);
-
-    if (remaining <= 3 && remaining > 0) {
-      if (elapsedPhaseSeconds !== tick._lastRestBeep) {
-        tick._lastRestBeep = elapsedPhaseSeconds;
-        beep(660, 0.08);
-      }
-    } else if (remaining === 0) {
-      beep(990, 0.3);
+    maybeCountdownCue('rest', remaining);
+    if (remaining === 0) {
       if (navigator.vibrate) navigator.vibrate(50);
       endRest();
     }
@@ -910,7 +938,9 @@ function enterRest() {
   phase = 'rest';
   phaseStartTime = Date.now();
   elapsedPhaseSeconds = 0;
+  lastSpokenSecondKey = '';
   stopDemoFlip();
+  announcePhase('rest');
 
   // Rest uses the exercise we're about to do (already advanced set index)
   const nextEx = currentExercise();
@@ -948,8 +978,8 @@ function endRest() {
   clearInterval(timerInterval);
   if (musicEngine.isPlaying) musicEngine.setVolume(1.0);
   if (navigator.vibrate) navigator.vibrate(30);
-  beep(880, 0.2);
   showScreen(activeScreen);
+  // enterWork announces "Work", or opens a demo preview first
   enterWork();
 }
 
@@ -962,8 +992,12 @@ function finishWorkout() {
   document.removeEventListener('visibilitychange', handleVisibilityChange);
   clearSessionState();
   updateProgress();
+  if (typeof setWorkoutChromeVisible === 'function') setWorkoutChromeVisible(true);
+  setTvMode(false);
+
   beep(660, 0.15);
   setTimeout(() => beep(880, 0.2), 180);
+  speakCue('Workout complete');
 
   const totalSeconds = Math.floor((Date.now() - startTime) / 1000);
   const totalSets = sessionExercises.reduce((sum, ex) => sum + ex.completedSets.length, 0);
@@ -978,15 +1012,51 @@ function finishWorkout() {
     Active work time: <strong>${formatTime(workSecondsTotal)}</strong>
   `;
 
+  // Auto-save when signed in; prompt sign-in otherwise
+  if (saveSessionArea) saveSessionArea.classList.remove('hidden');
+  if (saveSessionBtn) {
+    saveSessionBtn.classList.add('hidden');
+    saveSessionBtn.disabled = false;
+    saveSessionBtn.textContent = 'Retry save';
+  }
+  if (signInToSaveLink) signInToSaveLink.classList.add('hidden');
+
   if (currentUser) {
-    saveSessionArea.classList.remove('hidden');
+    if (saveSessionStatus) {
+      saveSessionStatus.textContent = 'Saving your session to history…';
+      saveSessionStatus.className = 'text-sm mb-2 text-gray-600';
+      saveSessionStatus.classList.remove('hidden');
+    }
+    // Fire-and-forget; UI updates when done
+    saveSession({ auto: true });
+  } else if (saveSessionStatus) {
+    saveSessionStatus.textContent = 'Signed-out sessions aren’t stored in History. Sign in next time for auto-save.';
+    saveSessionStatus.className = 'text-sm mb-2 text-amber-800';
+    if (signInToSaveLink) signInToSaveLink.classList.remove('hidden');
   }
 
   showScreen(finishScreen);
 }
 
-async function saveSession() {
-  if (sessionSaved || !currentUser) return;
+async function saveSession(options = {}) {
+  if (sessionSaved) return;
+  if (!currentUser) {
+    if (saveSessionStatus) {
+      saveSessionStatus.textContent = 'Sign in to save this workout to History.';
+      saveSessionStatus.className = 'text-sm mb-2 text-amber-800';
+    }
+    if (signInToSaveLink) signInToSaveLink.classList.remove('hidden');
+    return;
+  }
+
+  if (saveSessionStatus) {
+    saveSessionStatus.textContent = 'Saving your session to history…';
+    saveSessionStatus.className = 'text-sm mb-2 text-gray-600';
+  }
+  if (saveSessionBtn) {
+    saveSessionBtn.classList.add('hidden');
+    saveSessionBtn.disabled = true;
+  }
 
   const totalSeconds = Math.floor((Date.now() - startTime) / 1000);
   const payload = {
@@ -1016,16 +1086,25 @@ async function saveSession() {
 
     if (!res.ok) throw new Error('Server error');
     sessionSaved = true;
-    saveSessionBtn.disabled = true;
-    saveSessionBtn.textContent = 'Saved';
-    saveSessionStatus.textContent = 'Session saved to your history.';
-    saveSessionStatus.className = 'text-sm mt-2 text-green-600';
-    saveSessionStatus.classList.remove('hidden');
+    if (saveSessionBtn) {
+      saveSessionBtn.classList.add('hidden');
+      saveSessionBtn.disabled = true;
+    }
+    if (saveSessionStatus) {
+      saveSessionStatus.textContent = 'Saved to your history automatically.';
+      saveSessionStatus.className = 'text-sm mb-2 text-green-700 font-medium';
+    }
     if (typeof showToast === 'function') showToast('Session saved to your history.', 'success');
   } catch (err) {
-    saveSessionStatus.textContent = `Could not save session: ${err.message}`;
-    saveSessionStatus.className = 'text-sm mt-2 text-red-600';
-    saveSessionStatus.classList.remove('hidden');
+    if (saveSessionStatus) {
+      saveSessionStatus.textContent = `Could not auto-save: ${err.message}. Tap Retry.`;
+      saveSessionStatus.className = 'text-sm mb-2 text-red-600';
+    }
+    if (saveSessionBtn) {
+      saveSessionBtn.classList.remove('hidden');
+      saveSessionBtn.disabled = false;
+      saveSessionBtn.textContent = 'Retry save';
+    }
     if (typeof showToast === 'function') showToast(`Could not save session: ${err.message}`, 'error');
   }
 }
@@ -1101,21 +1180,138 @@ function formatTime(totalSeconds) {
   return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
 }
 
+// -------------------------- Voice + beeps --------------------------
+
+function initVoiceCuesToggle() {
+  if (!voiceCuesToggle) return;
+  const stored = localStorage.getItem('runnerVoiceCues');
+  voiceCuesToggle.checked = stored !== '0';
+  voiceCuesToggle.addEventListener('change', () => {
+    localStorage.setItem('runnerVoiceCues', voiceCuesToggle.checked ? '1' : '0');
+    if (!voiceCuesToggle.checked) stopSpeech();
+  });
+}
+
+function voiceCuesEnabled() {
+  if (voiceCuesToggle) return !!voiceCuesToggle.checked;
+  return localStorage.getItem('runnerVoiceCues') !== '0';
+}
+
+function stopSpeech() {
+  try {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+  } catch { /* ignore */ }
+}
+
+/**
+ * Short spoken cue. Cancels prior utterance so countdown stays crisp.
+ */
+function speakCue(text) {
+  if (!voiceCuesEnabled() || !text) return;
+  try {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(text));
+    u.rate = 1.08;
+    u.pitch = 1.0;
+    u.volume = 1.0;
+    const voices = window.speechSynthesis.getVoices() || [];
+    const en = voices.find(v => /^en(-|_)/i.test(v.lang)) || voices.find(v => /en/i.test(v.lang));
+    if (en) u.voice = en;
+    window.speechSynthesis.speak(u);
+  } catch {
+    // ignore speech errors
+  }
+}
+
+/**
+ * Countdown in last 3 seconds of preview / work / rest: rising beeps + spoken 3, 2, 1.
+ */
+function maybeCountdownCue(phaseName, remaining) {
+  if (remaining < 1 || remaining > 3) return;
+  const key = `${phaseName}:${remaining}`;
+  if (key === lastSpokenSecondKey) return;
+  lastSpokenSecondKey = key;
+
+  // Rising pitch: 3 → lower, 1 → higher
+  const freq = remaining === 3 ? 560 : remaining === 2 ? 700 : 880;
+  beep(freq, remaining === 1 ? 0.14 : 0.1);
+  speakCue(String(remaining));
+}
+
+/** Distinct start cue for work vs rest phases. */
+function announcePhase(kind) {
+  lastSpokenSecondKey = '';
+  if (kind === 'work') {
+    beep(990, 0.18);
+    speakCue('Work');
+  } else if (kind === 'rest') {
+    beep(440, 0.14);
+    setTimeout(() => beep(380, 0.12), 120);
+    speakCue('Rest');
+  }
+}
+
+function getAudioContext() {
+  if (!sharedAudioCtx || sharedAudioCtx.state === 'closed') {
+    sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (sharedAudioCtx.state === 'suspended') {
+    sharedAudioCtx.resume().catch(() => {});
+  }
+  return sharedAudioCtx;
+}
+
 function beep(frequency = 880, duration = 0.15) {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = getAudioContext();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    osc.type = 'sine';
     osc.frequency.value = frequency;
     osc.connect(gain);
     gain.connect(ctx.destination);
-    gain.gain.setValueAtTime(0.12, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.start();
-    osc.stop(ctx.currentTime + duration);
-    setTimeout(() => ctx.close().catch(() => {}), (duration + 0.05) * 1000);
+    const t = ctx.currentTime;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.14, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+    osc.start(t);
+    osc.stop(t + duration + 0.02);
   } catch {
     // ignore audio errors
+  }
+}
+
+// -------------------------- TV / cast mode --------------------------
+
+function openCastModal() {
+  // Second tap on TV while already in TV mode turns it off
+  if (document.body.classList.contains('tv-mode')) {
+    setTvMode(false);
+    if (typeof showToast === 'function') showToast('TV mode off', 'info');
+    return;
+  }
+  if (!castModal) {
+    setTvMode(true);
+    return;
+  }
+  castModal.classList.remove('hidden');
+}
+
+function closeCastModal() {
+  castModal?.classList.add('hidden');
+}
+
+function setTvMode(on) {
+  document.body.classList.toggle('tv-mode', !!on);
+  if (tvModeBtn) {
+    tvModeBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    tvModeBtn.classList.toggle('bg-blue-100', !!on);
+    tvModeBtn.title = on ? 'TV mode on (tap for cast tips / off)' : 'TV mode & cast tips';
+  }
+  if (on && typeof setWorkoutChromeVisible === 'function') {
+    // Hide bottom nav while training in TV mode
+    if (phase !== 'setup' && phase !== 'finish') setWorkoutChromeVisible(false);
   }
 }
 
