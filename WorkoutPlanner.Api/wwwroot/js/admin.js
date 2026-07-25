@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('userForm').addEventListener('submit', addAdminUser);
   document.getElementById('refreshExercisesBtn').addEventListener('click', refreshExercisesFromSource);
+  document.getElementById('refreshFeedbackBtn')?.addEventListener('click', loadFeedback);
+  document.getElementById('feedbackUnreadOnly')?.addEventListener('change', loadFeedback);
 });
 
 async function checkAdmin() {
@@ -37,7 +39,8 @@ async function checkAdmin() {
         loadWebpDemoIndex(),
         loadExercises(),
         loadUsers(),
-        loadLibraryStats()
+        loadLibraryStats(),
+        loadFeedback()
       ]);
       return;
     }
@@ -62,7 +65,60 @@ function switchTab(tab) {
   });
   document.getElementById('exercisesTab').classList.toggle('hidden', tab !== 'exercises');
   document.getElementById('equipmentTab').classList.toggle('hidden', tab !== 'equipment');
+  document.getElementById('feedbackTab')?.classList.toggle('hidden', tab !== 'feedback');
   document.getElementById('usersTab').classList.toggle('hidden', tab !== 'users');
+  if (tab === 'feedback') loadFeedback();
+}
+
+async function loadFeedback() {
+  const list = document.getElementById('feedbackList');
+  const empty = document.getElementById('feedbackEmpty');
+  if (!list) return;
+  const unreadOnly = document.getElementById('feedbackUnreadOnly')?.checked ? 'true' : 'false';
+  try {
+    const res = await fetch(`/api/admin/feedback?take=100&unreadOnly=${unreadOnly}`, { credentials: 'include' });
+    if (!res.ok) throw new Error('Failed to load');
+    const items = await res.json();
+    if (!items.length) {
+      list.innerHTML = '';
+      empty?.classList.remove('hidden');
+      return;
+    }
+    empty?.classList.add('hidden');
+    list.innerHTML = items.map(f => {
+      const when = f.createdAt ? new Date(f.createdAt).toLocaleString() : '';
+      const contact = f.contactEmail || f.userEmail || '—';
+      const badge = f.isRead
+        ? '<span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">Read</span>'
+        : '<span class="text-xs bg-amber-100 text-amber-900 px-2 py-0.5 rounded font-semibold">New</span>';
+      const markBtn = f.isRead
+        ? ''
+        : `<button type="button" data-mark-read="${f.id}" class="text-xs text-blue-700 font-semibold hover:underline">Mark read</button>`;
+      return `
+        <article class="bg-white rounded-xl shadow p-4 border ${f.isRead ? 'border-gray-100' : 'border-amber-200'}">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-2 flex-wrap">
+              ${badge}
+              <span class="text-xs font-semibold uppercase tracking-wide text-blue-800">${escapeHtml(f.category || '')}</span>
+              <span class="text-xs text-gray-500">#${f.id} · ${escapeHtml(when)}</span>
+            </div>
+            ${markBtn}
+          </div>
+          <p class="text-sm text-gray-900 whitespace-pre-wrap mb-2">${escapeHtml(f.message || '')}</p>
+          <div class="text-xs text-gray-500">Contact: ${escapeHtml(contact)}${f.pageUrl ? ` · <a class="text-blue-600 hover:underline" href="${escapeHtml(f.pageUrl)}">${escapeHtml(f.pageUrl)}</a>` : ''}</div>
+        </article>`;
+    }).join('');
+
+    list.querySelectorAll('[data-mark-read]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-mark-read');
+        await fetch(`/api/admin/feedback/${id}/read`, { method: 'POST', credentials: 'include' });
+        await loadFeedback();
+      });
+    });
+  } catch {
+    list.innerHTML = '<p class="text-sm text-red-600">Could not load feedback.</p>';
+  }
 }
 
 async function loadEquipment() {

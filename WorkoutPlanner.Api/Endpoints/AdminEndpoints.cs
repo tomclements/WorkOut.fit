@@ -13,6 +13,39 @@ public static class AdminEndpoints
 {
     public static IEndpointRouteBuilder MapAdminEndpoints(this IEndpointRouteBuilder app)
     {
+        app.MapGet("/api/admin/feedback", async (AppDbContext db, int? take, bool? unreadOnly) =>
+        {
+            var limit = Math.Clamp(take ?? 50, 1, 200);
+            var q = db.FeedbackMessages.AsNoTracking().AsQueryable();
+            if (unreadOnly == true)
+                q = q.Where(f => !f.IsRead);
+            var items = await q
+                .OrderByDescending(f => f.CreatedAt)
+                .Take(limit)
+                .Select(f => new
+                {
+                    f.Id,
+                    f.CreatedAt,
+                    f.Category,
+                    f.Message,
+                    f.ContactEmail,
+                    f.PageUrl,
+                    f.UserEmail,
+                    f.IsRead
+                })
+                .ToListAsync();
+            return Results.Ok(items);
+        }).RequireAuthorization("Admin");
+
+        app.MapPost("/api/admin/feedback/{id:int}/read", async (int id, AppDbContext db) =>
+        {
+            var row = await db.FeedbackMessages.FindAsync(id);
+            if (row == null) return Results.NotFound();
+            row.IsRead = true;
+            await db.SaveChangesAsync();
+            return Results.Ok(new { id = row.Id, isRead = true });
+        }).RequireAuthorization("Admin");
+
         app.MapGet("/api/admin/exercises", async (AppDbContext db) =>
         {
             var exercises = await db.Exercises

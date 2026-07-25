@@ -19,6 +19,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<UserPreference> UserPreferences { get; set; } = null!;
     public DbSet<UserFavoriteExercise> UserFavoriteExercises { get; set; } = null!;
     public DbSet<UserExerciseNote> UserExerciseNotes { get; set; } = null!;
+    public DbSet<FeedbackMessage> FeedbackMessages { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -112,6 +113,21 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
             entity.Property(e => e.UserId).HasMaxLength(450);
             entity.Property(e => e.ExerciseId).HasMaxLength(100);
             entity.HasIndex(e => new { e.UserId, e.ExerciseId }).IsUnique();
+        });
+
+        builder.Entity<FeedbackMessage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Category).HasMaxLength(40);
+            entity.Property(e => e.Message).HasMaxLength(4000);
+            entity.Property(e => e.ContactEmail).HasMaxLength(256);
+            entity.Property(e => e.PageUrl).HasMaxLength(500);
+            entity.Property(e => e.UserAgent).HasMaxLength(500);
+            entity.Property(e => e.UserId).HasMaxLength(450);
+            entity.Property(e => e.UserEmail).HasMaxLength(256);
+            entity.Property(e => e.IpHash).HasMaxLength(64);
+            entity.HasIndex(e => e.CreatedAt);
+            entity.HasIndex(e => e.IsRead);
         });
     }
 

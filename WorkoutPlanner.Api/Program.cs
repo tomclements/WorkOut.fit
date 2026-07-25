@@ -108,6 +108,15 @@ builder.Services.AddRateLimiter(options =>
         opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
         opt.QueueLimit = 0;
     });
+    var feedbackLimit = isDevOrTest ? 1000 : 8;
+    options.AddFixedWindowLimiter("feedback", opt =>
+    {
+        opt.PermitLimit = feedbackLimit;
+        opt.Window = TimeSpan.FromMinutes(10);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -157,6 +166,8 @@ using (var scope = app.Services.CreateScope())
     if (db.Database.IsSqlite())
     {
         await db.Database.EnsureCreatedAsync();
+        // Existing SQLite DBs created earlier won't get new tables from EnsureCreated — patch them.
+        await EnsureFeedbackTableSqliteAsync(db);
     }
     else if (db.Database.IsRelational())
     {
@@ -210,8 +221,39 @@ app.MapRunnerEndpoints();
 app.MapAdminEndpoints();
 app.MapDashboardEndpoints();
 app.MapUserEndpoints();
+app.MapFeedbackEndpoints();
 
 app.Run();
+
+static async Task EnsureFeedbackTableSqliteAsync(AppDbContext db)
+{
+    await db.Database.ExecuteSqlRawAsync("""
+        CREATE TABLE IF NOT EXISTS "FeedbackMessages" (
+            "Id" INTEGER NOT NULL CONSTRAINT "PK_FeedbackMessages" PRIMARY KEY AUTOINCREMENT,
+            "CreatedAt" TEXT NOT NULL,
+            "Category" TEXT NOT NULL,
+            "Message" TEXT NOT NULL,
+            "ContactEmail" TEXT NULL,
+            "PageUrl" TEXT NULL,
+            "UserAgent" TEXT NULL,
+            "UserId" TEXT NULL,
+            "UserEmail" TEXT NULL,
+            "IpHash" TEXT NULL,
+            "IsRead" INTEGER NOT NULL DEFAULT 0
+        );
+        """);
+    try
+    {
+        await db.Database.ExecuteSqlRawAsync(
+            """CREATE INDEX IF NOT EXISTS "IX_FeedbackMessages_CreatedAt" ON "FeedbackMessages" ("CreatedAt");""");
+        await db.Database.ExecuteSqlRawAsync(
+            """CREATE INDEX IF NOT EXISTS "IX_FeedbackMessages_IsRead" ON "FeedbackMessages" ("IsRead");""");
+    }
+    catch
+    {
+        // Index may already exist under another name
+    }
+}
 
 static void MapHtmlPage(WebApplication app, string webRoot, string route, string fileName)
 {

@@ -3,6 +3,27 @@ using WorkoutPlanner.Api.Models;
 
 namespace WorkoutPlanner.Api.Validators;
 
+public class SubmitFeedbackRequestValidator : AbstractValidator<SubmitFeedbackRequest>
+{
+    public SubmitFeedbackRequestValidator()
+    {
+        RuleFor(x => x.Message)
+            .NotEmpty().WithMessage("Please enter your feedback.")
+            .MinimumLength(5).WithMessage("Please write at least a few words.")
+            .MaximumLength(4000);
+        RuleFor(x => x.Category)
+            .Must(c => string.IsNullOrWhiteSpace(c) ||
+                       new[] { "suggestion", "bug", "other" }.Contains(c.ToLowerInvariant()))
+            .WithMessage("Category must be suggestion, bug, or other.");
+        RuleFor(x => x.ContactEmail)
+            .EmailAddress()
+            .When(x => !string.IsNullOrWhiteSpace(x.ContactEmail))
+            .WithMessage("Contact email looks invalid.");
+        RuleFor(x => x.PageUrl).MaximumLength(500);
+        RuleFor(x => x.Website).MaximumLength(200);
+    }
+}
+
 public class PlanRequestValidator : AbstractValidator<PlanRequest>
 {
     public PlanRequestValidator()
