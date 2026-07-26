@@ -22,7 +22,7 @@ public class BuildInfoTests : IClassFixture<TestWebApplicationFactory>
         Assert.NotNull(body);
         Assert.True(body!.ContainsKey("commit") || body.ContainsKey("shortCommit"));
         Assert.False(string.IsNullOrWhiteSpace(body["shortCommit"]?.ToString()));
-        Assert.Equal("WorkOut", body["app"]?.ToString());
+        Assert.Equal("Plan4Strength", body["app"]?.ToString());
     }
 
     [Fact]

@@ -216,7 +216,7 @@ function renderSessions() {
     <div class="p-4 border-b last:border-b-0 cursor-pointer hover:bg-gray-50 transition" onclick="showSessionDetails(${index})">
       <div class="flex justify-between items-start">
         <div>
-          <div class="font-medium">${escapeHtml(s.planName || 'Workout')}</div>
+          <div class="font-medium">${escapeHtml(s.planName || 'Plan4Strength')}</div>
           <div class="text-xs text-gray-500">${formatDate(s.startedAt)}</div>
         </div>
         <div class="text-right text-sm text-gray-700">
@@ -242,7 +242,7 @@ async function showSessionDetails(index) {
     if (!response.ok) throw new Error('Failed to load session details');
     const s = await response.json();
 
-    document.getElementById('sessionModalTitle').textContent = s.planName || 'Workout';
+    document.getElementById('sessionModalTitle').textContent = s.planName || 'Plan4Strength';
     const totalSets = (s.exercises || []).reduce((sum, ex) => sum + (ex.sets || []).length, 0);
     const totalReps = (s.exercises || []).reduce((sum, ex) => sum + (ex.sets || []).reduce((a, set) => a + (set.reps || 0), 0), 0);
 

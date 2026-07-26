@@ -92,7 +92,7 @@ public static class FeedbackEndpoints
                 if (!string.IsNullOrWhiteSpace(notifyTo))
                 {
                     var enc = HtmlEncoder.Default;
-                    var subject = $"[WorkOut feedback · {category}] #{row.Id}";
+                    var subject = $"[Plan4Strength feedback · {category}] #{row.Id}";
                     var body = $"""
                         <p><strong>Category:</strong> {enc.Encode(category)}</p>
                         <p><strong>Message:</strong></p>

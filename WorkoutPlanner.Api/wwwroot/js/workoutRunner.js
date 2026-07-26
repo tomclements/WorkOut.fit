@@ -15,7 +15,7 @@ const PREVIEW_SECONDS = 8;
 let musicEngine = null;
 let sessionSaved = false;
 let wakeLock = null;
-let sessionPlanName = 'Workout';
+let sessionPlanName = 'Plan4Strength';
 let currentSavedPlanId = null;
 let currentSavedPlanName = null;
 let isPaused = false;
@@ -305,7 +305,7 @@ function populateDaySelect() {
         ? WorkoutMobility.dayMobilitySummary(day)
         : '';
       const styleTag = day.sessionStyle === 'hiit' ? 'HIIT · ' : (day.sessionStyle === 'strength' ? 'Strength · ' : '');
-      option.textContent = `Week ${week.week} - ${day.day} (${styleTag}${day.focus || 'Workout'})${summary ? ' · ' + summary : ''}`;
+      option.textContent = `Week ${week.week} - ${day.day} (${styleTag}${day.focus || 'Training'})${summary ? ' · ' + summary : ''}`;
       daySelect.appendChild(option);
     });
   });
@@ -334,7 +334,7 @@ function saveSessionState() {
     sessionExercises,
     planName: currentPlan?.criteria
       ? `${currentPlan.criteria.weeks}-week ${currentPlan.criteria.goal} plan`
-      : 'Workout'
+      : 'Plan4Strength'
   };
   localStorage.setItem('workoutSession', JSON.stringify(state));
 }
@@ -362,7 +362,7 @@ async function resumeSession() {
     phaseStartTime = state.phaseStartTime || Date.now();
     phaseDurationSeconds = state.phaseDurationSeconds || 30;
     sessionSaved = false;
-    sessionPlanName = state.planName || 'Workout';
+    sessionPlanName = state.planName || 'Plan4Strength';
 
     await requestWakeLock();
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -463,7 +463,7 @@ async function startWorkout() {
   startTime = Date.now();
   sessionSaved = false;
   sessionPlanName = currentSavedPlanName
-    || (currentPlan.criteria ? `${currentPlan.criteria.weeks}-week ${currentPlan.criteria.goal} plan` : 'Workout');
+    || (currentPlan.criteria ? `${currentPlan.criteria.weeks}-week ${currentPlan.criteria.goal} plan` : 'Plan4Strength');
 
   await requestWakeLock();
   document.addEventListener('visibilitychange', handleVisibilityChange);

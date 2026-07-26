@@ -1340,7 +1340,7 @@ function renderPlan(result) {
           : `<span class="text-xs bg-indigo-100 text-indigo-900 px-2 py-1 rounded font-semibold">Strength</span>`;
         const focusBadge = isHiitDay
           ? `<span class="text-xs bg-rose-50 text-rose-800 px-2 py-1 rounded">${escapeHtml(day.focus || 'HIIT')}</span>`
-          : `<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${escapeHtml(day.focus || 'Workout')}</span>`;
+          : `<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${escapeHtml(day.focus || 'Training')}</span>`;
         const cardBg = isHiitDay ? 'bg-rose-50/40' : 'bg-white';
         card.className = 'border rounded-lg p-4 shadow-sm ' + cardBg;
         card.innerHTML = `

@@ -151,7 +151,7 @@ builder.Services.AddScoped<IExerciseImportService, ExerciseImportService>();
 builder.Services.AddHttpClient("free-exercise-db", client =>
 {
     client.Timeout = TimeSpan.FromMinutes(2);
-    client.DefaultRequestHeaders.UserAgent.ParseAdd("WorkOut.fit/1.0 (exercise-import)");
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("Plan4Strength/1.0 (exercise-import)");
 });
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 builder.Services.AddSingleton<IEmailService, SmtpEmailService>();

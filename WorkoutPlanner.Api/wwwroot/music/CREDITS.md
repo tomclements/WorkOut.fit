@@ -17,4 +17,4 @@ If a local file is missing, the catalog’s `fallback` URL is used so music stil
 
 ## “My music” mode
 
-No third-party audio is streamed by WorkOut. The user plays Spotify, Apple Music, YouTube Music, etc. on their own device.
+No third-party audio is streamed by Plan4Strength. The user plays Spotify, Apple Music, YouTube Music, etc. on their own device.

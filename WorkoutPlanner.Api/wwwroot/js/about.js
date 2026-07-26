@@ -23,7 +23,7 @@ async function loadBuildInfo() {
     document.getElementById('buildServerTime').textContent = formatMaybeDate(data.serverTimeUtc);
 
     // Highlight short commit for easy compare
-    document.title = `About · ${data.shortCommit || 'build'} · WorkOut`;
+    document.title = `About · ${data.shortCommit || 'build'} · Plan4Strength`;
 
     loading.classList.add('hidden');
     details.classList.remove('hidden');

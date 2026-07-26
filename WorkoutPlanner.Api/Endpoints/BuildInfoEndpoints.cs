@@ -65,7 +65,7 @@ public static class BuildInfoEndpoints
 
         return new BuildInfo
         {
-            App = "WorkOut",
+            App = "Plan4Strength",
             Version = version,
             Commit = commit,
             ShortCommit = shortCommit,
@@ -176,7 +176,7 @@ public static class BuildInfoEndpoints
 
 public class BuildInfo
 {
-    public string App { get; set; } = "WorkOut";
+        public string App { get; set; } = "Plan4Strength";
     public string Version { get; set; } = "";
     public string Commit { get; set; } = "unknown";
     public string ShortCommit { get; set; } = "unknown";

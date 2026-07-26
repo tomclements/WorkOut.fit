@@ -1,7 +1,7 @@
 {
-  "name": "WorkOut",
-  "short_name": "WorkOut",
-  "description": "Generate and run personalised workout plans with WorkOut.",
+  "name": "Plan4Strength",
+  "short_name": "Plan4Strength",
+  "description": "Generate and run personalised strength training plans with Plan4Strength.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f9fafb",

@@ -18,7 +18,7 @@ public class WorkoutSessionService : IWorkoutSessionService
         var session = new WorkoutSession
         {
             UserId = userId,
-            PlanName = request.PlanName ?? "Workout",
+            PlanName = request.PlanName ?? "Plan4Strength",
             SavedPlanId = request.SavedPlanId,
             StartedAt = request.StartedAt,
             CompletedAt = request.CompletedAt,
