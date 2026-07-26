@@ -34,6 +34,7 @@ const dashboardSection = document.getElementById('dashboardSection');
 const plannerSection = document.getElementById('plannerSection');
 const adminLink = document.getElementById('adminLink');
 const historyLink = document.getElementById('historyLink');
+const feedbackLink = document.getElementById('feedbackLink');
 const preferencesLink = document.getElementById('preferencesLink');
 const togglePlannerBtn = document.getElementById('togglePlannerBtn');
 const closePlannerBtn = document.getElementById('closePlannerBtn');
@@ -946,6 +947,7 @@ function showLoggedIn(email, roles) {
   document.getElementById('logoutBtn').addEventListener('click', logout);
 
   historyLink.classList.remove('hidden');
+  feedbackLink.classList.remove('hidden');
   preferencesLink.classList.remove('hidden');
 
   if (roles.includes('Admin')) {
@@ -973,6 +975,7 @@ function showLoggedOut() {
 
   adminLink.classList.add('hidden');
   historyLink.classList.add('hidden');
+  feedbackLink.classList.add('hidden');
   preferencesLink.classList.add('hidden');
   welcomeSection.classList.remove('hidden');
   dashboardSection.classList.add('hidden');

@@ -8,22 +8,13 @@ async function loadBuildInfo() {
   details.classList.add('hidden');
 
   try {
-    // Cache-bust so deploys always show fresh build metadata
     const res = await fetch('/api/build?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
 
-    document.getElementById('buildShort').textContent = data.shortCommit || data.commit || '—';
-    document.getElementById('buildCommit').textContent = data.commit || '—';
-    document.getElementById('buildBranch').textContent = data.branch || '—';
-    document.getElementById('buildMessage').textContent = data.commitMessage || '—';
-    document.getElementById('buildCommitTime').textContent = formatMaybeDate(data.commitTime);
     document.getElementById('buildTime').textContent = formatMaybeDate(data.buildTimeUtc);
-    document.getElementById('buildEnv').textContent = data.environment || '—';
-    document.getElementById('buildServerTime').textContent = formatMaybeDate(data.serverTimeUtc);
 
-    // Highlight short commit for easy compare
-    document.title = `About · ${data.shortCommit || 'build'} · Plan4Strength`;
+    document.title = `About · Plan4Strength`;
 
     loading.classList.add('hidden');
     details.classList.remove('hidden');
