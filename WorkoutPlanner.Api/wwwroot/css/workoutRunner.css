@@ -256,4 +256,62 @@ body.high-contrast .demo-actions a {
   }
 }
 
+/* Phone-optimized work mode — only timer, exercise name, set badge, finish button */
+body.work-phase #activeScreen #demoLink,
+body.work-phase #activeScreen .mb-4:first-child,
+body.work-phase #activeScreen #exerciseMeta,
+body.work-phase #activeScreen #workPhaseLabel,
+body.work-phase #activeScreen #workCue,
+body.work-phase #activeScreen .grid,
+body.work-phase #activeScreen #workProgressBar,
+body.work-phase #activeScreen #pauseBtn {
+  display: none !important;
+}
+
+body.work-phase #activeScreen {
+  padding: 0.75rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  min-height: 100vh;
+  background: #0f172a !important;
+  color: #f1f5f9 !important;
+}
+
+body.work-phase #activeScreen #exerciseName {
+  font-size: 2rem !important;
+  text-align: center !important;
+  color: #f1f5f9 !important;
+  margin-bottom: 0.25rem !important;
+}
+
+body.work-phase #activeScreen #setBadge {
+  font-size: 1rem !important;
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+  align-self: center !important;
+  margin-bottom: 1rem !important;
+}
+
+body.work-phase #activeScreen #timerDisplay {
+  font-size: clamp(6rem, 20vw, 10rem) !important;
+  text-align: center !important;
+  color: #22c55e !important;
+}
+
+body.work-phase #activeScreen .flex.justify-center {
+  margin-bottom: 0.5rem !important;
+}
+
+body.work-phase #activeScreen #completeSetBtn {
+  position: fixed !important;
+  bottom: 1rem !important;
+  left: 1rem !important;
+  right: 1rem !important;
+  width: auto !important;
+  min-height: 4.5rem !important;
+  font-size: 1.3rem !important;
+  border-radius: 1rem !important;
+}
+
 

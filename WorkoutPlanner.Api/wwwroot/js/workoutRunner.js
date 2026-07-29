@@ -1,4 +1,4 @@
-let currentPlan = null;
+﻿let currentPlan = null;
 let currentUser = null;
 let selectedDay = null;
 let sessionExercises = [];
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTvMode(true);
     closeCastModal();
     if (typeof showToast === 'function') {
-      showToast('TV mode on — mirror this screen with AirPlay or Cast tab.', 'info', 4500);
+      showToast('TV mode on â€” mirror this screen with AirPlay or Cast tab.', 'info', 4500);
     }
   });
   castModal?.addEventListener('click', (e) => {
@@ -207,7 +207,7 @@ function setMusicStyleUI(style) {
   if (deviceMusicHint) deviceMusicHint.classList.toggle('hidden', s !== 'device');
   if (musicStyleHint) {
     musicStyleHint.textContent = s === 'device'
-      ? 'Use your own app for music — we only play beeps.'
+      ? 'Use your own app for music â€” we only play beeps.'
       : s === 'off'
         ? 'Music off. You can turn a style on during the session.'
         : 'Built-in playlist will start when you begin the workout.';
@@ -304,8 +304,8 @@ function populateDaySelect() {
       const summary = typeof WorkoutMobility !== 'undefined'
         ? WorkoutMobility.dayMobilitySummary(day)
         : '';
-      const styleTag = day.sessionStyle === 'hiit' ? 'HIIT · ' : (day.sessionStyle === 'strength' ? 'Strength · ' : '');
-      option.textContent = `Week ${week.week} - ${day.day} (${styleTag}${day.focus || 'Training'})${summary ? ' · ' + summary : ''}`;
+      const styleTag = day.sessionStyle === 'hiit' ? 'HIIT Â· ' : (day.sessionStyle === 'strength' ? 'Strength Â· ' : '');
+      option.textContent = `Week ${week.week} - ${day.day} (${styleTag}${day.focus || 'Training'})${summary ? ' Â· ' + summary : ''}`;
       daySelect.appendChild(option);
     });
   });
@@ -418,10 +418,10 @@ function setWorkLabel(ex) {
     return muscles ? `Targets: ${muscles}` : (phase === 'warmup' ? 'Prep movement' : 'Recovery stretch');
   }
   if (selectedDay?.sessionStyle === 'hiit' && phase === 'work') {
-    return `${ex.sets} rounds · ${ex.repsDisplay || workSeconds(ex) + 's'} work · ${restSeconds(ex)}s rest`;
+    return `${ex.sets} rounds Â· ${ex.repsDisplay || workSeconds(ex) + 's'} work Â· ${restSeconds(ex)}s rest`;
   }
   const reps = ex.repsDisplay || 'your target reps';
-  return `${ex.sets} sets · aim for ${reps} each set · ${restSeconds(ex)}s rest`;
+  return `${ex.sets} sets Â· aim for ${reps} each set Â· ${restSeconds(ex)}s rest`;
 }
 
 function exercisePhase(ex) {
@@ -483,7 +483,7 @@ async function requestWakeLock() {
     try {
       wakeLock = await navigator.wakeLock.request('screen');
     } catch {
-      // denied — continue
+      // denied â€” continue
     }
   }
 }
@@ -578,7 +578,7 @@ function currentExercise() {
   return sessionExercises[currentExerciseIndex];
 }
 
-/** free-exercise-db often has 0.jpg + 1.jpg — flip them as a JS fallback. */
+/** free-exercise-db often has 0.jpg + 1.jpg â€” flip them as a JS fallback. */
 function demoImageUrls(ex) {
   const primary = ex?.imageUrl || '';
   if (!primary) return [];
@@ -596,7 +596,7 @@ function demoWebpUrl(ex) {
   if (!ex) return null;
   if (ex.demoAnimUrl) return ex.demoAnimUrl;
   if (!ex.id) return null;
-  // Always try /demos/{id}.webp — onerror falls back to still flip / placeholder
+  // Always try /demos/{id}.webp â€” onerror falls back to still flip / placeholder
   return `/demos/${encodeURIComponent(ex.id)}.webp`;
 }
 
@@ -607,7 +607,7 @@ function exerciseMediaHtml(ex, options = {}) {
   const cue = ex.progression && isMobilityExercise(ex)
     ? `<div class="demo-caption">${escapeHtmlRunner(ex.progression)}</div>`
     : (ex.primary && ex.primary.length
-      ? `<div class="demo-caption">${escapeHtmlRunner((ex.primary || []).join(' · '))}</div>`
+      ? `<div class="demo-caption">${escapeHtmlRunner((ex.primary || []).join(' Â· '))}</div>`
       : '');
 
   let frame;
@@ -625,7 +625,7 @@ function exerciseMediaHtml(ex, options = {}) {
     ).join('');
     frame = `<div class="demo-frame" data-demo-flip="${urls.length > 1 ? '1' : '0'}">${imgs}</div>`;
   } else {
-    frame = `<div class="demo-frame demo-frame--placeholder" aria-hidden="true">🏋️</div>`;
+    frame = `<div class="demo-frame demo-frame--placeholder" aria-hidden="true">ðŸ‹ï¸</div>`;
   }
 
   const actions = [];
@@ -668,7 +668,7 @@ window.onDemoImgError = function onDemoImgError(img) {
   const imgs = [...frame.querySelectorAll('img')].filter(el => el.dataset.broken !== '1');
   if (!imgs.length) {
     frame.classList.add('demo-frame--placeholder');
-    frame.innerHTML = '🏋️';
+    frame.innerHTML = 'ðŸ‹ï¸';
     return;
   }
   // Keep flipping only valid frames
@@ -676,7 +676,7 @@ window.onDemoImgError = function onDemoImgError(img) {
   startDemoFlip(frame);
 };
 
-/** Animated WebP missing → fall back to free-exercise-db still flip. */
+/** Animated WebP missing â†’ fall back to free-exercise-db still flip. */
 window.onDemoWebpError = function onDemoWebpError(img) {
   const frame = img.closest('.demo-frame');
   if (!frame) return;
@@ -686,7 +686,7 @@ window.onDemoWebpError = function onDemoWebpError(img) {
   }).filter(Boolean);
   if (!stills.length) {
     frame.classList.add('demo-frame--placeholder');
-    frame.innerHTML = '🏋️';
+    frame.innerHTML = 'ðŸ‹ï¸';
     return;
   }
   frame.classList.remove('demo-frame--anim');
@@ -728,10 +728,11 @@ function setWorkChromeMode(mode) {
   const isPreview = mode === 'preview';
   if (workTimerBlock) workTimerBlock.classList.toggle('hidden', isPreview);
   if (previewBlock) previewBlock.classList.toggle('hidden', !isPreview);
+  if (demoLinkEl) demoLinkEl.classList.toggle('hidden', !isPreview);
   if (completeSetBtn) completeSetBtn.classList.toggle('hidden', isPreview);
-  if (document.getElementById('pauseBtn')) {
-    document.getElementById('pauseBtn').classList.toggle('hidden', isPreview);
-  }
+  var p = document.getElementById('pauseBtn');
+  if (p) p.classList.toggle('hidden', isPreview);
+  document.body.classList.toggle('work-phase', !isPreview);
 }
 
 /** Estimate target reps for logging (midpoint of range when possible). */
@@ -745,7 +746,7 @@ function estimateTargetReps(ex) {
 function fillExerciseHeader(ex) {
   exerciseNameEl.textContent = ex.name;
   exerciseMetaEl.textContent = setWorkLabel(ex);
-  // Must not shadow global `phase` (setup|work|rest|finish) — that broke the timer.
+  // Must not shadow global `phase` (setup|work|rest|finish) â€” that broke the timer.
   const movePhase = exercisePhase(ex);
   const phaseLabelEl = document.getElementById('workPhaseLabel');
   if (phaseLabelEl) {
@@ -762,7 +763,7 @@ function fillExerciseHeader(ex) {
   }
   if (isMobilityExercise(ex)) {
     setBadgeEl.textContent = movePhase === 'warmup' ? 'Warm-up' : 'Cool-down';
-    workCueEl.textContent = ex.progression || (movePhase === 'warmup' ? 'Move easily — prepare the muscles' : 'Breathe and ease tension');
+    workCueEl.textContent = ex.progression || (movePhase === 'warmup' ? 'Move easily â€” prepare the muscles' : 'Breathe and ease tension');
     completeSetBtn.textContent = 'Done with this move';
   } else {
     setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
@@ -782,7 +783,7 @@ function fillExerciseHeader(ex) {
 function shouldPreviewMove(ex, resuming) {
   if (resuming) return false;
   if (currentSetIndex !== 0) return false;
-  // Always preview new exercises (even without images — cue text still helps)
+  // Always preview new exercises (even without images â€” cue text still helps)
   return !!ex;
 }
 
@@ -811,6 +812,13 @@ function showMovePreview() {
   if (previewCountdownEl) previewCountdownEl.textContent = String(PREVIEW_SECONDS);
   // Soft cue that a new move is coming (countdown will speak 3-2-1)
   speakCue('Get ready');
+
+  if (demoLinkEl && ex) {
+    var q = encodeURIComponent(ex.name + ' exercise form');
+    demoLinkEl.insertAdjacentHTML('beforeend',
+      '<a href="https://www.youtube.com/results?search_query=' + q + '" target="_blank" class="block w-full text-center bg-red-100 hover:bg-red-200 text-red-800 font-bold py-3 px-4 rounded-lg mt-2 touch-manipulation">Search form video</a>'
+    );
+  }
 
   updateProgress();
   startTimer();
@@ -935,6 +943,7 @@ function completeSet(early = false) {
 }
 
 function enterRest() {
+  document.body.classList.remove('work-phase');
   phase = 'rest';
   phaseStartTime = Date.now();
   elapsedPhaseSeconds = 0;
@@ -953,11 +962,11 @@ function enterRest() {
   if (isMobilityExercise(nextEx)) {
     const p = exercisePhase(nextEx);
     nextExerciseMetaEl.textContent = p === 'warmup'
-      ? `Next warm-up · ${workSeconds(nextEx)}s`
-      : `Next cool-down · ${workSeconds(nextEx)}s`;
+      ? `Next warm-up Â· ${workSeconds(nextEx)}s`
+      : `Next cool-down Â· ${workSeconds(nextEx)}s`;
   } else {
     const unit = selectedDay?.sessionStyle === 'hiit' ? 'Round' : 'Set';
-    nextExerciseMetaEl.textContent = `${unit} ${currentSetIndex + 1} / ${nextEx.sets} · ${nextEx.repsDisplay || 'target'} · ${workSeconds(nextEx)}s work`;
+    nextExerciseMetaEl.textContent = `${unit} ${currentSetIndex + 1} / ${nextEx.sets} Â· ${nextEx.repsDisplay || 'target'} Â· ${workSeconds(nextEx)}s work`;
   }
   if (nextDemoEl) {
     // Show demo of the *next* move during rest so you're ready
@@ -984,6 +993,7 @@ function endRest() {
 }
 
 function finishWorkout() {
+  document.body.classList.remove('work-phase');
   phase = 'finish';
   clearInterval(timerInterval);
   stopDemoFlip();
@@ -1023,14 +1033,14 @@ function finishWorkout() {
 
   if (currentUser) {
     if (saveSessionStatus) {
-      saveSessionStatus.textContent = 'Saving your session to history…';
+      saveSessionStatus.textContent = 'Saving your session to historyâ€¦';
       saveSessionStatus.className = 'text-sm mb-2 text-gray-600';
       saveSessionStatus.classList.remove('hidden');
     }
     // Fire-and-forget; UI updates when done
     saveSession({ auto: true });
   } else if (saveSessionStatus) {
-    saveSessionStatus.textContent = 'Signed-out sessions aren’t stored in History. Sign in next time for auto-save.';
+    saveSessionStatus.textContent = 'Signed-out sessions arenâ€™t stored in History. Sign in next time for auto-save.';
     saveSessionStatus.className = 'text-sm mb-2 text-amber-800';
     if (signInToSaveLink) signInToSaveLink.classList.remove('hidden');
   }
@@ -1050,7 +1060,7 @@ async function saveSession(options = {}) {
   }
 
   if (saveSessionStatus) {
-    saveSessionStatus.textContent = 'Saving your session to history…';
+    saveSessionStatus.textContent = 'Saving your session to historyâ€¦';
     saveSessionStatus.className = 'text-sm mb-2 text-gray-600';
   }
   if (saveSessionBtn) {
@@ -1125,7 +1135,7 @@ function updateMusicButton() {
     if (currentMusicStyle() === 'device') {
       nowPlayingEl.textContent = 'Using your own music app';
     } else if (musicEngine.isPlaying) {
-      nowPlayingEl.textContent = musicEngine.nowPlayingLabel() || 'Playing…';
+      nowPlayingEl.textContent = musicEngine.nowPlayingLabel() || 'Playingâ€¦';
     } else {
       nowPlayingEl.textContent = currentMusicStyle() === 'off' ? 'Music off' : 'Music paused';
     }
@@ -1233,7 +1243,7 @@ function maybeCountdownCue(phaseName, remaining) {
   if (key === lastSpokenSecondKey) return;
   lastSpokenSecondKey = key;
 
-  // Rising pitch: 3 → lower, 1 → higher
+  // Rising pitch: 3 â†’ lower, 1 â†’ higher
   const freq = remaining === 3 ? 560 : remaining === 2 ? 700 : 880;
   beep(freq, remaining === 1 ? 0.14 : 0.1);
   speakCue(String(remaining));
@@ -1243,11 +1253,11 @@ function maybeCountdownCue(phaseName, remaining) {
 function announcePhase(kind) {
   lastSpokenSecondKey = '';
   if (kind === 'work') {
-    beep(990, 0.18);
+    beep(1200, 0.25);
     speakCue('Work');
   } else if (kind === 'rest') {
-    beep(440, 0.14);
-    setTimeout(() => beep(380, 0.12), 120);
+    beep(660, 0.25);
+    setTimeout(() => beep(550, 0.2), 150);
     speakCue('Rest');
   }
 }
@@ -1267,13 +1277,13 @@ function beep(frequency = 880, duration = 0.15) {
     const ctx = getAudioContext();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'sine';
+    osc.type = 'square';
     osc.frequency.value = frequency;
     osc.connect(gain);
     gain.connect(ctx.destination);
     const t = ctx.currentTime;
     gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(0.14, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.45, t + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
     osc.start(t);
     osc.stop(t + duration + 0.02);
@@ -1393,7 +1403,7 @@ class PlaylistMusicEngine {
       this.isPlaying = true;
       updateMusicButton();
     }).catch(() => {
-      // Autoplay blocked or file missing — try fallback once
+      // Autoplay blocked or file missing â€” try fallback once
       if (!this._usingFallback && track.fallback) {
         this._usingFallback = true;
         this._playCurrent();
