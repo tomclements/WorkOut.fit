@@ -4,14 +4,14 @@ let selectedDay = null;
 let sessionExercises = [];
 let currentExerciseIndex = 0;
 let currentSetIndex = 0;
-let phase = 'setup'; // setup | preview | work | rest | finish
+let phase = 'setup'; // setup | work | rest | finish
 let startTime = null;
 let phaseStartTime = null;
 let elapsedPhaseSeconds = 0;
 let phaseDurationSeconds = 30;
 let timerInterval = null;
 let demoFlipInterval = null;
-const PREVIEW_SECONDS = 8;
+// PREVIEW_SECONDS removed (demo shown during rest)
 let musicEngine = null;
 let sessionSaved = false;
 let wakeLock = null;
@@ -141,13 +141,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (themeMeta) themeMeta.setAttribute('content', '#0b0f14');
   }
 
-  // Space / Enter: start set from preview, skip work/rest otherwise
+  // Space / Enter: skip work/rest
   document.addEventListener('keydown', (e) => {
     if (e.code !== 'Space' && e.code !== 'Enter') return;
-    if (phase === 'preview') {
-      e.preventDefault();
-      beginSetFromPreview();
-    } else if (phase === 'work') {
+    if (phase === 'work') {
       e.preventDefault();
       completeSet(true);
     } else if (phase === 'rest') {
@@ -323,7 +320,7 @@ function checkForResumableSession() {
 }
 
 function saveSessionState() {
-  if (phase !== 'work' && phase !== 'rest' && phase !== 'preview') return;
+  if (phase !== 'work' && phase !== 'rest') return;
   const state = {
     phase,
     currentExerciseIndex,
@@ -386,9 +383,6 @@ async function resumeSession() {
       }
       restTimerEl.textContent = formatTime(Math.max(0, phaseDurationSeconds - Math.floor((Date.now() - phaseStartTime) / 1000)));
       startTimer();
-    } else if (phase === 'preview') {
-      showScreen(activeScreen);
-      showMovePreview();
     } else {
       showScreen(activeScreen);
       enterWork(true);
@@ -440,8 +434,18 @@ async function startWorkout() {
   try { getAudioContext(); } catch { /* ignore */ }
   if (window.speechSynthesis) window.speechSynthesis.getVoices();
 
-  const selection = JSON.parse(daySelect.value);
-  selectedDay = currentPlan.plan.find(w => w.week === selection.week).days[selection.dayIndex];
+  // Auto-select first workout day
+  for (const week of currentPlan.plan) {
+    for (const day of week.days) {
+      if (day.type === 'workout') {
+        selectedDay = day;
+        break;
+      }
+    }
+    if (selectedDay) break;
+  }
+  if (!selectedDay) { showLoadError('No workout days in this plan.'); return; }
+  daySelect.closest('.mb-4')?.classList.add('hidden');
   if (typeof WorkoutMobility !== 'undefined') {
     WorkoutMobility.ensureDayMobility(selectedDay, currentPlan.criteria || {});
   }
@@ -496,14 +500,14 @@ function releaseWakeLock() {
 }
 
 function handleBeforeUnload(e) {
-  if (phase === 'work' || phase === 'rest' || phase === 'preview') {
+  if (phase === 'work' || phase === 'rest') {
     e.preventDefault();
     e.returnValue = '';
   }
 }
 
 function pauseWorkout(auto = false) {
-  if (isPaused || (phase !== 'work' && phase !== 'rest' && phase !== 'preview')) return;
+  if (isPaused || (phase !== 'work' && phase !== 'rest')) return;
   isPaused = true;
   autoPaused = auto;
   pauseStartTime = Date.now();
@@ -555,8 +559,7 @@ async function handleVisibilityChange() {
     } else if (phase !== 'setup' && phase !== 'finish') {
       await requestWakeLock();
     }
-    // Restart demo flip after tab focus (timers may throttle)
-    if (phase === 'work' || phase === 'preview') startDemoFlip(demoLinkEl);
+    if (phase === 'work') startDemoFlip(demoLinkEl);
     if (phase === 'rest') startDemoFlip(nextDemoEl);
   }
 }
@@ -723,16 +726,15 @@ function startDemoFlip(root) {
   }, 900);
 }
 
-function setWorkChromeMode(mode) {
-  // mode: 'preview' | 'work'
-  const isPreview = mode === 'preview';
-  if (workTimerBlock) workTimerBlock.classList.toggle('hidden', isPreview);
-  if (previewBlock) previewBlock.classList.toggle('hidden', !isPreview);
-  if (demoLinkEl) demoLinkEl.classList.toggle('hidden', !isPreview);
-  if (completeSetBtn) completeSetBtn.classList.toggle('hidden', isPreview);
-  var p = document.getElementById('pauseBtn');
-  if (p) p.classList.toggle('hidden', isPreview);
-  document.body.classList.toggle('work-phase', !isPreview);
+function setWorkChromeMode() {
+  if (demoLinkEl) demoLinkEl.classList.add('hidden');
+  if (workTimerBlock) workTimerBlock.classList.remove('hidden');
+  if (previewBlock) previewBlock.classList.add('hidden');
+  if (completeSetBtn) completeSetBtn.classList.remove('hidden');
+  if (document.getElementById('pauseBtn')) {
+    document.getElementById('pauseBtn').classList.remove('hidden');
+  }
+  document.body.classList.add('work-phase');
 }
 
 /** Estimate target reps for logging (midpoint of range when possible). */
@@ -780,76 +782,35 @@ function fillExerciseHeader(ex) {
  * Before the first set of each new move, show a short in-runner demo
  * so form is clear without leaving the app.
  */
-function shouldPreviewMove(ex, resuming) {
-  if (resuming) return false;
-  if (currentSetIndex !== 0) return false;
-  // Always preview new exercises (even without images â€” cue text still helps)
+function shouldPreviewMove() {
+  return false;
+}
+
+// (preview phase removed -- demo shown during rest)
+// Always preview new exercises (even without images â€” cue text still helps)
   return !!ex;
 }
 
 function showMovePreview() {
-  const ex = currentExercise();
-  phase = 'preview';
-  clearInterval(timerInterval);
-  isPaused = false;
-  fillExerciseHeader(ex);
-  setWorkChromeMode('preview');
-
-  const phaseLabelEl = document.getElementById('workPhaseLabel');
-  if (phaseLabelEl) {
-    phaseLabelEl.textContent = 'Demo';
-    phaseLabelEl.className = 'text-xs font-semibold uppercase tracking-wider text-blue-700';
-  }
-  workCueEl.textContent = isMobilityExercise(ex)
-    ? (ex.progression || 'Watch the movement, then begin')
-    : `Get set for ${ex.repsDisplay || 'your target'} reps`;
-  setBadgeEl.textContent = 'Next move';
-
-  phaseDurationSeconds = PREVIEW_SECONDS;
-  phaseStartTime = Date.now();
-  elapsedPhaseSeconds = 0;
-  lastSpokenSecondKey = '';
-  if (previewCountdownEl) previewCountdownEl.textContent = String(PREVIEW_SECONDS);
-  // Soft cue that a new move is coming (countdown will speak 3-2-1)
-  speakCue('Get ready');
-
-  if (demoLinkEl && ex) {
-    var q = encodeURIComponent(ex.name + ' exercise form');
-    demoLinkEl.insertAdjacentHTML('beforeend',
-      '<a href="https://www.youtube.com/results?search_query=' + q + '" target="_blank" class="block w-full text-center bg-red-100 hover:bg-red-200 text-red-800 font-bold py-3 px-4 rounded-lg mt-2 touch-manipulation">Search form video</a>'
-    );
-  }
-
-  updateProgress();
-  startTimer();
-  saveSessionState();
+  // No-op: preview phase removed
 }
 
 function beginSetFromPreview() {
-  if (phase !== 'preview') return;
-  clearInterval(timerInterval);
-  enterWork(false, { skipPreview: true, announce: true });
+  // No-op: preview phase removed
 }
 
-function enterWork(resuming = false, options = {}) {
+function enterWork(resuming = false) {
   const ex = currentExercise();
-  if (shouldPreviewMove(ex, resuming) && !options.skipPreview) {
-    showMovePreview();
-    return;
-  }
 
   phase = 'work';
   phaseDurationSeconds = workSeconds(ex);
-  setWorkChromeMode('work');
+  setWorkChromeMode();
   lastSpokenSecondKey = '';
 
-  if (!resuming || options.skipPreview) {
+  if (!resuming) {
     phaseStartTime = Date.now();
     elapsedPhaseSeconds = 0;
-    // Announce "Work" when a work interval actually starts (not demo-only)
-    if (!resuming && options.announce !== false) {
-      announcePhase('work');
-    }
+    announcePhase('work');
   } else {
     elapsedPhaseSeconds = Math.floor((Date.now() - phaseStartTime) / 1000);
   }
@@ -881,13 +842,7 @@ function tick() {
   elapsedPhaseSeconds = Math.floor((Date.now() - phaseStartTime) / 1000);
   const remaining = Math.max(0, phaseDurationSeconds - elapsedPhaseSeconds);
 
-  if (phase === 'preview') {
-    if (previewCountdownEl) previewCountdownEl.textContent = String(remaining);
-    maybeCountdownCue('preview', remaining);
-    if (remaining === 0) {
-      beginSetFromPreview();
-    }
-  } else if (phase === 'work') {
+  if (phase === 'work') {
     timerDisplayEl.textContent = formatTime(remaining);
     updatePhaseProgressBar(workProgressBar, remaining, phaseDurationSeconds);
     maybeCountdownCue('work', remaining);
@@ -969,7 +924,6 @@ function enterRest() {
     nextExerciseMetaEl.textContent = `${unit} ${currentSetIndex + 1} / ${nextEx.sets} Â· ${nextEx.repsDisplay || 'target'} Â· ${workSeconds(nextEx)}s work`;
   }
   if (nextDemoEl) {
-    // Show demo of the *next* move during rest so you're ready
     nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
     startDemoFlip(nextDemoEl);
   }
@@ -988,7 +942,6 @@ function endRest() {
   if (musicEngine.isPlaying) musicEngine.setVolume(1.0);
   if (navigator.vibrate) navigator.vibrate(30);
   showScreen(activeScreen);
-  // enterWork announces "Work", or opens a demo preview first
   enterWork();
 }
 
