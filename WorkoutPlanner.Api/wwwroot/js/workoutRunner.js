@@ -858,11 +858,6 @@ function shouldPreviewMove() {
   return false;
 }
 
-// (preview phase removed -- demo shown during rest)
-// Always preview new exercises (even without images â€” cue text still helps)
-  return !!ex;
-}
-
 function showMovePreview() {
   // No-op: preview phase removed
 }
