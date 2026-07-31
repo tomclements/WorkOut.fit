@@ -4,6 +4,8 @@ public class SaveSessionRequest
 {
     public string PlanName { get; set; } = string.Empty;
     public int? SavedPlanId { get; set; }
+    public int? Week { get; set; }
+    public int? DayIndex { get; set; }
     public DateTime StartedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
     public int DurationSeconds { get; set; }

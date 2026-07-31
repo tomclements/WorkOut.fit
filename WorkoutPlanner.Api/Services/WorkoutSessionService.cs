@@ -20,6 +20,8 @@ public class WorkoutSessionService : IWorkoutSessionService
             UserId = userId,
             PlanName = request.PlanName ?? "Plan4Strength",
             SavedPlanId = request.SavedPlanId,
+            Week = request.Week ?? 1,
+            DayIndex = request.DayIndex ?? 0,
             StartedAt = request.StartedAt,
             CompletedAt = request.CompletedAt,
             DurationSeconds = request.DurationSeconds,
@@ -50,6 +52,9 @@ public class WorkoutSessionService : IWorkoutSessionService
             {
                 s.Id,
                 s.PlanName,
+                s.SavedPlanId,
+                s.Week,
+                s.DayIndex,
                 s.StartedAt,
                 s.CompletedAt,
                 s.DurationSeconds,

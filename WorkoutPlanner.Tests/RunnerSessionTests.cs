@@ -39,6 +39,8 @@ public class RunnerSessionTests : IClassFixture<TestWebApplicationFactory>
         var payload = new SaveSessionRequest
         {
             PlanName = "Morning Workout",
+            Week = 2,
+            DayIndex = 3,
             StartedAt = DateTime.UtcNow.AddMinutes(-30),
             CompletedAt = DateTime.UtcNow,
             DurationSeconds = 1800,
@@ -76,6 +78,8 @@ public class RunnerSessionTests : IClassFixture<TestWebApplicationFactory>
         Assert.NotNull(detail);
         Assert.Single(detail!.Exercises);
         Assert.Equal(3, detail.Exercises[0].Sets.Count);
+        Assert.Equal(2, detail.Week);
+        Assert.Equal(3, detail.DayIndex);
     }
 
     [Fact]

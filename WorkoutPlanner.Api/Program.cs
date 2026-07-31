@@ -168,6 +168,7 @@ using (var scope = app.Services.CreateScope())
         await db.Database.EnsureCreatedAsync();
         // Existing SQLite DBs created earlier won't get new tables from EnsureCreated — patch them.
         await EnsureFeedbackTableSqliteAsync(db);
+        await EnsureWorkoutSessionWeekDaySqliteAsync(db);
     }
     else if (db.Database.IsRelational())
     {
@@ -252,6 +253,28 @@ static async Task EnsureFeedbackTableSqliteAsync(AppDbContext db)
     catch
     {
         // Index may already exist under another name
+    }
+}
+
+static async Task EnsureWorkoutSessionWeekDaySqliteAsync(AppDbContext db)
+{
+    try
+    {
+        var cols = await db.Database.SqlQueryRaw<string>("""
+            SELECT name FROM pragma_table_info("WorkoutSessions")
+            """).ToListAsync();
+        if (!cols.Contains("Week"))
+        {
+            await db.Database.ExecuteSqlRawAsync("""ALTER TABLE "WorkoutSessions" ADD COLUMN "Week" INTEGER NOT NULL DEFAULT 1;""");
+        }
+        if (!cols.Contains("DayIndex"))
+        {
+            await db.Database.ExecuteSqlRawAsync("""ALTER TABLE "WorkoutSessions" ADD COLUMN "DayIndex" INTEGER NOT NULL DEFAULT 0;""");
+        }
+    }
+    catch
+    {
+        // Columns may already exist under another migration path
     }
 }
 
