@@ -62,6 +62,10 @@ const nextExerciseNameEl = document.getElementById('nextExerciseName');
 const nextExerciseMetaEl = document.getElementById('nextExerciseMeta');
 const nextDemoEl = document.getElementById('nextDemo');
 const skipRestBtn = document.getElementById('skipRestBtn');
+const viewAllMovesBtn = document.getElementById('viewAllMovesBtn');
+const movesListModal = document.getElementById('movesListModal');
+const movesList = document.getElementById('movesList');
+const closeMovesListBtn = document.getElementById('closeMovesList');
 const workTimerBlock = document.getElementById('workTimerBlock');
 const previewBlock = document.getElementById('previewBlock');
 const previewCountdownEl = document.getElementById('previewCountdown');
@@ -130,6 +134,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   castModal?.addEventListener('click', (e) => {
     if (e.target === castModal) closeCastModal();
+  });
+
+  if (viewAllMovesBtn) viewAllMovesBtn.addEventListener('click', openMovesList);
+  if (closeMovesListBtn) closeMovesListBtn.addEventListener('click', closeMovesList);
+  movesListModal?.addEventListener('click', (e) => {
+    if (e.target === movesListModal) closeMovesList();
   });
 
   if (localStorage.getItem('runnerHighContrast') === '1') {
@@ -405,7 +415,9 @@ function saveSessionState() {
     selectedDayIndex,
     planName: currentPlan?.criteria
       ? `${currentPlan.criteria.weeks}-week ${currentPlan.criteria.goal} plan`
-      : 'Plan4Strength'
+      : 'Plan4Strength',
+    musicStyle: currentMusicStyle(),
+    musicWasPlaying: !!musicEngine?.isPlaying
   };
   localStorage.setItem('workoutSession', JSON.stringify(state));
 }
@@ -440,7 +452,14 @@ async function resumeSession() {
     await requestWakeLock();
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    if (shouldAutoStartMusic()) {
+    // Restore the music selection from when the session was saved
+    if (state.musicStyle) {
+      if (musicStyleSelect) musicStyleSelect.value = state.musicStyle;
+      if (musicStyleActive) musicStyleActive.value = state.musicStyle;
+      setMusicStyleUI(state.musicStyle);
+      musicEngine.setStyle(state.musicStyle);
+    }
+    if (state.musicWasPlaying && shouldAutoStartMusic()) {
       musicEngine.start();
       updateMusicButton();
     }
@@ -596,7 +615,15 @@ function resumeWorkout() {
   startTime += pauseDuration;
   isPaused = false;
   autoPaused = false;
-  if (musicEngine.isPlaying) musicEngine.setVolume(1.0);
+  const targetVol = phase === 'rest' ? 0.35 : 1.0;
+  if (musicEngine.isPlaying) {
+    musicEngine.setVolume(targetVol);
+    // iOS may have suspended the audio element while the phone was locked
+    musicEngine.audio.play().catch(() => {});
+  } else if (shouldAutoStartMusic() && (phase === 'work' || phase === 'rest')) {
+    musicEngine.start();
+    musicEngine.setVolume(targetVol);
+  }
   startTimer();
   updatePauseUI();
 }
@@ -1010,6 +1037,47 @@ function endRest() {
   if (navigator.vibrate) navigator.vibrate(30);
   showScreen(activeScreen);
   enterWork();
+}
+
+function movesListHtml() {
+  if (!sessionExercises.length) return '<p class="text-sm text-gray-600">No moves in this session.</p>';
+  const isHiit = selectedDay?.sessionStyle === 'hiit';
+  return sessionExercises.map((ex, i) => {
+    const movePhase = exercisePhase(ex);
+    const isCurrent = i === currentExerciseIndex;
+    const isDone = (ex.completedSets?.length || 0) >= (ex.sets || 1);
+    const isWarmCool = movePhase === 'warmup' || movePhase === 'cooldown';
+    let meta;
+    if (isWarmCool) {
+      meta = `${workSeconds(ex)}s`;
+    } else if (isHiit) {
+      meta = `${ex.sets} rounds · ${ex.repsDisplay || workSeconds(ex) + 's'} · ${restSeconds(ex)}s rest`;
+    } else {
+      meta = `${ex.sets} sets · ${ex.repsDisplay || 'target reps'} · ${restSeconds(ex)}s rest`;
+    }
+    const tag = isWarmCool
+      ? (movePhase === 'warmup' ? 'Warm-up' : 'Cool-down')
+      : (isHiit ? 'HIIT' : 'Work');
+    const tagClass = isWarmCool ? 'moves-item__tag--warmup' : 'moves-item__tag--work';
+    return `<div class="moves-item ${isCurrent ? 'moves-item--current' : ''} ${isDone ? 'moves-item--done' : ''}">
+      <span class="moves-item__idx">${i + 1}</span>
+      <div class="moves-item__body">
+        <div class="moves-item__name">${escapeHtmlRunner(ex.name)}</div>
+        <div class="moves-item__meta">${escapeHtmlRunner(meta)}</div>
+      </div>
+      <span class="moves-item__tag ${tagClass}">${tag}</span>
+    </div>`;
+  }).join('');
+}
+
+function openMovesList() {
+  if (!movesList || !sessionExercises.length) return;
+  movesList.innerHTML = movesListHtml();
+  if (movesListModal) movesListModal.classList.remove('hidden');
+}
+
+function closeMovesList() {
+  if (movesListModal) movesListModal.classList.add('hidden');
 }
 
 function finishWorkout() {
