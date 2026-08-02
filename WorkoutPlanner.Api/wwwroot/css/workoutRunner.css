@@ -258,8 +258,7 @@ body.high-contrast .demo-actions a {
 
 /* Phone-optimized work mode — only essential info */
 body.work-phase #activeScreen #demoLink,
-body.work-phase #activeScreen .mb-4:first-child,
-body.work-phase #activeScreen #exerciseMeta,
+body.work-phase #activeScreen > .mb-4:first-child,
 body.work-phase #activeScreen #workPhaseLabel,
 body.work-phase #activeScreen #workCue,
 body.work-phase #activeScreen #pauseBtn {
