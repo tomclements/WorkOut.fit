@@ -262,7 +262,7 @@ public class ExerciseImportService : IExerciseImportService
             RestSec = 60,
             DemoUrl = BuildDemoUrl(id, src.Name),
             ImageUrl = BuildImageUrl(src.Images),
-            AvoidFor = MapAvoidFor(primary, secondary, src.Category ?? "")
+            AvoidFor = MapAvoidFor(primary, secondary, src.Category ?? "", src.Name)
         };
         ExerciseTaxonomy.Reclassify(ex, src.Force, src.Mechanic);
         return ex;
@@ -310,7 +310,7 @@ public class ExerciseImportService : IExerciseImportService
         return ImageBase + images[0];
     }
 
-    private static List<string> MapAvoidFor(List<string> primary, List<string> secondary, string category)
+    private static List<string> MapAvoidFor(List<string> primary, List<string> secondary, string category, string name)
     {
         var avoid = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var all = primary.Concat(secondary).ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -333,7 +333,69 @@ public class ExerciseImportService : IExerciseImportService
             avoid.UnionWith(new[] { "knee", "wrist", "elbow", "shoulder", "lower-back" });
         }
 
+        // Compensate for movements that stress a joint but whose muscle tags don't
+        // literally name that joint (e.g. plank/push-up for wrist, dips for elbow).
+        avoid.UnionWith(GetAvoidTagsFromName(name));
+
         return avoid.OrderBy(a => a).ToList();
+    }
+
+    /// <summary>
+    /// Adds injury tags for movements that load a joint/reflect a contracture even when the
+    /// DB muscle list omits it (e.g. bodyweight support exercises for wrist/shoulder, pressing
+    /// triceps dips for elbow). Returns shoulder/elbow/wrist/neck flags by name only where the
+    /// name unambiguously indicates that shared mechanism, to keep legitimate compound lifts
+    /// (squat, deadlift, rows, curls) available.
+    /// </summary>
+    public static IEnumerable<string> GetAvoidTagsFromName(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) yield break;
+        var n = name.ToLowerInvariant();
+        bool Has(string token) => n.Contains(token, StringComparison.OrdinalIgnoreCase);
+        // A "hip dip" is an oblique core move; weight-bearing dips are elsewhere.
+        bool IsDip() => Has("dip") && !Has("hip");
+        bool IsPushBodyweight() => Has("push-up") || Has("pushup") || Has("press-up") || Has("pressup");
+        bool IsPlank() => Has("plank");
+        bool IsTriceps() => Has("triceps extension") || Has("tricep extension")
+            || Has("triceps pushdown") || Has("tricep pushdown") || Has("skull crusher") || Has("french press");
+        bool IsVerticalPull() => Has("pull-up") || Has("pullup") || Has("chin-up") || Has("chinups");
+
+        // Shoulder: overhead / blocked-against pressing and weight-bearing support through a raised arm.
+        if (Has("overhead")
+            || Has("behind the neck") || Has("behind-the-neck")
+            || Has("shoulder press") || Has("military press") || Has("arnold press") || Has("push press")
+            || Has("jerk")
+            || Has("upright row")
+            || Has("lateral raise") || Has("side raise") || Has("front raise")
+            || IsVerticalPull()
+            || IsTriceps()
+            || Has("bench press")
+            || Has("chest fly") || Has("chest flye") || Has("flye") || Has("pec deck")
+            || IsPlank() || Has("mountain climber")
+            || IsPushBodyweight()
+            || IsDip())
+        {
+            yield return "shoulder";
+        }
+
+        // Wrist: bodyweight support through the hand or crawling.
+        if (IsPlank() || IsPushBodyweight() || IsDip()
+            || Has("handstand") || Has("burpee") || Has("mountain climber") || Has("crawl"))
+        {
+            yield return "wrist";
+        }
+
+        // Elbow: pressing/triceps work where the muscle list often omits "triceps" as primary.
+        if (Has("bench press") || IsDip() || IsPushBodyweight() || IsVerticalPull() || IsTriceps())
+        {
+            yield return "elbow";
+        }
+
+        // Neck: shrugs load the neck/traps without ever listing "neck".
+        if (Has("shrug"))
+        {
+            yield return "neck";
+        }
     }
 
     private sealed class FreeExerciseSource

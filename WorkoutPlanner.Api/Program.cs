@@ -453,9 +453,27 @@ static async Task SeedDataAsync(IServiceProvider services)
             }
             if (changed) updated++;
         }
+
         if (updated > 0)
             await db.SaveChangesAsync();
     }
+
+    // Augment injury tags for movements the DB muscle list misses (planks/push-ups for
+    // wrist, dips for elbow, etc.) on every boot, fresh seed or not. Kept idempotent —
+    // name-derived tags only, never removed here.
+    var allExercises = await db.Exercises.ToListAsync();
+    var tagsUpdated = 0;
+    foreach (var ex in allExercises)
+    {
+        foreach (var tag in ExerciseImportService.GetAvoidTagsFromName(ex.Name))
+        {
+            if (ex.AvoidFor.Contains(tag, StringComparer.OrdinalIgnoreCase)) continue;
+            ex.AvoidFor.Add(tag);
+            tagsUpdated++;
+        }
+    }
+    if (tagsUpdated > 0)
+        await db.SaveChangesAsync();
 }
 
 static bool EquipmentListsEqual(List<string>? a, List<string>? b)

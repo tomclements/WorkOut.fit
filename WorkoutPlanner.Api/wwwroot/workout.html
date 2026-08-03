@@ -253,6 +253,8 @@
       <h2 class="text-2xl font-bold text-blue-900 mb-2">Workout complete!</h2>
       <p id="finishSummary" class="text-gray-700 mb-6"></p>
 
+      <div id="finishMuscles" class="mb-6" aria-live="polite"></div>
+
       <div id="saveSessionArea" class="mb-4">
         <p id="saveSessionStatus" class="text-sm mb-2 text-gray-600">Saving your session…</p>
         <button id="saveSessionBtn" type="button" class="hidden w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation">
@@ -300,6 +302,7 @@
 
   <script src="js/site.js"></script>
   <script src="js/mobility.js"></script>
+  <script src="js/muscle.js"></script>
   <script src="js/workoutRunner.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

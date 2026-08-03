@@ -330,7 +330,9 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
         if (includeWarmup)
         {
-            var warmup = MobilityCatalog.BuildWarmup(rankedMuscles, rng, budgetSec: 180);
+            var warmup = MobilityCatalog.BuildWarmup(rankedMuscles, rng, budgetSec: 180)
+                .Where(m => !IsMobilityRestricted(m, restrictions))
+                .ToList();
             foreach (var m in warmup)
             {
                 ordered.Add(m);
@@ -342,7 +344,9 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
         if (includeCooldown)
         {
-            var cooldown = MobilityCatalog.BuildCooldown(rankedMuscles, rng, budgetSec: 120);
+            var cooldown = MobilityCatalog.BuildCooldown(rankedMuscles, rng, budgetSec: 120)
+                .Where(m => !IsMobilityRestricted(m, restrictions))
+                .ToList();
             foreach (var m in cooldown)
             {
                 ordered.Add(m);
@@ -677,6 +681,29 @@ public class WorkoutPlannerService : IWorkoutPlannerService
     {
         if (restrictions == null || restrictions.Count == 0) return false;
         return ex.AvoidFor.Any(a => restrictions.Contains(a, StringComparer.OrdinalIgnoreCase));
+    }
+
+    /// <summary>Mobility/warm rolls that stress a restricted body part, so warm-up/cool-down
+    /// honor the same injury tags as the working set.</summary>
+    private static readonly Dictionary<string, string[]> RestrictedMobilityGroups = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["shoulder"] = new[] { "shoulders", "triceps", "biceps", "chest", "forearms" },
+        ["elbow"] = new[] { "triceps", "biceps", "forearms", "chest" },
+        ["wrist"] = new[] { "forearms", "biceps", "triceps" },
+        ["neck"] = new[] { "neck", "shoulders" },
+        ["knee"] = new[] { "quads", "hamstrings", "glutes", "calves" },
+        ["lower-back"] = new[] { "back", "hamstrings", "hips", "glutes" }
+    };
+
+    private static bool IsMobilityRestricted(PlanExercise ex, List<string> restrictions)
+    {
+        if (ex?.Primary == null || restrictions == null || restrictions.Count == 0) return false;
+        foreach (var r in restrictions)
+        {
+            if (!RestrictedMobilityGroups.TryGetValue(r, out var groups)) continue;
+            if (groups.Any(g => ex.Primary.Contains(g, StringComparer.OrdinalIgnoreCase))) return true;
+        }
+        return false;
     }
 
     private static int LevelToNum(string? level) => level?.ToLowerInvariant() switch

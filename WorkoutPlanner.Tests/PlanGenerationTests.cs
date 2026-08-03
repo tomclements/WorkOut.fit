@@ -303,6 +303,109 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
         Assert.NotEmpty(exerciseNames);
     }
 
+    [Theory]
+    [InlineData("Plank", "shoulder")]
+    [InlineData("Side Plank", "shoulder")]
+    [InlineData("Triceps Pushdown", "shoulder")]
+    [InlineData("Overhead Triceps Extension", "shoulder")]
+    [InlineData("Bench Dips", "shoulder")]
+    [InlineData("Upright Row", "shoulder")]
+    [InlineData("Plank", "wrist")]
+    [InlineData("Push-Up", "wrist")]
+    [InlineData("Handstand Hold", "wrist")]
+    [InlineData("Bear Crawl", "wrist")]
+    [InlineData("Bench Dips", "elbow")]
+    [InlineData("Push-Up", "elbow")]
+    [InlineData("Triceps Pushdown", "elbow")]
+    [InlineData("Barbell Shrug", "neck")]
+    public void GetAvoidTagsFromName_FlagsJointStressfulMovements(string name, string expectedTag)
+    {
+        var tags = ExerciseImportService.GetAvoidTagsFromName(name);
+        Assert.Contains(expectedTag, tags);
+    }
+
+    [Theory]
+    [InlineData("Barbell Back Squat", "shoulder")]
+    [InlineData("Barbell Back Squat", "wrist")]
+    [InlineData("Deadlift", "elbow")]
+    [InlineData("Dumbbell Curl", "shoulder")]
+    [InlineData("Dumbbell Curl", "wrist")]
+    [InlineData("Lat Pulldown", "wrist")]
+    [InlineData("Hip Dip", "shoulder")] // oblique core move — never shoulder-flagged
+    [InlineData("Hip Dip", "wrist")]    // oblique core move — never wrist-flagged
+    [InlineData("Hip Dip", "elbow")]    // oblique core move — never elbow-flagged
+    public void GetAvoidTagsFromName_DoesNotOverflag_CompoundLifts(string name, string notExpectedTag)
+    {
+        var tags = ExerciseImportService.GetAvoidTagsFromName(name);
+        Assert.DoesNotContain(notExpectedTag, tags);
+    }
+
+    [Fact]
+    public async Task GeneratePlan_ShoulderRestriction_ExcludesPlankAndTricepsPushdown()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 4,
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight" },
+            Restrictions = new List<string> { "shoulder" },
+            Goal = "full-body",
+            Level = "beginner"
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var exerciseNames = result!.Plan
+            .SelectMany(w => w.Days)
+            .Where(d => d.Type == "workout")
+            .SelectMany(d => d.Exercises)
+            .Select(e => e.Name)
+            .ToList();
+
+        Assert.DoesNotContain(exerciseNames, n =>
+            n.Contains("Plank", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Triceps Pushdown", StringComparison.OrdinalIgnoreCase));
+        Assert.NotEmpty(exerciseNames);
+    }
+
+    [Fact]
+    public async Task GeneratePlan_ShoulderRestriction_ExcludesShoulderAndArmWarmupCooldown()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 4,
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight" },
+            Restrictions = new List<string> { "shoulder" },
+            Goal = "full-body",
+            Level = "beginner",
+            IncludeWarmup = true,
+            IncludeCooldown = true
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+
+        var restrictedMobility = result!.Plan
+            .SelectMany(w => w.Days)
+            .Where(d => d.Type == "workout")
+            .SelectMany(d => d.Exercises)
+            .Where(e => e.Phase is "warmup" or "cooldown");
+        var blockedTargets = new[] { "shoulders", "chest", "triceps", "biceps", "forearms" };
+
+        foreach (var m in restrictedMobility)
+        {
+            var primary = m.Primary;
+            Assert.DoesNotContain(blockedTargets, t => primary.Contains(t, StringComparer.OrdinalIgnoreCase));
+        }
+    }
+
     [Fact]
     public async Task GeneratePlan_NoMatchingExercises_ReturnsBadRequest()
     {

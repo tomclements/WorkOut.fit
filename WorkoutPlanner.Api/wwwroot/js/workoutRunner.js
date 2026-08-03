@@ -1111,6 +1111,18 @@ function finishWorkout() {
     Active work time: <strong>${formatTime(workSecondsTotal)}</strong>
   `;
 
+  // Anatomical summary of the muscles worked this session
+  const finishMusclesEl = document.getElementById('finishMuscles');
+  if (finishMusclesEl && typeof MuscleDiagram !== 'undefined' && sessionExercises.length) {
+    const primarySet = [...new Set(sessionExercises.flatMap(e => e.primary || []))];
+    const secondarySet = [...new Set(sessionExercises.flatMap(e => e.secondary || []))];
+    finishMusclesEl.innerHTML =
+      '<h3 class="text-sm font-semibold text-blue-900 mb-3">Muscles worked</h3>' +
+      MuscleDiagram.render(primarySet, secondarySet) +
+      '<div class="text-xs text-gray-500 mt-2"><span class="swatch swatch-worked"></span>Primary&nbsp;&nbsp;' +
+      '<span class="swatch swatch-secondary"></span>Supporting</div>';
+  }
+
   // Auto-save when signed in; prompt sign-in otherwise
   if (saveSessionArea) saveSessionArea.classList.remove('hidden');
   if (saveSessionBtn) {
