@@ -359,6 +359,9 @@ public class ExerciseImportService : IExerciseImportService
         bool IsTriceps() => Has("triceps extension") || Has("tricep extension")
             || Has("triceps pushdown") || Has("tricep pushdown") || Has("skull crusher") || Has("french press");
         bool IsVerticalPull() => Has("pull-up") || Has("pullup") || Has("chin-up") || Has("chinups");
+        // Dips without the word "dip" (Body-Up, muscle-up, pike/ring variants) are still
+        // deep weight-bearing presses that load the shoulder/rotator cuff.
+        bool IsWeightBearingPress() => Has("body-up") || Has("muscle-up");
 
         // Shoulder: overhead / blocked-against pressing and weight-bearing support through a raised arm.
         if (Has("overhead")
@@ -373,20 +376,22 @@ public class ExerciseImportService : IExerciseImportService
             || Has("chest fly") || Has("chest flye") || Has("flye") || Has("pec deck")
             || IsPlank() || Has("mountain climber")
             || IsPushBodyweight()
-            || IsDip())
+            || IsDip()
+            || IsWeightBearingPress())
         {
             yield return "shoulder";
         }
 
         // Wrist: bodyweight support through the hand or crawling.
-        if (IsPlank() || IsPushBodyweight() || IsDip()
+        if (IsPlank() || IsPushBodyweight() || IsDip() || IsWeightBearingPress()
             || Has("handstand") || Has("burpee") || Has("mountain climber") || Has("crawl"))
         {
             yield return "wrist";
         }
 
         // Elbow: pressing/triceps work where the muscle list often omits "triceps" as primary.
-        if (Has("bench press") || IsDip() || IsPushBodyweight() || IsVerticalPull() || IsTriceps())
+        if (Has("bench press") || IsDip() || IsPushBodyweight() || IsVerticalPull() || IsTriceps()
+            || IsWeightBearingPress())
         {
             yield return "elbow";
         }

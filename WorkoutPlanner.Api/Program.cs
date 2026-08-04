@@ -451,29 +451,18 @@ static async Task SeedDataAsync(IServiceProvider services)
                 ex.Mechanic = seed.Mechanic;
                 changed = true;
             }
+            // Injury tags are authoritative in the seed (anatomy-derived); keep the DB in sync
+            if (!AvoidForListsEqual(ex.AvoidFor, seed.AvoidFor))
+            {
+                ex.AvoidFor = seed.AvoidFor?.ToList() ?? new List<string>();
+                changed = true;
+            }
             if (changed) updated++;
         }
 
         if (updated > 0)
             await db.SaveChangesAsync();
     }
-
-    // Augment injury tags for movements the DB muscle list misses (planks/push-ups for
-    // wrist, dips for elbow, etc.) on every boot, fresh seed or not. Kept idempotent —
-    // name-derived tags only, never removed here.
-    var allExercises = await db.Exercises.ToListAsync();
-    var tagsUpdated = 0;
-    foreach (var ex in allExercises)
-    {
-        foreach (var tag in ExerciseImportService.GetAvoidTagsFromName(ex.Name))
-        {
-            if (ex.AvoidFor.Contains(tag, StringComparer.OrdinalIgnoreCase)) continue;
-            ex.AvoidFor.Add(tag);
-            tagsUpdated++;
-        }
-    }
-    if (tagsUpdated > 0)
-        await db.SaveChangesAsync();
 }
 
 static bool EquipmentListsEqual(List<string>? a, List<string>? b)
@@ -483,6 +472,16 @@ static bool EquipmentListsEqual(List<string>? a, List<string>? b)
     if (a.Count != b.Count) return false;
     var sa = a.Select(x => x.ToLowerInvariant()).OrderBy(x => x);
     var sb = b.Select(x => x.ToLowerInvariant()).OrderBy(x => x);
+    return sa.SequenceEqual(sb);
+}
+
+static bool AvoidForListsEqual(List<string>? a, List<string>? b)
+{
+    a ??= new List<string>();
+    b ??= new List<string>();
+    if (a.Count != b.Count) return false;
+    var sa = a.Select(x => x.Trim().ToLowerInvariant()).OrderBy(x => x);
+    var sb = b.Select(x => x.Trim().ToLowerInvariant()).OrderBy(x => x);
     return sa.SequenceEqual(sb);
 }
 

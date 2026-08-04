@@ -318,6 +318,10 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     [InlineData("Push-Up", "elbow")]
     [InlineData("Triceps Pushdown", "elbow")]
     [InlineData("Barbell Shrug", "neck")]
+    [InlineData("Body-Up", "shoulder")]
+    [InlineData("Body-Up", "wrist")]
+    [InlineData("Body-Up", "elbow")]
+    [InlineData("Muscle-Up", "shoulder")]
     public void GetAvoidTagsFromName_FlagsJointStressfulMovements(string name, string expectedTag)
     {
         var tags = ExerciseImportService.GetAvoidTagsFromName(name);
@@ -368,7 +372,8 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
 
         Assert.DoesNotContain(exerciseNames, n =>
             n.Contains("Plank", StringComparison.OrdinalIgnoreCase)
-            || n.Contains("Triceps Pushdown", StringComparison.OrdinalIgnoreCase));
+            || n.Contains("Triceps Pushdown", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Body-Up", StringComparison.OrdinalIgnoreCase));
         Assert.NotEmpty(exerciseNames);
     }
 
