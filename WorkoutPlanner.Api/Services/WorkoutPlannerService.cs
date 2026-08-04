@@ -695,9 +695,20 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         ["lower-back"] = new[] { "back", "hamstrings", "hips", "glutes" }
     };
 
+    /// <summary>Mobility moves that load weight through the arms/hands during pressing, so they stress
+    /// shoulder and wrist even when their muscle targets are core/back (e.g. prone press-up / cobra).</summary>
+    private static readonly HashSet<string> MobilityWeightBearingUpper = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "cd-cobra"
+    };
+
     private static bool IsMobilityRestricted(PlanExercise ex, List<string> restrictions)
     {
         if (ex?.Primary == null || restrictions == null || restrictions.Count == 0) return false;
+        if (ex.Id != null && MobilityWeightBearingUpper.Contains(ex.Id) &&
+            restrictions.Any(r => r.Equals("shoulder", StringComparison.OrdinalIgnoreCase) ||
+                                  r.Equals("wrist", StringComparison.OrdinalIgnoreCase)))
+            return true;
         foreach (var r in restrictions)
         {
             if (!RestrictedMobilityGroups.TryGetValue(r, out var groups)) continue;

@@ -408,6 +408,7 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
         {
             var primary = m.Primary;
             Assert.DoesNotContain(blockedTargets, t => primary.Contains(t, StringComparer.OrdinalIgnoreCase));
+            Assert.DoesNotContain(new[] { "cobra", "press-up" }, t => m.Name.Contains(t, StringComparison.OrdinalIgnoreCase));
         }
     }
 
