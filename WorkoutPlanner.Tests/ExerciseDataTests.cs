@@ -154,6 +154,30 @@ public class ExerciseDataTests
         Assert.DoesNotContain("bench", ExerciseTaxonomy.EnrichEquipmentFromName("Floor Press", new[] { "barbell" }));
     }
 
+    [Fact]
+    public void InjuryTags_AreDerivedFromMechanics()
+    {
+        var exercises = LoadExercises();
+        Assert.All(exercises, ex =>
+        {
+            Assert.NotNull(ex.Mechanics);
+            var expected = InjuryRules.ComputeAvoidance(ex);
+            Assert.True(
+                expected.OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
+                    .SequenceEqual(ex.AvoidFor.OrderBy(t => t, StringComparer.OrdinalIgnoreCase)),
+                $"{ex.Name}: mechanics-derived tags {string.Join(",", expected)} != stored {string.Join(",", ex.AvoidFor)}");
+        });
+    }
+
+    [Fact]
+    public void TricepsPushdown_IsShoulderSafe_ButElbowLoads()
+    {
+        var ex = FindExercise("Triceps Pushdown");
+        var avoid = InjuryRules.ComputeAvoidance(ex);
+        Assert.DoesNotContain("shoulder", avoid);
+        Assert.Contains("elbow", avoid);
+    }
+
     private static List<Exercise> LoadExercises()
     {
         var path = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "WorkoutPlanner.Api", "Data", "exercises.json");

@@ -393,6 +393,11 @@ static async Task SeedDataAsync(IServiceProvider services)
     var seedExercises = JsonSerializer.Deserialize<List<Exercise>>(exercisesJson,
         new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<Exercise>();
 
+    // Mechanics are the single source of truth: recompute injury tags deterministically
+    // from the anatomy descriptor so stored avoidFor can never drift from the rules.
+    foreach (var se in seedExercises.Where(s => s.Mechanics != null))
+        se.AvoidFor = InjuryRules.ComputeAvoidance(se);
+
     if (!await db.Exercises.AnyAsync())
     {
         if (seedExercises.Count > 0)

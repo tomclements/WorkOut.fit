@@ -345,7 +345,7 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
-    public async Task GeneratePlan_ShoulderRestriction_ExcludesPlankAndTricepsPushdown()
+    public async Task GeneratePlan_ShoulderRestriction_ExcludesPlankAndBodyUp()
     {
         var request = new PlanRequest
         {
@@ -372,7 +372,6 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
 
         Assert.DoesNotContain(exerciseNames, n =>
             n.Contains("Plank", StringComparison.OrdinalIgnoreCase)
-            || n.Contains("Triceps Pushdown", StringComparison.OrdinalIgnoreCase)
             || n.Contains("Body-Up", StringComparison.OrdinalIgnoreCase));
         Assert.NotEmpty(exerciseNames);
     }
