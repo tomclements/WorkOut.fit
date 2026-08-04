@@ -178,6 +178,17 @@ public class ExerciseDataTests
         Assert.Contains("elbow", avoid);
     }
 
+    [Fact]
+    public void GorillaChin_IsAnOverheadPull_SoShoulderLoads()
+    {
+        var ex = FindExercise("Gorilla Chin/Crunch");
+        var avoid = InjuryRules.ComputeAvoidance(ex);
+        Assert.Contains("shoulder", avoid);
+        Assert.Contains("elbow", avoid);
+        Assert.Contains("wrist", avoid);
+        Assert.Contains("lower-back", avoid);
+    }
+
     private static List<Exercise> LoadExercises()
     {
         var path = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "WorkoutPlanner.Api", "Data", "exercises.json");

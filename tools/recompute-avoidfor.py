@@ -154,17 +154,27 @@ def author_mechanics(ex):
     is_leg_press = has_tokens(n, ["leg press"])
     is_leg_iso = has_tokens(n, ["leg curl", "leg extension"])
 
-    # hand support — weight on the hands (forearm planks bear on the forearms)
-    if has_tokens(n, ["plank"]) and ("forearm" in n or "elbow" in n):
-        hand_support_tokens = [t for t in HAND_SUPPORT if t != "plank"]
-    else:
-        hand_support_tokens = HAND_SUPPORT
-    m["handSupport"] = has_tokens(ex.get("name", ""), hand_support_tokens)
-    if m["handSupport"] or has_tokens(n, ["inverted row", "ring row", "hang"]):
+    # Gorilla Chin/Crunch is a weighted chin-up + crunch hybrid: hanging-pull
+    # overhead plus spinal flexion. Name only carries "chin", not "chin-up".
+    gorilla_chin = has_tokens(ex.get("name", ""), ["gorilla chin"])
+
+        # hand support — weight on the hands (forearm planks bear on the forearms)
+    if gorilla_chin:
+        m["handSupport"] = True
         m["chain"] = "closed"
+    else:
+        if has_tokens(n, ["plank"]) and ("forearm" in n or "elbow" in n):
+            hand_support_tokens = [t for t in HAND_SUPPORT if t != "plank"]
+        else:
+            hand_support_tokens = HAND_SUPPORT
+        m["handSupport"] = has_tokens(ex.get("name", ""), hand_support_tokens)
+        if m["handSupport"] or has_tokens(n, ["inverted row", "ring row", "hang"]):
+            m["chain"] = "closed"
 
     # shoulder position (order matters: overhead → elevated → horizontal → low)
-    if has_tokens(ex.get("name", ""), OVERHEAD):
+    if gorilla_chin:
+        m["shoulder"] = "overhead"
+    elif has_tokens(ex.get("name", ""), OVERHEAD):
         m["shoulder"] = "overhead"
     elif is_leg_press:
         m["shoulder"] = "neutral"
@@ -221,6 +231,15 @@ def author_mechanics(ex):
 
     if has_tokens(ex.get("name", ""), NECK_TOKENS):
         m["neckCompress"] = True
+
+    # Gorilla Chin/Crunch is a weighted chin-up + crunch hybrid: it hangs from
+    # an overhand grip and pulls overhead, so it loads shoulder/elbow/wrist in
+    # addition to the spine flexion the crunch component already flags.
+    if gorilla_chin:
+        m["shoulder"] = "overhead"
+        m["elbow"] = "flexion"
+        m["grip"] = "pronated"
+        m["gripLoad"] = True
 
     return m
 

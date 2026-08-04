@@ -10483,17 +10483,20 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Gorilla%20Chin/Crunch%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Gorilla_Chin_Crunch/0.jpg",
     "avoidFor": [
-      "lower-back"
+      "elbow",
+      "lower-back",
+      "shoulder",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "compound",
     "mechanics": {
-      "handSupport": false,
-      "chain": "open",
-      "shoulder": "neutral",
-      "elbow": "none",
-      "grip": "none",
-      "gripLoad": false,
+      "handSupport": true,
+      "chain": "closed",
+      "shoulder": "overhead",
+      "elbow": "flexion",
+      "grip": "pronated",
+      "gripLoad": true,
       "spine": "flexion",
       "hip": "neutral",
       "knee": "none",
