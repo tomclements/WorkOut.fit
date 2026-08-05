@@ -61,8 +61,11 @@ public static class MobilityCatalog
 
     private static readonly Move[] Catalog =
     {
+        // SourceDemoId = free-exercise-db id for still fallback ONLY when it is a true visual match.
+        // Stick WebP demos live at /demos/{Id}.webp (see scripts/generate-mobility-stick-demos.py).
+        // null SourceDemoId => stick demo only (no misleading still).
+
         // --- General pulse raisers (always first in warm-up) ---
-        // SourceDemoId = free-exercise-db exercise used for WebP/stills (closest visual match)
         new("wu-march", "March in place", "warmup", Array.Empty<string>(), "general", 40,
             "Light pace, swing arms, raise heart rate gently", "step-up-with-knee-raise"),
         new("wu-jacks", "Jumping jacks", "warmup", Array.Empty<string>(), "general", 40,
@@ -72,21 +75,21 @@ public static class MobilityCatalog
 
         // --- Activation / dynamic prep ---
         new("wu-arm-circles", "Arm circles", "warmup", new[] { "shoulders", "chest", "back" }, "activate", 35,
-            "Small to large circles, both directions", "around-the-worlds"),
+            "Small to large circles, both directions", null),
         new("wu-scap-pushup", "Scapular push-ups", "warmup", new[] { "chest", "shoulders", "triceps" }, "activate", 35,
-            "Plank or knees: spread then squeeze shoulder blades", "incline-push-up"),
+            "Plank or knees: spread then squeeze shoulder blades", null),
         new("wu-band-disloc", "Open-chest arm swings", "warmup", new[] { "chest", "shoulders" }, "activate", 30,
             "Cross-body then open wide; easy range", "band-pull-apart"),
         new("wu-cat-cow", "Cat–cow", "warmup", new[] { "back", "core" }, "activate", 40,
-            "On all fours, slow spinal flexion/extension", "hyperextensions-with-no-hyperextension-bench"),
+            "On all fours, slow spinal flexion/extension", null),
         new("wu-bird-dog", "Bird dog", "warmup", new[] { "back", "core", "glutes" }, "activate", 40,
-            "Opposite arm/leg, hold 2s, brace midsection", "plank"),
+            "Opposite arm/leg, hold 2s, brace midsection", null),
         new("wu-dead-bug", "Dead bug", "warmup", new[] { "core" }, "activate", 40,
             "Low back pressed to floor; slow opposite limbs", "dead-bug"),
         new("wu-hip-circles", "Standing hip circles", "warmup", new[] { "hips", "glutes", "quads", "hamstrings" }, "activate", 35,
-            "Hands on hips, slow circles each way", "bodyweight-squat"),
+            "Hands on hips, slow circles each way", null),
         new("wu-leg-swings", "Leg swings", "warmup", new[] { "hamstrings", "hips", "quads", "glutes" }, "activate", 35,
-            "Front-to-back then side-to-side, controlled", "scissors-jump"),
+            "Front-to-back then side-to-side, controlled", null),
         new("wu-bw-squat", "Bodyweight squat (easy)", "warmup", new[] { "quads", "glutes", "hamstrings" }, "activate", 40,
             "Shallow to full as you warm; no load", "bodyweight-squat"),
         new("wu-glute-bridge", "Glute bridge", "warmup", new[] { "glutes", "hamstrings", "core" }, "activate", 35,
@@ -94,43 +97,43 @@ public static class MobilityCatalog
         new("wu-calf-raise", "Calf raises", "warmup", new[] { "calves" }, "activate", 30,
             "Full ankle range, both feet", "standing-calf-raises"),
         new("wu-wrist-circles", "Wrist circles & open/close", "warmup", new[] { "forearms", "biceps", "triceps" }, "activate", 30,
-            "Prep elbows/wrists before curling or pressing", "palms-up-barbell-wrist-curl-over-a-bench"),
+            "Prep elbows/wrists before curling or pressing", null),
         new("wu-shoulder-rolls", "Shoulder rolls", "warmup", new[] { "shoulders", "back", "neck" }, "activate", 30,
-            "Slow forward and back, relax neck", "front-dumbbell-raise"),
+            "Slow forward and back, relax neck", null),
         new("wu-torso-twist", "Standing torso twists", "warmup", new[] { "core", "back" }, "activate", 30,
-            "Feet planted, gentle rotation", "medicine-ball-full-twist"),
+            "Feet planted, gentle rotation", null),
 
         // --- Cool-down stretches ---
         new("cd-chest-door", "Chest doorway stretch", "cooldown", new[] { "chest", "shoulders" }, "stretch", 40,
-            "Elbow at 90°, lean gently; breathe 4–5 slow breaths", "bodyweight-flyes"),
+            "Elbow at 90°, lean gently; breathe 4–5 slow breaths", null),
         new("cd-tricep-oh", "Overhead triceps stretch", "cooldown", new[] { "triceps", "shoulders" }, "stretch", 35,
-            "Elbow to ceiling, light pressure on elbow", "standing-dumbbell-triceps-extension"),
+            "Elbow to ceiling, light pressure on elbow", null),
         new("cd-cross-body", "Cross-body shoulder stretch", "cooldown", new[] { "shoulders", "back" }, "stretch", 35,
-            "Arm across chest, soft shoulders", "around-the-worlds"),
+            "Arm across chest, soft shoulders", null),
         new("cd-child-pose", "Child’s pose", "cooldown", new[] { "back", "shoulders", "hips" }, "stretch", 45,
-            "Hips to heels, arms reach forward, relax", "plank"),
+            "Hips to heels, arms reach forward, relax", null),
         new("cd-thread-needle", "Thread the needle", "cooldown", new[] { "back", "shoulders" }, "stretch", 40,
-            "On all fours, thread arm under; both sides", "hyperextensions-with-no-hyperextension-bench"),
+            "On all fours, thread arm under; both sides", null),
         new("cd-quad-stand", "Standing quad stretch", "cooldown", new[] { "quads", "hips" }, "stretch", 40,
-            "Hold ankle, knees together, tall posture", "bodyweight-squat"),
+            "Hold ankle, knees together, tall posture", null),
         new("cd-ham-hinge", "Standing hamstring hinge", "cooldown", new[] { "hamstrings", "back" }, "stretch", 40,
             "Soft knees, hinge at hips, long spine", "stiff-leg-barbell-good-morning"),
         new("cd-fig4", "Figure-4 glute stretch", "cooldown", new[] { "glutes", "hips" }, "stretch", 40,
-            "Seated or lying; ankle on opposite knee", "single-leg-glute-bridge"),
+            "Seated or lying; ankle on opposite knee", null),
         new("cd-calf-wall", "Calf wall stretch", "cooldown", new[] { "calves" }, "stretch", 35,
-            "Back heel down, both straight and bent knee", "standing-calf-raises"),
+            "Back heel down, both straight and bent knee", null),
         new("cd-hip-flexor", "Half-kneeling hip flexor stretch", "cooldown", new[] { "hips", "quads" }, "stretch", 40,
-            "Tuck pelvis, gentle forward shift", "kneeling-squat"),
+            "Tuck pelvis, gentle forward shift", null),
         new("cd-cobra", "Prone press-up / cobra", "cooldown", new[] { "core", "back" }, "stretch", 35,
-            "Gentle extension, hips stay down", "reverse-hyperextension"),
+            "Gentle extension, hips stay down", null),
         new("cd-knees-chest", "Knees to chest", "cooldown", new[] { "core", "back", "glutes" }, "stretch", 40,
-            "Supine hug knees, rock gently", "bent-knee-hip-raise"),
+            "Supine hug knees, rock gently", null),
         new("cd-forearm-stretch", "Forearm flexor/extensor stretch", "cooldown", new[] { "forearms", "biceps" }, "stretch", 30,
-            "Arm straight, gentle palm up then palm down", "palms-up-barbell-wrist-curl-over-a-bench"),
+            "Arm straight, gentle palm up then palm down", null),
         new("cd-neck-side", "Neck side stretch", "cooldown", new[] { "neck", "shoulders" }, "stretch", 30,
-            "Ear toward shoulder, no force", "isometric-neck-exercise-sides"),
+            "Ear toward shoulder, no force", null),
         new("cd-breathe", "Box breathing (easy)", "cooldown", Array.Empty<string>(), "stretch", 40,
-            "In 4 · hold 4 · out 4 · hold 4 — downshift nervous system", "plank"),
+            "In 4 · hold 4 · out 4 · hold 4 — downshift nervous system", null),
     };
 
     /// <summary>free-exercise-db image base for still fallbacks.</summary>
@@ -309,26 +312,19 @@ public static class MobilityCatalog
     }
 
     /// <summary>
-    /// WebP is stored under the mobility id (/demos/wu-jacks.webp) after
-    /// <c>scripts/build-mobility-webps.py</c> copies from the source exercise demo.
-    /// Stills fall back to the source free-exercise-db pair for JS flip if needed.
+    /// Animated WebP is always /demos/{mobilityId}.webp (stick demo or copied FEDB match).
+    /// Optional still from free-exercise-db only when SourceDemoId is a real visual match.
     /// </summary>
     private static (string? ImageUrl, string? DemoAnimUrl) ResolveMedia(Move m)
     {
-        if (string.IsNullOrWhiteSpace(m.SourceDemoId))
-            return (null, null);
-
-        // Prefer known folder names for stills (id uses hyphens; FEDB folders use underscores)
-        if (SourceImageFolders.TryGetValue(m.SourceDemoId, out var folder))
+        string? imageUrl = null;
+        if (!string.IsNullOrWhiteSpace(m.SourceDemoId)
+            && SourceImageFolders.TryGetValue(m.SourceDemoId, out var folder))
         {
-            return (
-                FedbImageBase + folder + "/0.jpg",
-                $"/demos/{m.Id}.webp"
-            );
+            imageUrl = FedbImageBase + folder + "/0.jpg";
         }
 
-        // Fallback: only WebP path
-        return (null, $"/demos/{m.Id}.webp");
+        return (imageUrl, $"/demos/{m.Id}.webp");
     }
 
     /// <summary>
