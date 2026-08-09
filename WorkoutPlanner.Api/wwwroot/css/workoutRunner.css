@@ -413,37 +413,44 @@ body.work-phase #activeScreen #completeSetBtn {
 
 
 /* --- Anatomical muscle summary --- */
-#finishMuscles .muscle-pair {
+#finishMuscles .muscle-pair,
+#analyzeModal .muscle-pair {
   display: flex;
   gap: 8px;
   justify-content: center;
   align-items: flex-start;
 }
-#finishMuscles .muscle-figure {
+#finishMuscles .muscle-figure,
+#analyzeModal .muscle-figure {
   width: 92px;
   height: auto;
   max-width: 42vw;
 }
-#finishMuscles .body {
+#finishMuscles .body,
+#analyzeModal .body {
   fill: #dfe8ee;
   stroke: #b7c5d1;
   stroke-width: 1;
 }
-#finishMuscles .muscle {
+#finishMuscles .muscle,
+#analyzeModal .muscle {
   fill: #c4d2dc;
   stroke: #9fb2c0;
   stroke-width: 1;
   transition: fill .25s ease;
 }
-#finishMuscles .muscle.worked {
+#finishMuscles .muscle.worked,
+#analyzeModal .muscle.worked {
   fill: #e0453f;
   stroke: #b33833;
 }
-#finishMuscles .muscle.secondary {
+#finishMuscles .muscle.secondary,
+#analyzeModal .muscle.secondary {
   fill: #f49392;
   stroke: #d96d6c;
 }
-#finishMuscles .swatch {
+#finishMuscles .swatch,
+#analyzeModal .swatch {
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -452,5 +459,5 @@ body.work-phase #activeScreen #completeSetBtn {
   vertical-align: baseline;
   border: 1px solid rgba(0,0,0,.15);
 }
-#finishMuscles .swatch-worked { background: #e0453f; }
-#finishMuscles .swatch-secondary { background: #f49392; }
+#finishMuscles .swatch-worked, #analyzeModal .swatch-worked { background: #e0453f; }
+#finishMuscles .swatch-secondary, #analyzeModal .swatch-secondary { background: #f49392; }

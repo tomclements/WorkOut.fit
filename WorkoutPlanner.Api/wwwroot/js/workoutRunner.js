@@ -23,6 +23,8 @@ let currentSavedPlanName = null;
 let isPaused = false;
 let autoPaused = false;
 let pauseStartTime = 0;
+let previewCache = null;      // cached exercise catalog (id -> exercise) for previews/analyze
+let previewCachePromise = null;
 
 const setupScreen = document.getElementById('setupScreen');
 const activeScreen = document.getElementById('activeScreen');
@@ -141,6 +143,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   movesListModal?.addEventListener('click', (e) => {
     if (e.target === movesListModal) closeMovesList();
   });
+
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const closeAnalyze = document.getElementById('closeAnalyze');
+  const analyzeModal = document.getElementById('analyzeModal');
+  if (analyzeBtn) analyzeBtn.addEventListener('click', openAnalyze);
+  if (closeAnalyze) closeAnalyze.addEventListener('click', closeAnalyzeModal);
+  analyzeModal?.addEventListener('click', (e) => {
+    if (e.target === analyzeModal) closeAnalyzeModal();
+  });
+  if (daySelect) daySelect.addEventListener('change', renderDayPreview);
 
   if (localStorage.getItem('runnerHighContrast') === '1') {
     document.body.classList.add('high-contrast');
@@ -292,6 +304,7 @@ async function loadPlan() {
 
   populateDaySelect();
   await defaultToNextWorkoutDay();
+  renderDayPreview();
 }
 
 function showLoadError(message) {
@@ -399,6 +412,255 @@ function checkForResumableSession() {
   if (saved) {
     resumeBanner.classList.remove('hidden');
   }
+}
+
+// -------------------------- Day preview + analyze --------------------------
+
+function previewSelectedDay() {
+  if (!daySelect.value || !currentPlan) return null;
+  let selection;
+  try { selection = JSON.parse(daySelect.value); } catch { return null; }
+  const week = currentPlan.plan.find(w => w.week === selection.week);
+  if (!week) return null;
+  return week.days[selection.dayIndex];
+}
+
+function dayEquipmentNames(day) {
+  const used = new Set();
+  (day.exercises || []).forEach(ex => {
+    const cat = previewCache && previewCache[ex.id];
+    (cat?.equipment || ex.equipment || []).forEach(e => used.add(e));
+  });
+  const names = { bodyweight: 'Bodyweight', barbell: 'Barbell', dumbbells: 'Dumbbells', kettlebell: 'Kettlebell', bench: 'Bench', cable: 'Cable machine', 'ez-bar': 'EZ bar', 'foam-roller': 'Foam roller', 'pull-up-bar': 'Pull-up bar', bands: 'Bands', machine: 'Machine', 'medicine-ball': 'Medicine ball', 'suspension-trainer': 'Suspension trainer', 'resistance-band': 'Resistance band' };
+  if (used.size === 0) return ['Bodyweight'];
+  return [...used].map(id => names[id] || id);
+}
+
+function estimateDayMinutes(day) {
+  const transition = 15;
+  const secs = (day.exercises || []).reduce((sum, ex) => {
+    const sets = Math.max(1, ex.sets || 1);
+    return sum + sets * ((ex.workDuration || 30) + (ex.rest || 0)) + transition;
+  }, 0);
+  return Math.max(1, Math.round(secs / 60));
+}
+
+async function ensurePreviewCache() {
+  if (previewCache) return previewCache;
+  if (previewCachePromise) return previewCachePromise;
+  previewCachePromise = (async () => {
+    const map = {};
+    try {
+      const res = await fetch('/api/exercises', { credentials: 'include' });
+      if (res.ok) {
+        (await res.json()).forEach(ex => { map[ex.id] = ex; });
+      }
+    } catch { /* offline */ }
+    previewCache = map;
+    return map;
+  })();
+  return previewCachePromise;
+}
+
+async function renderDayPreview() {
+  const day = previewSelectedDay();
+  const preview = document.getElementById('dayPreview');
+  if (!day || day.type !== 'workout') {
+    if (preview) preview.classList.add('hidden');
+    return;
+  }
+  const title = document.getElementById('previewTitle');
+  const meta = document.getElementById('previewMeta');
+  const moves = document.getElementById('previewMoves');
+  const equip = document.getElementById('previewEquipment');
+  const style = day.sessionStyle === 'hiit' ? 'HIIT' : 'Strength';
+  const focus = day.focus ? ` · ${day.focus}` : '';
+  const summary = typeof WorkoutMobility !== 'undefined'
+    ? WorkoutMobility.dayMobilitySummary(day)
+    : '';
+  title.textContent = `${day.day}${focus}`;
+  meta.textContent = `~${estimateDayMinutes(day)} min · ${style}${summary ? ' · ' + summary : ''}`;
+
+  const eqNames = await ensurePreviewCache().then(() => dayEquipmentNames(day));
+  equip.textContent = 'Equipment: ' + eqNames.join(' · ');
+
+  const rows = (day.exercises || []).map(ex => {
+    const phase = (ex.phase || 'work').toLowerCase();
+    const isWarmCool = phase === 'warmup' || phase === 'cooldown';
+    const tag = isWarmCool
+      ? `<span class="text-[10px] font-semibold uppercase tracking-wide ${phase === 'warmup' ? 'bg-amber-100 text-amber-900' : 'bg-teal-100 text-teal-900'} px-1.5 py-0.5 rounded">${phase === 'warmup' ? 'Warm-up' : 'Cool-down'}</span>`
+      : `<span class="text-[10px] font-semibold uppercase tracking-wide bg-blue-100 text-blue-900 px-1.5 py-0.5 rounded">Work</span>`;
+    let detail;
+    if (isWarmCool) {
+      detail = `${ex.workDuration || 30}s`;
+    } else if (day.sessionStyle === 'hiit') {
+      detail = `${ex.sets} rounds × ${ex.repsDisplay || (ex.workDuration + 's')} <span class="text-gray-500">(${ex.rest}s rest)</span>`;
+    } else {
+      detail = `${ex.sets} sets × ${ex.repsDisplay || 'target reps'} <span class="text-gray-500">(${ex.rest}s rest)</span>`;
+    }
+    return `<div class="flex items-start justify-between gap-2">
+      <span class="min-w-0">${tag} ${escapeHtmlRunner(ex.name)}</span>
+      <span class="text-gray-600 shrink-0 whitespace-nowrap">${detail}</span>
+    </div>`;
+  }).join('');
+  moves.innerHTML = rows || '<p class="text-sm text-gray-500">No moves in this day.</p>';
+  if (preview) preview.classList.remove('hidden');
+}
+
+function analyzeMuscleSets(day) {
+  const primary = [];
+  const secondary = [];
+  (day.exercises || []).forEach(ex => {
+    (ex.primary || []).forEach(p => { if (!primary.includes(p)) primary.push(p); });
+    (ex.secondary || []).forEach(s => { if (!secondary.includes(s)) secondary.push(s); });
+  });
+  return { primary, secondary };
+}
+
+function openAnalyze() {
+  const day = previewSelectedDay();
+  if (!day || day.type !== 'workout') return;
+  const modal = document.getElementById('analyzeModal');
+  const body = document.getElementById('analyzeBody');
+  const { primary, secondary } = analyzeMuscleSets(day);
+  const isHiit = day.sessionStyle === 'hiit';
+  const unit = isHiit ? 'rounds' : 'sets';
+
+  let html = '';
+
+  // 1) Muscle coverage diagram
+  if (typeof MuscleDiagram !== 'undefined') {
+    html += `<div>
+      <h3 class="text-sm font-semibold text-blue-900 mb-2">Muscles worked</h3>
+      <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 flex justify-center">
+        ${MuscleDiagram.render(primary, secondary)}
+      </div>
+      <div class="text-xs text-gray-500 mt-1 text-center">
+        <span class="swatch swatch-worked"></span>Primary&nbsp;&nbsp;
+        <span class="swatch swatch-secondary"></span>Supporting
+      </div>
+    </div>`;
+  }
+
+  // 2) Muscle list
+  const muscleChips = (list, cls) => list.length
+    ? list.map(m => `<span class="inline-block text-xs font-medium px-2 py-1 rounded-full ${cls}">${escapeHtmlRunner(m)}</span>`).join(' ')
+    : '<span class="text-xs text-gray-400">—</span>';
+  html += `<div>
+    <h3 class="text-sm font-semibold text-blue-900 mb-2">Coverage</h3>
+    <div class="space-y-1.5">
+      <div><span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Primary</span><div class="mt-1 flex flex-wrap gap-1">${muscleChips(primary, 'bg-red-50 text-red-800')}</div></div>
+      <div><span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Supporting</span><div class="mt-1 flex flex-wrap gap-1">${muscleChips(secondary, 'bg-pink-50 text-pink-800')}</div></div>
+    </div>
+  </div>`;
+
+  // 3) Per-move tweak (swap)
+  html += `<div>
+    <h3 class="text-sm font-semibold text-blue-900 mb-2">Tweak a move</h3>
+    <div class="space-y-2" id="analyzeSwapList">
+      ${(day.exercises || []).map((ex, i) => swapCardHtml(ex, i, unit)).join('')}
+    </div>
+  </div>`;
+
+  body.innerHTML = html;
+  modal.classList.remove('hidden');
+}
+
+function swapCardHtml(ex, index, unit) {
+  const phase = (ex.phase || 'work').toLowerCase();
+  const isWarmCool = phase === 'warmup' || phase === 'cooldown';
+  const detail = isWarmCool
+    ? `${ex.workDuration || 30}s`
+    : `${ex.sets} ${unit} × ${ex.repsDisplay || 'target'} · ${ex.rest}s rest`;
+  const muscles = (ex.primary || []).join(', ');
+  return `<div class="border border-gray-200 rounded-lg p-3">
+    <div class="flex items-center justify-between gap-2">
+      <div class="min-w-0">
+        <div class="font-medium text-sm">${escapeHtmlRunner(ex.name)}</div>
+        <div class="text-xs text-gray-500 truncate">${escapeHtmlRunner(detail)}${muscles ? ' · ' + escapeHtmlRunner(muscles) : ''}</div>
+      </div>
+      ${isWarmCool ? '' : `<button onclick="openSwapPicker(${index})" class="shrink-0 text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded-md touch-manipulation">Swap</button>`}
+    </div>
+    <div id="swapPicker-${index}" class="hidden mt-2 space-y-1"></div>
+  </div>`;
+}
+
+function swapAlternatives(ex) {
+  if (!previewCache) return [];
+  const exPrimary = (ex.primary || []).map(p => p.toLowerCase());
+  const criteria = currentPlan?.criteria || {};
+  const equipment = (criteria.equipment || []).map(e => e.toLowerCase());
+  const restrictions = (criteria.restrictions || []).map(r => r.toLowerCase());
+  const levelNum = { beginner: 1, intermediate: 2, advanced: 3 }[criteria.level] || 1;
+  const usedIds = new Set((previewSelectedDay()?.exercises || []).map(e => e.id));
+  return Object.values(previewCache).filter(c => {
+    if (c.id === ex.id || usedIds.has(c.id)) return false;
+    if (String(c.slot).toLowerCase() !== String(ex.slot).toLowerCase()) return false;
+    if (levelNum < ({ beginner: 1, intermediate: 2, advanced: 3 }[c.level] || 1)) return false;
+    // Must share at least one primary muscle
+    if (!(c.primary || []).some(p => exPrimary.includes(p.toLowerCase()))) return false;
+    // Equipment: every required piece must be available (empty = bodyweight)
+    const required = (c.equipment && c.equipment.length) ? c.equipment.map(e => e.toLowerCase()) : ['bodyweight'];
+    if (!required.every(eq => equipment.includes(eq))) return false;
+    // Injury restrictions: no overlap with avoidFor
+    if ((c.avoidFor || []).some(t => restrictions.includes(t.toLowerCase()))) return false;
+    return true;
+  }).sort((a, b) => a.name.localeCompare(b.name)).slice(0, 8);
+}
+
+function openSwapPicker(index) {
+  const day = previewSelectedDay();
+  const ex = day?.exercises?.[index];
+  const picker = document.getElementById('swapPicker-' + index);
+  if (!ex || !picker) return;
+  if (!picker.classList.contains('hidden')) {
+    picker.classList.add('hidden');
+    return;
+  }
+  const alts = swapAlternatives(ex);
+  if (!alts.length) {
+    picker.innerHTML = '<p class="text-xs text-gray-500">No compatible alternatives found.</p>';
+  } else {
+    picker.innerHTML = alts.map(a => `
+      <button onclick="swapDayExercise(${index}, '${escapeHtmlRunner(a.id)}')" class="w-full text-left text-xs bg-gray-50 hover:bg-blue-50 border border-gray-200 rounded-md px-2 py-1.5 touch-manipulation">
+        ${escapeHtmlRunner(a.name)}
+      </button>`).join('');
+  }
+  picker.classList.remove('hidden');
+}
+
+function swapDayExercise(index, newId) {
+  const day = previewSelectedDay();
+  const cat = previewCache && previewCache[newId];
+  if (!day || !cat || !day.exercises[index]) return;
+  const old = day.exercises[index];
+  day.exercises[index] = {
+    ...old,
+    id: cat.id,
+    name: cat.name,
+    slot: cat.slot || old.slot,
+    primary: cat.primary || old.primary,
+    secondary: cat.secondary || old.secondary,
+    demoUrl: cat.demoUrl,
+    imageUrl: cat.imageUrl,
+    demoAnimUrl: `/demos/${cat.id}.webp`,
+    rest: old.rest || cat.restSec || 60,
+    workDuration: old.workDuration || cat.workDuration || 30,
+    repsDisplay: old.repsDisplay || (cat.repsMin ? `${cat.repsMin}-${cat.repsMax}` : '')
+  };
+  day.estimatedMinutes = estimateDayMinutes(day);
+  // Persist swap back to the local plan so it survives a reload
+  try {
+    localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
+  } catch { /* ignore */ }
+  if (typeof showToast === 'function') showToast(`Swapped to ${cat.name}`, 'success');
+  renderDayPreview();
+  openAnalyze();
+}
+
+function closeAnalyzeModal() {
+  const modal = document.getElementById('analyzeModal');
+  if (modal) modal.classList.add('hidden');
 }
 
 function saveSessionState() {
