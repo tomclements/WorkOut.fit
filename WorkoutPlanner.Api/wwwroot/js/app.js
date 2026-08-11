@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (printBtn) printBtn.addEventListener('click', () => window.print());
   const welcomeSignInBtn = document.getElementById('welcomeSignInBtn');
   if (welcomeSignInBtn) welcomeSignInBtn.addEventListener('click', openAuthModal);
+  initBodyWeight();
   if (startWorkoutBtn) startWorkoutBtn.addEventListener('click', () => {
     if (currentPlan) {
       localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
@@ -964,6 +965,7 @@ function showLoggedIn(email, roles) {
   document.getElementById('savePlanBtn').classList.remove('hidden');
 
   loadDashboard();
+  loadBodyWeight();
 }
 
 function showLoggedOut() {
@@ -1050,6 +1052,197 @@ function renderDashboard(data) {
         <p class="text-gray-500 mb-3">Finish a session in the runner and tap Save — your streak starts here.</p>
         <a href="/workout.html" class="inline-block text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-3 rounded-md">Open runner</a>
       </div>`;
+  }
+}
+
+// --- Body weight tracking ---
+const WEIGHT_UNIT_KEY = 'workoutWeightUnit';
+
+function getWeightUnit() {
+  return localStorage.getItem(WEIGHT_UNIT_KEY) === 'lb' ? 'lb' : 'kg';
+}
+
+function setWeightUnit(unit) {
+  localStorage.setItem(WEIGHT_UNIT_KEY, unit);
+  renderWeightUnitButtons();
+  if (typeof currentWeightData !== 'undefined' && currentWeightData) {
+    renderBodyWeight(currentWeightData);
+  }
+}
+
+function renderWeightUnitButtons() {
+  const unit = getWeightUnit();
+  const kgBtn = document.getElementById('weightUnitKg');
+  const lbBtn = document.getElementById('weightUnitLb');
+  if (!kgBtn || !lbBtn) return;
+  kgBtn.className = `px-3 py-1.5 font-semibold ${unit === 'kg' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600'}`;
+  lbBtn.className = `px-3 py-1.5 font-semibold ${unit === 'lb' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600'}`;
+}
+
+function weightToDisplay(kg) {
+  return getWeightUnit() === 'lb' ? Math.round(kg * 2.20462 * 10) / 10 : kg;
+}
+
+function weightToLabel(kg) {
+  const value = weightToDisplay(kg);
+  const decimals = getWeightUnit() === 'lb' ? (Number.isInteger(value) ? 0 : 1) : 1;
+  return `${value.toFixed(decimals)} ${getWeightUnit()}`;
+}
+
+let currentWeightData = null;
+
+async function loadBodyWeight() {
+  if (!currentUser) return;
+  try {
+    const response = await fetch('/api/body-weight', { credentials: 'include' });
+    if (!response.ok) return;
+    currentWeightData = await response.json();
+    renderBodyWeight(currentWeightData);
+  } catch {
+    // ignore
+  }
+}
+
+function renderBodyWeight(data) {
+  const card = document.getElementById('bodyWeightCard');
+  if (!card) return;
+  card.classList.remove('hidden');
+
+  const entries = (data.entries || []).slice().sort((a, b) => new Date(a.weighedAt) - new Date(b.weighedAt));
+
+  const current = document.getElementById('weightCurrent');
+  const change = document.getElementById('weightChange30');
+  const chart = document.getElementById('weightChart');
+  const list = document.getElementById('weightEntries');
+
+  if (data.latestWeightKg != null) {
+    current.textContent = weightToLabel(data.latestWeightKg);
+  } else {
+    current.textContent = '—';
+  }
+
+  if (data.change30Days != null && data.change30Days !== 0) {
+    const delta = weightToDisplay(data.change30Days);
+    const sign = delta > 0 ? '+' : '';
+    const cls = data.change30Days > 0 ? 'text-red-600' : 'text-green-600';
+    change.innerHTML = `<span class="${cls} font-semibold">${sign}${delta.toFixed(1)} ${getWeightUnit()}</span> over the last 30 days`;
+  } else if (data.change30Days != null) {
+    change.textContent = 'No change over the last 30 days';
+  } else {
+    change.textContent = 'Log entries for a while to see a 30-day trend';
+  }
+
+  if (entries.length >= 2) {
+    chart.classList.remove('hidden');
+    chart.innerHTML = renderWeightSparkline(entries);
+  } else {
+    chart.classList.add('hidden');
+    chart.innerHTML = '';
+  }
+
+  if (entries.length) {
+    const rows = entries.slice().reverse().slice(0, 10).map(e => `
+      <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+        <span class="text-gray-600">${formatDate(e.weighedAt)}</span>
+        <span class="font-semibold">${weightToLabel(e.weightKg)}</span>
+        <button type="button" class="text-xs text-gray-400 hover:text-red-600" onclick="deleteWeightEntry(${e.id})">Remove</button>
+      </div>
+    `).join('');
+    list.innerHTML = `<div class="max-h-48 overflow-y-auto">${rows}</div>`;
+  } else {
+    list.innerHTML = '<p class="text-gray-400">No weight entries yet — log your first one above.</p>';
+  }
+}
+
+function renderWeightSparkline(entries) {
+  const values = entries.map(e => e.weightKg);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const span = (max - min) || 1;
+  const w = 320, h = 80, pad = 6;
+
+  const points = values.map((v, i) => {
+    const x = values.length === 1 ? w / 2 : pad + (i / (values.length - 1)) * (w - pad * 2);
+    const y = h - pad - ((v - min) / span) * (h - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+
+  const last = values[values.length - 1];
+  const first = values[0];
+  const trendUp = last >= first;
+  const stroke = trendUp ? '#16a34a' : '#dc2626';
+
+  return `
+    <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" class="w-full h-20" aria-label="Body weight trend">
+      <polyline fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="${points}" />
+      <circle cx="${(values.length === 1 ? w / 2 : pad + (values.length - 1) / (values.length - 1) * (w - pad * 2))}" cy="${h - pad - ((last - min) / span) * (h - pad * 2)}" r="3" fill="${stroke}" />
+    </svg>`;
+}
+
+async function addWeightEntry(event) {
+  event.preventDefault();
+  const valueInput = document.getElementById('weightValue');
+  const dateInput = document.getElementById('weightDate');
+  if (!valueInput || !valueInput.value) {
+    if (typeof showToast === 'function') showToast('Enter a weight to log.', 'error');
+    return;
+  }
+
+  let weightKg = parseFloat(valueInput.value);
+  if (isNaN(weightKg) || weightKg <= 0) {
+    if (typeof showToast === 'function') showToast('Enter a valid weight.', 'error');
+    return;
+  }
+  if (getWeightUnit() === 'lb') weightKg = weightKg * 0.45359237;
+
+  const body = { weightKg: Math.round(weightKg * 100) / 100 };
+  if (dateInput && dateInput.value) body.weighedAt = new Date(dateInput.value + 'T00:00:00').toISOString();
+
+  try {
+    const response = await fetch('/api/body-weight', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(body)
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => null);
+      if (typeof showToast === 'function') showToast(err?.errors?.[0] || 'Could not log weight.', 'error');
+      return;
+    }
+    valueInput.value = '';
+    if (typeof showToast === 'function') showToast('Weight logged.', 'success');
+    await loadBodyWeight();
+  } catch (err) {
+    if (typeof showToast === 'function') showToast(`Could not log weight: ${err.message}`, 'error');
+  }
+}
+
+async function deleteWeightEntry(id) {
+  if (!confirm('Remove this weight entry?')) return;
+  try {
+    const response = await fetch(`/api/body-weight/${id}`, { method: 'DELETE', credentials: 'include' });
+    if (!response.ok) throw new Error('Failed to remove');
+    if (typeof showToast === 'function') showToast('Entry removed.', 'info');
+    await loadBodyWeight();
+  } catch (err) {
+    if (typeof showToast === 'function') showToast(`Could not remove entry: ${err.message}`, 'error');
+  }
+}
+
+function initBodyWeight() {
+  const unitBtn = document.getElementById('weightUnitKg');
+  const lbBtn = document.getElementById('weightUnitLb');
+  if (unitBtn) unitBtn.addEventListener('click', () => setWeightUnit('kg'));
+  if (lbBtn) lbBtn.addEventListener('click', () => setWeightUnit('lb'));
+  renderWeightUnitButtons();
+
+  const form = document.getElementById('weightForm');
+  if (form) form.addEventListener('submit', addWeightEntry);
+
+  const dateInput = document.getElementById('weightDate');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().slice(0, 10);
   }
 }
 

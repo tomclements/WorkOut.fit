@@ -35,3 +35,8 @@ WorkoutPlanner.Api/Data/*.bak.*
 # Large optional music assets (fetch with scripts/fetch-music.py)
 WorkoutPlanner.Api/wwwroot/music/*.mp3
 
+
+# Python
+__pycache__/
+*.pyc
+

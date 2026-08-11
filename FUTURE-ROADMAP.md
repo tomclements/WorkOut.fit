@@ -141,6 +141,13 @@ Give admins a one-click way to pull the latest public-domain exercise data from 
 - Progressive plan generator: **linear / wave / block / none** with week phases, deloads, set/rep/rest modifiers, and a plain-language progression summary
 - Non-technical **Help** page (`/help.html`) linked from header, welcome, bottom nav, and plan results
 
+## Sprint E (body weight tracking) ✅ Done
+
+- `BodyWeightEntry` model + table (`BodyWeightEntries`) with index on `(UserId, WeighedAt)`
+- `GET /api/body-weight` (entries + latest + 30-day change), `POST /api/body-weight`, `DELETE /api/body-weight/{id}`
+- Dashboard **Body weight** card: kg/lb toggle (persisted), log form (date + weight), inline SVG trend sparkline, recent-entry list with remove
+- Values stored in kg; lb converted client-side
+
 ## Suggested next sprint
 
 If you want to continue, I’d recommend this order:

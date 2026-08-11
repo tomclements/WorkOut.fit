@@ -20,6 +20,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<UserFavoriteExercise> UserFavoriteExercises { get; set; } = null!;
     public DbSet<UserExerciseNote> UserExerciseNotes { get; set; } = null!;
     public DbSet<FeedbackMessage> FeedbackMessages { get; set; } = null!;
+    public DbSet<BodyWeightEntry> BodyWeightEntries { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -128,6 +129,14 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
             entity.Property(e => e.IpHash).HasMaxLength(64);
             entity.HasIndex(e => e.CreatedAt);
             entity.HasIndex(e => e.IsRead);
+        });
+
+        builder.Entity<BodyWeightEntry>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).HasMaxLength(450);
+            entity.Property(e => e.WeightKg).HasPrecision(6, 2);
+            entity.HasIndex(e => new { e.UserId, e.WeighedAt });
         });
     }
 

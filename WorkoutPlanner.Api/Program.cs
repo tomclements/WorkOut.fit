@@ -169,6 +169,7 @@ using (var scope = app.Services.CreateScope())
         // Existing SQLite DBs created earlier won't get new tables from EnsureCreated — patch them.
         await EnsureFeedbackTableSqliteAsync(db);
         await EnsureWorkoutSessionWeekDaySqliteAsync(db);
+        await EnsureBodyWeightTableSqliteAsync(db);
     }
     else if (db.Database.IsRelational())
     {
@@ -222,6 +223,7 @@ app.MapRunnerEndpoints();
 app.MapAdminEndpoints();
 app.MapDashboardEndpoints();
 app.MapUserEndpoints();
+app.MapBodyWeightEndpoints();
 app.MapFeedbackEndpoints();
 
 app.Run();
@@ -275,6 +277,35 @@ static async Task EnsureWorkoutSessionWeekDaySqliteAsync(AppDbContext db)
     catch
     {
         // Columns may already exist under another migration path
+    }
+}
+
+static async Task EnsureBodyWeightTableSqliteAsync(AppDbContext db)
+{
+    try
+    {
+        var tables = await db.Database.SqlQueryRaw<string>("""
+            SELECT name FROM sqlite_master WHERE type = 'table'
+            """).ToListAsync();
+        if (!tables.Contains("BodyWeightEntries"))
+        {
+            await db.Database.ExecuteSqlRawAsync("""
+                CREATE TABLE "BodyWeightEntries" (
+                    "Id" INTEGER NOT NULL CONSTRAINT "PK_BodyWeightEntries" PRIMARY KEY AUTOINCREMENT,
+                    "UserId" TEXT NOT NULL,
+                    "WeightKg" TEXT NOT NULL,
+                    "WeighedAt" TEXT NOT NULL,
+                    "CreatedAt" TEXT NOT NULL
+                );
+                """);
+            await db.Database.ExecuteSqlRawAsync("""
+                CREATE INDEX IF NOT EXISTS "IX_BodyWeightEntries_UserId_WeighedAt" ON "BodyWeightEntries" ("UserId", "WeighedAt");
+                """);
+        }
+    }
+    catch
+    {
+        // Table may already exist under another migration path
     }
 }
 
