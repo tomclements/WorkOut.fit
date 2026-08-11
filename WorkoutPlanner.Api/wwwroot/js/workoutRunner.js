@@ -33,6 +33,7 @@ const finishScreen = document.getElementById('finishScreen');
 
 const daySelect = document.getElementById('daySelect');
 const startBtn = document.getElementById('startBtn');
+const testSoundBtn = document.getElementById('testSoundBtn');
 const loadError = document.getElementById('loadError');
 const resumeBanner = document.getElementById('resumeBanner');
 const resumeBtn = document.getElementById('resumeBtn');
@@ -107,6 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   startBtn.addEventListener('click', startWorkout);
   resumeBtn.addEventListener('click', resumeSession);
   discardBtn.addEventListener('click', discardSession);
+  if (testSoundBtn) testSoundBtn.addEventListener('click', testSound);
   completeSetBtn.addEventListener('click', () => completeSet(true));
   skipRestBtn.addEventListener('click', endRest);
   if (startSetBtn) startSetBtn.addEventListener('click', beginSetFromPreview);
@@ -713,6 +715,7 @@ async function resumeSession() {
 
     await requestWakeLock();
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    startAudioKeepAlive();
 
     // Restore the music selection from when the session was saved
     if (state.musicStyle) {
@@ -824,6 +827,7 @@ async function startWorkout() {
 
   await requestWakeLock();
   document.addEventListener('visibilitychange', handleVisibilityChange);
+  startAudioKeepAlive();
 
   if (shouldAutoStartMusic()) {
     musicEngine.start();
@@ -920,6 +924,8 @@ async function handleVisibilityChange() {
     } else if (phase !== 'setup' && phase !== 'finish') {
       await requestWakeLock();
     }
+    const audioCtx = sharedAudioCtx;
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
     if (phase === 'work') startDemoFlip(demoLinkEl);
     if (phase === 'rest') startDemoFlip(nextDemoEl);
   }
@@ -1348,6 +1354,7 @@ function finishWorkout() {
   phase = 'finish';
   clearInterval(timerInterval);
   stopDemoFlip();
+  stopAudioKeepAlive();
   musicEngine.stop();
   releaseWakeLock();
   document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -1608,9 +1615,9 @@ function maybeCountdownCue(phaseName, remaining) {
   if (key === lastSpokenSecondKey) return;
   lastSpokenSecondKey = key;
 
-  // Rising pitch: 3 â†’ lower, 1 â†’ higher
+  // Rising pitch: 3 â†’ lower, 1 â†’ higher (final second slightly longer)
   const freq = remaining === 3 ? 560 : remaining === 2 ? 700 : 880;
-  beep(freq, remaining === 1 ? 0.14 : 0.1);
+  beep(freq, remaining === 1 ? 0.2 : 0.12, 0.7);
   speakCue(String(remaining));
 }
 
@@ -1618,11 +1625,13 @@ function maybeCountdownCue(phaseName, remaining) {
 function announcePhase(kind) {
   lastSpokenSecondKey = '';
   if (kind === 'work') {
-    beep(1200, 0.25);
+    // Clear double-beep "GO"
+    beep(1245, 0.28, 0.7);
+    setTimeout(() => beep(1568, 0.16, 0.6), 150);
     speakCue('Work');
   } else if (kind === 'rest') {
-    beep(660, 0.25);
-    setTimeout(() => beep(550, 0.2), 150);
+    beep(784, 0.28, 0.7);
+    setTimeout(() => beep(587, 0.24, 0.6), 160);
     speakCue('Rest');
   }
 }
@@ -1637,9 +1646,42 @@ function getAudioContext() {
   return sharedAudioCtx;
 }
 
-function beep(frequency = 880, duration = 0.15) {
+/**
+ * Browsers (notably iOS/Android) suspend the AudioContext when the tab or
+ * screen goes idle, and resume() needs a user gesture in some cases. Hook
+ * taps so timer beeps keep coming back even mid-workout.
+ */
+function unlockAudioOnGesture() {
   try {
     const ctx = getAudioContext();
+    if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+  } catch {
+    // ignore
+  }
+}
+document.addEventListener('pointerdown', unlockAudioOnGesture);
+document.addEventListener('touchstart', unlockAudioOnGesture);
+
+let audioKeepAliveInterval = null;
+function startAudioKeepAlive() {
+  clearInterval(audioKeepAliveInterval);
+  audioKeepAliveInterval = setInterval(() => {
+    const ctx = sharedAudioCtx;
+    if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+  }, 4000);
+}
+function stopAudioKeepAlive() {
+  clearInterval(audioKeepAliveInterval);
+  audioKeepAliveInterval = null;
+}
+
+async function beep(frequency = 880, duration = 0.15, volume = 0.7) {
+  try {
+    const ctx = getAudioContext();
+    if (ctx.state === 'suspended') {
+      await ctx.resume().catch(() => {});
+    }
+    if (ctx.state !== 'running') return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'square';
@@ -1648,13 +1690,25 @@ function beep(frequency = 880, duration = 0.15) {
     gain.connect(ctx.destination);
     const t = ctx.currentTime;
     gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(0.45, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(volume, t + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
     osc.start(t);
-    osc.stop(t + duration + 0.02);
+    osc.stop(t + duration + 0.03);
   } catch {
     // ignore audio errors
   }
+}
+
+/**
+ * Verify audio before a session: unlocks the AudioContext on the button tap
+ * and plays the same cue sounds the timers use.
+ */
+function testSound() {
+  getAudioContext();
+  beep(1245, 0.25, 0.7);
+  setTimeout(() => beep(880, 0.2, 0.7), 300);
+  setTimeout(() => beep(660, 0.3, 0.7), 600);
+  setTimeout(() => speakCue('Test'), 150);
 }
 
 // -------------------------- TV / cast mode --------------------------

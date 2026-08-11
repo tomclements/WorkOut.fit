@@ -84,7 +84,7 @@ body.tv-mode #restScreen {
 /* Phone-first: even larger controls */
 @media (max-width: 640px) {
   .big-timer {
-    font-size: 5rem;
+    font-size: 6rem;
   }
 
   .rep-display {
@@ -99,13 +99,13 @@ body.tv-mode #restScreen {
   }
 
   .cta-start {
-    min-height: 3.75rem;
-    font-size: 1.15rem;
+    min-height: 4rem;
+    font-size: 1.3rem;
   }
 
   .complete-set-btn {
-    min-height: 4rem;
-    font-size: 1.1rem;
+    min-height: 4.5rem;
+    font-size: 1.35rem;
   }
 }
 
@@ -276,14 +276,21 @@ body.work-phase #activeScreen {
 }
 
 body.work-phase #activeScreen #exerciseName {
-  font-size: 2rem !important;
+  font-size: clamp(2.5rem, 9vw, 4rem) !important;
   text-align: center !important;
   color: #f1f5f9 !important;
   margin-bottom: 0.25rem !important;
 }
 
+body.work-phase #activeScreen #exerciseMeta {
+  font-size: 1.35rem !important;
+  color: #cbd5e1 !important;
+  text-align: center !important;
+  margin-bottom: 0.25rem !important;
+}
+
 body.work-phase #activeScreen #setBadge {
-  font-size: 1rem !important;
+  font-size: 1.2rem !important;
   background: #1e293b !important;
   color: #94a3b8 !important;
   align-self: center !important;
@@ -308,8 +315,8 @@ body.work-phase #activeScreen #completeSetBtn {
   left: 1rem !important;
   right: 1rem !important;
   width: auto !important;
-  min-height: 4.5rem !important;
-  font-size: 1.3rem !important;
+  min-height: 5rem !important;
+  font-size: 1.7rem !important;
   border-radius: 1rem !important;
 }
 
@@ -461,3 +468,93 @@ body.work-phase #activeScreen #completeSetBtn {
 }
 #finishMuscles .swatch-worked, #analyzeModal .swatch-worked { background: #e0453f; }
 #finishMuscles .swatch-secondary, #analyzeModal .swatch-secondary { background: #f49392; }
+
+/* ---------- Run-screen readability (phone sits on the floor mid-set) ---------- */
+
+/* Work screen */
+#exerciseName {
+  font-size: 1.9rem;
+}
+#exerciseMeta {
+  font-size: 1.15rem;
+}
+#setBadge {
+  font-size: 1.05rem;
+}
+#workPhaseLabel {
+  font-size: 0.95rem;
+}
+#workCue {
+  font-size: 1.3rem;
+}
+#activeScreen .flex.justify-between.text-xs {
+  font-size: 1rem;
+}
+#activeScreen label,
+#activeScreen #volumeValue {
+  font-size: 0.95rem;
+}
+#activeScreen #musicStyleActive {
+  font-size: 1.05rem;
+}
+#activeScreen #nowPlaying {
+  font-size: 0.8rem;
+}
+#activeScreen #pausedOverlay .text-xl,
+#restScreen #restPausedOverlay .text-xl {
+  font-size: 1.6rem;
+}
+
+/* Rest screen */
+#restScreen .text-center .uppercase {
+  font-size: 1.5rem;
+}
+#restScreen .bg-white > .text-sm {
+  font-size: 1.05rem;
+}
+#nextExerciseName {
+  font-size: 2.25rem;
+}
+#nextExerciseMeta {
+  font-size: 1.15rem;
+}
+#viewAllMovesBtn,
+#skipRestBtn,
+#restPauseBtn {
+  font-size: 1.2rem;
+}
+
+/* Finish screen */
+#finishScreen h2 {
+  font-size: 2.25rem;
+}
+#finishSummary {
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+#finishMuscles h3 {
+  font-size: 1.05rem;
+}
+#finishMuscles .text-xs {
+  font-size: 0.95rem;
+}
+#saveSessionStatus {
+  font-size: 1rem;
+}
+#finishScreen a,
+#finishScreen button {
+  font-size: 1.2rem;
+}
+
+/* Moves list (opened during rest) */
+#movesList .moves-item__idx {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.9rem;
+}
+#movesList .moves-item__name {
+  font-size: 1.05rem;
+}
+#movesList .moves-item__meta {
+  font-size: 0.9rem;
+}
