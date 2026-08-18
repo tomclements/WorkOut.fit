@@ -63,6 +63,8 @@ public static class InjuryRules
         var avoid = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var m = ex.Mechanics;
         var primary = ex.Primary ?? new List<string>();
+        var secondary = ex.Secondary ?? new List<string>();
+        var allMuscles = primary.Concat(secondary).ToList();
 
         bool rehabilitative =
             !string.IsNullOrWhiteSpace(m?.Rehab) &&
@@ -77,10 +79,10 @@ public static class InjuryRules
         Neck(avoid, m, primary);
 
         // Muscle-based safety net — always runs, never suppressed by rehab intent.
-        // If an exercise's primary muscles target an injured area, tag it.
+        // If an exercise's primary or secondary muscles target an injured area, tag it.
         foreach (var kvp in MuscleToInjury)
         {
-            if (primary.Any(p => kvp.Value.Contains(p, StringComparer.OrdinalIgnoreCase)))
+            if (allMuscles.Any(p => kvp.Value.Contains(p, StringComparer.OrdinalIgnoreCase)))
                 avoid.Add(kvp.Key);
         }
 
