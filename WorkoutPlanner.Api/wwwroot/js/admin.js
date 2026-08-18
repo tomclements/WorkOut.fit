@@ -603,7 +603,4 @@ function splitCsv(value) {
   return value.split(',').map(s => s.trim()).filter(s => s.length > 0);
 }
 
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str).replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
-}
+

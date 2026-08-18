@@ -1859,6 +1859,4 @@ function formatWorkoutDays(workoutDays, daysPerWeek) {
   return `${daysPerWeek} days/week`;
 }
 
-function escapeHtml(str) {
-  return window.escapeHtml ? window.escapeHtml(str) : (str ? String(str).replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c])) : '');
-}
+

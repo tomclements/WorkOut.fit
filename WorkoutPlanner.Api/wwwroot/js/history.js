@@ -286,6 +286,4 @@ function formatDuration(seconds) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-function escapeHtml(str) {
-  return window.escapeHtml ? window.escapeHtml(str) : (str ? String(str).replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c])) : '');
-}
+
