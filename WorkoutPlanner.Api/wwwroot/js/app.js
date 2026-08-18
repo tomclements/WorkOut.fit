@@ -76,6 +76,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   const welcomeSignInBtn = document.getElementById('welcomeSignInBtn');
   if (welcomeSignInBtn) welcomeSignInBtn.addEventListener('click', openAuthModal);
   initBodyWeight();
+  // Dark mode toggle (matches runner's Aa button)
+  const contrastBtn = document.getElementById('contrastBtn');
+  if (contrastBtn) {
+    contrastBtn.addEventListener('click', () => {
+      const on = !document.body.classList.contains('high-contrast');
+      if (typeof setHighContrast === 'function') setHighContrast(on);
+      else {
+        document.body.classList.toggle('high-contrast', on);
+        try { localStorage.setItem('highContrast', on ? '1' : ''); } catch { /* ignore */ }
+      }
+      contrastBtn.setAttribute('aria-pressed', String(on));
+    });
+    if (document.body.classList.contains('high-contrast')) contrastBtn.setAttribute('aria-pressed', 'true');
+  }
+  // Next workout suggestion card
+  updateNextWorkoutCard();
+  // Initialize focus traps on modals
+  ['authModal', 'preferencesModal', 'exercisePickerModal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && typeof initModal === 'function') {
+      el._onClose = function() { el.classList.add('hidden'); };
+      initModal(el);
+    }
+  });
   if (startWorkoutBtn) startWorkoutBtn.addEventListener('click', () => {
     if (currentPlan) {
       localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
@@ -991,11 +1015,14 @@ async function loadDashboard() {
   if (!currentUser) return;
   try {
     const response = await fetch('/api/dashboard', { credentials: 'include' });
-    if (!response.ok) return;
+    if (!response.ok) {
+      if (typeof showToast === 'function') showToast('Could not load dashboard.', 'error');
+      return;
+    }
     const data = await response.json();
     renderDashboard(data);
-  } catch {
-    // ignore
+  } catch (err) {
+    if (typeof showToast === 'function') showToast(`Dashboard load failed: ${err.message}`, 'error');
   }
 }
 
@@ -1055,6 +1082,63 @@ function renderDashboard(data) {
   }
 }
 
+// --- Next workout suggestion ---
+function updateNextWorkoutCard() {
+  const card = document.getElementById('nextWorkoutCard');
+  if (!card) return;
+  const saved = localStorage.getItem('workoutPlan');
+  if (!saved) { card.classList.add('hidden'); return; }
+  try {
+    const plan = JSON.parse(saved);
+    if (!plan || !plan.plan || !plan.criteria) { card.classList.add('hidden'); return; }
+
+    // Find the plan ID for completed-days tracking
+    let planId = null;
+    const plansKey = 'workoutPlanSavedId';
+    try { planId = localStorage.getItem(plansKey); } catch { /* ignore */ }
+    const completedKey = planId ? 'runnerCompleted_saved-' + planId : 'runnerCompleted_gen-' + (plan.generatedAt || 'unknown');
+    let completed = new Set();
+    try { completed = new Set(JSON.parse(localStorage.getItem(completedKey) || '[]')); } catch { /* ignore */ }
+
+    // Find first uncompleted workout day
+    let nextDay = null;
+    let nextWeek = null;
+    for (const week of plan.plan) {
+      for (const day of week.days) {
+        if (day.type !== 'workout') continue;
+        if (!completed.has(week.week + ':' + day.dayIndex)) {
+          nextDay = day;
+          nextWeek = week;
+          break;
+        }
+      }
+      if (nextDay) break;
+    }
+
+    if (!nextDay) {
+      // All done — suggest restarting from week 1
+      for (const week of plan.plan) {
+        for (const day of week.days) {
+          if (day.type === 'workout') { nextDay = day; nextWeek = week; break; }
+        }
+        if (nextDay) break;
+      }
+    }
+
+    if (!nextDay) { card.classList.add('hidden'); return; }
+
+    const goal = capitalize(plan.criteria.goal || 'training');
+    const split = capitalize(plan.criteria.split || 'full-body');
+    const focus = nextDay.focus || nextDay.sessionStyle || 'Strength';
+    document.getElementById('nextWorkoutInfo').textContent =
+      `Week ${nextWeek.week} — ${nextDay.day} · ${focus} · ${split} · ${goal}`;
+    document.getElementById('nextWorkoutBtn').href = '/workout.html';
+    card.classList.remove('hidden');
+  } catch {
+    card.classList.add('hidden');
+  }
+}
+
 // --- Body weight tracking ---
 const WEIGHT_UNIT_KEY = 'workoutWeightUnit';
 
@@ -1098,8 +1182,8 @@ async function loadBodyWeight() {
     if (!response.ok) return;
     currentWeightData = await response.json();
     renderBodyWeight(currentWeightData);
-  } catch {
-    // ignore
+  } catch (err) {
+    if (typeof showToast === 'function') showToast('Could not load weight data.', 'error');
   }
 }
 
@@ -1219,7 +1303,11 @@ async function addWeightEntry(event) {
 }
 
 async function deleteWeightEntry(id) {
-  if (!confirm('Remove this weight entry?')) return;
+  if (typeof showConfirm === 'function') {
+    if (!await showConfirm('Remove entry', 'Remove this weight entry?')) return;
+  } else {
+    if (!confirm('Remove this weight entry?')) return;
+  }
   try {
     const response = await fetch(`/api/body-weight/${id}`, { method: 'DELETE', credentials: 'include' });
     if (!response.ok) throw new Error('Failed to remove');
@@ -1254,6 +1342,7 @@ async function loadSavedPlan(id) {
     currentPlan = result;
     currentPlanId = id;
     localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
+    try { localStorage.setItem('workoutPlanSavedId', String(id)); } catch { /* ignore */ }
     renderPlan(currentPlan);
     plannerSection.classList.remove('hidden');
     document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
@@ -1263,7 +1352,11 @@ async function loadSavedPlan(id) {
 }
 
 async function deleteSavedPlan(id) {
-  if (!confirm('Are you sure you want to delete this plan?')) return;
+  if (typeof showConfirm === 'function') {
+    if (!await showConfirm('Delete plan', 'Are you sure you want to delete this plan?')) return;
+  } else {
+    if (!confirm('Are you sure you want to delete this plan?')) return;
+  }
   try {
     const response = await fetch(`/api/plans/${id}`, { method: 'DELETE', credentials: 'include' });
     if (!response.ok) throw new Error('Failed to delete');
@@ -1283,7 +1376,9 @@ async function saveCurrentPlan() {
     return;
   }
   const defaultName = `Plan ${new Date().toLocaleDateString()}`;
-  const name = window.prompt('Save plan as:', defaultName);
+  const name = typeof showPrompt === 'function'
+    ? await showPrompt('Save plan', 'Give your plan a name:', defaultName)
+    : window.prompt('Save plan as:', defaultName);
   if (name === null) return;
 
   try {
@@ -1323,6 +1418,7 @@ async function generate(options = {}) {
   const originalRegen = regenBtn ? regenBtn.textContent : '';
   btn.textContent = reshuffle ? 'Trying a new mix...' : 'Creating...';
   btn.disabled = true;
+  btn.classList.add('opacity-75', 'cursor-wait');
   if (regenBtn) {
     regenBtn.disabled = true;
     if (reshuffle) regenBtn.textContent = 'Shuffling...';
@@ -1381,6 +1477,7 @@ async function generate(options = {}) {
   } finally {
     btn.textContent = originalText;
     btn.disabled = false;
+    btn.classList.remove('opacity-75', 'cursor-wait');
     if (regenBtn) {
       regenBtn.disabled = false;
       regenBtn.textContent = originalRegen || 'Try different exercises';
@@ -1763,5 +1860,5 @@ function formatWorkoutDays(workoutDays, daysPerWeek) {
 }
 
 function escapeHtml(str) {
-  return str.replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+  return window.escapeHtml ? window.escapeHtml(str) : (str ? String(str).replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c])) : '');
 }

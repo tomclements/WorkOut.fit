@@ -50,7 +50,7 @@ async function checkAdmin() {
   const returnUrl = '/?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
   document.getElementById('loginLink').href = returnUrl;
   // If not signed in, send the user to the main page to sign in and come back.
-  setTimeout(() => { window.location.href = returnUrl; }, 500);
+  // User can click the "Sign in now" link — no auto-redirect
 }
 
 function switchTab(tab) {
@@ -161,7 +161,7 @@ async function loadLibraryStats() {
     document.getElementById('statWithImages').textContent = stats.withImages ?? 0;
     document.getElementById('statTotalEquipment').textContent = stats.totalEquipment ?? 0;
   } catch {
-    // ignore
+    if (typeof showToast === 'function') showToast('Could not load library stats.', 'error');
   }
 }
 
@@ -170,7 +170,11 @@ async function refreshExercisesFromSource() {
   const msg = force
     ? 'Force overwrite will update existing exercises from free-exercise-db (manual name/equipment edits on those IDs may be replaced). Continue?'
     : 'Import new exercises from free-exercise-db? Existing exercises will be left unchanged.';
-  if (!confirm(msg)) return;
+  if (typeof showConfirm === 'function') {
+    if (!await showConfirm('Refresh exercises', msg)) return;
+  } else {
+    if (!confirm(msg)) return;
+  }
 
   const btn = document.getElementById('refreshExercisesBtn');
   const spinner = document.getElementById('refreshSpinner');
@@ -261,7 +265,11 @@ async function addAdminUser(e) {
 }
 
 async function deleteAdminUser(id) {
-  if (!confirm('Remove this admin user?')) return;
+  if (typeof showConfirm === 'function') {
+    if (!await showConfirm('Remove admin', 'Remove this admin user?')) return;
+  } else {
+    if (!confirm('Remove this admin user?')) return;
+  }
   try {
     const response = await fetch(`/api/admin/users/${id}`, {
       method: 'DELETE',
@@ -269,12 +277,14 @@ async function deleteAdminUser(id) {
     });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      alert(data.title || data.detail || `Remove failed (${response.status})`);
+      if (typeof showToast === 'function') showToast(data.title || data.detail || `Remove failed (${response.status})`, 'error');
+      else alert(data.title || data.detail || `Remove failed (${response.status})`);
       return;
     }
     await loadUsers();
   } catch (err) {
-    alert('Error removing admin: ' + err.message);
+    if (typeof showToast === 'function') showToast('Error removing admin: ' + err.message, 'error');
+    else alert('Error removing admin: ' + err.message);
   }
 }
 
@@ -378,13 +388,15 @@ async function saveExercise(e) {
     });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      alert(data.title || data.detail || `Save failed (${response.status})`);
+      if (typeof showToast === 'function') showToast(data.title || data.detail || `Save failed (${response.status})`, 'error');
+      else alert(data.title || data.detail || `Save failed (${response.status})`);
       return;
     }
     resetExerciseForm();
     await loadExercises();
   } catch (err) {
-    alert('Error saving exercise: ' + err.message);
+    if (typeof showToast === 'function') showToast('Error saving exercise: ' + err.message, 'error');
+    else alert('Error saving exercise: ' + err.message);
   }
 }
 
@@ -493,7 +505,11 @@ function resetExerciseForm() {
 }
 
 async function deleteExercise(id) {
-  if (!confirm(`Delete exercise '${id}'?`)) return;
+  if (typeof showConfirm === 'function') {
+    if (!await showConfirm('Delete exercise', `Delete exercise '${id}'?`)) return;
+  } else {
+    if (!confirm(`Delete exercise '${id}'?`)) return;
+  }
   try {
     const response = await fetch(`/api/admin/exercises/${encodeURIComponent(id)}`, {
       method: 'DELETE',
@@ -502,7 +518,8 @@ async function deleteExercise(id) {
     if (!response.ok) throw new Error('Delete failed');
     await loadExercises();
   } catch (err) {
-    alert('Error deleting exercise: ' + err.message);
+    if (typeof showToast === 'function') showToast('Error deleting exercise: ' + err.message, 'error');
+    else alert('Error deleting exercise: ' + err.message);
   }
 }
 
@@ -527,13 +544,15 @@ async function saveEquipment(e) {
     });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      alert(data.title || data.detail || `Save failed (${response.status})`);
+      if (typeof showToast === 'function') showToast(data.title || data.detail || `Save failed (${response.status})`, 'error');
+      else alert(data.title || data.detail || `Save failed (${response.status})`);
       return;
     }
     resetEquipmentForm();
     await loadEquipment();
   } catch (err) {
-    alert('Error saving equipment: ' + err.message);
+    if (typeof showToast === 'function') showToast('Error saving equipment: ' + err.message, 'error');
+    else alert('Error saving equipment: ' + err.message);
   }
 }
 
@@ -557,7 +576,11 @@ function resetEquipmentForm() {
 }
 
 async function deleteEquipment(id) {
-  if (!confirm(`Delete equipment '${id}'?`)) return;
+  if (typeof showConfirm === 'function') {
+    if (!await showConfirm('Delete equipment', `Delete equipment '${id}'?`)) return;
+  } else {
+    if (!confirm(`Delete equipment '${id}'?`)) return;
+  }
   try {
     const response = await fetch(`/api/admin/equipment/${encodeURIComponent(id)}`, {
       method: 'DELETE',
@@ -565,12 +588,14 @@ async function deleteEquipment(id) {
     });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      alert(data.title || data.detail || `Delete failed (${response.status})`);
+      if (typeof showToast === 'function') showToast(data.title || data.detail || `Delete failed (${response.status})`, 'error');
+      else alert(data.title || data.detail || `Delete failed (${response.status})`);
       return;
     }
     await loadEquipment();
   } catch (err) {
-    alert('Error deleting equipment: ' + err.message);
+    if (typeof showToast === 'function') showToast('Error deleting equipment: ' + err.message, 'error');
+    else alert('Error deleting equipment: ' + err.message);
   }
 }
 

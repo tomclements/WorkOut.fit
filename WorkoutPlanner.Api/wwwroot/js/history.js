@@ -30,7 +30,7 @@ async function checkAuth() {
   historySection.classList.add('hidden');
   const returnUrl = '/?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
   document.getElementById('loginLink').href = returnUrl;
-  setTimeout(() => { window.location.href = returnUrl; }, 500);
+  // User can click the "Sign in now" link — no auto-redirect
 }
 
 async function loadHistory() {
@@ -276,7 +276,7 @@ function closeSessionModal() {
 
 function formatDate(dateString) {
   if (!dateString) return '-';
-  return new Date(dateString).toLocaleString();
+  return (typeof window.formatDateTime === 'function' ? window.formatDateTime : (d => new Date(d).toLocaleString()))(dateString);
 }
 
 function formatDuration(seconds) {
@@ -287,6 +287,5 @@ function formatDuration(seconds) {
 }
 
 function escapeHtml(str) {
-  if (!str) return '';
-  return String(str).replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+  return window.escapeHtml ? window.escapeHtml(str) : (str ? String(str).replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c])) : '');
 }

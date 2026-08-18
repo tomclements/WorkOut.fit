@@ -70,7 +70,7 @@ const movesListModal = document.getElementById('movesListModal');
 const movesList = document.getElementById('movesList');
 const closeMovesListBtn = document.getElementById('closeMovesList');
 const workTimerBlock = document.getElementById('workTimerBlock');
-const previewBlock = document.getElementById('previewBlock');
+const previewBlock = null; // removed dead preview UI
 const previewCountdownEl = document.getElementById('previewCountdown');
 const startSetBtn = document.getElementById('startSetBtn');
 
@@ -140,6 +140,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.target === castModal) closeCastModal();
   });
 
+  // Skip exercise buttons
+  const skipExerciseBtn = document.getElementById('skipExerciseBtn');
+  if (skipExerciseBtn) skipExerciseBtn.addEventListener('click', skipCurrentExercise);
+  
+  const restSkipExerciseBtn = document.getElementById('restSkipExerciseBtn');
+  if (restSkipExerciseBtn) restSkipExerciseBtn.addEventListener('click', skipCurrentExercise);
+  
+  // Previous exercise button
+  const prevExerciseBtn = document.getElementById('prevExerciseBtn');
+  if (prevExerciseBtn) prevExerciseBtn.addEventListener('click', goBackExercise);
+
   if (viewAllMovesBtn) viewAllMovesBtn.addEventListener('click', openMovesList);
   if (closeMovesListBtn) closeMovesListBtn.addEventListener('click', closeMovesList);
   movesListModal?.addEventListener('click', (e) => {
@@ -177,6 +188,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       e.preventDefault();
       endRest();
     }
+  });
+
+  // Initialize focus traps on runner modals
+  document.querySelectorAll('[role="dialog"][aria-modal="true"]').forEach(modal => {
+    modal._onClose = function() { modal.classList.add('hidden'); };
+    if (typeof initModal === 'function') initModal(modal);
   });
 });
 
@@ -1025,12 +1042,8 @@ function exerciseMediaHtml(ex, options = {}) {
     </div>`;
 }
 
-function escapeHtmlRunner(s) {
-  return String(s ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+function escapeHtmlRunner(str) {
+  return window.escapeHtml ? window.escapeHtml(str) : (str ? String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])) : '');
 }
 
 window.onDemoImgError = function onDemoImgError(img) {
@@ -1146,21 +1159,10 @@ function fillExerciseHeader(ex) {
   }
 }
 
-/**
- * Before the first set of each new move, show a short in-runner demo
- * so form is clear without leaving the app.
- */
-function shouldPreviewMove() {
-  return false;
-}
-
-function showMovePreview() {
-  // No-op: preview phase removed
-}
-
-function beginSetFromPreview() {
-  // No-op: preview phase removed
-}
+// Preview phase removed — functions kept as no-ops for call-site compatibility
+function shouldPreviewMove() { return false; }
+function showMovePreview() { }
+function beginSetFromPreview() { }
 
 function enterWork(resuming = false) {
   const ex = currentExercise();
@@ -1347,6 +1349,53 @@ function openMovesList() {
 
 function closeMovesList() {
   if (movesListModal) movesListModal.classList.add('hidden');
+}
+
+function skipCurrentExercise() {
+  if (phase !== 'work' && phase !== 'rest') return;
+  if (sessionExercises.length === 0) return;
+
+  // Mark any incomplete sets as skipped (0 reps)
+  const ex = currentExercise();
+  if (ex && ex.completedSets.length < ex.sets) {
+    const remaining = ex.sets - ex.completedSets.length;
+    for (let i = 0; i < remaining; i++) {
+      ex.completedSets.push({ reps: 0, durationSeconds: 0 });
+    }
+  }
+
+  currentExerciseIndex++;
+  currentSetIndex = 0;
+
+  if (currentExerciseIndex >= sessionExercises.length) {
+    finishWorkout();
+    return;
+  }
+
+  // Show a brief toast
+  if (typeof showToast === 'function') showToast('Skipped — next exercise', 'info');
+  
+  enterRest();
+}
+
+function goBackExercise() {
+  if (phase !== 'work' && phase !== 'rest') return;
+  if (currentExerciseIndex <= 0) return;
+
+  // Clear completed sets on the current exercise so we can redo it
+  const ex = currentExercise();
+  if (ex) ex.completedSets = [];
+
+  currentExerciseIndex--;
+  currentSetIndex = 0;
+
+  if (typeof showToast === 'function') showToast('Going back', 'info');
+  
+  // If we're in rest phase, restart rest for the previous exercise
+  if (phase === 'rest') {
+    clearInterval(timerInterval);
+  }
+  enterWork();
 }
 
 function finishWorkout() {
@@ -1767,7 +1816,7 @@ class PlaylistMusicEngine {
 
   async loadCatalog() {
     try {
-      const res = await fetch('/music/catalog.json?t=' + Date.now(), { cache: 'no-store' });
+      const res = await fetch('/music/catalog.json');
       if (res.ok) this.catalog = await res.json();
     } catch {
       this.catalog = { styles: [] };

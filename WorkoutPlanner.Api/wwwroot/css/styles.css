@@ -3,6 +3,116 @@ html {
   color-scheme: light;
 }
 
+/* ---------- Confirm / prompt modal ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 55;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.modal-dialog {
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 24rem;
+  margin: 0 1rem;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.modal-message {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.modal-input {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+.btn-primary:hover { background: #1d4ed8; }
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+.btn-secondary:hover { background: #e5e7eb; }
+
+.btn-danger {
+  background: #dc2626;
+  color: #fff;
+}
+.btn-danger:hover { background: #b91c1c; }
+
+body.high-contrast .modal-dialog {
+  background: var(--dm-surface);
+  border: 1px solid var(--dm-border);
+}
+
+body.high-contrast .modal-title {
+  color: var(--dm-text);
+}
+
+body.high-contrast .modal-message {
+  color: var(--dm-muted);
+}
+
+body.high-contrast .modal-input {
+  background: var(--dm-surface-2);
+  color: var(--dm-text);
+  border-color: var(--dm-border);
+}
+
+body.high-contrast .btn-secondary {
+  background: var(--dm-elevated);
+  color: var(--dm-text);
+  border-color: var(--dm-border);
+}
+
 /* Print-friendly plan output */
 @media print {
   body {
@@ -110,7 +220,9 @@ body.workout-active {
 }
 
 .site-toast.hidden {
-  display: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(8px);
 }
 
 .site-toast--success {
@@ -130,6 +242,38 @@ body.workout-active {
 
 body.workout-active .site-toast {
   bottom: 1.5rem;
+}
+
+/* ---------- Spinner ---------- */
+.site-spinner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.site-spinner::before {
+  content: '';
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2.5px solid #d1d5db;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: site-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes site-spin {
+  to { transform: rotate(360deg); }
+}
+
+body.reduced-motion .site-spinner::before {
+  animation: none;
+  border-color: #2563eb;
+  border-top-color: transparent;
 }
 
 /* ---------- Empty / onboarding ---------- */
@@ -668,3 +812,12 @@ body.high-contrast .shadow-lg {
 }
 
 /* Fixed: muted links that are only text-sm without color utility still inherit light text */
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

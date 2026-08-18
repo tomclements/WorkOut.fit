@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#1e3a8a" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" href="/icon.svg" type="image/svg+xml" />
@@ -141,7 +141,7 @@
       <div class="mb-4">
         <div class="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
           <span>Workout progress</span>
-          <span id="progressText">0%</span>
+          <span id="progressText" aria-live="polite">0%</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-3">
           <div id="progressBar" class="bg-blue-600 h-3 rounded-full transition-all" style="width:0%"></div>
@@ -166,19 +166,11 @@
 
       <div id="workTimerBlock">
         <div class="flex justify-center mb-4">
-          <div id="timerDisplay" class="big-timer text-green-700">00:30</div>
+          <div id="timerDisplay" class="big-timer text-green-700" aria-live="polite" aria-atomic="true">00:30</div>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
           <div id="workProgressBar" class="bg-green-500 h-2 rounded-full transition-all" style="width:100%"></div>
         </div>
-      </div>
-
-      <div id="previewBlock" class="hidden text-center mb-4">
-        <p class="text-sm text-gray-600 mb-2">Watch the demo, then go when ready.</p>
-        <div id="previewCountdown" class="text-3xl font-bold text-blue-800 tabular-nums mb-3">8</div>
-        <button id="startSetBtn" type="button" class="w-full bg-green-600 active:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation min-h-[3.5rem]">
-          Start set
-        </button>
       </div>
 
       <div class="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
@@ -213,6 +205,14 @@
         <button id="resumeWorkoutBtn" type="button" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-md touch-manipulation">Resume</button>
       </div>
 
+      <div class="grid grid-cols-2 gap-2 mt-3">
+        <button id="skipExerciseBtn" type="button" class="bg-amber-100 active:bg-amber-200 text-amber-800 font-semibold py-3 px-4 rounded-lg transition touch-manipulation min-h-[3rem] text-sm">
+          Skip exercise
+        </button>
+        <button id="prevExerciseBtn" type="button" class="bg-gray-100 active:bg-gray-200 text-gray-600 font-semibold py-3 px-4 rounded-lg transition touch-manipulation min-h-[3rem] text-sm">
+          ← Previous
+        </button>
+      </div>
       <button id="pauseBtn" type="button" class="w-full mt-3 bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition touch-manipulation min-h-[3rem]">
         Pause workout
       </button>
@@ -222,7 +222,7 @@
     <section id="restScreen" class="runner-screen rest-bg rounded-xl shadow p-6">
       <div class="text-center mb-4">
         <div class="text-base sm:text-lg font-semibold text-blue-800 uppercase tracking-wider mb-2">Rest</div>
-        <div id="restTimer" class="big-timer text-blue-800">00:00</div>
+        <div id="restTimer" class="big-timer text-blue-800" aria-live="polite" aria-atomic="true">00:00</div>
       </div>
 
       <div class="w-full bg-blue-100 rounded-full h-2 mb-6">
@@ -249,6 +249,9 @@
         <button id="restResumeWorkoutBtn" type="button" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-md touch-manipulation">Resume</button>
       </div>
 
+      <button id="restSkipExerciseBtn" type="button" class="w-full mt-3 bg-amber-100 active:bg-amber-200 text-amber-800 font-semibold py-3 px-4 rounded-lg transition touch-manipulation min-h-[3rem]">
+        Skip exercise
+      </button>
       <button id="restPauseBtn" type="button" class="w-full mt-3 bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition touch-manipulation min-h-[3rem]">
         Pause workout
       </button>
