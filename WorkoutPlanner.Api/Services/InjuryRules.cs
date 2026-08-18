@@ -6,13 +6,29 @@ namespace WorkoutPlanner.Api.Services;
 /// Deterministic injury-tag engine driven by each exercise's anatomical
 /// <see cref="ExerciseMechanics"/> plus its primary muscle list. This is the single
 /// source of truth for <c>avoidFor</c> at catalog/DB seed time.
-/// Rehab-intent exercises (rotator-cuff / patellar) deliberately retain their flags.
+/// A muscle-based pass runs unconditionally at the end so that exercises whose
+/// primary muscles target an injured area are always tagged — even when the
+/// mechanics-based check suppresses the tag for rehabilitative intent.
 /// </summary>
 public static class InjuryRules
 {
     private static readonly string[] ArmMuscles = { "biceps", "triceps", "forearms" };
     private static readonly string[] LegMuscles =
         { "quadriceps", "hamstrings", "glutes", "calves", "adductors", "abductors" };
+
+    /// <summary>
+    /// Maps each injury area to the primary muscles that, when worked, stress that area.
+    /// Runs unconditionally so rehab intent never suppresses a genuine muscle→joint match.
+    /// </summary>
+    private static readonly Dictionary<string, string[]> MuscleToInjury = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["shoulder"] = new[] { "shoulders", "traps" },
+        ["elbow"]    = new[] { "biceps", "triceps", "forearms" },
+        ["wrist"]    = new[] { "forearms" },
+        ["knee"]     = LegMuscles,
+        ["lower-back"] = new[] { "lower back" },
+        ["neck"]     = new[] { "neck" }
+    };
 
     public static List<string> ComputeAvoidance(Exercise ex)
     {
@@ -31,6 +47,14 @@ public static class InjuryRules
         Knee(avoid, m, primary);
         LowerBack(avoid, m, primary);
         Neck(avoid, m, primary);
+
+        // Muscle-based safety net — always runs, never suppressed by rehab intent.
+        // If an exercise's primary muscles target an injured area, tag it.
+        foreach (var kvp in MuscleToInjury)
+        {
+            if (primary.Any(p => kvp.Value.Contains(p, StringComparer.OrdinalIgnoreCase)))
+                avoid.Add(kvp.Key);
+        }
 
         return avoid.OrderBy(a => a, StringComparer.OrdinalIgnoreCase).ToList();
     }

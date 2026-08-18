@@ -1003,7 +1003,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Band%20Pull%20Apart%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Pull_Apart/0.jpg",
-    "avoidFor": [],
+    "avoidFor": [
+      "shoulder"
+    ],
     "force": "pull",
     "mechanic": "isolation",
     "mechanics": {
@@ -1763,7 +1765,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Rear%20Delt%20Row%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Rear_Delt_Row/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "shoulder"
     ],
     "force": "pull",
     "mechanic": "compound",
@@ -1974,6 +1977,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shrug/0.jpg",
     "avoidFor": [
       "neck",
+      "shoulder",
       "wrist"
     ],
     "force": "pull",
@@ -2016,6 +2020,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shrug_Behind_The_Back/0.jpg",
     "avoidFor": [
       "neck",
+      "shoulder",
       "wrist"
     ],
     "force": "pull",
@@ -2576,7 +2581,8 @@
     "demoUrl": "https://exrx.net/WeightExercises/DeltoidPosterior/DBRearLateralRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Dumbbell_Rear_Delt_Raise_With_Head_On_Bench/0.jpg",
     "avoidFor": [
-      "lower-back"
+      "lower-back",
+      "shoulder"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -4219,7 +4225,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Rear%20Delt%20Fly%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Rear_Delt_Fly/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "shoulder"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -4339,7 +4346,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Cable%20Rope%20Rear-Delt%20Rows%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Rope_Rear-Delt_Rows/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "shoulder"
     ],
     "force": "pull",
     "mechanic": "compound",
@@ -4538,6 +4546,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Shrugs/0.jpg",
     "avoidFor": [
       "neck",
+      "shoulder",
       "wrist"
     ],
     "force": "pull",
@@ -4576,7 +4585,8 @@
     "demoUrl": "https://exrx.net/WeightExercises/Biceps/CBCurl",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Wrist_Curl/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -4769,6 +4779,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf-Machine_Shoulder_Shrug/0.jpg",
     "avoidFor": [
       "neck",
+      "shoulder",
       "wrist"
     ],
     "force": "pull",
@@ -7929,7 +7940,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Lying%20Pronation%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lying_Pronation/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -8007,7 +8019,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Lying%20Supination%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lying_Supination/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -8541,6 +8554,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/0.jpg",
     "avoidFor": [
       "neck",
+      "shoulder",
       "wrist"
     ],
     "force": "pull",
@@ -9181,7 +9195,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=External%20Rotation%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/External_Rotation/0.jpg",
-    "avoidFor": [],
+    "avoidFor": [
+      "shoulder"
+    ],
     "force": "pull",
     "mechanic": "isolation",
     "mechanics": {
@@ -9218,7 +9234,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=External%20Rotation%20with%20Band%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/External_Rotation_with_Band/0.jpg",
-    "avoidFor": [],
+    "avoidFor": [
+      "shoulder"
+    ],
     "force": "pull",
     "mechanic": "compound",
     "mechanics": {
@@ -9255,7 +9273,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=External%20Rotation%20with%20Cable%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/External_Rotation_with_Cable/0.jpg",
-    "avoidFor": [],
+    "avoidFor": [
+      "shoulder"
+    ],
     "force": "pull",
     "mechanic": "isolation",
     "mechanics": {
@@ -9333,6 +9353,7 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Farmer%27s%20Carry",
     "avoidFor": [
       "lower-back",
+      "shoulder",
       "wrist"
     ],
     "force": "unknown",
@@ -9415,7 +9436,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Finger%20Curls%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Finger_Curls/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -10567,7 +10589,8 @@
     "restSec": 45,
     "demoUrl": "https://exrx.net/WeightExercises/Brachioradialis/DBHammerCurl",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "unknown",
     "mechanic": "unknown",
@@ -12979,7 +13002,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Kettlebell%20Sumo%20High%20Pull%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Sumo_High_Pull/0.jpg",
     "avoidFor": [
-      "knee"
+      "knee",
+      "shoulder"
     ],
     "force": "pull",
     "mechanic": "compound",
@@ -14229,6 +14253,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Shrug/0.jpg",
     "avoidFor": [
       "neck",
+      "shoulder",
       "wrist"
     ],
     "force": "pull",
@@ -14880,7 +14905,9 @@
     "restSec": 60,
     "demoUrl": "https://www.youtube.com/results?search_query=Lying%20Rear%20Delt%20Raise%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Rear_Delt_Raise/0.jpg",
-    "avoidFor": [],
+    "avoidFor": [
+      "shoulder"
+    ],
     "force": "pull",
     "mechanic": "isolation",
     "mechanics": {
@@ -17397,7 +17424,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Palms-Down%20Dumbbell%20Wrist%20Curl%20Over%20A%20Bench%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Palms-Down_Dumbbell_Wrist_Curl_Over_A_Bench/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -17436,7 +17464,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Palms-Down%20Wrist%20Curl%20Over%20A%20Bench%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Palms-Down_Wrist_Curl_Over_A_Bench/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -17475,7 +17504,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Palms-Up%20Barbell%20Wrist%20Curl%20Over%20A%20Bench%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Palms-Up_Barbell_Wrist_Curl_Over_A_Bench/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -17514,7 +17544,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Palms-Up%20Dumbbell%20Wrist%20Curl%20Over%20A%20Bench%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Palms-Up_Dumbbell_Wrist_Curl_Over_A_Bench/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -19433,7 +19464,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Reverse%20Flyes%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Flyes/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "shoulder"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -19472,7 +19504,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Reverse%20Flyes%20With%20External%20Rotation%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Flyes_With_External_Rotation/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "shoulder"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -20166,7 +20199,9 @@
     "restSec": 60,
     "demoUrl": "https://exrx.net/WeightExercises/DeltoidPosterior/DBSeatedRearLateralRaise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Bent-Over_Rear_Delt_Raise/0.jpg",
-    "avoidFor": [],
+    "avoidFor": [
+      "shoulder"
+    ],
     "force": "pull",
     "mechanic": "isolation",
     "mechanics": {
@@ -20485,7 +20520,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Dumbbell%20Palms-Down%20Wrist%20Curl%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Dumbbell_Palms-Down_Wrist_Curl/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -20524,7 +20560,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Dumbbell%20Palms-Up%20Wrist%20Curl%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Dumbbell_Palms-Up_Wrist_Curl/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -20758,7 +20795,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Seated%20One-Arm%20Dumbbell%20Palms-Down%20Wrist%20Curl%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_One-Arm_Dumbbell_Palms-Down_Wrist_Curl/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -20797,7 +20835,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Seated%20One-Arm%20Dumbbell%20Palms-Up%20Wrist%20Curl%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_One-Arm_Dumbbell_Palms-Up_Wrist_Curl/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -20879,7 +20918,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Palm-Up%20Barbell%20Wrist%20Curl%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Palm-Up_Barbell_Wrist_Curl/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -20918,7 +20958,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Palms-Down%20Barbell%20Wrist%20Curl%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Palms-Down_Barbell_Wrist_Curl/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -21034,7 +21075,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Two-Arm%20Palms-Up%20Low-Pulley%20Wrist%20Curl%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Two-Arm_Palms-Up_Low-Pulley_Wrist_Curl/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -21756,6 +21798,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Behind_the_Back_Shrug/0.jpg",
     "avoidFor": [
       "neck",
+      "shoulder",
       "wrist"
     ],
     "force": "pull",
@@ -24753,7 +24796,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Palms-Up%20Barbell%20Behind%20The%20Back%20Wrist%20Curl%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Palms-Up_Barbell_Behind_The_Back_Wrist_Curl/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",
@@ -27145,7 +27189,8 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Wrist%20Rotations%20with%20Straight%20Bar%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wrist_Rotations_with_Straight_Bar/0.jpg",
     "avoidFor": [
-      "elbow"
+      "elbow",
+      "wrist"
     ],
     "force": "pull",
     "mechanic": "isolation",

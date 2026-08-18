@@ -1382,6 +1382,7 @@ async function deleteSavedPlan(id) {
 }
 
 function runPlan(id) {
+  try { localStorage.setItem('workoutPlanSavedId', String(id)); } catch { /* ignore */ }
   window.location.href = `/workout.html?planId=${id}`;
 }
 
@@ -1404,6 +1405,8 @@ async function saveCurrentPlan() {
       body: JSON.stringify({ name: name || defaultName, planJson: JSON.stringify(currentPlan) })
     });
     if (!response.ok) throw new Error('Server error');
+    const saved = await response.json();
+    try { localStorage.setItem('workoutPlanSavedId', String(saved.id)); } catch { /* ignore */ }
     setStatus('Plan saved.', false);
     if (typeof showToast === 'function') showToast('Plan saved to your account.', 'success');
     loadDashboard();

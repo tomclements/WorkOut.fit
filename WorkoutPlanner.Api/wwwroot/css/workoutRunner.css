@@ -257,7 +257,6 @@ body.high-contrast .demo-actions a {
 }
 
 /* Phone-optimized work mode — only essential info */
-body.work-phase #activeScreen #demoLink,
 body.work-phase #activeScreen > .mb-4:first-child,
 body.work-phase #activeScreen #workPhaseLabel,
 body.work-phase #activeScreen #workCue,
@@ -403,11 +402,6 @@ body.rest-phase #restScreen #restPausedOverlay button {
   min-height: 4rem !important;
 }
 
-/* Hide demo panel in rest phase for cleaner floor view */
-body.rest-phase #nextDemo {
-  display: none !important;
-}
-
 /* ---------- Landscape (phone on side) ---------- */
 @media (orientation: landscape) and (max-height: 500px) {
   /* Work screen landscape */
@@ -495,8 +489,10 @@ body.rest-phase #nextDemo {
     padding: 0.4rem 1.5rem;
   }
 
-  /* Hide chrome in landscape to use every pixel */
-  body.rest-phase #restScreen .bg-white {
+  /* Hide chrome in landscape to use every pixel — keep demo panel visible */
+  body.rest-phase #restScreen .bg-white > div:first-child,
+  body.rest-phase #restScreen .bg-white > #nextExerciseName,
+  body.rest-phase #restScreen .bg-white > #nextExerciseMeta {
     display: none !important;
   }
 

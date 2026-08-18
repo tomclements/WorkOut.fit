@@ -298,17 +298,31 @@ async function loadPlan() {
       return;
     }
   } else {
-    const saved = localStorage.getItem('workoutPlan');
-    if (saved) {
+    // Check for a saved plan ID in localStorage (set by runPlan or saveCurrentPlan)
+    const savedId = localStorage.getItem('workoutPlanSavedId');
+    if (savedId) {
       try {
-        currentPlan = JSON.parse(saved);
+        const res = await fetch(`/api/plans/${savedId}`, { credentials: 'include' });
+        if (!res.ok) throw new Error('Could not load saved plan.');
+        currentPlan = await res.json();
+        currentSavedPlanId = parseInt(savedId, 10);
       } catch {
+        // Fall through to localStorage plan
+      }
+    }
+    if (!currentPlan) {
+      const saved = localStorage.getItem('workoutPlan');
+      if (saved) {
+        try {
+          currentPlan = JSON.parse(saved);
+        } catch {
+          showLoadError('No workout plan found. Generate or save a plan first.');
+          return;
+        }
+      } else {
         showLoadError('No workout plan found. Generate or save a plan first.');
         return;
       }
-    } else {
-      showLoadError('No workout plan found. Generate or save a plan first.');
-      return;
     }
   }
 
@@ -1108,7 +1122,6 @@ function startDemoFlip(root) {
 }
 
 function setWorkChromeMode() {
-  if (demoLinkEl) demoLinkEl.classList.add('hidden');
   if (workTimerBlock) workTimerBlock.classList.remove('hidden');
   if (previewBlock) previewBlock.classList.add('hidden');
   if (completeSetBtn) completeSetBtn.classList.remove('hidden');
