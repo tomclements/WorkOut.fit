@@ -934,6 +934,7 @@ async function handleVisibilityChange() {
 function showScreen(screen) {
   [setupScreen, activeScreen, restScreen, finishScreen].forEach(s => s.classList.remove('active'));
   screen.classList.add('active');
+  document.body.classList.toggle('rest-phase', screen === restScreen);
 
   const inSession = screen === activeScreen || screen === restScreen;
   // Keep demo flip alive when returning to a screen that has media
