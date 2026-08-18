@@ -30,6 +30,34 @@ public static class InjuryRules
         ["neck"]     = new[] { "neck" }
     };
 
+    /// <summary>
+    /// Maps UI rehab checkbox values (injury area names) to the <c>mechanics.rehab</c>
+    /// string values stored on exercises. Used to match user rehab selections to exercises.
+    /// </summary>
+    public static readonly Dictionary<string, string[]> RehabToMechanics = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["shoulder"] = new[] { "rotator-cuff" },
+        ["knee"]     = new[] { "patellar" }
+    };
+
+    /// <summary>
+    /// Returns true if the exercise's <c>mechanics.rehab</c> matches any of the user's
+    /// selected rehab areas via <see cref="RehabToMechanics"/>.
+    /// </summary>
+    public static bool MatchesRehab(Exercise ex, List<string> rehabAreas)
+    {
+        if (rehabAreas == null || rehabAreas.Count == 0) return false;
+        var mechRehab = ex.Mechanics?.Rehab;
+        if (string.IsNullOrWhiteSpace(mechRehab)) return false;
+        foreach (var area in rehabAreas)
+        {
+            if (RehabToMechanics.TryGetValue(area, out var mechanicsValues) &&
+                mechanicsValues.Any(v => v.Equals(mechRehab, StringComparison.OrdinalIgnoreCase)))
+                return true;
+        }
+        return false;
+    }
+
     public static List<string> ComputeAvoidance(Exercise ex)
     {
         var avoid = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

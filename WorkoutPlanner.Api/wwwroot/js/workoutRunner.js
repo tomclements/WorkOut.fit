@@ -624,8 +624,16 @@ function swapAlternatives(ex) {
   const criteria = currentPlan?.criteria || {};
   const equipment = (criteria.equipment || []).map(e => e.toLowerCase());
   const restrictions = (criteria.restrictions || []).map(r => r.toLowerCase());
+  const rehabAreas = (criteria.rehab || []).map(r => r.toLowerCase());
   const levelNum = { beginner: 1, intermediate: 2, advanced: 3 }[criteria.level] || 1;
   const usedIds = new Set((previewSelectedDay()?.exercises || []).map(e => e.id));
+  // Rehab-to-mechanics mapping (mirrors InjuryRules.RehabToMechanics on the server)
+  const rehabToMechanics = { shoulder: ['rotator-cuff'], knee: ['patellar'] };
+  function matchesRehab(c) {
+    if (!rehabAreas.length || !c.mechanics?.rehab) return false;
+    const mr = c.mechanics.rehab.toLowerCase();
+    return rehabAreas.some(a => (rehabToMechanics[a] || []).some(v => v === mr));
+  }
   return Object.values(previewCache).filter(c => {
     if (c.id === ex.id || usedIds.has(c.id)) return false;
     if (String(c.slot).toLowerCase() !== String(ex.slot).toLowerCase()) return false;
@@ -635,10 +643,15 @@ function swapAlternatives(ex) {
     // Equipment: every required piece must be available (empty = bodyweight)
     const required = (c.equipment && c.equipment.length) ? c.equipment.map(e => e.toLowerCase()) : ['bodyweight'];
     if (!required.every(eq => equipment.includes(eq))) return false;
-    // Injury restrictions: no overlap with avoidFor
-    if ((c.avoidFor || []).some(t => restrictions.includes(t.toLowerCase()))) return false;
+    // Injury restrictions: no overlap with avoidFor — unless rehab matches
+    if (!matchesRehab(c) && (c.avoidFor || []).some(t => restrictions.includes(t.toLowerCase()))) return false;
     return true;
-  }).sort((a, b) => a.name.localeCompare(b.name)).slice(0, 8);
+  }).sort((a, b) => {
+    // Prefer rehab-matching alternatives
+    const aRehab = matchesRehab(a) ? 1 : 0;
+    const bRehab = matchesRehab(b) ? 1 : 0;
+    return bRehab - aRehab || a.name.localeCompare(b.name);
+  }).slice(0, 8);
 }
 
 function openSwapPicker(index) {

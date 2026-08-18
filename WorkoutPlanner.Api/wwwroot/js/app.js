@@ -448,6 +448,7 @@ function collectPreviousExerciseIds() {
 function getCriteria(options = {}) {
   const equipment = Array.from(document.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value);
   const restrictions = Array.from(document.querySelectorAll('input[name="restrictions"]:checked')).map(cb => cb.value);
+  const rehab = Array.from(document.querySelectorAll('input[name="rehab"]:checked')).map(cb => cb.value);
   const workoutDays = Array.from(document.querySelectorAll('input[name="workoutDay"]:checked'))
     .map(cb => parseInt(cb.value, 10))
     .filter(d => !Number.isNaN(d))
@@ -474,6 +475,7 @@ function getCriteria(options = {}) {
     sessionMinutes: parseInt(document.getElementById('sessionMinutes').value, 10),
     equipment,
     restrictions,
+    rehab,
     // Split and goal are separate fields — always send both explicitly
     split: document.getElementById('split').value || 'full-body',
     goal: document.getElementById('goal').value || 'hypertrophy',

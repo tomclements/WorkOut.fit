@@ -116,7 +116,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 {
                     session = BuildHiitSession(dayIdx, w, targetTime, selectedEquipment,
                         userLevelNum, goal, exercises, planWideRecent, favoriteIds, dislikedIds,
-                        req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, mods, rng, dynamicAvoid);
+                        req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, req.Rehab, mods, rng, dynamicAvoid);
                 }
                 else
                 {
@@ -125,7 +125,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                     strengthOrdinal++;
                     session = BuildSession(dayIdx, w, strengthOrdinal, targetTime, selectedEquipment,
                         userLevelNum, goal, split, focusLabel, slotOrder, exercises, planWideRecent, favoriteIds, dislikedIds,
-                        req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, mods, rng, dynamicAvoid);
+                        req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, req.Rehab, mods, rng, dynamicAvoid);
                 }
 
                 foreach (var id in session.Exercises.Select(e => e.Id))
@@ -198,10 +198,10 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         List<string> equipment, int userLevelNum, string goal, string split, string focusLabel, List<string> slotOrder,
         List<Exercise> allExercises, List<string> planWideRecent, HashSet<string> favoriteIds, HashSet<string> dislikedIds,
         bool includeWarmup, bool includeCooldown,
-        List<string> restrictions, WeekProgression mods, Random rng, HashSet<string> avoidIds)
+        List<string> restrictions, List<string>? rehab, WeekProgression mods, Random rng, HashSet<string> avoidIds)
     {
         var pool = allExercises
-            .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions))
+            .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions, rehab))
             .ToList();
 
         bool isBro = split == "bro-split";
@@ -251,8 +251,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
             if (candidates.Count == 0) continue;
 
-            var ex = PickWeightedExercise(candidates, favoriteIds, avoidIds, planWideRecent, isBro, slot, rng);
-            if (ex == null) continue;
+            var ex = PickWeightedExercise(candidates, favoriteIds, avoidIds, planWideRecent, isBro, slot, rng, rehab);            if (ex == null) continue;
 
             int sets = ComputeSets(ex, goal, userLevelNum, isBro, mods);
             string reps = ComputeReps(ex, goal, mods);
@@ -331,7 +330,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         if (includeWarmup)
         {
             var warmup = MobilityCatalog.BuildWarmup(rankedMuscles, rng, budgetSec: 180)
-                .Where(m => !IsMobilityRestricted(m, restrictions))
+                .Where(m => !IsMobilityRestricted(m, restrictions, rehab))
                 .ToList();
             foreach (var m in warmup)
             {
@@ -345,7 +344,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         if (includeCooldown)
         {
             var cooldown = MobilityCatalog.BuildCooldown(rankedMuscles, rng, budgetSec: 120)
-                .Where(m => !IsMobilityRestricted(m, restrictions))
+                .Where(m => !IsMobilityRestricted(m, restrictions, rehab))
                 .ToList();
             foreach (var m in cooldown)
             {
@@ -367,10 +366,10 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         List<string> equipment, int userLevelNum, string goal,
         List<Exercise> allExercises, List<string> planWideRecent, HashSet<string> favoriteIds, HashSet<string> dislikedIds,
         bool includeWarmup, bool includeCooldown,
-        List<string> restrictions, WeekProgression mods, Random rng, HashSet<string> avoidIds)
+        List<string> restrictions, List<string>? rehab, WeekProgression mods, Random rng, HashSet<string> avoidIds)
     {
         var pool = allExercises
-            .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions))
+            .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions, rehab))
             .ToList();
 
         // Prefer multi-joint / conditioning-friendly slots; fall back to full pool
@@ -432,7 +431,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
             if (candidates.Count == 0) continue;
 
-            var ex = PickWeightedExercise(candidates, favoriteIds, avoidIds, planWideRecent, isBro: false, slot, rng);
+            var ex = PickWeightedExercise(candidates, favoriteIds, avoidIds, planWideRecent, isBro: false, slot, rng, rehab);
             if (ex == null) continue;
 
             int exerciseDuration = rounds * (workSec + restSec) + transition;
@@ -596,7 +595,8 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         List<string> planWideRecent,
         bool isBro,
         string slot,
-        Random rng)
+        Random rng,
+        List<string>? rehab = null)
     {
         if (candidates.Count == 0) return null;
         if (candidates.Count == 1) return candidates[0];
@@ -619,6 +619,10 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 w += Math.Min(3, BroMuscleMatchScore(e, slot));
             else
                 w += Math.Min(2, e.Primary.Count);
+
+            // Rehab boost: prefer exercises targeting the user's recovery areas
+            if (rehab != null && rehab.Count > 0 && InjuryRules.MatchesRehab(e, rehab))
+                w += 15;
 
             // Keep every candidate in play at least a little
             w = Math.Max(1, w);
@@ -677,9 +681,11 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         return required.All(eq => selected.Contains(eq, StringComparer.OrdinalIgnoreCase));
     }
 
-    private static bool IsRestricted(Exercise ex, List<string> restrictions)
+    private static bool IsRestricted(Exercise ex, List<string> restrictions, List<string>? rehab = null)
     {
         if (restrictions == null || restrictions.Count == 0) return false;
+        // Rehab exercises are exempt from restrictions — they're intended for recovery
+        if (rehab != null && rehab.Count > 0 && InjuryRules.MatchesRehab(ex, rehab)) return false;
         return ex.AvoidFor.Any(a => restrictions.Contains(a, StringComparer.OrdinalIgnoreCase));
     }
 
@@ -702,9 +708,11 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         "cd-cobra"
     };
 
-    private static bool IsMobilityRestricted(PlanExercise ex, List<string> restrictions)
+    private static bool IsMobilityRestricted(PlanExercise ex, List<string> restrictions, List<string>? rehab = null)
     {
         if (ex?.Primary == null || restrictions == null || restrictions.Count == 0) return false;
+        // Rehab exercises are exempt from mobility restrictions too
+        if (rehab != null && rehab.Count > 0 && MobilityHasRehab(ex, rehab)) return false;
         if (ex.Id != null && MobilityWeightBearingUpper.Contains(ex.Id) &&
             restrictions.Any(r => r.Equals("shoulder", StringComparison.OrdinalIgnoreCase) ||
                                   r.Equals("wrist", StringComparison.OrdinalIgnoreCase)))
@@ -712,6 +720,22 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         foreach (var r in restrictions)
         {
             if (!RestrictedMobilityGroups.TryGetValue(r, out var groups)) continue;
+            if (groups.Any(g => ex.Primary.Contains(g, StringComparer.OrdinalIgnoreCase))) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Mobility exercises don't carry mechanics data, so check rehab areas against
+    /// their primary muscles to decide if they should be exempt from restrictions.
+    /// </summary>
+    private static bool MobilityHasRehab(PlanExercise ex, List<string> rehabAreas)
+    {
+        if (rehabAreas == null || rehabAreas.Count == 0 || ex.Primary == null) return false;
+        foreach (var area in rehabAreas)
+        {
+            if (!InjuryRules.RehabToMechanics.TryGetValue(area, out _)) continue;
+            if (!RestrictedMobilityGroups.TryGetValue(area, out var groups)) continue;
             if (groups.Any(g => ex.Primary.Contains(g, StringComparer.OrdinalIgnoreCase))) return true;
         }
         return false;

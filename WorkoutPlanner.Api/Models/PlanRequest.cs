@@ -13,6 +13,7 @@ public class PlanRequest
     public bool IncludeWarmup { get; set; } = true;
     public bool IncludeCooldown { get; set; } = true;
     public List<string> Restrictions { get; set; } = new();
+    public List<string> Rehab { get; set; } = new();
     public List<string> FavoriteExerciseIds { get; set; } = new();
     /// <summary>Exercises the user dislikes — strongly deprioritized or skipped when alternatives exist.</summary>
     public List<string> DislikedExerciseIds { get; set; } = new();
