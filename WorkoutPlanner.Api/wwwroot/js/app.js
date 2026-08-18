@@ -1083,7 +1083,7 @@ function renderDashboard(data) {
 }
 
 // --- Next workout suggestion ---
-function updateNextWorkoutCard() {
+async function updateNextWorkoutCard() {
   const card = document.getElementById('nextWorkoutCard');
   if (!card) return;
   const saved = localStorage.getItem('workoutPlan');
@@ -1099,6 +1099,21 @@ function updateNextWorkoutCard() {
     const completedKey = planId ? 'runnerCompleted_saved-' + planId : 'runnerCompleted_gen-' + (plan.generatedAt || 'unknown');
     let completed = new Set();
     try { completed = new Set(JSON.parse(localStorage.getItem(completedKey) || '[]')); } catch { /* ignore */ }
+
+    // Merge server-side history for cross-device accuracy
+    if (currentUser && planId) {
+      try {
+        const res = await fetch('/api/runner/sessions', { credentials: 'include' });
+        if (res.ok) {
+          const sessions = await res.json();
+          sessions.forEach(s => {
+            if (s.savedPlanId == planId && s.week && s.dayIndex != null) {
+              completed.add(s.week + ':' + s.dayIndex);
+            }
+          });
+        }
+      } catch { /* ignore */ }
+    }
 
     // Find first uncompleted workout day
     let nextDay = null;

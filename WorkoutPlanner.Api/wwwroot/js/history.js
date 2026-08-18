@@ -58,7 +58,7 @@ function renderSummary() {
   document.getElementById('statReps').textContent = totalReps;
 }
 
-/** Calendar-day streak ending today or yesterday (still "alive" if last workout was yesterday). */
+/** Calendar-day streak ending today or yesterday (still "alive" if last workout was yesterday). Rest days in the user's plan don't break the streak. */
 function computeStreak(sessionList) {
   if (!sessionList.length) return 0;
 
@@ -69,23 +69,56 @@ function computeStreak(sessionList) {
     })
   );
 
+  // Load plan workout days so scheduled rest days don't break the streak
+  let workoutDaySet = null;
+  try {
+    const planData = JSON.parse(localStorage.getItem('workoutPlan'));
+    if (planData && planData.criteria && planData.criteria.workoutDays && planData.criteria.workoutDays.length) {
+      workoutDaySet = new Set(planData.criteria.workoutDays);
+    }
+  } catch { /* ignore */ }
+
+  function isWorkoutDay(date) {
+    if (!workoutDaySet) return true; // no plan loaded — treat every day as a workout day
+    var jsDay = date.getDay(); // 0=Sun .. 6=Sat
+    var planDay = (jsDay + 6) % 7; // 0=Mon .. 6=Sun — matches criteria.workoutDays
+    return workoutDaySet.has(planDay);
+  }
+
   const today = new Date();
   let cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const todayKey = dateKey(cursor);
-  const yesterday = new Date(cursor);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yKey = dateKey(yesterday);
 
-  // Streak must include today or yesterday
-  if (!days.has(todayKey) && !days.has(yKey)) return 0;
-  if (!days.has(todayKey)) {
-    cursor = yesterday;
+  // Alive check: with a plan, find the most recent expected workout day (skipping rest days)
+  // and verify it has a session. Without a plan, fall back to today-or-yesterday.
+  if (workoutDaySet) {
+    let probe = new Date(cursor);
+    var probeSafety = 14;
+    while (!isWorkoutDay(probe) && probeSafety-- > 0) {
+      probe.setDate(probe.getDate() - 1);
+    }
+    if (!days.has(dateKey(probe))) return 0;
+  } else {
+    var yPrev = new Date(cursor);
+    yPrev.setDate(yPrev.getDate() - 1);
+    if (!days.has(dateKey(cursor)) && !days.has(dateKey(yPrev))) return 0;
+    if (!days.has(dateKey(cursor))) {
+      cursor = yPrev;
+    }
   }
 
   let streak = 0;
-  while (days.has(dateKey(cursor))) {
-    streak++;
-    cursor.setDate(cursor.getDate() - 1);
+  var loopSafety = 90;
+  while (loopSafety-- > 0) {
+    var key = dateKey(cursor);
+    if (days.has(key)) {
+      streak++;
+      cursor.setDate(cursor.getDate() - 1);
+    } else if (!isWorkoutDay(cursor)) {
+      // Scheduled rest day — skip without breaking streak
+      cursor.setDate(cursor.getDate() - 1);
+    } else {
+      break; // Workout day without session — streak broken
+    }
   }
   return streak;
 }
