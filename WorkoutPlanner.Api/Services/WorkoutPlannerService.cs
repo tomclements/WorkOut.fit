@@ -190,7 +190,8 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             Criteria = req,
             Plan = plan,
             GeneratedAt = DateTime.UtcNow.ToString("O"),
-            ProgressionSummary = BuildProgressionSummary(progression, weeks, goal, mixMode, hiitCount, effectiveDays)
+            ProgressionSummary = BuildProgressionSummary(progression, weeks, goal, mixMode, hiitCount, effectiveDays),
+            RehabProgressions = RehabProgressionCatalog.GetFor(req.Rehab)
         };
     }
 

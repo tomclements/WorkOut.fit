@@ -260,10 +260,60 @@
     return parts.join(' · ') || 'No exercises';
   }
 
+  // Muscle targets to skip when a joint is restricted, so recovery sessions
+  // respect the same injury filters as the planner. Lower-back keeps its
+  // gentle spinal moves — cat-cow, bird-dog, bridges ARE the recovery.
+  const RECOVERY_BLOCK = {
+    shoulder: ['shoulders'],
+    elbow: ['biceps', 'triceps', 'forearms'],
+    wrist: ['forearms'],
+    knee: ['quads', 'hamstrings', 'glutes', 'calves'],
+    'lower-back': [],
+    neck: ['neck']
+  };
+
+  /**
+   * Standalone 10–15 min active-recovery session: a gentle pulse-raiser, a few
+   * low-load activations, then easy stretching, ending with box breathing.
+   * Returns PlanExercise-shaped items (warmup/cooldown phases) the runner can play.
+   */
+  function buildRecoverySession(targetMinutes = 12, restrictions = []) {
+    const blocked = new Set();
+    (restrictions || []).forEach(r => {
+      (RECOVERY_BLOCK[String(r).toLowerCase()] || []).forEach(t => blocked.add(t));
+    });
+    const ok = (m) => !(m.targets || []).some(t => blocked.has(normalizeMuscle(t)));
+
+    const pulse = CATALOG.filter(m => m.phase === 'warmup' && m.role === 'general' && ok(m));
+    const acts = CATALOG.filter(m => m.phase === 'warmup' && m.role === 'activate' && ok(m));
+    const stretches = CATALOG.filter(m => m.phase === 'cooldown' && m.role === 'stretch' && ok(m));
+    const breathe = CATALOG.find(m => m.id === 'cd-breathe');
+
+    const budget = Math.max(5, targetMinutes) * 60;
+    const picks = [];
+    const used = new Set();
+    let time = 0;
+    const push = (m) => {
+      if (!m || used.has(m.id)) return;
+      picks.push(m);
+      used.add(m.id);
+      time += m.duration + 10;
+    };
+    const shuffled = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+
+    shuffled(pulse).slice(0, 1).forEach(push);
+    shuffled(acts).slice(0, 5).forEach(push);
+    shuffled(stretches).forEach(m => { if (time < budget - 60) push(m); });
+    if (breathe && !used.has(breathe.id)) push(breathe);
+
+    return picks.map(toPlanExercise);
+  }
+
   global.WorkoutMobility = {
     ensurePlanMobility,
     ensureDayMobility,
     dayMobilitySummary,
+    buildRecoverySession,
     splitByPhase,
     phaseOf
   };

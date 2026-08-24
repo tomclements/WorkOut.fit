@@ -859,4 +859,61 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
         Assert.All(workouts, d => Assert.NotEmpty(d.Exercises));
         Assert.Equal(split, result.Criteria.Split);
     }
+
+    [Fact]
+    public async Task GeneratePlan_WithRehab_ReturnsRehabProgressions()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 3,
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "bands" },
+            Split = "full-body",
+            Goal = "strength",
+            Level = "beginner",
+            Rehab = new List<string> { "shoulder" },
+            Seed = 7
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        Assert.NotNull(result!.RehabProgressions);
+        Assert.NotEmpty(result.RehabProgressions);
+        var shoulder = result.RehabProgressions.FirstOrDefault(a => a.Area == "shoulder");
+        Assert.NotNull(shoulder);
+        Assert.True(shoulder!.Stages.Count >= 3);
+        Assert.All(shoulder.Stages, s =>
+        {
+            Assert.False(string.IsNullOrWhiteSpace(s.Name));
+            Assert.False(string.IsNullOrWhiteSpace(s.StopIf));
+        });
+        // Stage numbers are 1-based and ascending
+        Assert.Equal(shoulder.Stages.Select(s => s.Stage), shoulder.Stages.Select(s => s.Stage).OrderBy(x => x));
+    }
+
+    [Fact]
+    public async Task GeneratePlan_WithoutRehab_ReturnsNoRehabProgressions()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 3,
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight" },
+            Split = "full-body",
+            Goal = "hypertrophy",
+            Level = "beginner",
+            Seed = 11
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+        Assert.Empty(result!.RehabProgressions);
+    }
 }

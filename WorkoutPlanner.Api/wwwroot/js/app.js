@@ -157,6 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('input[name="workoutDay"]').forEach(cb => {
     cb.addEventListener('change', syncSliderFromDaySelector);
   });
+  renderPrograms();
   const splitEl = document.getElementById('split');
   if (splitEl) splitEl.addEventListener('change', onSplitChange);
   if (splitEl) onSplitChange();
@@ -504,6 +505,133 @@ const MIX_MODE_HINTS = {
   hybrid: 'Most days are strength; 1–2 days per week are full-body HIIT (short work, short rest). Never on the same day.',
   conditioning: 'Most days are HIIT intervals; 1–2 days stay strength for muscle and joints. Separate days only.'
 };
+
+// -------------------------- Named programs --------------------------
+// Preset calendars on top of the generator: each card pre-fills the form,
+// then the existing sliders still apply. Equipment is left untouched.
+const PROGRAMS = [
+  {
+    id: 'shoulder-friendly',
+    name: 'Shoulder-Friendly Strength',
+    blurb: 'Build strength without overhead pressing — horizontal presses, rows, and legs, plus rotator-cuff prehab.',
+    chip: '4 wk · 3 d/wk',
+    weeks: 4,
+    daysPerWeek: 3,
+    sessionMinutes: 30,
+    split: 'upper-lower',
+    goal: 'strength',
+    level: 'beginner',
+    mixMode: 'strength',
+    progression: 'linear',
+    restrictions: ['shoulder'],
+    rehab: ['shoulder']
+  },
+  {
+    id: 'hybrid-fat-loss',
+    name: 'Hybrid Fat Loss',
+    blurb: 'Strength days plus interval days in one plan — more weekly burn while keeping muscle.',
+    chip: '4 wk · 4 d/wk',
+    weeks: 4,
+    daysPerWeek: 4,
+    sessionMinutes: 25,
+    split: 'full-body',
+    goal: 'fat-loss',
+    level: 'beginner',
+    mixMode: 'hybrid',
+    progression: 'wave',
+    restrictions: [],
+    rehab: []
+  },
+  {
+    id: 'three-day-full-body',
+    name: '3-Day Full Body',
+    blurb: 'Three balanced full-body sessions a week — the classic, time-efficient way to build muscle.',
+    chip: '4 wk · 3 d/wk',
+    weeks: 4,
+    daysPerWeek: 3,
+    sessionMinutes: 35,
+    split: 'full-body',
+    goal: 'hypertrophy',
+    level: 'beginner',
+    mixMode: 'strength',
+    progression: 'linear',
+    restrictions: [],
+    rehab: []
+  },
+  {
+    id: 'recovery-block',
+    name: 'Recovery Block',
+    blurb: 'A single lighter week of easy movement and mobility — use between harder programs or when run down.',
+    chip: '1 wk · 3 d/wk',
+    weeks: 1,
+    daysPerWeek: 3,
+    sessionMinutes: 15,
+    split: 'full-body',
+    goal: 'endurance',
+    level: 'beginner',
+    mixMode: 'strength',
+    progression: 'none',
+    restrictions: [],
+    rehab: []
+  }
+];
+
+function renderPrograms() {
+  const grid = document.getElementById('programsGrid');
+  if (!grid) return;
+  grid.innerHTML = PROGRAMS.map(p => `
+    <button type="button" data-program="${escapeHtml(p.id)}"
+      class="text-left bg-white border border-gray-200 rounded-xl shadow-sm p-4 hover:border-blue-400 hover:shadow transition focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div class="flex items-start justify-between gap-2">
+        <h3 class="font-semibold text-blue-900 leading-snug">${escapeHtml(p.name)}</h3>
+        <span class="shrink-0 text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-100 rounded-full px-2 py-0.5">${escapeHtml(p.chip)}</span>
+      </div>
+      <p class="text-sm text-gray-600 mt-2 leading-snug">${escapeHtml(p.blurb)}</p>
+    </button>`).join('');
+  grid.querySelectorAll('[data-program]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = PROGRAMS.find(x => x.id === btn.dataset.program);
+      if (p) applyProgram(p);
+    });
+  });
+}
+
+function applyProgram(p) {
+  setSelectValue('weeks', p.weeks);
+  setSelectValue('goal', p.goal);
+  setSelectValue('level', p.level);
+  setSelectValue('split', p.split);
+  setSelectValue('progression', p.progression);
+  setSelectValue('mixMode', p.mixMode);
+  setRangeValue('sessionMinutes', p.sessionMinutes, 'minutesLabel');
+  setRangeValue('daysPerWeek', p.daysPerWeek, 'daysLabel');
+  syncDaySelectorFromSlider();
+
+  document.querySelectorAll('input[name="restrictions"]').forEach(cb => {
+    cb.checked = p.restrictions.includes(cb.value);
+  });
+  document.querySelectorAll('input[name="rehab"]').forEach(cb => {
+    cb.checked = p.rehab.includes(cb.value);
+  });
+
+  onSplitChange({ skipBroNudge: true });
+  const mixModeEl = document.getElementById('mixMode');
+  const mixHint = document.getElementById('mixModeHint');
+  if (mixHint) mixHint.textContent = MIX_MODE_HINTS[mixModeEl?.value] || MIX_MODE_HINTS.strength;
+  const progEl = document.getElementById('progression');
+  const progHint = document.getElementById('progressionHint');
+  if (progHint) progHint.textContent = PROGRESSION_HINTS[progEl?.value] || PROGRESSION_HINTS.linear;
+
+  if (plannerSection && togglePlannerBtn && closePlannerBtn) {
+    plannerSection.classList.remove('hidden');
+    closePlannerBtn.classList.remove('hidden');
+    togglePlannerBtn.classList.add('hidden');
+    plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  if (typeof showToast === 'function') {
+    showToast(`${p.name} loaded — tweak anything, then Create my plan.`, 'info');
+  }
+}
 
 async function loadFavorites() {
   favoriteExerciseIds = [];
@@ -1546,6 +1674,8 @@ function renderPlan(result) {
   `;
   container.appendChild(summary);
 
+  renderRehabProgressions(result, container);
+
   result.plan.forEach((week, weekIndex) => {
     const weekEl = document.createElement('section');
     weekEl.className = 'mb-8';
@@ -1570,8 +1700,9 @@ function renderPlan(result) {
         card.innerHTML = `
           <div class="font-semibold text-gray-500">${day.day}</div>
           <div class="text-sm text-gray-600">${day.note || 'Rest / mobility'}</div>
-          <div class="mt-3">
+          <div class="mt-3 flex flex-wrap gap-2">
             <button onclick="toggleDayType(${weekIndex}, ${dayIndex})" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-2 rounded">Make workout day</button>
+            <button onclick="makeRecoveryDay(${weekIndex}, ${dayIndex})" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1 px-2 rounded">Make recovery day</button>
           </div>
         `;
       } else {
@@ -1648,13 +1779,18 @@ function renderPlan(result) {
           ? WorkoutMobility.dayMobilitySummary(day)
           : '';
         const isHiitDay = day.sessionStyle === 'hiit';
-        const styleBadge = isHiitDay
-          ? `<span class="text-xs bg-rose-100 text-rose-900 px-2 py-1 rounded font-semibold">HIIT</span>`
-          : `<span class="text-xs bg-indigo-100 text-indigo-900 px-2 py-1 rounded font-semibold">Strength</span>`;
-        const focusBadge = isHiitDay
-          ? `<span class="text-xs bg-rose-50 text-rose-800 px-2 py-1 rounded">${escapeHtml(day.focus || 'HIIT')}</span>`
-          : `<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${escapeHtml(day.focus || 'Training')}</span>`;
-        const cardBg = isHiitDay ? 'bg-rose-50/40' : 'bg-white';
+        const isMobilityDay = day.sessionStyle === 'mobility';
+        const styleBadge = isMobilityDay
+          ? `<span class="text-xs bg-emerald-100 text-emerald-900 px-2 py-1 rounded font-semibold">Recovery</span>`
+          : isHiitDay
+            ? `<span class="text-xs bg-rose-100 text-rose-900 px-2 py-1 rounded font-semibold">HIIT</span>`
+            : `<span class="text-xs bg-indigo-100 text-indigo-900 px-2 py-1 rounded font-semibold">Strength</span>`;
+        const focusBadge = isMobilityDay
+          ? `<span class="text-xs bg-emerald-50 text-emerald-800 px-2 py-1 rounded">${escapeHtml(day.focus || 'Recovery')}</span>`
+          : isHiitDay
+            ? `<span class="text-xs bg-rose-50 text-rose-800 px-2 py-1 rounded">${escapeHtml(day.focus || 'HIIT')}</span>`
+            : `<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${escapeHtml(day.focus || 'Training')}</span>`;
+        const cardBg = isMobilityDay ? 'bg-emerald-50/40' : isHiitDay ? 'bg-rose-50/40' : 'bg-white';
         card.className = 'border rounded-lg p-4 shadow-sm ' + cardBg;
         card.innerHTML = `
           <div class="flex justify-between items-center mb-2 gap-2 flex-wrap">
@@ -1668,10 +1804,10 @@ function renderPlan(result) {
           ${day.note ? `<p class="text-xs text-gray-600 mb-2 italic">${escapeHtml(day.note)}</p>` : ''}
           <ul class="text-sm">${listHtml}</ul>
           <div class="mt-3 flex flex-wrap gap-2">
-            <button onclick="openExercisePicker(${weekIndex}, ${dayIndex})" class="text-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-2 rounded">+ Add exercise</button>
+            ${isMobilityDay ? '' : `<button onclick="openExercisePicker(${weekIndex}, ${dayIndex})" class="text-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-2 rounded">+ Add exercise</button>`}
             <button onclick="toggleDayType(${weekIndex}, ${dayIndex})" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-2 rounded">Make rest day</button>
           </div>
-          <div class="mt-2 text-xs ${isHiitDay ? 'text-rose-800' : 'text-blue-700'} italic">${escapeHtml(workHint?.progression || '')}</div>
+          ${isMobilityDay ? '' : `<div class="mt-2 text-xs ${isHiitDay ? 'text-rose-800' : 'text-blue-700'} italic">${escapeHtml(workHint?.progression || '')}</div>`}
         `;
       }
 
@@ -1687,6 +1823,48 @@ function renderPlan(result) {
   const regenBtn = document.getElementById('regenerateBtn');
   if (regenBtn) regenBtn.classList.remove('hidden');
   document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+/**
+ * Render the per-area rehab progression chains ("start gentle, build up, stop if…").
+ * Shown only when the user selected recovery/rehab areas.
+ */
+function renderRehabProgressions(result, container) {
+  const chains = result?.rehabProgressions;
+  if (!Array.isArray(chains) || chains.length === 0) return;
+
+  const panel = document.createElement('div');
+  panel.className = 'mb-6 bg-emerald-50 border border-emerald-200 rounded-xl p-4';
+
+  const areasHtml = chains.map(area => {
+    const stages = (area.stages || []).map(s => {
+      const demo = s.demoExerciseId
+        ? `<img src="/demos/${encodeURIComponent(s.demoExerciseId)}.webp" alt="" loading="lazy" class="w-12 h-12 rounded-md object-cover bg-gray-200 shrink-0" onerror="this.remove()" />`
+        : '';
+      return `
+        <li class="flex gap-3 items-start py-2">
+          <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold">${s.stage}</span>
+          ${demo}
+          <div class="min-w-0">
+            <div class="font-semibold text-emerald-900">${escapeHtml(s.name)}</div>
+            <div class="text-sm text-gray-700">${escapeHtml(s.cue)}</div>
+            <div class="text-xs text-rose-800 mt-0.5"><strong>Stop if:</strong> ${escapeHtml(s.stopIf)}</div>
+          </div>
+        </li>`;
+    }).join('');
+    return `
+      <div class="mt-3 first:mt-0">
+        <h4 class="text-sm font-bold text-emerald-900 uppercase tracking-wide">${escapeHtml(area.label)} rehab path</h4>
+        <ol class="mt-1 divide-y divide-emerald-100">${stages}</ol>
+      </div>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <h3 class="text-base font-bold text-emerald-900">Rehab path</h3>
+    <p class="text-sm text-gray-700 mt-1">Start at stage 1 and only move up when the current stage feels easy and pain-free. If a stage flares things up, drop back one. These complement — not replace — the rehab moves already built into your workouts.</p>
+    ${areasHtml}
+  `;
+  container.appendChild(panel);
 }
 
 function deleteExerciseFromDay(weekIndex, dayIndex, exIndex) {
@@ -1714,6 +1892,26 @@ function toggleDayType(weekIndex, dayIndex) {
     day.exercises = [];
     day.note = 'Rest / mobility';
   }
+  recalculateDayMinutes(day);
+  localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
+  renderPlan(currentPlan);
+}
+
+/** Turn a rest day into a standalone 10–15 min active-recovery session. */
+function makeRecoveryDay(weekIndex, dayIndex) {
+  if (!currentPlan) return;
+  const day = currentPlan.plan[weekIndex].days[dayIndex];
+  const restrictions = currentPlan.criteria?.restrictions || [];
+  const exercises = typeof WorkoutMobility !== 'undefined'
+    ? WorkoutMobility.buildRecoverySession(12, restrictions)
+    : [];
+  if (!exercises.length) return;
+
+  day.type = 'workout';
+  day.sessionStyle = 'mobility';
+  day.focus = 'Recovery & mobility';
+  day.exercises = exercises;
+  day.note = 'Active recovery — move gently, no intensity.';
   recalculateDayMinutes(day);
   localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
   renderPlan(currentPlan);
