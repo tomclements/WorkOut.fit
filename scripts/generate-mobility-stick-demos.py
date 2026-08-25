@@ -703,6 +703,154 @@ def wrist_circles(t: float) -> Image.Image:
     return im
 
 
+def march_in_place(t: float) -> Image.Image:
+    """Marching in place — alternating knee lifts, opposite arm swing."""
+    im = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(im)
+    fy = floor(d)
+    cyc = math.sin(t * 2 * math.pi)          # +1..-1 per step
+    lift_l = max(0.0, cyc)                    # left knee up on positive half
+    lift_r = max(0.0, -cyc)
+    # Support stance
+    hip = (W * 0.5, fy - 185)
+    shoulder = (hip[0], fy - 300)
+    head_c = (shoulder[0], shoulder[1] - 40)
+    # Standing legs (slight bend when their knee lifts)
+    ang_l = math.radians(55 * ease(lift_l))
+    ang_r = math.radians(55 * ease(lift_r))
+    knee_l = (hip[0] - 14 + math.sin(ang_l) * 62, hip[1] + math.cos(ang_l) * 95)
+    ankle_l = (knee_l[0] - 8, fy - max(4, 95 - math.sin(ang_l) * 130))
+    knee_r = (hip[0] + 14 + math.sin(ang_r) * 62, hip[1] + math.cos(ang_r) * 95)
+    ankle_r = (knee_r[0] + 8, fy - max(4, 95 - math.sin(ang_r) * 130))
+
+    seg(d, hip, knee_l, 10)
+    seg(d, knee_l, ankle_l, 9)
+    seg(d, hip, knee_r, 10)
+    seg(d, knee_r, ankle_r, 9)
+    seg(d, hip, shoulder, 12)
+    # Opposite arm swing
+    sw = cyc * 22
+    elbow_f = (shoulder[0] - 20 - sw * 0.6, shoulder[1] + 52 + sw * 0.5)
+    hand_f = (elbow_f[0] - 12 - sw * 0.4, elbow_f[1] + 42 + sw)
+    elbow_b = (shoulder[0] + 20 + sw * 0.6, shoulder[1] + 52 - sw * 0.5)
+    hand_b = (elbow_b[0] + 12 + sw * 0.4, elbow_b[1] + 42 - sw)
+    seg(d, shoulder, elbow_f, 8)
+    seg(d, elbow_f, hand_f, 7)
+    seg(d, shoulder, elbow_b, 8)
+    seg(d, elbow_b, hand_b, 7)
+    head(d, head_c, 16)
+    label(d, "March in place", "Light pace · swing arms · easy pace")
+    return im
+
+
+def jumping_jacks(t: float) -> Image.Image:
+    """Jumping jacks, front view — arms overhead / legs apart ↔ closed."""
+    im = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(im)
+    fy = floor(d)
+    e = 0.5 - 0.5 * math.cos(t * 2 * math.pi)   # 0 closed → 1 open
+    hip = (W * 0.5, fy - 180)
+    neck = (hip[0], fy - 300)
+    head_c = (neck[0], neck[1] - 34)
+    # Legs: splay symmetric
+    spread = 16 + 58 * e
+    knee_l = (hip[0] - 12, hip[1] + 48)
+    knee_r = (hip[0] + 12, hip[1] + 48)
+    ankle_l = (hip[0] - spread, fy - 4)
+    ankle_r = (hip[0] + spread, fy - 4)
+    # Arms rotate from sides to overhead
+    a_ang = lerp(math.radians(75), math.radians(-80), e)   # from down to up
+    r_arm = 105
+    elbow_l = (neck[0] - math.sin(a_ang) * 52 - 4, neck[1] + math.cos(a_ang) * 52)
+    hand_l = (neck[0] - math.sin(a_ang) * r_arm, neck[1] + math.cos(a_ang) * r_arm)
+    elbow_r = (neck[0] + math.sin(a_ang) * 52 + 4, neck[1] + math.cos(a_ang) * 52)
+    hand_r = (neck[0] + math.sin(a_ang) * r_arm, neck[1] + math.cos(a_ang) * r_arm)
+
+    seg(d, hip, knee_l, 10)
+    seg(d, knee_l, ankle_l, 9)
+    seg(d, hip, knee_r, 10)
+    seg(d, knee_r, ankle_r, 9)
+    seg(d, hip, neck, 12)
+    seg(d, neck, elbow_l, 8)
+    seg(d, elbow_l, hand_l, 7)
+    seg(d, neck, elbow_r, 8)
+    seg(d, elbow_r, hand_r, 7)
+    head(d, head_c, 16)
+    label(d, "Jumping jacks", "Soft landings · step-jacks if needed")
+    return im
+
+
+def high_knees(t: float) -> Image.Image:
+    """High knees — fast alternating drives, slight forward lean."""
+    im = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(im)
+    fy = floor(d)
+    cyc = math.sin(t * 2 * math.pi)
+    lean_x = 26                                # forward lean
+    hip = (W * 0.46, fy - 182)
+    shoulder = (hip[0] + lean_x, fy - 292)
+    head_c = (shoulder[0] + lean_x * 0.4, shoulder[1] - 38)
+    lift_l = max(0.0, cyc)
+    lift_r = max(0.0, -cyc)
+    ang_l = math.radians(80 * ease(lift_l))    # higher than march
+    ang_r = math.radians(80 * ease(lift_r))
+    knee_l = (hip[0] - 12 + math.sin(ang_l) * 68, hip[1] + math.cos(ang_l) * 92)
+    ankle_l = (knee_l[0] - 6, fy - max(4, 92 - math.sin(ang_l) * 150))
+    knee_r = (hip[0] + 12 + math.sin(ang_r) * 68, hip[1] + math.cos(ang_r) * 92)
+    ankle_r = (knee_r[0] + 6, fy - max(4, 92 - math.sin(ang_r) * 150))
+
+    seg(d, hip, knee_l, 10)
+    seg(d, knee_l, ankle_l, 9)
+    seg(d, hip, knee_r, 10)
+    seg(d, knee_r, ankle_r, 9)
+    seg(d, hip, shoulder, 12)
+    sw = cyc * 26
+    elbow_f = (shoulder[0] - 18 - sw * 0.6, shoulder[1] + 50 + sw * 0.5)
+    hand_f = (elbow_f[0] - 10 - sw * 0.4, elbow_f[1] + 40 + sw)
+    elbow_b = (shoulder[0] + 18 + sw * 0.6, shoulder[1] + 50 - sw * 0.5)
+    hand_b = (elbow_b[0] + 10 + sw * 0.4, elbow_b[1] + 40 - sw)
+    seg(d, shoulder, elbow_f, 8)
+    seg(d, elbow_f, hand_f, 7)
+    seg(d, shoulder, elbow_b, 8)
+    seg(d, elbow_b, hand_b, 7)
+    head(d, head_c, 16)
+    label(d, "High knees", "Low intensity · just get blood moving")
+    return im
+
+
+def dead_bug_stick(t: float) -> Image.Image:
+    """Dead bug — supine, opposite arm reaches back as leg extends."""
+    im = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(im)
+    fy = floor(d)
+    e = ease(t)
+    shoulder = (W * 0.34, fy - 34)
+    hip = (W * 0.60, fy - 30)
+    head_c = (shoulder[0] - 24, shoulder[1] - 12)
+    # Folded limbs (hold position): left arm up, right knee stacked
+    hand_up = (shoulder[0] - 2, shoulder[1] - 92)
+    knee_up = (hip[0] - 6, hip[1] - 88)
+    ankle_up = (knee_up[0] - 30, knee_up[1] - 18)
+    # Moving limbs: right arm arcs overhead, left leg extends long
+    hand_ext = (
+        lerp(shoulder[0] + 4, shoulder[0] - 78, e),
+        lerp(shoulder[1] - 90, shoulder[1] + 6, e),
+    )
+    knee_ext = (lerp(hip[0] - 4, hip[0] + 66, e), lerp(hip[1] - 86, hip[1] + 6, e))
+    ankle_ext = (lerp(knee_ext[0] - 26, knee_ext[0] + 74, e), lerp(knee_ext[1] - 20, knee_ext[1] - 2, e))
+
+    seg(d, shoulder, hip, 12)                 # trunk on floor
+    seg(d, shoulder, hand_up, 7)              # static arm
+    seg(d, hip, knee_up, 9)                   # static leg (tabletop)
+    seg(d, knee_up, ankle_up, 8)
+    seg(d, shoulder, hand_ext, 7)             # reaching arm
+    seg(d, hip, knee_ext, 9)                  # extending leg
+    seg(d, knee_ext, ankle_ext, 8)
+    head(d, head_c, 15)
+    label(d, "Dead bug", "Low back pressed down · slow opposite limbs")
+    return im
+
+
 def refresh_index():
     import json
 
@@ -723,6 +871,10 @@ def refresh_index():
 
 
 DEMOS = [
+    ("wu-march", lambda: [march_in_place(i / 24) for i in range(25)]),
+    ("wu-jacks", lambda: [jumping_jacks(i / 20) for i in range(21)]),
+    ("wu-high-knees", lambda: [high_knees(i / 16) for i in range(17)]),
+    ("wu-dead-bug", lambda: bounce_frames(dead_bug_stick, 12, 3)),
     ("wu-cat-cow", lambda: bounce_frames(cat_cow, 12, 2)),
     ("cd-cobra", lambda: bounce_frames(cobra, 12, 3)),
     ("wu-bird-dog", lambda: bounce_frames(bird_dog, 12, 3)),

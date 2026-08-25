@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Demo QA | Plan4Strength</title>
+  <style>
+    :root { color-scheme: light; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; margin: 0; background: #f8fafc; color: #1e293b; }
+    main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+    h1 { font-size: 1.4rem; margin: 0 0 .25rem; }
+    .sub { color: #64748b; font-size: .85rem; margin-bottom: 1rem; }
+    .chips { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .chip { border: 1px solid #cbd5e1; background: #fff; border-radius: 9999px; padding: .35rem .9rem; font-size: .85rem; font-weight: 600; cursor: pointer; }
+    .chip[data-active="true"] { background: #1e293b; color: #fff; border-color: #1e293b; }
+    .chip .n { opacity: .7; font-weight: 400; margin-left: .25rem; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: .75rem; overflow: hidden; box-shadow: 0 1px 4px rgba(15,23,42,.08); font-size: .85rem; }
+    th, td { text-align: left; padding: .5rem .65rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+    th { background: #f1f5f9; font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: #475569; position: sticky; top: 0; }
+    tr:last-child td { border-bottom: none; }
+    td img.thumb { width: 56px; height: 56px; object-fit: cover; border-radius: .5rem; background: #e2e8f0; }
+    .status { font-weight: 700; font-size: .72rem; text-transform: uppercase; padding: .18rem .55rem; border-radius: 9999px; white-space: nowrap; }
+    .status.fail { background: #fee2e2; color: #b91c1c; }
+    .status.warn { background: #fef3c7; color: #b45309; }
+    .status.pass { background: #dcfce7; color: #15803d; }
+    .flag { display: inline-block; background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569; border-radius: .4rem; padding: .06rem .4rem; font-size: .7rem; margin-right: .25rem; }
+    .kind { color: #64748b; font-size: .72rem; }
+    code { font-size: .78rem; color: #334155; word-break: break-all; }
+    .hint { color: #64748b; font-size: .75rem; max-width: 22rem; }
+    tr.fail-row { background: #fff5f5; }
+    tr.warn-row { background: #fffdf5; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Demo QA</h1>
+    <p class="sub">Audit of every demo file the runner can request. Regenerate the report with
+      <code>python scripts/demo-qa.py</code>. Flags: <strong>snap</strong> = 2-frame hard flip (reads as two poses, not motion) ·
+      <strong>tiny</strong> = &lt;15&nbsp;KB (likely unreadable at arm's length) · <strong>missing</strong> = runner falls back to still/placeholder ·
+      <strong>reused-slug</strong> = art shows a different movement.</p>
+    <div class="chips" id="chips"></div>
+    <table>
+      <thead>
+        <tr><th></th><th>Status</th><th>Id</th><th>Name</th><th>Type</th><th>Frames</th><th>Size</th><th>Flags</th><th>Note</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+
+  <script>
+    const HINTS = {
+      snap: 'Two-pose file: treat as start/end photos, not motion. Replace with multi-frame loop or label as stills.',
+      tiny: 'Too small to read on a phone across the room. Needs higher-quality source art.',
+      missing: 'No WebP — runner shows photo stills or a placeholder plus video search.',
+      'reused-slug': 'File shows a different exercise than its name. Remove or replace.'
+    };
+    let items = [];
+    let filter = 'all';
+
+    async function load() {
+      const res = await fetch('/demos/qa.json', { cache: 'no-store' });
+      const data = await res.json();
+      items = data.items || [];
+      renderChips();
+      renderRows();
+    }
+
+    function counts() {
+      return {
+        all: items.length,
+        fail: items.filter(i => i.status === 'fail').length,
+        warn: items.filter(i => i.status === 'warn').length,
+        pass: items.filter(i => i.status === 'pass').length
+      };
+    }
+
+    function renderChips() {
+      const c = counts();
+      const el = document.getElementById('chips');
+      el.innerHTML = '';
+      ['all', 'fail', 'warn', 'pass'].forEach(k => {
+        const b = document.createElement('button');
+        b.className = 'chip';
+        b.dataset.active = String(filter === k);
+        b.innerHTML = `${k} <span class="n">${c[k]}</span>`;
+        b.addEventListener('click', () => { filter = k; renderChips(); renderRows(); });
+        el.appendChild(b);
+      });
+    }
+
+    function renderRows() {
+      const tbody = document.getElementById('rows');
+      const rows = items.filter(i => filter === 'all' || i.status === filter);
+      const frag = document.createDocumentFragment();
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = r.status + '-row';
+        const flagsHtml = (r.flags || []).map(f => `<span class="flag">${f}</span>`).join('');
+        const hint = (r.flags || []).map(f => HINTS[f]).filter(Boolean)[0] || '';
+        const webp = r.exists === false ? '' : `/demos/${encodeURIComponent(r.id)}.webp`;
+        tr.innerHTML = `
+          <td>${webp ? `<img class="thumb" loading="lazy" src="${webp}" alt="" onerror="this.style.visibility='hidden'">` : ''}</td>
+          <td><span class="status ${r.status}">${r.status}</span></td>
+          <td><code>${r.id}</code></td>
+          <td>${r.name || ''}</td>
+          <td class="kind">${r.kind}</td>
+          <td>${r.frames ?? '—'}</td>
+          <td>${r.kb != null ? r.kb + ' KB' : '—'}</td>
+          <td>${flagsHtml || '—'}</td>
+          <td class="hint">${hint}</td>`;
+        frag.appendChild(tr);
+      });
+      tbody.innerHTML = '';
+      tbody.appendChild(frag);
+    }
+
+    load();
+  </script>
+</body>
+</html>

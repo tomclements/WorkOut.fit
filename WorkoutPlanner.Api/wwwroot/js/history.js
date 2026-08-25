@@ -9,29 +9,27 @@ const sessionModal = document.getElementById('sessionModal');
 const sessionModalBody = document.getElementById('sessionModalBody');
 
 document.addEventListener('DOMContentLoaded', () => {
-  checkAuth();
   document.getElementById('closeSessionModal').addEventListener('click', closeSessionModal);
   sessionModal.addEventListener('click', e => {
     if (e.target.id === 'sessionModal') closeSessionModal();
   });
-});
 
-async function checkAuth() {
-  try {
-    const response = await fetch('/api/auth/me', { credentials: 'include' });
-    if (response.ok) {
+  // Global auth: show/hide history based on auth state
+  window.addEventListener('auth-changed', async (e) => {
+    const { user } = e.detail;
+    if (user) {
       loginSection.classList.add('hidden');
       historySection.classList.remove('hidden');
       await loadHistory();
-      return;
+    } else {
+      loginSection.classList.remove('hidden');
+      historySection.classList.add('hidden');
+      const returnUrl = '/?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
+      document.getElementById('loginLink').href = returnUrl;
     }
-  } catch { }
-  loginSection.classList.remove('hidden');
-  historySection.classList.add('hidden');
-  const returnUrl = '/?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
-  document.getElementById('loginLink').href = returnUrl;
-  // User can click the "Sign in now" link — no auto-redirect
-}
+  });
+  initGlobalAuth();
+});
 
 async function loadHistory() {
   try {

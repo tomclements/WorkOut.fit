@@ -94,128 +94,110 @@
         <div id="previewEquipment" class="text-xs text-gray-500 mt-3"></div>
       </div>
 
-      <div class="border rounded-lg p-4 mb-4 space-y-3">
-        <div class="flex items-center justify-between gap-3">
-          <label class="text-sm font-medium" for="musicStyle">Background music</label>
-          <select id="musicStyle" class="border border-gray-300 rounded-md p-2 text-sm max-w-[60%]">
-            <option value="off">Off</option>
-            <option value="drive" selected>Drive — upbeat</option>
-            <option value="focus">Focus — steady</option>
-            <option value="power">Power — driving</option>
-            <option value="calm">Calm — soft</option>
-            <option value="device">My music (other app)</option>
-          </select>
-        </div>
-        <label class="flex items-center justify-between gap-3 text-sm font-medium cursor-pointer">
-          <span>Voice countdown cues</span>
-          <input id="voiceCuesToggle" type="checkbox" checked class="rounded text-blue-600 w-5 h-5" />
-        </label>
-        <p class="text-xs text-gray-500 -mt-1">Spoken 3–2–1 plus “Work” / “Rest” at phase changes (uses device speech).</p>
-        <p id="musicStyleHint" class="text-xs text-gray-500">Built-in playlists loop instrumentals. Pick a style or use music on your phone.</p>
-        <div id="deviceMusicHint" class="hidden text-xs text-blue-900 bg-blue-50 border border-blue-100 rounded-md p-2">
-          Start Spotify, Apple Music, or YouTube Music in another app. Plan4Strength will only play timer beeps.
-          <div class="mt-2 flex flex-wrap gap-2">
-            <a class="underline font-medium" href="https://open.spotify.com/genre/0JQ5DAqbMKFAXlCG6QvYQ4" target="_blank" rel="noopener">Open Spotify workout</a>
-            <a class="underline font-medium" href="https://music.youtube.com/search?q=workout%20mix" target="_blank" rel="noopener">YouTube Music</a>
-          </div>
-        </div>
-        <!-- keep for prefs compatibility; hidden -->
-        <input id="musicToggle" type="checkbox" class="hidden" />
-      </div>
-
-      <button id="testSoundBtn" type="button" class="w-full mb-3 bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-4 px-6 rounded-xl transition touch-manipulation min-h-[3.5rem]">
-        Test sound &amp; beeps
-      </button>
-
       <button id="startBtn" class="cta-start w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation shadow-md">
         Start workout
       </button>
 
+      <!-- Compact settings row -->
+      <details class="setup-settings mt-4 border rounded-lg bg-white">
+        <summary class="setup-settings__summary">
+          <span>Sound &amp; music settings</span>
+          <span class="setup-settings__chevron" aria-hidden="true">&#9662;</span>
+        </summary>
+        <div class="p-4 pt-2 space-y-3">
+          <div class="flex items-center justify-between gap-3">
+            <label class="text-sm font-medium" for="musicStyle">Background music</label>
+            <select id="musicStyle" class="border border-gray-300 rounded-md p-2 text-sm max-w-[60%]">
+              <option value="off">Off</option>
+              <option value="drive" selected>Drive — upbeat</option>
+              <option value="focus">Focus — steady</option>
+              <option value="power">Power — driving</option>
+              <option value="calm">Calm — soft</option>
+              <option value="device">My music (other app)</option>
+            </select>
+          </div>
+          <label class="flex items-center justify-between gap-3 text-sm font-medium cursor-pointer">
+            <span>Voice countdown cues</span>
+            <input id="voiceCuesToggle" type="checkbox" checked class="rounded text-blue-600 w-5 h-5" />
+          </label>
+          <p id="musicStyleHint" class="text-xs text-gray-500">Built-in playlists loop instrumentals. Pick a style or use music on your phone.</p>
+          <div id="deviceMusicHint" class="hidden text-xs text-blue-900 bg-blue-50 border border-blue-100 rounded-md p-2">
+            Start Spotify, Apple Music, or YouTube Music in another app. Plan4Strength will only play timer beeps.
+            <div class="mt-2 flex flex-wrap gap-2">
+              <a class="underline font-medium" href="https://open.spotify.com/genre/0JQ5DAqbMKFAXlCG6QvYQ4" target="_blank" rel="noopener">Open Spotify workout</a>
+              <a class="underline font-medium" href="https://music.youtube.com/search?q=workout%20mix" target="_blank" rel="noopener">YouTube Music</a>
+            </div>
+          </div>
+          <!-- keep for prefs compatibility; hidden -->
+          <input id="musicToggle" type="checkbox" class="hidden" />
+          <button id="testSoundBtn" type="button" class="w-full bg-gray-100 active:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg transition touch-manipulation min-h-[3rem]">
+            Test sound &amp; beeps
+          </button>
+        </div>
+      </details>
+
       <p class="text-xs text-gray-500 mt-3 text-center">
-        Screen stays awake during the session. Use fullscreen if you like. Timers auto-advance; you can skip anytime.
+        Screen stays awake during the session. Timers auto-advance; skip anytime.
       </p>
     </section>
 
     <!-- Active exercise (work interval) -->
     <section id="activeScreen" class="runner-screen bg-white rounded-xl shadow p-5 sm:p-6">
+      <!-- Thin whole-workout progress: one glance -->
       <div class="mb-4">
-        <div class="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
+        <div class="w-full bg-gray-200 rounded-full h-1.5">
+          <div id="progressBar" class="bg-blue-600 h-1.5 rounded-full transition-all" style="width:0%"></div>
+        </div>
+        <div class="flex justify-between text-xs sm:text-sm text-gray-600 mt-1">
           <span>Workout progress</span>
           <span id="progressText" aria-live="polite">0%</span>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-3">
-          <div id="progressBar" class="bg-blue-600 h-3 rounded-full transition-all" style="width:0%"></div>
-        </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-2">
-        <div>
+      <!-- Name · set · overflow -->
+      <div class="flex justify-between items-start gap-3 mb-3">
+        <div class="min-w-0">
           <div id="exerciseName" class="text-2xl sm:text-3xl font-bold text-blue-900 leading-tight">Exercise</div>
           <div id="exerciseMeta" class="text-sm sm:text-base text-gray-600 mt-1"></div>
         </div>
-        <div id="setBadge" class="text-sm font-semibold bg-gray-100 text-gray-800 px-3 py-2 rounded-full self-start sm:self-auto"></div>
+        <div class="flex items-center gap-2 shrink-0">
+          <div id="setBadge" class="text-sm font-semibold bg-gray-100 text-gray-800 px-3 py-2 rounded-full"></div>
+          <button id="workOverflowBtn" type="button" class="overflow-btn" title="Music, skip, view all moves" aria-label="More options">&#8943;</button>
+        </div>
       </div>
 
-      <!-- In-runner demo (animated stills + optional video link) -->
-      <div id="demoLink" class="demo-panel mb-4"></div>
-
-      <div class="text-center mb-2">
-        <div id="workPhaseLabel" class="text-xs font-semibold uppercase tracking-wider text-green-700">Work</div>
-        <div id="workCue" class="text-base sm:text-lg font-medium text-gray-800 mt-1">Aim for your target reps</div>
-      </div>
-
+      <!-- Hero work timer -->
       <div id="workTimerBlock">
-        <div class="flex justify-center mb-4">
+        <div class="flex justify-center mb-3">
           <div id="timerDisplay" class="big-timer text-green-700" aria-live="polite" aria-atomic="true">00:30</div>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
           <div id="workProgressBar" class="bg-green-500 h-2 rounded-full transition-all" style="width:100%"></div>
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
-        <div class="flex flex-col gap-1">
-          <label class="text-xs text-gray-600" for="musicStyleActive">Music</label>
-          <select id="musicStyleActive" class="border border-gray-300 rounded-md p-2 text-sm min-h-[3rem] touch-manipulation">
-            <option value="off">Off</option>
-            <option value="drive">Drive</option>
-            <option value="focus">Focus</option>
-            <option value="power">Power</option>
-            <option value="calm">Calm</option>
-            <option value="device">My music</option>
-          </select>
-          <button id="musicBtn" type="button" class="hidden">Music</button>
-        </div>
-        <div class="flex flex-col justify-center px-1">
-          <label class="flex items-center justify-between text-xs text-gray-600 mb-0.5">
-            <span>Volume</span>
-            <span id="volumeValue">35%</span>
-          </label>
-          <input id="volumeSlider" type="range" min="0" max="100" value="35" class="w-full h-2" />
-          <div id="nowPlaying" class="text-[10px] text-gray-500 mt-1 truncate">—</div>
-        </div>
+      <!-- Target -->
+      <div class="text-center mb-4">
+        <div id="workCue" class="text-base sm:text-lg font-medium text-gray-800">Aim for your target reps</div>
       </div>
 
-      <button id="completeSetBtn" type="button" class="complete-set-btn w-full bg-green-600 active:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation">
-        Finish set early
-      </button>
+      <!-- Demo, large and still -->
+      <div id="demoLink" class="demo-panel mb-4"></div>
+
+      <!-- Fat controls, thumb zone -->
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <button id="pauseBtn" type="button" class="bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-4 px-6 rounded-xl transition touch-manipulation min-h-[4rem]">
+          Pause
+        </button>
+        <button id="completeSetBtn" type="button" class="complete-set-btn w-full bg-green-600 active:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation min-h-[4rem]">
+          Finish set early
+        </button>
+      </div>
 
       <div id="pausedOverlay" class="hidden text-center mt-4">
         <div class="text-xl font-bold text-amber-600">Paused</div>
         <button id="resumeWorkoutBtn" type="button" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-md touch-manipulation">Resume</button>
       </div>
-
-      <div class="grid grid-cols-2 gap-2 mt-3">
-        <button id="skipExerciseBtn" type="button" class="bg-amber-100 active:bg-amber-200 text-amber-800 font-semibold py-3 px-4 rounded-lg transition touch-manipulation min-h-[3rem] text-sm">
-          Skip exercise
-        </button>
-        <button id="prevExerciseBtn" type="button" class="bg-gray-100 active:bg-gray-200 text-gray-600 font-semibold py-3 px-4 rounded-lg transition touch-manipulation min-h-[3rem] text-sm">
-          ← Previous
-        </button>
-      </div>
-      <button id="pauseBtn" type="button" class="w-full mt-3 bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition touch-manipulation min-h-[3rem]">
-        Pause workout
-      </button>
     </section>
 
     <!-- Rest -->
@@ -230,32 +212,67 @@
       </div>
 
       <div class="bg-white rounded-lg p-4 mb-6">
-        <div class="text-sm text-gray-600 uppercase tracking-wider mb-2">Next up — demo</div>
-        <div id="nextDemo" class="demo-panel demo-panel--rest mb-3"></div>
-        <div id="nextExerciseName" class="text-2xl font-semibold text-gray-900"></div>
-        <div id="nextExerciseMeta" class="text-base text-gray-700"></div>
+        <div id="nextExerciseName" class="text-2xl font-semibold text-gray-900 mb-1"></div>
+        <div id="nextExerciseMeta" class="text-base text-gray-700 mb-3"></div>
+        <div class="text-sm text-gray-600 uppercase tracking-wider mb-2">Demo</div>
+        <div id="nextDemo" class="demo-panel demo-panel--rest"></div>
       </div>
 
-      <button id="viewAllMovesBtn" type="button" class="w-full mb-3 bg-white active:bg-gray-100 text-blue-700 font-semibold py-3 px-6 rounded-xl transition touch-manipulation min-h-[3rem]">
-        View all moves
-      </button>
-
-      <button id="skipRestBtn" type="button" class="w-full bg-blue-600 active:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition touch-manipulation min-h-[3.5rem]">
-        Skip rest
-      </button>
+      <div id="restControls" class="grid gap-3" style="grid-template-columns: auto 1fr;">
+        <button id="restOverflowBtn" type="button" class="overflow-btn overflow-btn--lg" title="Music, skip, view all moves" aria-label="More options">&#8943;</button>
+        <button id="skipRestBtn" type="button" class="w-full bg-blue-600 active:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition touch-manipulation min-h-[3.5rem]">
+          Skip rest
+        </button>
+      </div>
 
       <div id="restPausedOverlay" class="hidden text-center mt-4">
         <div class="text-xl font-bold text-amber-600">Paused</div>
         <button id="restResumeWorkoutBtn" type="button" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-md touch-manipulation">Resume</button>
       </div>
-
-      <button id="restSkipExerciseBtn" type="button" class="w-full mt-3 bg-amber-100 active:bg-amber-200 text-amber-800 font-semibold py-3 px-4 rounded-lg transition touch-manipulation min-h-[3rem]">
-        Skip exercise
-      </button>
-      <button id="restPauseBtn" type="button" class="w-full mt-3 bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition touch-manipulation min-h-[3rem]">
-        Pause workout
-      </button>
     </section>
+
+    <!-- Session options overflow (music / skip / previous / view all) -->
+    <div id="overflowModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="overflowTitle">
+      <div class="bg-white rounded-t-2xl sm:rounded-xl shadow-lg p-5 w-full sm:max-w-md max-h-[85vh] overflow-y-auto">
+        <div class="flex justify-between items-center gap-3 mb-4">
+          <h2 id="overflowTitle" class="text-lg font-bold text-blue-900">Session options</h2>
+          <button id="closeOverflow" type="button" class="text-gray-500 hover:text-gray-800 text-2xl leading-none px-1" aria-label="Close">&times;</button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="musicStyleActive">Background music</label>
+            <select id="musicStyleActive" class="border border-gray-300 rounded-md p-2 text-sm w-full min-h-[3rem] touch-manipulation">
+              <option value="off">Off</option>
+              <option value="drive">Drive — upbeat</option>
+              <option value="focus">Focus — steady</option>
+              <option value="power">Power — driving</option>
+              <option value="calm">Calm — soft</option>
+              <option value="device">My music (other app)</option>
+            </select>
+            <div id="nowPlaying" class="text-xs text-gray-500 mt-1 truncate">—</div>
+          </div>
+          <div>
+            <label class="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">
+              <span>Volume</span>
+              <span id="volumeValue">35%</span>
+            </label>
+            <input id="volumeSlider" type="range" min="0" max="100" value="35" class="w-full" />
+          </div>
+          <button id="overflowViewAllBtn" type="button" class="w-full bg-gray-100 active:bg-gray-200 text-blue-700 font-semibold py-3 px-4 rounded-lg touch-manipulation min-h-[3rem]">
+            View all moves
+          </button>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="overflowPrevBtn" type="button" class="bg-gray-100 active:bg-gray-200 text-gray-600 font-semibold py-3 px-4 rounded-lg transition touch-manipulation min-h-[3rem] text-sm">
+              &larr; Previous
+            </button>
+            <button id="overflowSkipBtn" type="button" class="bg-amber-100 active:bg-amber-200 text-amber-800 font-semibold py-3 px-4 rounded-lg transition touch-manipulation min-h-[3rem] text-sm">
+              Skip exercise
+            </button>
+          </div>
+          <button hidden id="musicBtn" type="button" class="hidden">Music</button>
+        </div>
+      </div>
+    </div>
 
     <!-- All moves list -->
     <div id="movesListModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="movesListTitle">

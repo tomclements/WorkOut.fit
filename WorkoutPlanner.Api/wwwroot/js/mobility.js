@@ -15,18 +15,15 @@
     abdominals: 'core', core: 'core', obliques: 'core', neck: 'neck'
   };
 
-  // FEDB folder for still flip fallback (must match free-exercise-db paths)
+  // FEDB folder for still fallback (must match free-exercise-db paths).
+  // Only true visual matches remain — wrong-move art was replaced by stick demos.
   const FEDB = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
   const SOURCE_FOLDERS = {
-    'step-up-with-knee-raise': 'Step-up_with_Knee_Raise',
-    'star-jump': 'Star_Jump',
-    'knee-tuck-jump': 'Knee_Tuck_Jump',
     'around-the-worlds': 'Around_The_Worlds',
     'incline-push-up': 'Incline_Push-Up',
     'band-pull-apart': 'Band_Pull_Apart',
     'hyperextensions-with-no-hyperextension-bench': 'Hyperextensions_With_No_Hyperextension_Bench',
     'plank': 'Plank',
-    'dead-bug': 'Dead_Bug',
     'bodyweight-squat': 'Bodyweight_Squat',
     'scissors-jump': 'Scissors_Jump',
     'butt-lift-bridge': 'Butt_Lift_Bridge',
@@ -44,17 +41,19 @@
     'isometric-neck-exercise-sides': 'Isometric_Neck_Exercise_-_Sides'
   };
 
-  // Keep SourceDemoId aligned with MobilityCatalog.cs (null = stick WebP only)
+  // Keep SourceDemoId aligned with MobilityCatalog.cs.
+  // Only true visual matches get a FEDB still — stick demos cover the rest
+  // (march/jacks/high-knees/dead-bug have original stick animations).
   const CATALOG = [
-    { id: 'wu-march', name: 'March in place', phase: 'warmup', role: 'general', targets: [], duration: 40, cue: 'Light pace, swing arms, raise heart rate gently', sourceDemoId: 'step-up-with-knee-raise' },
-    { id: 'wu-jacks', name: 'Jumping jacks', phase: 'warmup', role: 'general', targets: [], duration: 40, cue: 'Soft landings; step-jacks if needed', sourceDemoId: 'star-jump' },
-    { id: 'wu-high-knees', name: 'High knees (easy)', phase: 'warmup', role: 'general', targets: [], duration: 35, cue: 'Low intensity — just get blood moving', sourceDemoId: 'knee-tuck-jump' },
+    { id: 'wu-march', name: 'March in place', phase: 'warmup', role: 'general', targets: [], duration: 40, cue: 'Light pace, swing arms, raise heart rate gently', sourceDemoId: null },
+    { id: 'wu-jacks', name: 'Jumping jacks', phase: 'warmup', role: 'general', targets: [], duration: 40, cue: 'Soft landings; step-jacks if needed', sourceDemoId: null },
+    { id: 'wu-high-knees', name: 'High knees (easy)', phase: 'warmup', role: 'general', targets: [], duration: 35, cue: 'Low intensity — just get blood moving', sourceDemoId: null },
     { id: 'wu-arm-circles', name: 'Arm circles', phase: 'warmup', role: 'activate', targets: ['shoulders', 'chest', 'back'], duration: 35, cue: 'Small to large circles, both directions', sourceDemoId: null },
     { id: 'wu-scap-pushup', name: 'Scapular push-ups', phase: 'warmup', role: 'activate', targets: ['chest', 'shoulders', 'triceps'], duration: 35, cue: 'Plank or knees: spread then squeeze shoulder blades', sourceDemoId: null },
     { id: 'wu-band-disloc', name: 'Open-chest arm swings', phase: 'warmup', role: 'activate', targets: ['chest', 'shoulders'], duration: 30, cue: 'Cross-body then open wide; easy range', sourceDemoId: 'band-pull-apart' },
     { id: 'wu-cat-cow', name: 'Cat–cow', phase: 'warmup', role: 'activate', targets: ['back', 'core'], duration: 40, cue: 'On all fours, slow spinal flexion/extension', sourceDemoId: null },
     { id: 'wu-bird-dog', name: 'Bird dog', phase: 'warmup', role: 'activate', targets: ['back', 'core', 'glutes'], duration: 40, cue: 'Opposite arm/leg, brace midsection', sourceDemoId: null },
-    { id: 'wu-dead-bug', name: 'Dead bug', phase: 'warmup', role: 'activate', targets: ['core'], duration: 40, cue: 'Low back pressed to floor; slow opposite limbs', sourceDemoId: 'dead-bug' },
+    { id: 'wu-dead-bug', name: 'Dead bug', phase: 'warmup', role: 'activate', targets: ['core'], duration: 40, cue: 'Low back pressed to floor; slow opposite limbs', sourceDemoId: null },
     { id: 'wu-hip-circles', name: 'Standing hip circles', phase: 'warmup', role: 'activate', targets: ['hips', 'glutes', 'quads', 'hamstrings'], duration: 35, cue: 'Hands on hips, slow circles each way', sourceDemoId: null },
     { id: 'wu-leg-swings', name: 'Leg swings', phase: 'warmup', role: 'activate', targets: ['hamstrings', 'hips', 'quads', 'glutes'], duration: 35, cue: 'Front-to-back then side-to-side', sourceDemoId: null },
     { id: 'wu-bw-squat', name: 'Bodyweight squat (easy)', phase: 'warmup', role: 'activate', targets: ['quads', 'glutes', 'hamstrings'], duration: 40, cue: 'Easy depth, no load', sourceDemoId: 'bodyweight-squat' },

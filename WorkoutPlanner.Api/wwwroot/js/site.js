@@ -354,6 +354,254 @@
     }
   };
 
+  // ── Global auth ──────────────────────────────────────────────────
+
+  window.currentUser = null;
+  window.currentRoles = [];
+  var _authModal = null;
+  var _authLoginMode = true;
+  var _authCleanup = null;
+
+  function buildAuthModalHtml() {
+    return '<div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-4">' +
+      '<div class="flex justify-between items-center mb-4">' +
+        '<h2 id="gAuthTitle" class="text-xl font-bold">Sign in</h2>' +
+        '<button id="gAuthClose" type="button" class="text-gray-500 hover:text-gray-700 text-xl leading-none">&times;</button>' +
+      '</div>' +
+      '<div id="gAuthPanel">' +
+        '<form id="gAuthForm" class="space-y-0">' +
+          '<div id="gAuthError" class="text-sm text-red-600 mb-3 hidden"></div>' +
+          '<input id="gAuthEmail" name="email" type="email" autocomplete="username" placeholder="Email" class="w-full border border-gray-300 rounded-md p-2 mb-3" required />' +
+          '<input id="gAuthPassword" name="password" type="password" autocomplete="current-password" placeholder="Password" class="w-full border border-gray-300 rounded-md p-2 mb-4" required />' +
+          '<button id="gAuthSubmit" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Sign in</button>' +
+        '</form>' +
+        '<div id="gAuthExternal" class="hidden">' +
+          '<div class="relative my-4"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300"></div></div>' +
+          '<div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-gray-500">Or continue with</span></div></div>' +
+          '<div class="grid grid-cols-2 gap-3">' +
+            '<a id="gGoogleBtn" href="/api/auth/external-login?provider=Google" class="text-center border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-md transition">Google</a>' +
+            '<a id="gMicrosoftBtn" href="/api/auth/external-login?provider=Microsoft" class="text-center border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-md transition">Microsoft</a>' +
+          '</div>' +
+        '</div>' +
+        '<p class="mt-4 text-sm text-center">' +
+          '<button type="button" id="gAuthForgot" class="text-blue-600 hover:underline font-medium">Forgot password?</button>' +
+        '</p>' +
+        '<p class="mt-3 text-sm text-center text-gray-600">' +
+          '<span id="gAuthToggleText">Don\'t have an account?</span> ' +
+          '<button type="button" id="gAuthToggle" class="text-blue-600 hover:underline font-medium ml-1">Register</button>' +
+        '</p>' +
+      '</div>' +
+      '<div id="gForgotPanel" class="hidden">' +
+        '<form id="gForgotForm">' +
+          '<div id="gForgotError" class="text-sm text-red-600 mb-3 hidden"></div>' +
+          '<div id="gForgotSuccess" class="text-sm text-green-600 mb-3 hidden"></div>' +
+          '<input id="gForgotEmail" name="email" type="email" autocomplete="email" placeholder="Email" class="w-full border border-gray-300 rounded-md p-2 mb-4" required />' +
+          '<button id="gForgotSubmit" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Send reset link</button>' +
+        '</form>' +
+        '<p class="mt-4 text-sm text-center text-gray-600">' +
+          '<button type="button" id="gBackToAuth" class="text-blue-600 hover:underline font-medium">Back to sign in</button>' +
+        '</p>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function injectAuthModal() {
+    if (_authModal) return;
+    var overlay = document.createElement('div');
+    overlay.id = 'globalAuthModal';
+    overlay.className = 'modal-overlay';
+    overlay.style.display = 'none';
+    overlay.innerHTML = buildAuthModalHtml();
+    document.body.appendChild(overlay);
+    _authModal = overlay;
+
+    // Wire up events
+    overlay.querySelector('#gAuthClose').addEventListener('click', closeLoginModal);
+    overlay.querySelector('#gAuthForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      globalSubmitAuth();
+    });
+    overlay.querySelector('#gAuthToggle').addEventListener('click', function () {
+      _authLoginMode = !_authLoginMode;
+      overlay.querySelector('#gAuthTitle').textContent = _authLoginMode ? 'Sign in' : 'Register';
+      overlay.querySelector('#gAuthSubmit').textContent = _authLoginMode ? 'Sign in' : 'Create account';
+      overlay.querySelector('#gAuthToggleText').textContent = _authLoginMode ? 'Don\'t have an account?' : 'Already have an account?';
+      overlay.querySelector('#gAuthToggle').textContent = _authLoginMode ? 'Register' : 'Sign in';
+    });
+    overlay.querySelector('#gAuthForgot').addEventListener('click', function () {
+      overlay.querySelector('#gAuthPanel').style.display = 'none';
+      overlay.querySelector('#gForgotPanel').style.display = '';
+      overlay.querySelector('#gAuthTitle').textContent = 'Reset password';
+    });
+    overlay.querySelector('#gBackToAuth').addEventListener('click', function () {
+      overlay.querySelector('#gForgotPanel').style.display = 'none';
+      overlay.querySelector('#gAuthPanel').style.display = '';
+      overlay.querySelector('#gAuthTitle').textContent = _authLoginMode ? 'Sign in' : 'Register';
+    });
+    overlay.querySelector('#gForgotForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      globalSubmitForgot();
+    });
+
+    // Check for external providers
+    fetchExternalProviders(overlay);
+    overlay._onClose = closeLoginModal;
+  }
+
+  async function fetchExternalProviders(overlay) {
+    try {
+      var res = await fetch('/api/auth/external-providers', { credentials: 'include' });
+      if (!res.ok) return;
+      var providers = await res.json();
+      if (providers.length === 0) return;
+      var section = overlay.querySelector('#gAuthExternal');
+      section.style.display = '';
+      overlay.querySelector('#gGoogleBtn').style.display = providers.includes('Google') ? '' : 'none';
+      overlay.querySelector('#gMicrosoftBtn').style.display = providers.includes('Microsoft') ? '' : 'none';
+    } catch { /* ignore */ }
+  }
+
+  function setGlobalAuthError(msg) {
+    var el = document.getElementById('gAuthError');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.display = '';
+  }
+
+  async function globalSubmitAuth() {
+    var overlay = document.getElementById('globalAuthModal');
+    var email = overlay.querySelector('#gAuthEmail').value.trim();
+    var password = overlay.querySelector('#gAuthPassword').value;
+    if (!email || !password) { setGlobalAuthError('Please enter an email and password.'); return; }
+
+    var endpoint = _authLoginMode ? '/api/auth/login' : '/api/auth/register';
+    try {
+      var response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email: email, password: password })
+      });
+      if (!response.ok) {
+        var data = await response.json().catch(function () { return {}; });
+        var msg = data.errors ? data.errors.join('\n') : (data.title || data.detail || 'Authentication failed.');
+        setGlobalAuthError(msg);
+        return;
+      }
+      var data = await response.json();
+      window.currentUser = data.email;
+      window.currentRoles = data.roles || [];
+      closeLoginModal();
+      window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user: data.email, roles: data.roles } }));
+
+      // Check for returnUrl redirect
+      var params = new URLSearchParams(window.location.search);
+      var returnUrl = params.get('returnUrl');
+      if (returnUrl) window.location.href = returnUrl;
+    } catch (err) {
+      setGlobalAuthError('Error: ' + err.message);
+    }
+  }
+
+  async function globalSubmitForgot() {
+    var overlay = document.getElementById('globalAuthModal');
+    var email = overlay.querySelector('#gForgotEmail').value.trim();
+    var errorEl = overlay.querySelector('#gForgotError');
+    var successEl = overlay.querySelector('#gForgotSuccess');
+    errorEl.style.display = 'none';
+    successEl.style.display = 'none';
+
+    if (!email) { errorEl.textContent = 'Please enter your email.'; errorEl.style.display = ''; return; }
+
+    try {
+      var response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      });
+      var data = await response.json().catch(function () { return {}; });
+      if (!response.ok) {
+        errorEl.textContent = data.detail || data.title || 'Could not send reset email.';
+        errorEl.style.display = '';
+        return;
+      }
+      successEl.textContent = data.message || 'Check your email for a password reset link.';
+      successEl.style.display = '';
+    } catch (err) {
+      errorEl.textContent = 'Error: ' + err.message;
+      errorEl.style.display = '';
+    }
+  }
+
+  window.openLoginModal = function openLoginModal() {
+    injectAuthModal();
+    _authModal.style.display = '';
+    var emailInput = _authModal.querySelector('#gAuthEmail');
+    if (emailInput) emailInput.focus();
+    if (_authCleanup) _authCleanup();
+    _authCleanup = window.initModal(_authModal);
+  };
+
+  window.closeLoginModal = function closeLoginModal() {
+    if (!_authModal) return;
+    _authModal.style.display = 'none';
+    if (_authCleanup) { _authCleanup(); _authCleanup = null; }
+    // Clear form state
+    var emailInput = _authModal.querySelector('#gAuthEmail');
+    var passInput = _authModal.querySelector('#gAuthPassword');
+    if (emailInput) emailInput.value = '';
+    if (passInput) passInput.value = '';
+    var errEl = _authModal.querySelector('#gAuthError');
+    if (errEl) errEl.style.display = 'none';
+    // Reset to login panel
+    _authLoginMode = true;
+    _authModal.querySelector('#gAuthPanel').style.display = '';
+    _authModal.querySelector('#gForgotPanel').style.display = 'none';
+    _authModal.querySelector('#gAuthTitle').textContent = 'Sign in';
+  };
+
+  /** Check session on page load and fire auth-changed event. */
+  window.initGlobalAuth = async function initGlobalAuth() {
+    try {
+      var res = await fetch('/api/auth/me', { credentials: 'include' });
+      if (res.ok) {
+        var data = await res.json();
+        window.currentUser = data.email;
+        window.currentRoles = data.roles || [];
+        window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user: data.email, roles: data.roles } }));
+      } else {
+        window.currentUser = null;
+        window.currentRoles = [];
+        window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user: null, roles: [] } }));
+      }
+    } catch {
+      window.currentUser = null;
+      window.currentRoles = [];
+    }
+  };
+
+  /** Global fetch interceptor: open login modal on 401 for auth-required endpoints. */
+  var _originalFetch = window.fetch;
+  window.fetch = function () {
+    var args = arguments;
+    return _originalFetch.apply(this, args).then(function (response) {
+      if (response.status === 401) {
+        var url = typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url) || '';
+        // Don't intercept the auth check itself or login/register endpoints
+        if (url.includes('/api/auth/me') || url.includes('/api/auth/login') || url.includes('/api/auth/register') || url.includes('/api/auth/forgot-password') || url.includes('/api/auth/external')) {
+          return response;
+        }
+        // Only intercept API calls (not static assets)
+        if (url.startsWith('/api/')) {
+          window.currentUser = null;
+          window.openLoginModal();
+          if (typeof showToast === 'function') showToast('Your session has expired. Please sign in again.', 'error');
+        }
+      }
+      return response;
+    });
+  };
+
   // ── DOMContentLoaded ─────────────────────────────────────────────
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -372,5 +620,8 @@
     } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       document.body.classList.add('high-contrast');
     }
+
+    // Global auth check
+    initGlobalAuth();
   });
 })();

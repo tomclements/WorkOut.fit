@@ -2,7 +2,6 @@ let currentUser = null;
 let currentRoles = [];
 let currentPlan = null;
 let currentPlanId = null;
-let isLoginMode = true;
 let allExercises = [];
 let pickerTarget = { weekIndex: -1, dayIndex: -1 };
 const PLAN_DEFAULTS_KEY = 'workoutPlanFormDefaults';
@@ -59,8 +58,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyPlanDefaultsToForm({ skipBroNudge: true });
   await loadFavorites();
   loadEquipment();
-  await loadExternalProviders();
-  await checkSession();
+  // Global auth check (site.js) — listen for auth-changed to update planner UI
+  window.addEventListener('auth-changed', (e) => {
+    const { user, roles } = e.detail;
+    if (user) showLoggedIn(user, roles || []);
+    else showLoggedOut();
+  });
+  await initGlobalAuth();
   // Re-apply after session in case server prefs arrived late for returning users
   applyPlanDefaultsToForm({ skipBroNudge: true });
   handleReturnUrl();
@@ -74,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', () => window.print());
   const welcomeSignInBtn = document.getElementById('welcomeSignInBtn');
-  if (welcomeSignInBtn) welcomeSignInBtn.addEventListener('click', openAuthModal);
+  if (welcomeSignInBtn) welcomeSignInBtn.addEventListener('click', openLoginModal);
   initBodyWeight();
   // Dark mode toggle (matches runner's Aa button)
   const contrastBtn = document.getElementById('contrastBtn');
@@ -93,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Next workout suggestion card
   updateNextWorkoutCard();
   // Initialize focus traps on modals
-  ['authModal', 'preferencesModal', 'exercisePickerModal'].forEach(id => {
+  ['preferencesModal', 'exercisePickerModal'].forEach(id => {
     const el = document.getElementById(id);
     if (el && typeof initModal === 'function') {
       el._onClose = function() { el.classList.add('hidden'); };
@@ -136,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     bottomNavAccount.addEventListener('click', (e) => {
       e.preventDefault();
       if (currentUser) openPreferencesModal();
-      else openAuthModal();
+      else openLoginModal();
     });
   }
 
@@ -145,7 +149,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (openParam === 'account' || openParam === 'preferences' || openParam === 'auth') {
     setTimeout(() => {
       if (currentUser && (openParam === 'account' || openParam === 'preferences')) openPreferencesModal();
-      else if (!currentUser) openAuthModal();
+      else if (!currentUser) openLoginModal();
     }, 200);
   }
 
@@ -178,29 +182,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Auth modal
   const openAuthBtnEl = document.getElementById('openAuthBtn');
-  if (openAuthBtnEl) openAuthBtnEl.addEventListener('click', openAuthModal);
-  const closeAuthModalEl = document.getElementById('closeAuthModal');
-  if (closeAuthModalEl) closeAuthModalEl.addEventListener('click', closeAuthModal);
-  const authModalEl = document.getElementById('authModal');
-  if (authModalEl) authModalEl.addEventListener('click', e => {
-    if (e.target.id === 'authModal') closeAuthModal();
-  });
-  const authToggleBtn = document.getElementById('authToggleBtn');
-  if (authToggleBtn) authToggleBtn.addEventListener('click', toggleAuthMode);
-  const authForm = document.getElementById('authForm');
-  if (authForm) authForm.addEventListener('submit', e => {
-    e.preventDefault();
-    submitAuth();
-  });
-  const forgotToggleBtn = document.getElementById('forgotToggleBtn');
-  if (forgotToggleBtn) forgotToggleBtn.addEventListener('click', showForgotPanel);
-  const backToAuthBtn = document.getElementById('backToAuthBtn');
-  if (backToAuthBtn) backToAuthBtn.addEventListener('click', showAuthPanel);
-  const forgotForm = document.getElementById('forgotForm');
-  if (forgotForm) forgotForm.addEventListener('submit', e => {
-    e.preventDefault();
-    submitForgotPassword();
-  });
+  if (openAuthBtnEl) openAuthBtnEl.addEventListener('click', openLoginModal);
 
   const preferencesLinkEl = document.getElementById('preferencesLink');
   if (preferencesLinkEl) preferencesLinkEl.addEventListener('click', openPreferencesModal);
@@ -682,7 +664,7 @@ async function setExerciseRating(exerciseId, desired, event) {
   }
   if (!currentUser) {
     if (typeof showToast === 'function') showToast('Sign in to rank exercises you like or dislike.', 'info');
-    openAuthModal();
+    openLoginModal();
     return;
   }
 
@@ -894,181 +876,15 @@ async function savePreferences() {
   }
 }
 
-// Auth UI
-function openAuthModal() {
-  showAuthPanel();
-  updateExternalLoginLinks();
-  document.getElementById('authModal').classList.remove('hidden');
-  document.getElementById('authEmail').focus();
-}
-
-function updateExternalLoginLinks() {
-  const params = new URLSearchParams(window.location.search);
-  const returnUrl = params.get('returnUrl');
-  const google = document.getElementById('googleLoginBtn');
-  const microsoft = document.getElementById('microsoftLoginBtn');
-  const base = '/api/auth/external-login';
-  if (returnUrl) {
-    google.href = `${base}?provider=Google&returnUrl=${encodeURIComponent(returnUrl)}`;
-    microsoft.href = `${base}?provider=Microsoft&returnUrl=${encodeURIComponent(returnUrl)}`;
-  } else {
-    google.href = `${base}?provider=Google`;
-    microsoft.href = `${base}?provider=Microsoft`;
-  }
-}
-
-function closeAuthModal() {
-  document.getElementById('authModal').classList.add('hidden');
-  document.getElementById('authError').classList.add('hidden');
-  document.getElementById('authEmail').value = '';
-  document.getElementById('authPassword').value = '';
-  document.getElementById('forgotEmail').value = '';
-  document.getElementById('forgotError').classList.add('hidden');
-  document.getElementById('forgotSuccess').classList.add('hidden');
-}
-
-function showAuthPanel() {
-  document.getElementById('authPanel').classList.remove('hidden');
-  document.getElementById('forgotPanel').classList.add('hidden');
-  document.getElementById('authModalTitle').textContent = isLoginMode ? 'Sign in' : 'Register';
-}
-
-function showForgotPanel() {
-  document.getElementById('authPanel').classList.add('hidden');
-  document.getElementById('forgotPanel').classList.remove('hidden');
-  document.getElementById('authModalTitle').textContent = 'Reset password';
-  document.getElementById('forgotEmail').focus();
-}
-
-function toggleAuthMode() {
-  isLoginMode = !isLoginMode;
-  document.getElementById('authModalTitle').textContent = isLoginMode ? 'Sign in' : 'Register';
-  document.getElementById('authSubmitBtn').textContent = isLoginMode ? 'Sign in' : 'Create account';
-  document.getElementById('authToggleText').textContent = isLoginMode ? "Don't have an account?" : 'Already have an account?';
-  document.getElementById('authToggleBtn').textContent = isLoginMode ? 'Register' : 'Sign in';
-  const pwd = document.getElementById('authPassword');
-  if (pwd) pwd.autocomplete = isLoginMode ? 'current-password' : 'new-password';
-}
-
-function setAuthError(message) {
-  const el = document.getElementById('authError');
-  el.textContent = message;
-  el.classList.remove('hidden');
-}
-
-async function submitAuth() {
-  const email = document.getElementById('authEmail').value.trim();
-  const password = document.getElementById('authPassword').value;
-  if (!email || !password) {
-    setAuthError('Please enter an email and password.');
-    return;
-  }
-
-  const endpoint = isLoginMode ? '/api/auth/login' : '/api/auth/register';
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ email, password })
-    });
-
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      const msg = data.errors ? data.errors.join('\n') : (data.title || data.detail || 'Authentication failed.');
-      setAuthError(msg);
-      return;
-    }
-
-    const data = await response.json();
-    closeAuthModal();
-    showLoggedIn(data.email, data.roles || []);
-    await loadPreferences();
-    loadEquipment();
-
-    const params = new URLSearchParams(window.location.search);
-    const returnUrl = params.get('returnUrl');
-    if (returnUrl) {
-      window.location.href = returnUrl;
-    }
-  } catch (err) {
-    setAuthError(`Error: ${err.message}`);
-  }
-}
-
-async function submitForgotPassword() {
-  const email = document.getElementById('forgotEmail').value.trim();
-  const error = document.getElementById('forgotError');
-  const success = document.getElementById('forgotSuccess');
-  error.classList.add('hidden');
-  success.classList.add('hidden');
-
-  if (!email) {
-    error.textContent = 'Please enter your email.';
-    error.classList.remove('hidden');
-    return;
-  }
-
-  try {
-    const response = await fetch('/api/auth/forgot-password', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    });
-
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      error.textContent = data.title || data.detail || 'Could not request reset.';
-      error.classList.remove('hidden');
-      return;
-    }
-
-    const data = await response.json();
-    success.textContent = data.resetLink
-      ? `Reset link: ${data.resetLink}`
-      : (data.message || 'Check your email for a reset link.');
-    success.classList.remove('hidden');
-  } catch (err) {
-    error.textContent = 'Error: ' + err.message;
-    error.classList.remove('hidden');
-  }
-}
-
+// Auth UI (global auth modal in site.js)
 async function logout() {
   try {
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
   } catch { }
+  window.currentUser = null;
+  window.currentRoles = [];
   showLoggedOut();
-}
-
-async function checkSession() {
-  try {
-    const response = await fetch('/api/auth/me', { credentials: 'include' });
-    if (response.ok) {
-      const data = await response.json();
-      showLoggedIn(data.email, data.roles || []);
-    } else {
-      // 401 when signed out is normal
-      showLoggedOut();
-    }
-  } catch {
-    showLoggedOut();
-  }
-}
-
-async function loadExternalProviders() {
-  try {
-    const response = await fetch('/api/auth/external-providers', { credentials: 'include' });
-    if (!response.ok) return;
-    const providers = await response.json();
-    if (providers.length === 0) return;
-
-    document.getElementById('externalLoginSection').classList.remove('hidden');
-    document.getElementById('googleLoginBtn').classList.toggle('hidden', !providers.includes('Google'));
-    document.getElementById('microsoftLoginBtn').classList.toggle('hidden', !providers.includes('Microsoft'));
-  } catch {
-    // ignore
-  }
+  window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user: null, roles: [] } }));
 }
 
 function handleReturnUrl() {
@@ -1076,15 +892,13 @@ function handleReturnUrl() {
   const returnUrl = params.get('returnUrl');
   if (!returnUrl) return;
 
-  updateExternalLoginLinks();
-
   if (currentUser) {
     window.location.replace(returnUrl);
     return;
   }
 
   if (returnUrl.toLowerCase().includes('admin')) {
-    openAuthModal();
+    openLoginModal();
   }
 }
 
@@ -1127,7 +941,7 @@ function showLoggedOut() {
   currentRoles = [];
   const section = document.getElementById('authSection');
   section.innerHTML = `<button id="openAuthBtn" class="text-sm bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-semibold py-2 px-4 rounded-md transition">Sign in / Register</button>`;
-  document.getElementById('openAuthBtn').addEventListener('click', openAuthModal);
+  document.getElementById('openAuthBtn').addEventListener('click', openLoginModal);
 
   adminLink.classList.add('hidden');
   historyLink.classList.add('hidden');
@@ -1195,19 +1009,24 @@ function renderDashboard(data) {
   }
 
   if (data.recentSessions && data.recentSessions.length) {
-    const sessions = data.recentSessions.map(s => `
-      <div class="p-4 border-b last:border-b-0">
-        <div class="font-medium">${escapeHtml(s.planName)}</div>
-        <div class="text-xs text-gray-500">${formatDate(s.startedAt)} • ${formatDuration(s.durationSeconds)} • ${s.sets} sets • ${s.reps} reps</div>
-      </div>
-    `).join('');
-    recentActivity.innerHTML = sessions;
+    const count = data.recentWeekCount || 0;
+    const weekWord = count === 1 ? 'week' : 'weeks';
+    recentActivity.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-2xl font-bold text-blue-700">${count}</span>
+          <span class="text-sm text-gray-600 ml-1">workout${count === 1 ? '' : 's'} this week</span>
+        </div>
+        <a href="/history.html" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View history &rarr;</a>
+      </div>`;
   } else {
     recentActivity.innerHTML = `
-      <div class="p-4 text-sm text-gray-600">
-        <p class="font-medium text-gray-800 mb-1">No workouts logged yet</p>
-        <p class="text-gray-500 mb-3">Finish a session in the runner and tap Save — your streak starts here.</p>
-        <a href="/workout.html" class="inline-block text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-3 rounded-md">Open runner</a>
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-2xl font-bold text-blue-700">0</span>
+          <span class="text-sm text-gray-600 ml-1">workouts this week</span>
+        </div>
+        <a href="/workout.html" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Open runner &rarr;</a>
       </div>`;
   }
 }

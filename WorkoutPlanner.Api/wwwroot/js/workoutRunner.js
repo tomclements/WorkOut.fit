@@ -65,7 +65,6 @@ const nextExerciseNameEl = document.getElementById('nextExerciseName');
 const nextExerciseMetaEl = document.getElementById('nextExerciseMeta');
 const nextDemoEl = document.getElementById('nextDemo');
 const skipRestBtn = document.getElementById('skipRestBtn');
-const viewAllMovesBtn = document.getElementById('viewAllMovesBtn');
 const movesListModal = document.getElementById('movesListModal');
 const movesList = document.getElementById('movesList');
 const closeMovesListBtn = document.getElementById('closeMovesList');
@@ -94,7 +93,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   musicEngine = new PlaylistMusicEngine();
   await musicEngine.loadCatalog();
 
-  await checkAuth();
+  // Global auth: update local currentUser when auth state changes
+  window.addEventListener('auth-changed', (e) => {
+    const { user } = e.detail;
+    currentUser = user;
+    if (userLabel) userLabel.textContent = user || '';
+  });
+  await initGlobalAuth();
+  currentUser = window.currentUser;
+  if (userLabel && currentUser) userLabel.textContent = currentUser;
+
   await loadUserPreferences();
   await loadPlan();
   checkForResumableSession();
@@ -120,12 +128,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (tvModeBtn) tvModeBtn.addEventListener('click', openCastModal);
   if (saveSessionBtn) saveSessionBtn.addEventListener('click', () => saveSession({ manual: true }));
   document.getElementById('pauseBtn').addEventListener('click', () => pauseWorkout(false));
-  document.getElementById('restPauseBtn').addEventListener('click', () => pauseWorkout(false));
   document.getElementById('resumeWorkoutBtn').addEventListener('click', resumeWorkout);
   document.getElementById('restResumeWorkoutBtn').addEventListener('click', resumeWorkout);
   document.getElementById('volumeSlider').addEventListener('input', onVolumeChange);
   window.addEventListener('beforeunload', handleBeforeUnload);
 
+  // Session options overflow (⋯)
+  const overflowModal = document.getElementById('overflowModal');
+  const openOverflow = () => overflowModal?.classList.remove('hidden');
+  const closeOverflow = () => overflowModal?.classList.add('hidden');
+  document.getElementById('workOverflowBtn')?.addEventListener('click', openOverflow);
+  document.getElementById('restOverflowBtn')?.addEventListener('click', openOverflow);
+  document.getElementById('closeOverflow')?.addEventListener('click', closeOverflow);
+  document.getElementById('overflowViewAllBtn')?.addEventListener('click', () => {
+    closeOverflow();
+    openMovesList();
+  });
+  overflowModal?.addEventListener('click', (e) => {
+    if (e.target === overflowModal) closeOverflow();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overflowModal && !overflowModal.classList.contains('hidden')) closeOverflow();
+  });
+
+  // TV / cast modal
   const closeCast = () => closeCastModal();
   document.getElementById('closeCastModal')?.addEventListener('click', closeCast);
   document.getElementById('dismissCastModal')?.addEventListener('click', closeCast);
@@ -133,25 +159,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTvMode(true);
     closeCastModal();
     if (typeof showToast === 'function') {
-      showToast('TV mode on â€” mirror this screen with AirPlay or Cast tab.', 'info', 4500);
+      showToast('TV mode on \u2014 mirror this screen with AirPlay or Cast tab.', 'info', 4500);
     }
   });
   castModal?.addEventListener('click', (e) => {
     if (e.target === castModal) closeCastModal();
   });
 
-  // Skip exercise buttons
-  const skipExerciseBtn = document.getElementById('skipExerciseBtn');
-  if (skipExerciseBtn) skipExerciseBtn.addEventListener('click', skipCurrentExercise);
-  
-  const restSkipExerciseBtn = document.getElementById('restSkipExerciseBtn');
-  if (restSkipExerciseBtn) restSkipExerciseBtn.addEventListener('click', skipCurrentExercise);
-  
-  // Previous exercise button
-  const prevExerciseBtn = document.getElementById('prevExerciseBtn');
-  if (prevExerciseBtn) prevExerciseBtn.addEventListener('click', goBackExercise);
+  // Skip exercise button (overflow)
+  const skipExerciseBtn = document.getElementById('overflowSkipBtn');
+  if (skipExerciseBtn) skipExerciseBtn.addEventListener('click', () => { closeOverflow(); skipCurrentExercise(); });
 
-  if (viewAllMovesBtn) viewAllMovesBtn.addEventListener('click', openMovesList);
+  // Previous exercise button (overflow)
+  const prevExerciseBtn = document.getElementById('overflowPrevBtn');
+  if (prevExerciseBtn) prevExerciseBtn.addEventListener('click', () => { closeOverflow(); goBackExercise(); });
+
   if (closeMovesListBtn) closeMovesListBtn.addEventListener('click', closeMovesList);
   movesListModal?.addEventListener('click', (e) => {
     if (e.target === movesListModal) closeMovesList();
@@ -196,19 +218,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (typeof initModal === 'function') initModal(modal);
   });
 });
-
-async function checkAuth() {
-  try {
-    const res = await fetch('/api/auth/me', { credentials: 'include' });
-    if (res.ok) {
-      const data = await res.json();
-      currentUser = data.email;
-      userLabel.textContent = currentUser;
-    }
-  } catch {
-    // ignore
-  }
-}
 
 async function loadUserPreferences() {
   try {
@@ -942,12 +951,10 @@ function updatePauseUI() {
   const pausedOverlay = document.getElementById('pausedOverlay');
   const restPausedOverlay = document.getElementById('restPausedOverlay');
   const pauseBtn = document.getElementById('pauseBtn');
-  const restPauseBtn = document.getElementById('restPauseBtn');
 
   pausedOverlay.classList.toggle('hidden', !isPaused);
   restPausedOverlay.classList.toggle('hidden', !isPaused);
   pauseBtn.classList.toggle('hidden', isPaused);
-  restPauseBtn.classList.toggle('hidden', isPaused);
 }
 
 function onVolumeChange(e) {
@@ -1155,21 +1162,6 @@ function estimateTargetReps(ex) {
 function fillExerciseHeader(ex) {
   exerciseNameEl.textContent = ex.name;
   exerciseMetaEl.textContent = setWorkLabel(ex);
-  // Must not shadow global `phase` (setup|work|rest|finish) â€” that broke the timer.
-  const movePhase = exercisePhase(ex);
-  const phaseLabelEl = document.getElementById('workPhaseLabel');
-  if (phaseLabelEl) {
-    if (movePhase === 'warmup') {
-      phaseLabelEl.textContent = 'Warm-up';
-      phaseLabelEl.className = 'text-xs font-semibold uppercase tracking-wider text-amber-700';
-    } else if (movePhase === 'cooldown') {
-      phaseLabelEl.textContent = 'Cool-down';
-      phaseLabelEl.className = 'text-xs font-semibold uppercase tracking-wider text-teal-700';
-    } else {
-      phaseLabelEl.textContent = 'Work';
-      phaseLabelEl.className = 'text-xs font-semibold uppercase tracking-wider text-green-700';
-    }
-  }
   if (isMobilityExercise(ex)) {
     setBadgeEl.textContent = movePhase === 'warmup' ? 'Warm-up' : 'Cool-down';
     workCueEl.textContent = ex.progression || (movePhase === 'warmup' ? 'Move easily â€” prepare the muscles' : 'Breathe and ease tension');

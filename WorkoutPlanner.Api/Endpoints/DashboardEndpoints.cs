@@ -42,6 +42,7 @@ public static class DashboardEndpoints
             var totalDuration = sessions.Sum(s => s.DurationSeconds);
             var totalSets = sessions.SelectMany(s => s.Exercises).Sum(e => e.Sets.Count);
             var totalReps = sessions.SelectMany(s => s.Exercises).SelectMany(e => e.Sets).Sum(s => s.Reps);
+            var recentWeekCount = sessions.Count(s => s.StartedAt >= DateTime.UtcNow.AddDays(-7));
 
             var recentSessions = sessions.Take(5).Select(s => new
             {
@@ -60,6 +61,7 @@ public static class DashboardEndpoints
                 TotalDurationSeconds = totalDuration,
                 TotalSets = totalSets,
                 TotalReps = totalReps,
+                RecentWeekCount = recentWeekCount,
                 Plans = planStats,
                 RecentSessions = recentSessions
             });

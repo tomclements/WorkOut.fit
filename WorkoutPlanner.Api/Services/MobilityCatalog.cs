@@ -66,12 +66,13 @@ public static class MobilityCatalog
         // null SourceDemoId => stick demo only (no misleading still).
 
         // --- General pulse raisers (always first in warm-up) ---
+        // march/jacks/high-knees/dead-bug have original stick demos; no FEDB still.
         new("wu-march", "March in place", "warmup", Array.Empty<string>(), "general", 40,
-            "Light pace, swing arms, raise heart rate gently", "step-up-with-knee-raise"),
+            "Light pace, swing arms, raise heart rate gently", null),
         new("wu-jacks", "Jumping jacks", "warmup", Array.Empty<string>(), "general", 40,
-            "Soft landings; skip or step-jacks if joints prefer", "star-jump"),
+            "Soft landings; skip or step-jacks if joints prefer", null),
         new("wu-high-knees", "High knees (easy)", "warmup", Array.Empty<string>(), "general", 35,
-            "Low intensity — just get blood moving", "knee-tuck-jump"),
+            "Low intensity — just get blood moving", null),
 
         // --- Activation / dynamic prep ---
         new("wu-arm-circles", "Arm circles", "warmup", new[] { "shoulders", "chest", "back" }, "activate", 35,
@@ -85,7 +86,7 @@ public static class MobilityCatalog
         new("wu-bird-dog", "Bird dog", "warmup", new[] { "back", "core", "glutes" }, "activate", 40,
             "Opposite arm/leg, hold 2s, brace midsection", null),
         new("wu-dead-bug", "Dead bug", "warmup", new[] { "core" }, "activate", 40,
-            "Low back pressed to floor; slow opposite limbs", "dead-bug"),
+            "Low back pressed to floor; slow opposite limbs", null),
         new("wu-hip-circles", "Standing hip circles", "warmup", new[] { "hips", "glutes", "quads", "hamstrings" }, "activate", 35,
             "Hands on hips, slow circles each way", null),
         new("wu-leg-swings", "Leg swings", "warmup", new[] { "hamstrings", "hips", "quads", "glutes" }, "activate", 35,
@@ -332,29 +333,10 @@ public static class MobilityCatalog
     /// </summary>
     private static readonly Dictionary<string, string> SourceImageFolders = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["step-up-with-knee-raise"] = "Step-up_with_Knee_Raise",
-        ["star-jump"] = "Star_Jump",
-        ["knee-tuck-jump"] = "Knee_Tuck_Jump",
-        ["around-the-worlds"] = "Around_The_Worlds",
-        ["incline-push-up"] = "Incline_Push-Up",
         ["band-pull-apart"] = "Band_Pull_Apart",
-        ["hyperextensions-with-no-hyperextension-bench"] = "Hyperextensions_With_No_Hyperextension_Bench",
-        ["plank"] = "Plank",
-        ["dead-bug"] = "Dead_Bug",
         ["bodyweight-squat"] = "Bodyweight_Squat",
-        ["scissors-jump"] = "Scissors_Jump",
         ["butt-lift-bridge"] = "Butt_Lift_Bridge",
         ["standing-calf-raises"] = "Standing_Calf_Raises",
-        ["palms-up-barbell-wrist-curl-over-a-bench"] = "Palms-Up_Barbell_Wrist_Curl_Over_A_Bench",
-        ["front-dumbbell-raise"] = "Front_Dumbbell_Raise",
-        ["medicine-ball-full-twist"] = "Medicine_Ball_Full_Twist",
-        ["bodyweight-flyes"] = "Bodyweight_Flyes",
-        ["standing-dumbbell-triceps-extension"] = "Standing_Dumbbell_Triceps_Extension",
         ["stiff-leg-barbell-good-morning"] = "Stiff_Leg_Barbell_Good_Morning",
-        ["single-leg-glute-bridge"] = "Single_Leg_Glute_Bridge",
-        ["kneeling-squat"] = "Kneeling_Squat",
-        ["reverse-hyperextension"] = "Reverse_Hyperextension",
-        ["bent-knee-hip-raise"] = "Bent-Knee_Hip_Raise",
-        ["isometric-neck-exercise-sides"] = "Isometric_Neck_Exercise_-_Sides",
     };
 }

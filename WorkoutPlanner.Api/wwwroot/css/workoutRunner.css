@@ -51,6 +51,24 @@ body.tv-mode #restScreen {
   min-height: 70vh;
 }
 
+/* TV shows timer + name only — controls stay on the phone (not mirrored) */
+body.tv-mode #setBadge,
+body.tv-mode #exerciseMeta,
+body.tv-mode #workCue,
+body.tv-mode .overflow-btn,
+body.tv-mode #progressBar,
+body.tv-mode #restProgressBar {
+  display: none !important;
+}
+body.tv-mode .demo-caption,
+body.tv-mode .demo-actions {
+  display: none !important;
+}
+body.tv-mode #timerDisplay,
+body.rest-phase.tv-mode #restTimer {
+  font-size: clamp(7rem, 20vw, 14rem) !important;
+}
+
 .rep-display {
   font-size: 3.5rem;
   font-weight: 800;
@@ -131,6 +149,93 @@ body.high-contrast #backToPlanner {
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
+}
+
+/* ---------- Session options (⋯ overflow) ---------- */
+/* Compat: some arbitrary utilities are absent from the compiled Tailwind build */
+#overflowModal {
+  display: flex;
+}
+
+#overflowModal.hidden {
+  display: none;
+}
+
+#overflowModal > div {
+  border-radius: 1rem;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 639px) {
+  #overflowModal {
+    align-items: flex-end;
+  }
+
+  #overflowModal > div {
+    border-radius: 1rem 1rem 0 0;
+  }
+}
+
+#overflowModal button,
+#overflowModal select {
+  min-height: 3rem;
+}
+
+.overflow-btn {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.overflow-btn--lg {
+  width: 3.75rem;
+  height: 3.75rem;
+  font-size: 1.7rem;
+}
+
+body.work-phase .overflow-btn,
+body.rest-phase .overflow-btn {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+  border: 1px solid #334155;
+}
+
+/* ---------- Setup screen: collapsed settings row ---------- */
+.setup-settings__summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #334155;
+  touch-action: manipulation;
+}
+
+.setup-settings__summary::-webkit-details-marker {
+  display: none;
+}
+
+.setup-settings[open] .setup-settings__chevron {
+  transform: rotate(180deg);
+}
+
+.setup-settings__chevron {
+  transition: transform 0.15s ease;
+  color: #94a3b8;
 }
 
 .ex-thumb {
@@ -256,16 +361,13 @@ body.high-contrast .demo-actions a {
   }
 }
 
-/* Phone-optimized work mode — only essential info */
-body.work-phase #activeScreen > .mb-4:first-child,
-body.work-phase #activeScreen #workPhaseLabel,
-body.work-phase #activeScreen #workCue,
-body.work-phase #activeScreen #pauseBtn {
+/* Phone-optimized work mode — name·set, hero timer, target, demo, Done/Pause */
+body.work-phase #activeScreen > .mb-4:first-child {
   display: none !important;
 }
 
 body.work-phase #activeScreen {
-  padding: 0.75rem !important;
+  padding: 0.9rem 1rem calc(7.5rem + env(safe-area-inset-bottom)) !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
@@ -275,48 +377,69 @@ body.work-phase #activeScreen {
 }
 
 body.work-phase #activeScreen #exerciseName {
-  font-size: clamp(2.5rem, 9vw, 4rem) !important;
-  text-align: center !important;
+  font-size: clamp(1.9rem, 7vw, 3rem) !important;
+  text-align: left !important;
   color: #f1f5f9 !important;
-  margin-bottom: 0.25rem !important;
 }
 
 body.work-phase #activeScreen #exerciseMeta {
-  font-size: 1.35rem !important;
-  color: #cbd5e1 !important;
-  text-align: center !important;
-  margin-bottom: 0.25rem !important;
+  font-size: 1.05rem !important;
+  color: #94a3b8 !important;
+  text-align: left !important;
+  margin-top: 0.15rem !important;
 }
 
 body.work-phase #activeScreen #setBadge {
-  font-size: 1.2rem !important;
+  font-size: 1.15rem !important;
   background: #1e293b !important;
-  color: #94a3b8 !important;
-  align-self: center !important;
-  margin-bottom: 1rem !important;
+  color: #a7f3d0 !important;
+  border: 1px solid #064e3b;
+  white-space: nowrap;
 }
 
 body.work-phase #activeScreen #timerDisplay {
-  font-size: clamp(7rem, 24vw, 12rem) !important;
+  font-size: clamp(5.5rem, 27vw, 12rem) !important;
   line-height: 1 !important;
   text-align: center !important;
-  color: #22c55e !important;
+  color: #34d399 !important;
   font-variant-numeric: tabular-nums !important;
+  letter-spacing: -0.02em;
 }
 
-body.work-phase #activeScreen .flex.justify-center {
-  margin-bottom: 0.5rem !important;
+body.work-phase #activeScreen #workCue {
+  font-size: 1.3rem !important;
+  color: #cbd5e1 !important;
+  text-align: center !important;
+}
+
+body.work-phase #activeScreen .demo-panel {
+  max-width: min(100%, 21rem) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Fat controls pinned to the thumb zone */
+body.work-phase #activeScreen .grid-cols-2 {
+  position: fixed !important;
+  left: 1rem !important;
+  right: 1rem !important;
+  bottom: calc(1rem + env(safe-area-inset-bottom)) !important;
+  z-index: 30;
+  gap: 0.75rem !important;
+}
+
+body.work-phase #activeScreen .grid-cols-2 button {
+  min-height: 4.75rem !important;
+  font-size: 1.45rem !important;
+  border-radius: 1.1rem !important;
 }
 
 body.work-phase #activeScreen #completeSetBtn {
-  position: fixed !important;
-  bottom: 1rem !important;
-  left: 1rem !important;
-  right: 1rem !important;
-  width: auto !important;
-  min-height: 5rem !important;
-  font-size: 1.7rem !important;
-  border-radius: 1rem !important;
+  background: #059669 !important;
+}
+
+body.work-phase #pausedOverlay button {
+  min-height: 3.75rem;
 }
 
 /* ---------- Rest screen readability ---------- */
@@ -326,21 +449,21 @@ body.work-phase #activeScreen #completeSetBtn {
 
 /* ---------- Rest screen — phone on floor (portrait) ---------- */
 body.rest-phase #restScreen {
-  background: #0f172a !important;
+  background: #0b1526 !important;
   color: #f1f5f9 !important;
   padding-top: 1rem !important;
-  padding-bottom: 1rem !important;
+  padding-bottom: calc(7.5rem + env(safe-area-inset-bottom)) !important;
   min-height: 100vh !important;
 }
 
 body.rest-phase #restScreen .text-center .uppercase {
-  font-size: 1.6rem !important;
-  color: #93c5fd !important;
+  font-size: 1.3rem !important;
+  color: #60a5fa !important;
   margin-bottom: 0.25rem !important;
 }
 
 body.rest-phase #restTimer {
-  font-size: clamp(7rem, 24vw, 13rem) !important;
+  font-size: clamp(6rem, 24vw, 11rem) !important;
   line-height: 1 !important;
   color: #60a5fa !important;
   margin-bottom: 0.5rem !important;
@@ -356,12 +479,12 @@ body.rest-phase #restProgressBar {
 }
 
 body.rest-phase #restScreen .bg-white {
-  background: #1e293b !important;
-  border-color: #334155 !important;
+  background: #16223b !important;
+  border-color: #24365c !important;
 }
 
 body.rest-phase #nextExerciseName {
-  font-size: clamp(1.5rem, 5vw, 2.5rem) !important;
+  font-size: clamp(1.5rem, 5vw, 2.25rem) !important;
   color: #f1f5f9 !important;
 }
 
@@ -374,24 +497,29 @@ body.rest-phase #restScreen .text-xs {
   color: #94a3b8 !important;
 }
 
-body.rest-phase #viewAllMovesBtn {
-  background: transparent !important;
-  border: 2px solid #60a5fa !important;
-  color: #93c5fd !important;
-  font-size: 1.3rem !important;
+/* Skip rest + ⋯ pinned to the thumb zone */
+body.rest-phase #restControls {
+  position: fixed !important;
+  left: 1rem !important;
+  right: 1rem !important;
+  bottom: calc(1rem + env(safe-area-inset-bottom)) !important;
+  z-index: 30;
 }
 
 body.rest-phase #skipRestBtn {
   font-size: 1.4rem !important;
   min-height: 4.5rem !important;
   background: #2563eb !important;
+  border-radius: 1.1rem !important;
 }
 
-body.rest-phase #restPauseBtn {
-  background: #1e293b !important;
-  color: #94a3b8 !important;
-  border: 1px solid #334155 !important;
-  font-size: 1.1rem !important;
+body.rest-phase #restOverflowBtn {
+  width: 4.5rem !important;
+  height: auto !important;
+  border-radius: 1.1rem !important;
+  background: #16223b !important;
+  color: #93c5fd !important;
+  border: 1px solid #24365c !important;
 }
 
 body.rest-phase #restScreen #restPausedOverlay .text-xl {
@@ -404,61 +532,84 @@ body.rest-phase #restScreen #restPausedOverlay button {
 
 /* ---------- Landscape (phone on side) ---------- */
 @media (orientation: landscape) and (max-height: 500px) {
-  /* Work screen landscape */
+  /* Work screen landscape: name+target | hero timer | demo */
   body.work-phase #activeScreen {
     min-height: 100vh !important;
-    padding: 0.5rem 1rem !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
+    padding: 0.5rem 1.25rem 4.75rem !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
     align-items: center !important;
-    justify-content: center !important;
-    gap: 0 1.5rem;
+    justify-items: start;
+    column-gap: 1.25rem;
+    row-gap: 0.25rem;
+  }
+
+  body.work-phase #activeScreen > .mb-4:first-child {
+    display: none !important;
+  }
+
+  body.work-phase #activeScreen > .flex.justify-between {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+  }
+
+  body.work-phase #activeScreen > .text-center.mb-4 {
+    grid-column: 1;
+    grid-row: 2;
+    margin-bottom: 0 !important;
+    text-align: left !important;
+  }
+
+  body.work-phase #activeScreen #workTimerBlock {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin-bottom: 0 !important;
+  }
+
+  body.work-phase #activeScreen #demoLink {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    justify-self: center;
   }
 
   body.work-phase #activeScreen #exerciseName {
-    font-size: clamp(2rem, 6vw, 3.5rem) !important;
-    text-align: left !important;
-    margin-bottom: 0 !important;
-  }
-
-  body.work-phase #activeScreen #exerciseMeta {
-    font-size: 1rem !important;
-    text-align: left !important;
-    margin-bottom: 0 !important;
-  }
-
-  body.work-phase #activeScreen #setBadge {
-    position: static !important;
-    margin-bottom: 0 !important;
-  }
-
-  body.work-phase #activeScreen .flex.justify-center {
-    flex: 1 1 auto !important;
-    margin: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    font-size: clamp(1.5rem, 4.5vw, 2.6rem) !important;
   }
 
   body.work-phase #activeScreen #timerDisplay {
-    font-size: clamp(5rem, 22vw, 9rem) !important;
+    font-size: clamp(4.5rem, 20vw, 8.5rem) !important;
   }
 
-  body.work-phase #activeScreen #completeSetBtn {
-    position: fixed !important;
-    bottom: 0.5rem !important;
-    right: 0.5rem !important;
+  body.work-phase #activeScreen .demo-panel {
+    max-width: min(100%, 34vh) !important;
+  }
+
+  body.work-phase #activeScreen .demo-panel img,
+  body.work-phase #activeScreen .demo-panel video {
+    max-height: 38vh !important;
+  }
+
+  body.work-phase #activeScreen .grid-cols-2 {
     left: auto !important;
-    width: auto !important;
-    min-height: 3.5rem !important;
-    font-size: 1.2rem !important;
-    padding: 0.5rem 1.5rem !important;
+    right: 0.75rem !important;
+    bottom: 0.5rem !important;
+    width: auto;
+    grid-template-columns: auto auto !important;
+    gap: 0.5rem !important;
+  }
+
+  body.work-phase #activeScreen .grid-cols-2 button {
+    min-height: 3.25rem !important;
+    font-size: 1.05rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
   }
 
   /* Rest screen landscape */
   body.rest-phase #restScreen {
     min-height: 100vh !important;
-    padding: 0.5rem 1rem !important;
+    padding: 0.5rem 1rem calc(4.25rem + env(safe-area-inset-bottom)) !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -467,12 +618,26 @@ body.rest-phase #restScreen #restPausedOverlay button {
   }
 
   body.rest-phase #restTimer {
-    font-size: clamp(5rem, 22vw, 9rem) !important;
+    font-size: clamp(4.5rem, 18vw, 8rem) !important;
     margin-bottom: 0.25rem !important;
   }
 
   body.rest-phase #restScreen .text-center .uppercase {
     font-size: 1.1rem !important;
+  }
+
+  body.rest-phase #nextDemo img,
+  body.rest-phase #nextDemo video {
+    max-height: 26vh !important;
+  }
+
+  body.rest-phase #restControls {
+    left: auto !important;
+    right: 0.75rem !important;
+    bottom: 0.5rem !important;
+    grid-template-columns: auto auto !important;
+    width: auto;
+    gap: 0.5rem;
   }
 
   body.rest-phase #skipRestBtn {
@@ -482,16 +647,12 @@ body.rest-phase #restScreen #restPausedOverlay button {
     padding: 0.5rem 2rem;
   }
 
-  body.rest-phase #restPauseBtn {
-    font-size: 1rem !important;
-    min-height: 3rem !important;
-    width: auto !important;
-    padding: 0.4rem 1.5rem;
+  body.rest-phase #restOverflowBtn {
+    width: 3.5rem !important;
   }
 
-  /* Hide chrome in landscape to use every pixel — keep demo panel visible */
+  /* Hide chrome in landscape to use every pixel — keep demo visible */
   body.rest-phase #restScreen .bg-white > div:first-child,
-  body.rest-phase #restScreen .bg-white > #nextExerciseName,
   body.rest-phase #restScreen .bg-white > #nextExerciseMeta {
     display: none !important;
   }
@@ -662,23 +823,18 @@ body.rest-phase #restScreen #restPausedOverlay button {
 #setBadge {
   font-size: 1.05rem;
 }
-#workPhaseLabel {
-  font-size: 0.95rem;
-}
 #workCue {
   font-size: 1.3rem;
 }
 #activeScreen .flex.justify-between.text-xs {
   font-size: 1rem;
 }
-#activeScreen label,
-#activeScreen #volumeValue {
+#overflowModal label,
+#overflowModal #volumeValue,
+#overflowModal #musicStyleActive {
   font-size: 0.95rem;
 }
-#activeScreen #musicStyleActive {
-  font-size: 1.05rem;
-}
-#activeScreen #nowPlaying {
+#overflowModal #nowPlaying {
   font-size: 0.8rem;
 }
 #activeScreen #pausedOverlay .text-xl,
@@ -699,9 +855,7 @@ body.rest-phase #restScreen #restPausedOverlay button {
 #nextExerciseMeta {
   font-size: 1.15rem;
 }
-#viewAllMovesBtn,
-#skipRestBtn,
-#restPauseBtn {
+#skipRestBtn {
   font-size: 1.2rem;
 }
 
