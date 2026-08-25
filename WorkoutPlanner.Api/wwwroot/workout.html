@@ -118,13 +118,14 @@
           </div>
           <label class="flex items-center justify-between gap-3 text-sm font-medium cursor-pointer">
             <span>Voice countdown cues</span>
-            <input id="voiceCuesToggle" type="checkbox" checked class="rounded text-blue-600 w-5 h-5" />
+            <input id="voiceCuesToggle" type="checkbox" class="rounded text-blue-600 w-5 h-5" />
           </label>
           <p id="musicStyleHint" class="text-xs text-gray-500">Built-in playlists loop instrumentals. Pick a style or use music on your phone.</p>
           <div id="deviceMusicHint" class="hidden text-xs text-blue-900 bg-blue-50 border border-blue-100 rounded-md p-2">
             Start Spotify, Apple Music, or YouTube Music in another app. Plan4Strength will only play timer beeps.
             <div class="mt-2 flex flex-wrap gap-2">
-              <a class="underline font-medium" href="https://open.spotify.com/genre/0JQ5DAqbMKFAXlCG6QvYQ4" target="_blank" rel="noopener">Open Spotify workout</a>
+              <a class="underline font-medium" href="https://open.spotify.com/genre/0JQ5DAqbMKFAXlCG6QvYQ4" target="_blank" rel="noopener">Spotify</a>
+                <a class="underline font-medium" href="https://music.apple.com/us/browse/top-charts" target="_blank" rel="noopener">Apple Music</a>
               <a class="underline font-medium" href="https://music.youtube.com/search?q=workout%20mix" target="_blank" rel="noopener">YouTube Music</a>
             </div>
           </div>
@@ -250,6 +251,14 @@
               <option value="device">My music (other app)</option>
             </select>
             <div id="nowPlaying" class="text-xs text-gray-500 mt-1 truncate">—</div>
+            <div id="deviceMusicHintActive" class="hidden text-xs text-blue-900 bg-blue-50 border border-blue-100 rounded-md p-2 mt-2">
+              Start your music in another app. We'll only play timer beeps.
+              <div class="mt-2 flex flex-wrap gap-2">
+                <a class="underline font-medium" href="https://open.spotify.com/genre/0JQ5DAqbMKFAXlCG6QvYQ4" target="_blank" rel="noopener">Spotify</a>
+              <a class="underline font-medium" href="https://music.apple.com/us/browse/top-charts" target="_blank" rel="noopener">Apple Music</a>
+                <a class="underline font-medium" href="https://music.youtube.com/search?q=workout%20mix" target="_blank" rel="noopener">YouTube Music</a>
+              </div>
+            </div>
           </div>
           <div>
             <label class="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">

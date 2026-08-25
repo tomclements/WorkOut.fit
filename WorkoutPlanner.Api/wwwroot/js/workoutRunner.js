@@ -43,6 +43,7 @@ const musicStyleSelect = document.getElementById('musicStyle');
 const musicStyleActive = document.getElementById('musicStyleActive');
 const musicStyleHint = document.getElementById('musicStyleHint');
 const deviceMusicHint = document.getElementById('deviceMusicHint');
+const deviceMusicHintActive = document.getElementById('deviceMusicHintActive');
 const nowPlayingEl = document.getElementById('nowPlaying');
 
 const exerciseNameEl = document.getElementById('exerciseName');
@@ -254,6 +255,7 @@ function setMusicStyleUI(style) {
   if (musicStyleActive) musicStyleActive.value = s;
   if (musicToggle) musicToggle.checked = s !== 'off' && s !== 'device';
   if (deviceMusicHint) deviceMusicHint.classList.toggle('hidden', s !== 'device');
+  if (deviceMusicHintActive) deviceMusicHintActive.classList.toggle('hidden', s !== 'device');
   if (musicStyleHint) {
     musicStyleHint.textContent = s === 'device'
       ? 'Use your own app for music â€” we only play beeps.'
@@ -1163,8 +1165,9 @@ function fillExerciseHeader(ex) {
   exerciseNameEl.textContent = ex.name;
   exerciseMetaEl.textContent = setWorkLabel(ex);
   if (isMobilityExercise(ex)) {
-    setBadgeEl.textContent = movePhase === 'warmup' ? 'Warm-up' : 'Cool-down';
-    workCueEl.textContent = ex.progression || (movePhase === 'warmup' ? 'Move easily â€” prepare the muscles' : 'Breathe and ease tension');
+    const p = exercisePhase(ex);
+    setBadgeEl.textContent = p === 'warmup' ? 'Warm-up' : 'Cool-down';
+    workCueEl.textContent = ex.progression || (p === 'warmup' ? 'Move easily — prepare the muscles' : 'Breathe and ease tension');
     completeSetBtn.textContent = 'Done with this move';
   } else {
     setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
@@ -1635,7 +1638,7 @@ function formatTime(totalSeconds) {
 function initVoiceCuesToggle() {
   if (!voiceCuesToggle) return;
   const stored = localStorage.getItem('runnerVoiceCues');
-  voiceCuesToggle.checked = stored !== '0';
+  voiceCuesToggle.checked = stored === '1';
   voiceCuesToggle.addEventListener('change', () => {
     localStorage.setItem('runnerVoiceCues', voiceCuesToggle.checked ? '1' : '0');
     if (!voiceCuesToggle.checked) stopSpeech();
@@ -1644,7 +1647,7 @@ function initVoiceCuesToggle() {
 
 function voiceCuesEnabled() {
   if (voiceCuesToggle) return !!voiceCuesToggle.checked;
-  return localStorage.getItem('runnerVoiceCues') !== '0';
+  return localStorage.getItem('runnerVoiceCues') === '1';
 }
 
 function stopSpeech() {
