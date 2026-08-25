@@ -136,8 +136,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Session options overflow (⋯)
   const overflowModal = document.getElementById('overflowModal');
-  const openOverflow = () => overflowModal?.classList.remove('hidden');
-  const closeOverflow = () => overflowModal?.classList.add('hidden');
+  let overflowWasPaused = false;
+  const openOverflow = () => {
+    overflowModal?.classList.remove('hidden');
+    // Auto-pause when opening session options (unless already paused)
+    if (!isPaused && (phase === 'work' || phase === 'rest')) {
+      overflowWasPaused = false;
+      pauseWorkout(true);
+    } else {
+      overflowWasPaused = true;
+    }
+  };
+  const closeOverflow = () => {
+    overflowModal?.classList.add('hidden');
+    // Auto-resume if we auto-paused
+    if (autoPaused && !overflowWasPaused) {
+      resumeWorkout();
+    }
+  };
   document.getElementById('workOverflowBtn')?.addEventListener('click', openOverflow);
   document.getElementById('restOverflowBtn')?.addEventListener('click', openOverflow);
   document.getElementById('closeOverflow')?.addEventListener('click', closeOverflow);

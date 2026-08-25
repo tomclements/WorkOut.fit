@@ -442,6 +442,59 @@ body.work-phase #pausedOverlay button {
   min-height: 3.75rem;
 }
 
+/* Paused overlay: cover the whole screen above the fixed buttons */
+body.work-phase #pausedOverlay:not(.hidden) {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 40 !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 1rem !important;
+  margin: 0 !important;
+}
+
+body.work-phase #pausedOverlay:not(.hidden) .text-xl {
+  font-size: 2.5rem !important;
+  color: #fbbf24 !important;
+}
+
+body.work-phase #pausedOverlay:not(.hidden) button {
+  min-height: 4.5rem !important;
+  font-size: 1.5rem !important;
+  padding-left: 3rem !important;
+  padding-right: 3rem !important;
+  border-radius: 1rem !important;
+}
+
+body.rest-phase #restPausedOverlay:not(.hidden) {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 40 !important;
+  background: rgba(11, 21, 38, 0.85) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 1rem !important;
+  margin: 0 !important;
+}
+
+body.rest-phase #restPausedOverlay:not(.hidden) .text-xl {
+  font-size: 2.5rem !important;
+  color: #fbbf24 !important;
+}
+
+body.rest-phase #restPausedOverlay:not(.hidden) button {
+  min-height: 4.5rem !important;
+  font-size: 1.5rem !important;
+  padding-left: 3rem !important;
+  padding-right: 3rem !important;
+  border-radius: 1rem !important;
+}
+
 /* ---------- Rest screen readability ---------- */
 .demo-panel--rest .demo-caption {
   font-size: 0.9rem;
@@ -522,12 +575,8 @@ body.rest-phase #restOverflowBtn {
   border: 1px solid #24365c !important;
 }
 
-body.rest-phase #restScreen #restPausedOverlay .text-xl {
+body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   font-size: 2rem !important;
-}
-
-body.rest-phase #restScreen #restPausedOverlay button {
-  min-height: 4rem !important;
 }
 
 /* ---------- Landscape (phone on side) ---------- */
