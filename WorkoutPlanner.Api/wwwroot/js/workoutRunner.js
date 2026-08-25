@@ -80,7 +80,10 @@ const saveSessionBtn = document.getElementById('saveSessionBtn');
 const saveSessionStatus = document.getElementById('saveSessionStatus');
 const signInToSaveLink = document.getElementById('signInToSaveLink');
 const userLabel = document.getElementById('userLabel');
+const tonesToggle = document.getElementById('tonesToggle');
+const tonesToggleActive = document.getElementById('tonesToggleActive');
 const voiceCuesToggle = document.getElementById('voiceCuesToggle');
+const voiceCuesToggleActive = document.getElementById('voiceCuesToggleActive');
 const tvModeBtn = document.getElementById('tvModeBtn');
 const castModal = document.getElementById('castModal');
 
@@ -107,6 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadUserPreferences();
   await loadPlan();
   checkForResumableSession();
+  initTonesToggle();
   initVoiceCuesToggle();
   // Warm speech voices (Chrome loads async)
   if (window.speechSynthesis) {
@@ -862,7 +866,17 @@ async function startWorkout() {
   if (!currentPlan) return;
 
   // Unlock audio / speech on user gesture
-  try { getAudioContext(); } catch { /* ignore */ }
+  try {
+    const ctx = getAudioContext();
+    // Warm up: play a silent buffer so the browser marks audio as user-initiated
+    if (ctx && ctx.state === 'running') {
+      const buf = ctx.createBuffer(1, 1, 22050);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      src.start(0);
+    }
+  } catch { /* ignore */ }
   if (window.speechSynthesis) window.speechSynthesis.getVoices();
 
   if (!daySelect.value) { showLoadError('No workout day selected.'); return; }
@@ -1651,19 +1665,61 @@ function formatTime(totalSeconds) {
 
 // -------------------------- Voice + beeps --------------------------
 
-function initVoiceCuesToggle() {
-  if (!voiceCuesToggle) return;
-  const stored = localStorage.getItem('runnerVoiceCues');
-  voiceCuesToggle.checked = stored === '1';
-  voiceCuesToggle.addEventListener('change', () => {
-    localStorage.setItem('runnerVoiceCues', voiceCuesToggle.checked ? '1' : '0');
-    if (!voiceCuesToggle.checked) stopSpeech();
-  });
+function initTonesToggle() {
+  // Setup screen toggle
+  if (tonesToggle) {
+    const stored = localStorage.getItem('runnerTones');
+    // Default ON if never set
+    tonesToggle.checked = stored !== '0';
+    tonesToggle.addEventListener('change', () => {
+      localStorage.setItem('runnerTones', tonesToggle.checked ? '1' : '0');
+      syncCueToggles();
+    });
+  }
+  // Active session toggle (overflow modal)
+  if (tonesToggleActive) {
+    tonesToggleActive.checked = tonesEnabled();
+    tonesToggleActive.addEventListener('change', () => {
+      localStorage.setItem('runnerTones', tonesToggleActive.checked ? '1' : '0');
+      syncCueToggles();
+    });
+  }
 }
 
-function voiceCuesEnabled() {
-  if (voiceCuesToggle) return !!voiceCuesToggle.checked;
-  return localStorage.getItem('runnerVoiceCues') === '1';
+function tonesEnabled() {
+  if (tonesToggle) return !!tonesToggle.checked;
+  return localStorage.getItem('runnerTones') !== '0';
+}
+
+function initVoiceCuesToggle() {
+  // Setup screen toggle
+  if (voiceCuesToggle) {
+    const stored = localStorage.getItem('runnerVoiceCues');
+    voiceCuesToggle.checked = stored === '1';
+    voiceCuesToggle.addEventListener('change', () => {
+      localStorage.setItem('runnerVoiceCues', voiceCuesToggle.checked ? '1' : '0');
+      if (!voiceCuesToggle.checked) stopSpeech();
+      syncCueToggles();
+    });
+  }
+  // Active session toggle (overflow modal)
+  if (voiceCuesToggleActive) {
+    voiceCuesToggleActive.checked = voiceCuesEnabled();
+    voiceCuesToggleActive.addEventListener('change', () => {
+      localStorage.setItem('runnerVoiceCues', voiceCuesToggleActive.checked ? '1' : '0');
+      if (!voiceCuesToggleActive.checked) stopSpeech();
+      syncCueToggles();
+    });
+  }
+}
+
+function syncCueToggles() {
+  const tones = tonesEnabled();
+  const voice = voiceCuesEnabled();
+  if (tonesToggle) tonesToggle.checked = tones;
+  if (tonesToggleActive) tonesToggleActive.checked = tones;
+  if (voiceCuesToggle) voiceCuesToggle.checked = voice;
+  if (voiceCuesToggleActive) voiceCuesToggleActive.checked = voice;
 }
 
 function stopSpeech() {
@@ -1702,9 +1758,10 @@ function maybeCountdownCue(phaseName, remaining) {
   if (key === lastSpokenSecondKey) return;
   lastSpokenSecondKey = key;
 
-  // Rising pitch: 3 â†’ lower, 1 â†’ higher (final second slightly longer)
-  const freq = remaining === 3 ? 560 : remaining === 2 ? 700 : 880;
-  beep(freq, remaining === 1 ? 0.2 : 0.12, 0.7);
+  if (tonesEnabled()) {
+    const freq = remaining === 3 ? 560 : remaining === 2 ? 700 : 880;
+    beep(freq, remaining === 1 ? 0.2 : 0.12, 0.7);
+  }
   speakCue(String(remaining));
 }
 
@@ -1712,13 +1769,16 @@ function maybeCountdownCue(phaseName, remaining) {
 function announcePhase(kind) {
   lastSpokenSecondKey = '';
   if (kind === 'work') {
-    // Clear double-beep "GO"
-    beep(1245, 0.28, 0.7);
-    setTimeout(() => beep(1568, 0.16, 0.6), 150);
+    if (tonesEnabled()) {
+      beep(1245, 0.28, 0.7);
+      setTimeout(() => beep(1568, 0.16, 0.6), 150);
+    }
     speakCue('Work');
   } else if (kind === 'rest') {
-    beep(784, 0.28, 0.7);
-    setTimeout(() => beep(587, 0.24, 0.6), 160);
+    if (tonesEnabled()) {
+      beep(784, 0.28, 0.7);
+      setTimeout(() => beep(587, 0.24, 0.6), 160);
+    }
     speakCue('Rest');
   }
 }
@@ -1762,12 +1822,12 @@ function stopAudioKeepAlive() {
   audioKeepAliveInterval = null;
 }
 
-async function beep(frequency = 880, duration = 0.15, volume = 0.7) {
+function beep(frequency = 880, duration = 0.15, volume = 0.7) {
   try {
     const ctx = getAudioContext();
-    if (ctx.state === 'suspended') {
-      await ctx.resume().catch(() => {});
-    }
+    // Kick off resume if needed (non-blocking — won't help this call but
+    // the keep-alive + pointer handler will catch future calls)
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
     if (ctx.state !== 'running') return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
