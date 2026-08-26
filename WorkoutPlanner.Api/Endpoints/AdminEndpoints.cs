@@ -241,6 +241,65 @@ public static class AdminEndpoints
             return Results.NoContent();
         }).RequireAuthorization("Admin");
 
+        app.MapGet("/api/admin/all-users", async (AppDbContext db, UserManager<IdentityUser> userManager) =>
+        {
+            var allUsers = await userManager.Users
+                .AsNoTracking()
+                .OrderBy(u => u.Email)
+                .ToListAsync();
+
+            var adminEmails = new HashSet<string>(
+                await db.AdminUsers.AsNoTracking().Select(a => a.Email).ToListAsync(),
+                StringComparer.OrdinalIgnoreCase);
+
+            var result = allUsers.Select(u => new
+            {
+                u.Id,
+                u.Email,
+                u.EmailConfirmed,
+                u.LockoutEnd,
+                IsAdmin = adminEmails.Contains(u.Email ?? string.Empty)
+            });
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Admin");
+
+        app.MapPost("/api/admin/all-users/{id}/role", async (
+            string id, bool add, UserManager<IdentityUser> userManager, AppDbContext db) =>
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null) return Results.NotFound("User not found.");
+
+            if (add)
+            {
+                if (await userManager.IsInRoleAsync(user, "Admin"))
+                    return Results.Conflict("User is already an admin.");
+
+                await userManager.AddToRoleAsync(user, "Admin");
+                if (!db.AdminUsers.Any(a => a.Email == user.Email))
+                {
+                    db.AdminUsers.Add(new AdminUser { Email = user.Email! });
+                    await db.SaveChangesAsync();
+                }
+            }
+            else
+            {
+                if (!await userManager.IsInRoleAsync(user, "Admin"))
+                    return Results.BadRequest("User is not an admin.");
+
+                var remaining = await db.AdminUsers.CountAsync();
+                if (remaining <= 1)
+                    return Results.BadRequest("Cannot remove the last admin.");
+
+                await userManager.RemoveFromRoleAsync(user, "Admin");
+                var adminRow = db.AdminUsers.FirstOrDefault(a => a.Email == user.Email);
+                if (adminRow != null) db.AdminUsers.Remove(adminRow);
+                await db.SaveChangesAsync();
+            }
+
+            return Results.Ok(new { user.Id, user.Email, IsAdmin = add });
+        }).RequireAuthorization("Admin");
+
         app.MapGet("/api/admin/me", (ClaimsPrincipal user) =>
         {
             return Results.Ok(new { email = user.Identity?.Name });

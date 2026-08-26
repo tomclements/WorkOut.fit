@@ -13,7 +13,7 @@
     <header class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
         <h1 class="text-3xl font-extrabold tracking-tight text-blue-900">Admin</h1>
-        <p class="text-gray-600 mt-1">Manage exercises, equipment, and workout data.</p>
+        <p class="text-gray-600 mt-1">Manage exercises, equipment, users, and feedback.</p>
       </div>
       <div class="flex items-center gap-3">
         <a href="/about.html" class="text-sm text-blue-600 hover:underline font-medium">About</a>
@@ -33,7 +33,7 @@
           <button data-tab="exercises" class="tab-btn active-tab py-2 px-4 text-sm font-medium border-b-2 border-blue-600 text-blue-600">Exercises</button>
           <button data-tab="equipment" class="tab-btn py-2 px-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Equipment</button>
           <button data-tab="feedback" class="tab-btn py-2 px-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Feedback</button>
-          <button data-tab="users" class="tab-btn py-2 px-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Admins</button>
+          <button data-tab="users" class="tab-btn py-2 px-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Users</button>
         </nav>
       </div>
 
@@ -262,13 +262,14 @@
           <table class="min-w-full text-sm">
             <thead class="bg-gray-100">
               <tr>
-                <th class="text-left p-3 font-semibold">Id</th>
                 <th class="text-left p-3 font-semibold">Email</th>
+                <th class="text-left p-3 font-semibold">Role</th>
                 <th class="text-left p-3 font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody id="usersTableBody" class="divide-y"></tbody>
           </table>
+          <p id="usersEmpty" class="hidden text-sm text-gray-500 p-4">No users found.</p>
         </div>
       </div>
     </section>

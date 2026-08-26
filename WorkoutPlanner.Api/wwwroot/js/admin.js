@@ -219,22 +219,79 @@ async function refreshExercisesFromSource() {
 }
 
 async function loadUsers() {
-  const response = await fetch('/api/admin/users', { credentials: 'include' });
-  const users = await response.json();
-  renderUsersTable(users);
+  try {
+    const response = await fetch('/api/admin/all-users', { credentials: 'include' });
+    if (!response.ok) {
+      // Fallback to admin-only list if the new endpoint isn't available yet
+      const fallback = await fetch('/api/admin/users', { credentials: 'include' });
+      const admins = await fallback.json();
+      renderUsersTable(admins.map(u => ({ ...u, isAdmin: true })));
+      return;
+    }
+    const users = await response.json();
+    renderUsersTable(users);
+  } catch {
+    renderUsersTable([]);
+  }
 }
 
 function renderUsersTable(users) {
   const tbody = document.getElementById('usersTableBody');
-  tbody.innerHTML = users.map(u => `
+  const empty = document.getElementById('usersEmpty');
+  if (!users.length) {
+    tbody.innerHTML = '';
+    empty?.classList.remove('hidden');
+    return;
+  }
+  empty?.classList.add('hidden');
+  tbody.innerHTML = users.map(u => {
+    const roleBadge = u.isAdmin
+      ? '<span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-0.5 rounded">Admin</span>'
+      : '<span class="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">User</span>';
+    const toggleBtn = u.isAdmin
+      ? `<button onclick="toggleAdminRole('${escapeHtml(u.id)}', false)" class="text-amber-700 hover:underline text-xs font-semibold">Remove admin</button>`
+      : `<button onclick="toggleAdminRole('${escapeHtml(u.id)}', true)" class="text-blue-700 hover:underline text-xs font-semibold">Make admin</button>`;
+    const lockBadge = u.lockoutEnd && new Date(u.lockoutEnd) > new Date()
+      ? ' <span class="text-xs text-red-600 font-semibold">Locked</span>'
+      : '';
+    return `
     <tr>
-      <td class="p-3">${u.id}</td>
-      <td class="p-3">${escapeHtml(u.email)}</td>
-      <td class="p-3">
-        <button onclick="deleteAdminUser(${u.id})" class="text-red-600 hover:underline">Remove</button>
+      <td class="p-3">${escapeHtml(u.email || '—')}${lockBadge}</td>
+      <td class="p-3">${roleBadge}</td>
+      <td class="p-3 flex gap-3">
+        ${toggleBtn}
       </td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
+}
+
+async function toggleAdminRole(userId, add) {
+  const label = add ? 'Grant admin' : 'Remove admin';
+  const msg = add
+    ? 'Grant admin privileges to this user?'
+    : 'Remove admin privileges from this user?';
+  if (typeof showConfirm === 'function') {
+    if (!await showConfirm(label, msg)) return;
+  } else {
+    if (!confirm(msg)) return;
+  }
+  try {
+    const response = await fetch(`/api/admin/all-users/${userId}/role?add=${add}`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      if (typeof showToast === 'function') showToast(data || `Failed (${response.status})`, 'error');
+      else alert(data || `Failed (${response.status})`);
+      return;
+    }
+    if (typeof showToast === 'function') showToast(add ? 'Admin granted' : 'Admin removed', 'success');
+    await loadUsers();
+  } catch (err) {
+    if (typeof showToast === 'function') showToast('Error: ' + err.message, 'error');
+    else alert('Error: ' + err.message);
+  }
 }
 
 async function addAdminUser(e) {
@@ -257,34 +314,11 @@ async function addAdminUser(e) {
       return;
     }
     document.getElementById('userForm').reset();
+    if (typeof showToast === 'function') showToast('Admin user added', 'success');
     await loadUsers();
   } catch (err) {
     error.textContent = 'Error adding admin: ' + err.message;
     error.classList.remove('hidden');
-  }
-}
-
-async function deleteAdminUser(id) {
-  if (typeof showConfirm === 'function') {
-    if (!await showConfirm('Remove admin', 'Remove this admin user?')) return;
-  } else {
-    if (!confirm('Remove this admin user?')) return;
-  }
-  try {
-    const response = await fetch(`/api/admin/users/${id}`, {
-      method: 'DELETE',
-      credentials: 'include'
-    });
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      if (typeof showToast === 'function') showToast(data.title || data.detail || `Remove failed (${response.status})`, 'error');
-      else alert(data.title || data.detail || `Remove failed (${response.status})`);
-      return;
-    }
-    await loadUsers();
-  } catch (err) {
-    if (typeof showToast === 'function') showToast('Error removing admin: ' + err.message, 'error');
-    else alert('Error removing admin: ' + err.message);
   }
 }
 

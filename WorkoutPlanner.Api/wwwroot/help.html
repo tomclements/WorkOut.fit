@@ -27,13 +27,14 @@
       <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">On this page</p>
       <ul class="grid sm:grid-cols-2 gap-2 text-sm">
         <li><a class="text-blue-700 hover:underline" href="#first-plan">Create your first plan</a></li>
-        <li><a class="text-blue-700 hover:underline" href="#equipment">Equipment &amp; injuries</a></li>
+        <li><a class="text-blue-700 hover:underline" href="#equipment">Equipment, injuries &amp; rehab</a></li>
         <li><a class="text-blue-700 hover:underline" href="#splits">Workout styles (splits)</a></li>
         <li><a class="text-blue-700 hover:underline" href="#mix">Strength + HIIT mix</a></li>
         <li><a class="text-blue-700 hover:underline" href="#progression">How plans get harder</a></li>
         <li><a class="text-blue-700 hover:underline" href="#runner">Running a workout</a></li>
         <li><a class="text-blue-700 hover:underline" href="#account">Account, history &amp; favorites</a></li>
         <li><a class="text-blue-700 hover:underline" href="#faq">Common questions</a></li>
+        <li><a class="text-blue-700 hover:underline" href="#keyboard">Keyboard shortcuts</a></li>
         <li><a class="text-blue-700 hover:underline" href="#feedback">Feedback</a></li>
         <li><a class="text-blue-700 hover:underline" href="#tv-cast">TV / AirPlay</a></li>
       </ul>
@@ -42,16 +43,25 @@
     <article class="space-y-10 text-gray-800 leading-relaxed">
       <section id="first-plan" class="bg-white rounded-xl shadow p-6 scroll-mt-20">
         <h2 class="text-xl font-bold text-blue-900 mb-3">Create your first plan</h2>
+        <p class="mb-3 text-sm text-gray-700">
+          <strong>Quick start:</strong> scroll down to the "Start a program" section and pick a preset (Shoulder-Friendly Strength, Hybrid Fat Loss, 3-Day Full Body, or Recovery Block). Each one pre-fills the whole form — just tap <strong>Create my plan</strong>.
+        </p>
+        <p class="mb-3 text-sm text-gray-700">Or build your own:</p>
         <ol class="list-decimal pl-5 space-y-2">
           <li>Open the <strong>Planner</strong> (home page).</li>
           <li>Choose how long the plan lasts (for example 4 weeks) and which days you train.</li>
           <li>Set session length — how many minutes you have on a normal day.</li>
           <li>Pick a <strong>goal</strong> (build muscle, get stronger, endurance, or fat loss) and your experience level.</li>
+          <li>Choose a <strong>split</strong> (full body, upper/lower, push/pull/legs, or bro split) and a <strong>mix</strong> (strength only, hybrid, or conditioning-focused).</li>
+          <li>Pick a <strong>progression</strong> style (steady progress, wave, blocks, or keep it the same).</li>
+          <li>Toggle <strong>warm-up</strong> and <strong>cool-down</strong> on or off (both on by default).</li>
           <li>Check the equipment you actually have (bodyweight alone is fine).</li>
-          <li>Optional: mark injuries so those moves are avoided.</li>
+          <li>Optional: mark <strong>injuries</strong> so those moves are avoided.</li>
+          <li>Optional: check <strong>rehab / recovery</strong> areas to prefer rehab exercises targeting those joints (for example shoulder rehab includes rotator-cuff and band work).</li>
           <li>Tap <strong>Create my plan</strong>. Scroll down to see each week and day.</li>
-          <li>If you don’t like the exercises, tap <strong>Try different exercises</strong> (or Create again) for a new mix with the same settings.</li>
-          <li>When you’re ready, tap <strong>Start this workout</strong> to open the runner.</li>
+          <li>If you don't like the exercises, tap <strong>Try different exercises</strong> (or Create again) for a new mix with the same settings.</li>
+          <li>Tap <strong>Analyze</strong> to see a muscle-coverage diagram and swap individual exercises for better alternatives.</li>
+          <li>When you're ready, tap <strong>Start this workout</strong> to open the runner.</li>
         </ol>
         <p class="mt-4 text-sm text-gray-600">
           You do <em>not</em> need an account to generate a plan. Sign in only if you want to save plans and history.
@@ -59,14 +69,19 @@
       </section>
 
       <section id="equipment" class="bg-white rounded-xl shadow p-6 scroll-mt-20">
-        <h2 class="text-xl font-bold text-blue-900 mb-3">Equipment &amp; injuries</h2>
+        <h2 class="text-xl font-bold text-blue-900 mb-3">Equipment, injuries &amp; rehab</h2>
         <p class="mb-3">
           Plan4Strength only suggests exercises that match <strong>all</strong> of the equipment you selected.
-          If something needs a bench and you didn’t check “bench,” it won’t appear.
+          If something needs a bench and you didn't check "bench," it won't appear.
         </p>
         <p class="mb-3">
-          Injury boxes remove moves that commonly stress that area (for example shoulder issues skip overhead pressing).
+          <strong>Injury boxes</strong> remove moves that commonly stress that area (for example shoulder issues skip overhead pressing).
           This is a helpful filter, not medical advice — if something hurts, stop and talk to a professional.
+        </p>
+        <p class="mb-3">
+          <strong>Rehab / recovery</strong> checkboxes go the other way: they <em>prefer</em> exercises that target the rehab path for that area.
+          For example, checking "shoulder" will include band pull-aparts, external rotations, and other rotator-cuff work
+          alongside your regular exercises. Rehab exercises are never restricted by the injury filter, so they always stay in the pool.
         </p>
         <p class="text-sm text-gray-600">
           Tip: after you sign in, open <strong>Preferences</strong> to remember your default gear for next time.
@@ -158,19 +173,29 @@
         </p>
         <ol class="list-decimal pl-5 space-y-2 mb-3">
           <li>Open <strong>Run</strong> (or Start workout from a plan).</li>
-          <li>Pick the day you’re doing. Choose music: Drive / Focus / Power / Calm, or <strong>My music</strong> (play Spotify etc. yourself).</li>
-          <li>Sessions can start with a short <strong>warm-up</strong> and end with a <strong>cool-down</strong> matched to the muscles that day trains.</li>
-          <li>Before each new move you’ll see an <strong>in-app demo</strong> (photo flip + optional video search). Rest screens also preview the next exercise.</li>
+          <li>Pick the workout day from the dropdown. A preview card shows the exercises, estimated time, and focus.</li>
+          <li>Configure <strong>Sound &amp; music</strong>: choose a background style (Drive / Focus / Power / Calm / My music), and toggle <strong>Countdown tones</strong> (beeps, on by default) and <strong>Voice cues</strong> (spoken 3-2-1, off by default). Tap <strong>Test sound &amp; beeps</strong> to preview.</li>
+          <li>Tap <strong>Analyze</strong> on the preview card to see a muscle-coverage body diagram and swap individual exercises for better alternatives.</li>
           <li>Tap <strong>Start workout</strong>. Work when the green timer runs; rest when the blue timer runs.</li>
-          <li>Timers advance automatically. Use <strong>Finish set early</strong> or <strong>Skip rest</strong> if you need to.</li>
-          <li>At the end, if you’re signed in, the session is <strong>saved to History automatically</strong>.</li>
+          <li>Timers advance automatically. Tap <strong>Finish set early</strong> or <strong>Skip rest</strong> if you need to.</li>
+          <li>Tap the <strong>⋯ (three dots)</strong> for session options: change music, adjust volume, toggle tones/voice, skip exercise, go to previous exercise, or view all moves.</li>
+          <li>At the end, if you're signed in, the session is <strong>saved to History automatically</strong>.</li>
         </ol>
         <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
           <li><strong>Fullscreen</strong> and screen wake lock help in the gym.</li>
           <li><strong>Aa</strong> toggles dark / high-contrast mode (better outdoors and at night).</li>
           <li><strong>TV</strong> opens cast tips and a big-timer TV mode for AirPlay / screen mirroring.</li>
-          <li><strong>Voice countdown cues</strong> (on by default) speak 3–2–1 and “Work” / “Rest”.</li>
+          <li>Before each new move you'll see an <strong>in-app demo</strong> (animated WebP or photo flip + video search). Rest screens also preview the next exercise.</li>
           <li>If you leave mid-workout, you can usually <strong>Resume</strong> from where you left off.</li>
+        </ul>
+      </section>
+
+      <section id="keyboard" class="bg-white rounded-xl shadow p-6 scroll-mt-20">
+        <h2 class="text-xl font-bold text-blue-900 mb-3">Keyboard shortcuts</h2>
+        <p class="mb-3">While the runner is open:</p>
+        <ul class="space-y-2 text-sm">
+          <li><strong>Space</strong> or <strong>Enter</strong> — finish the current set early (work) or skip rest.</li>
+          <li><strong>Escape</strong> — close the overflow modal if it's open.</li>
         </ul>
       </section>
 
@@ -201,9 +226,10 @@
         <h2 class="text-xl font-bold text-blue-900 mb-3">Account, history &amp; favorites</h2>
         <ul class="space-y-2">
           <li><strong>Sign in / register</strong> — saves plans and completed workouts to your account.</li>
-          <li><strong>History</strong> — past sessions, totals, a streak counter, and simple charts.</li>
-          <li><strong>Like / dislike (👍 👎)</strong> — rank exercises on a plan or in the picker. Plans prefer likes and skip dislikes when possible.</li>
-          <li><strong>Preferences</strong> — default equipment and music volume. Your last plan choices (level, goal, split, days, etc.) are remembered automatically when you create a plan.</li>
+          <li><strong>History</strong> — past sessions with totals, a streak counter, volume and minutes charts, and per-exercise breakdowns.</li>
+          <li><strong>Body weight</strong> — log daily weigh-ins (kg or lb) from the dashboard. Includes a 30-day sparkline chart and change indicator.</li>
+          <li><strong>Like / dislike (👍 👎)</strong> — rank exercises on a plan or in the exercise picker. Plans prefer likes and skip dislikes when possible.</li>
+          <li><strong>Preferences</strong> — default equipment, workout music, and music volume. Your last plan choices (level, goal, split, days, etc.) are remembered automatically when you create a plan.</li>
         </ul>
       </section>
 
@@ -215,8 +241,8 @@
             <dd class="text-gray-700 mt-1">Full body, 2–3 days, 20–30 minutes, beginner level, steady progress. Keep weights light until movements feel smooth.</dd>
           </div>
           <div>
-            <dt class="font-semibold">Can I change a plan after it’s generated?</dt>
-            <dd class="text-gray-700 mt-1">Yes. On the plan view you can add or remove exercises and turn days into rest (or the reverse).</dd>
+            <dt class="font-semibold">Can I change a plan after it's generated?</dt>
+            <dd class="text-gray-700 mt-1">Yes. Tap <strong>Analyze</strong> to swap individual exercises for compatible alternatives. You can also add exercises with the <strong>+ Add exercise</strong> button, remove exercises, or turn days into rest (and vice versa).</dd>
           </div>
           <div>
             <dt class="font-semibold">Why is a recovery week lighter?</dt>
@@ -225,6 +251,14 @@
           <div>
             <dt class="font-semibold">Do I need special equipment?</dt>
             <dd class="text-gray-700 mt-1">No. Bodyweight-only plans work. More equipment just unlocks more exercise variety.</dd>
+          </div>
+          <div>
+            <dt class="font-semibold">What's the difference between injuries and rehab?</dt>
+            <dd class="text-gray-700 mt-1"><strong>Injuries</strong> remove exercises that stress that area. <strong>Rehab / recovery</strong> does the opposite — it <em>prefers</em> exercises that target the rehab path for that area (for example rotator-cuff band work for shoulders). You can use both together: mark the injury to avoid harmful moves, and check rehab to add therapeutic ones.</dd>
+          </div>
+          <div>
+            <dt class="font-semibold">How do I swap an exercise during a workout?</dt>
+            <dd class="text-gray-700 mt-1">Tap the <strong>⋯ (three dots)</strong> button during any set, then tap the exercise you want to swap. You'll see a list of compatible alternatives filtered by the same slot, equipment, and injury settings. Tap one to swap it in.</dd>
           </div>
           <div>
             <dt class="font-semibold">Is this medical advice?</dt>
