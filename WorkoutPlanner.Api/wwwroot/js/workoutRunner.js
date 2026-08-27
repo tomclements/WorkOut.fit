@@ -93,31 +93,14 @@ let lastSpokenSecondKey = '';
 
 // -------------------------- Init --------------------------
 
-document.addEventListener('DOMContentLoaded', async () => {
-  musicEngine = new PlaylistMusicEngine();
-  await musicEngine.loadCatalog();
-
-  // Global auth: update local currentUser when auth state changes
-  window.addEventListener('auth-changed', (e) => {
-    const { user } = e.detail;
-    currentUser = user;
-    if (userLabel) userLabel.textContent = user || '';
-  });
-  await initGlobalAuth();
-  currentUser = window.currentUser;
-  if (userLabel && currentUser) userLabel.textContent = currentUser;
-
-  await loadUserPreferences();
-  await loadPlan();
-  checkForResumableSession();
-  initTonesToggle();
-  initVoiceCuesToggle();
-  // Warm speech voices (Chrome loads async)
-  if (window.speechSynthesis) {
-    window.speechSynthesis.getVoices();
-    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-  }
-
+document.addEventListener('DOMContentLoaded', () => {
+  // ------------------------------------------------------------------
+  // 1. Wire up ALL button/event listeners FIRST (synchronously).
+  //    This guarantees the controls always work even if a network fetch
+  //    (plan, preferences, music catalog, auth) hangs on a slow mobile
+  //    connection. Previously these were attached only after several
+  //    awaits, so a hanging request on iPhone left the runner dead.
+  // ------------------------------------------------------------------
   startBtn.addEventListener('click', startWorkout);
   resumeBtn.addEventListener('click', resumeSession);
   discardBtn.addEventListener('click', discardSession);
@@ -137,6 +120,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('restResumeWorkoutBtn').addEventListener('click', resumeWorkout);
   document.getElementById('volumeSlider').addEventListener('input', onVolumeChange);
   window.addEventListener('beforeunload', handleBeforeUnload);
+
+  // Global auth: update local currentUser when auth state changes
+  window.addEventListener('auth-changed', (e) => {
+    const { user } = e.detail;
+    currentUser = user;
+    if (userLabel) userLabel.textContent = user || '';
+  });
 
   // Session options overflow (⋯)
   const overflowModal = document.getElementById('overflowModal');
@@ -167,9 +157,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   overflowModal?.addEventListener('click', (e) => {
     if (e.target === overflowModal) closeOverflow();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && overflowModal && !overflowModal.classList.contains('hidden')) closeOverflow();
   });
 
   // TV / cast modal
@@ -210,17 +197,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   if (daySelect) daySelect.addEventListener('change', renderDayPreview);
 
-  if (localStorage.getItem('runnerHighContrast') === '1') {
-    document.body.classList.add('high-contrast');
-    if (contrastBtn) {
-      contrastBtn.classList.add('bg-blue-100');
-      contrastBtn.setAttribute('aria-pressed', 'true');
-      contrastBtn.title = 'Dark mode on (tap for light)';
-    }
-    const themeMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeMeta) themeMeta.setAttribute('content', '#0b0f14');
-  }
-
   // Space / Enter: skip work/rest
   document.addEventListener('keydown', (e) => {
     if (e.code !== 'Space' && e.code !== 'Enter') return;
@@ -233,12 +209,63 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Escape closes the overflow modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overflowModal && !overflowModal.classList.contains('hidden')) closeOverflow();
+  });
+
+  // Restore dark-mode from storage
+  if (localStorage.getItem('runnerHighContrast') === '1') {
+    document.body.classList.add('high-contrast');
+    if (contrastBtn) {
+      contrastBtn.classList.add('bg-blue-100');
+      contrastBtn.setAttribute('aria-pressed', 'true');
+      contrastBtn.title = 'Dark mode on (tap for light)';
+    }
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) themeMeta.setAttribute('content', '#0b0f14');
+  }
+
+  // Tone / voice cue toggles — no async dependency, init synchronously
+  initTonesToggle();
+  initVoiceCuesToggle();
+
+  // ------------------------------------------------------------------
+  // 2. Async setup — runs independently. If any of these hang on a slow
+  //    connection, the controls above are already live.
+  // ------------------------------------------------------------------
+  musicEngine = new PlaylistMusicEngine();
+  musicEngine.loadCatalog().finally(() => {
+    // Preferences may depend on loadUserPreferences for style/volume
+    loadUserPreferences();
+  });
+
+  initAsyncSetup();
+});
+
+async function initAsyncSetup() {
+  try {
+    await initGlobalAuth();
+  } catch { /* ignore */ }
+  currentUser = window.currentUser;
+  if (userLabel && currentUser) userLabel.textContent = currentUser;
+
+  try {
+    await loadPlan();
+  } catch { /* ignore */ }
+  checkForResumableSession();
+  // Warm speech voices (Chrome loads async)
+  if (window.speechSynthesis) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  }
+
   // Initialize focus traps on runner modals
   document.querySelectorAll('[role="dialog"][aria-modal="true"]').forEach(modal => {
     modal._onClose = function() { modal.classList.add('hidden'); };
     if (typeof initModal === 'function') initModal(modal);
   });
-});
+}
 
 async function loadUserPreferences() {
   try {
@@ -288,18 +315,20 @@ function setMusicStyleUI(style) {
 function onMusicStyleChange() {
   const style = musicStyleSelect?.value || 'off';
   setMusicStyleUI(style);
-  musicEngine.setStyle(style);
+  if (musicEngine) musicEngine.setStyle(style);
   try { localStorage.setItem('runnerMusicStyle', style); } catch { /* ignore */ }
 }
 
 function onMusicStyleActiveChange() {
   const style = musicStyleActive?.value || 'off';
   setMusicStyleUI(style);
-  musicEngine.setStyle(style);
-  if (style === 'off' || style === 'device') {
-    musicEngine.stop();
-  } else if (phase === 'work' || phase === 'rest') {
-    musicEngine.start();
+  if (musicEngine) {
+    musicEngine.setStyle(style);
+    if (style === 'off' || style === 'device') {
+      musicEngine.stop();
+    } else if (phase === 'work' || phase === 'rest') {
+      musicEngine.start();
+    }
   }
   updateMusicButton();
   try { localStorage.setItem('runnerMusicStyle', style); } catch { /* ignore */ }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'plan4strength-v3';
+const CACHE_NAME = 'plan4strength-v4';
 const PRECACHE = [
   '/',
   '/index.html',
