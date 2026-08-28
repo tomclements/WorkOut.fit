@@ -23,6 +23,9 @@ let currentSavedPlanName = null;
 let isPaused = false;
 let autoPaused = false;
 let pauseStartTime = 0;
+let ignoreVisibilityUntil = 0;
+let phaseBusy = false;
+const Engine = window.RunnerEngine || null;
 let previewCache = null;      // cached exercise catalog (id -> exercise) for previews/analyze
 let previewCachePromise = null;
 
@@ -430,7 +433,7 @@ function populateDaySelect() {
       if (day.type !== 'workout') return;
       hasWorkout = true;
       const option = document.createElement('option');
-      option.value = JSON.stringify({ week: week.week, dayIndex: day.dayIndex });
+      option.value = JSON.stringify({ week: week.week, dayIndex: day.dayIndex ?? idx, arrayIndex: idx });
       const summary = typeof WorkoutMobility !== 'undefined'
         ? WorkoutMobility.dayMobilitySummary(day)
         : '';
@@ -529,7 +532,9 @@ function previewSelectedDay() {
   try { selection = JSON.parse(daySelect.value); } catch { return null; }
   const week = currentPlan.plan.find(w => w.week === selection.week);
   if (!week) return null;
-  return week.days[selection.dayIndex];
+  return (selection.arrayIndex != null ? week.days[selection.arrayIndex] : null)
+    || week.days.find(d => d.dayIndex === selection.dayIndex)
+    || week.days[selection.dayIndex];
 }
 
 function dayEquipmentNames(day) {
@@ -810,7 +815,22 @@ function clearSessionState() {
 
 function discardSession() {
   clearSessionState();
-  resumeBanner.classList.add('hidden');
+  if (resumeBanner) resumeBanner.classList.add('hidden');
+}
+
+function applyEngineState(state) {
+  if (!state) return;
+  sessionExercises = state.sessionExercises;
+  currentExerciseIndex = state.currentExerciseIndex;
+  currentSetIndex = state.currentSetIndex;
+  phase = state.phase;
+  startTime = state.startTime;
+  phaseStartTime = state.phaseStartTime;
+  phaseDurationSeconds = state.phaseDurationSeconds;
+  isPaused = !!state.isPaused;
+  autoPaused = !!state.autoPaused;
+  pauseStartTime = state.pauseStartedAt || 0;
+  ignoreVisibilityUntil = state.ignoreVisibilityUntil || (Date.now() + 800);
 }
 
 async function resumeSession() {
@@ -818,48 +838,68 @@ async function resumeSession() {
   if (!saved) return;
 
   try {
-    const state = JSON.parse(saved);
-    sessionExercises = state.sessionExercises;
-    currentExerciseIndex = state.currentExerciseIndex;
-    currentSetIndex = state.currentSetIndex;
-    selectedWeek = state.selectedWeek ?? null;
-    selectedDayIndex = state.selectedDayIndex ?? null;
-    phase = state.phase;
-    startTime = state.startTime;
-    phaseStartTime = state.phaseStartTime || Date.now();
-    phaseDurationSeconds = state.phaseDurationSeconds || 30;
+    const raw = JSON.parse(saved);
+    const restored = Engine ? Engine.restoreSession(raw, Date.now()) : null;
+    if (restored) {
+      applyEngineState(restored);
+      sessionPlanName = restored.planName || raw.planName || 'Plan4Strength';
+    } else {
+      sessionExercises = (raw.sessionExercises || []).map(ex => ({
+        ...ex,
+        completedSets: Array.isArray(ex.completedSets) ? ex.completedSets : []
+      }));
+      currentExerciseIndex = raw.currentExerciseIndex || 0;
+      currentSetIndex = raw.currentSetIndex || 0;
+      phase = raw.phase === 'rest' ? 'rest' : 'work';
+      startTime = raw.startTime || Date.now();
+      phaseStartTime = Date.now();
+      phaseDurationSeconds = raw.phaseDurationSeconds || 30;
+      sessionPlanName = raw.planName || 'Plan4Strength';
+    }
+    selectedWeek = raw.selectedWeek ?? null;
+    selectedDayIndex = raw.selectedDayIndex ?? null;
     sessionSaved = false;
-    sessionPlanName = state.planName || 'Plan4Strength';
+    isPaused = false;
+    autoPaused = false;
+    ignoreVisibilityUntil = Date.now() + 800;
+
+    if (!currentExercise()) {
+      showLoadError('Could not restore that session. Start the day again.');
+      clearSessionState();
+      return;
+    }
 
     await requestWakeLock();
     document.addEventListener('visibilitychange', handleVisibilityChange);
     startAudioKeepAlive();
 
-    // Restore the music selection from when the session was saved
-    if (state.musicStyle) {
-      if (musicStyleSelect) musicStyleSelect.value = state.musicStyle;
-      if (musicStyleActive) musicStyleActive.value = state.musicStyle;
-      setMusicStyleUI(state.musicStyle);
-      musicEngine.setStyle(state.musicStyle);
+    if (raw.musicStyle) {
+      if (musicStyleSelect) musicStyleSelect.value = raw.musicStyle;
+      if (musicStyleActive) musicStyleActive.value = raw.musicStyle;
+      setMusicStyleUI(raw.musicStyle);
+      musicEngine.setStyle(raw.musicStyle);
     }
-    if (state.musicWasPlaying && shouldAutoStartMusic()) {
+    if (raw.musicWasPlaying && shouldAutoStartMusic()) {
       musicEngine.start();
       updateMusicButton();
     }
 
-    resumeBanner.classList.add('hidden');
+    if (resumeBanner) resumeBanner.classList.add('hidden');
     clearSessionState();
 
     if (phase === 'rest') {
       showScreen(restScreen);
       const nextEx = currentExercise();
-      nextExerciseNameEl.textContent = nextEx.name;
-      nextExerciseMetaEl.textContent = setWorkLabel(nextEx);
+      if (nextExerciseNameEl) nextExerciseNameEl.textContent = nextEx.name;
+      if (nextExerciseMetaEl) nextExerciseMetaEl.textContent = setWorkLabel(nextEx);
       if (nextDemoEl) {
         nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
         startDemoFlip(nextDemoEl);
       }
-      restTimerEl.textContent = formatTime(Math.max(0, phaseDurationSeconds - Math.floor((Date.now() - phaseStartTime) / 1000)));
+      const remain = Engine
+        ? Engine.remainingSeconds({ phaseStartTime, phaseDurationSeconds, isPaused, pauseStartedAt: pauseStartTime }, Date.now())
+        : Math.max(0, phaseDurationSeconds - Math.floor((Date.now() - phaseStartTime) / 1000));
+      if (restTimerEl) restTimerEl.textContent = formatTime(remain);
       startTimer();
     } else {
       showScreen(activeScreen);
@@ -867,7 +907,7 @@ async function resumeSession() {
     }
   } catch {
     clearSessionState();
-    resumeBanner.classList.add('hidden');
+    if (resumeBanner) resumeBanner.classList.add('hidden');
   }
 }
 
@@ -926,30 +966,45 @@ async function startWorkout() {
   const selection = JSON.parse(daySelect.value);
   const weekObj = currentPlan.plan.find(w => w.week === selection.week);
   if (!weekObj) { showLoadError('Selected day not found in plan.'); return; }
-  selectedDay = weekObj.days[selection.dayIndex];
+  selectedDay = (selection.arrayIndex != null ? weekObj.days[selection.arrayIndex] : null)
+    || weekObj.days.find(d => d.dayIndex === selection.dayIndex)
+    || weekObj.days[selection.dayIndex];
   selectedWeek = selection.week;
   selectedDayIndex = selection.dayIndex;
   if (!selectedDay || selectedDay.type !== 'workout') { showLoadError('Selected day is not a workout day.'); return; }
   if (typeof WorkoutMobility !== 'undefined') {
     WorkoutMobility.ensureDayMobility(selectedDay, currentPlan.criteria || {});
   }
-  sessionExercises = selectedDay.exercises.map(ex => {
-    const phase = (ex.phase || (ex.slot === 'warmup' || ex.slot === 'cooldown' ? ex.slot : 'work'));
-    const id = ex.id || '';
-    const demoAnimUrl = ex.demoAnimUrl
-      || (id ? `/demos/${id}.webp` : null);
-    return {
-      ...ex,
-      phase,
-      demoAnimUrl,
-      completedSets: []
-    };
-  });
-  currentExerciseIndex = 0;
-  currentSetIndex = 0;
-  phase = 'work';
-  startTime = Date.now();
+  const mapped = Engine
+    ? Engine.normalizeExercises(selectedDay.exercises)
+    : selectedDay.exercises.map(ex => {
+        const p = (ex.phase || (ex.slot === 'warmup' || ex.slot === 'cooldown' ? ex.slot : 'work'));
+        const id = ex.id || '';
+        return {
+          ...ex,
+          phase: p,
+          demoAnimUrl: ex.demoAnimUrl || (id ? `/demos/${id}.webp` : null),
+          completedSets: []
+        };
+      });
+  if (!mapped.length) {
+    showLoadError('This day has no exercises to run. Generate the plan again.');
+    return;
+  }
+  if (Engine) {
+    applyEngineState(Engine.createSession(mapped, Date.now()));
+  } else {
+    sessionExercises = mapped;
+    currentExerciseIndex = 0;
+    currentSetIndex = 0;
+    phase = 'work';
+    startTime = Date.now();
+    isPaused = false;
+    autoPaused = false;
+  }
+  ignoreVisibilityUntil = Date.now() + 800;
   sessionSaved = false;
+  if (resumeBanner) resumeBanner.classList.add('hidden');
   sessionPlanName = currentSavedPlanName
     || (currentPlan.criteria ? `${currentPlan.criteria.weeks}-week ${currentPlan.criteria.goal} plan` : 'Plan4Strength');
 
@@ -998,15 +1053,15 @@ function pauseWorkout(auto = false) {
   pauseStartTime = Date.now();
   clearInterval(timerInterval);
   stopSpeech();
-  if (musicEngine.isPlaying) musicEngine.setVolume(0.05);
+  if (musicEngine && musicEngine.isPlaying) musicEngine.setVolume(0.05);
   updatePauseUI();
 }
 
 function resumeWorkout() {
   if (!isPaused) return;
-  const pauseDuration = Date.now() - pauseStartTime;
+  const pauseDuration = Date.now() - (pauseStartTime || Date.now());
   phaseStartTime += pauseDuration;
-  startTime += pauseDuration;
+  if (startTime) startTime += pauseDuration;
   isPaused = false;
   autoPaused = false;
   const targetVol = phase === 'rest' ? 0.35 : 1.0;
@@ -1027,9 +1082,9 @@ function updatePauseUI() {
   const restPausedOverlay = document.getElementById('restPausedOverlay');
   const pauseBtn = document.getElementById('pauseBtn');
 
-  pausedOverlay.classList.toggle('hidden', !isPaused);
-  restPausedOverlay.classList.toggle('hidden', !isPaused);
-  pauseBtn.classList.toggle('hidden', isPaused);
+  if (pausedOverlay) pausedOverlay.classList.toggle('hidden', !isPaused);
+  if (restPausedOverlay) restPausedOverlay.classList.toggle('hidden', !isPaused);
+  if (pauseBtn) pauseBtn.classList.toggle('hidden', isPaused);
 }
 
 function onVolumeChange(e) {
@@ -1040,6 +1095,7 @@ function onVolumeChange(e) {
 }
 
 async function handleVisibilityChange() {
+  if (Date.now() < ignoreVisibilityUntil) return;
   if (document.visibilityState === 'hidden') {
     if (!isPaused && phase !== 'setup' && phase !== 'finish') {
       pauseWorkout(true);
@@ -1072,7 +1128,10 @@ function showScreen(screen) {
 }
 
 function currentExercise() {
-  return sessionExercises[currentExerciseIndex];
+  if (Engine) {
+    return Engine.currentExercise({ sessionExercises, currentExerciseIndex });
+  }
+  return (sessionExercises || [])[currentExerciseIndex] || null;
 }
 
 /** free-exercise-db often has 0.jpg + 1.jpg â€” flip them as a JS fallback. */
@@ -1200,7 +1259,9 @@ function stopDemoFlip() {
 function startDemoFlip(root) {
   stopDemoFlip();
   const frames = root
-    ? [root]
+    ? (root.classList && root.classList.contains('demo-frame')
+      ? [root]
+      : [...root.querySelectorAll('.demo-frame')])
     : [...document.querySelectorAll('.demo-frame[data-demo-flip="1"]')];
   const flippers = frames.filter(f => f && f.dataset.demoFlip === '1');
   if (!flippers.length) return;
@@ -1235,8 +1296,9 @@ function estimateTargetReps(ex) {
 }
 
 function fillExerciseHeader(ex) {
-  exerciseNameEl.textContent = ex.name;
-  exerciseMetaEl.textContent = setWorkLabel(ex);
+  if (!ex) return;
+  if (exerciseNameEl) exerciseNameEl.textContent = ex.name || 'Exercise';
+  if (exerciseMetaEl) exerciseMetaEl.textContent = setWorkLabel(ex);
   if (isMobilityExercise(ex)) {
     const p = exercisePhase(ex);
     setBadgeEl.textContent = p === 'warmup' ? 'Warm-up' : 'Cool-down';
@@ -1260,24 +1322,67 @@ function beginSetFromPreview() { }
 
 function enterWork(resuming = false) {
   const ex = currentExercise();
+  if (!ex) {
+    showLoadError('No exercise to run.');
+    showScreen(setupScreen);
+    return;
+  }
 
-  phase = 'work';
-  phaseDurationSeconds = workSeconds(ex);
+  if (Engine) {
+    const snap = Engine.beginWork({
+      sessionExercises,
+      currentExerciseIndex,
+      currentSetIndex,
+      phase,
+      startTime,
+      phaseStartTime,
+      phaseDurationSeconds,
+      isPaused,
+      autoPaused,
+      pauseStartedAt: pauseStartTime
+    }, Date.now(), resuming);
+    if (!snap.ok) {
+      showLoadError('No exercise to run.');
+      showScreen(setupScreen);
+      return;
+    }
+    phase = 'work';
+    phaseDurationSeconds = Engine.workSeconds(ex);
+    isPaused = false;
+    autoPaused = false;
+    if (!resuming || snap.remaining === Engine.workSeconds(ex)) {
+      phaseStartTime = Date.now();
+    }
+  } else {
+    phase = 'work';
+    phaseDurationSeconds = workSeconds(ex);
+    if (!resuming) phaseStartTime = Date.now();
+    isPaused = false;
+    autoPaused = false;
+  }
+
   setWorkChromeMode();
   lastSpokenSecondKey = '';
 
   if (!resuming) {
-    phaseStartTime = Date.now();
     elapsedPhaseSeconds = 0;
     announcePhase('work');
   } else {
-    elapsedPhaseSeconds = Math.floor((Date.now() - phaseStartTime) / 1000);
+    const remain = Engine
+      ? Engine.remainingSeconds({ phaseStartTime, phaseDurationSeconds, isPaused, pauseStartedAt: pauseStartTime }, Date.now())
+      : Math.max(0, phaseDurationSeconds - Math.floor((Date.now() - phaseStartTime) / 1000));
+    if (remain <= 0) {
+      phaseStartTime = Date.now();
+    }
+    elapsedPhaseSeconds = Math.max(0, phaseDurationSeconds - Math.max(0, remain <= 0 ? phaseDurationSeconds : remain));
   }
 
   fillExerciseHeader(ex);
 
-  const remaining = Math.max(0, phaseDurationSeconds - elapsedPhaseSeconds);
-  timerDisplayEl.textContent = formatTime(remaining);
+  const remaining = Engine
+    ? Engine.remainingSeconds({ phaseStartTime, phaseDurationSeconds, isPaused, pauseStartedAt: pauseStartTime }, Date.now())
+    : Math.max(0, phaseDurationSeconds - elapsedPhaseSeconds);
+  if (timerDisplayEl) timerDisplayEl.textContent = formatTime(remaining);
   updatePhaseProgressBar(workProgressBar, remaining, phaseDurationSeconds);
 
   updateProgress();
@@ -1297,12 +1402,15 @@ function updatePhaseProgressBar(bar, remaining, total) {
 }
 
 function tick() {
-  if (isPaused) return;
-  elapsedPhaseSeconds = Math.floor((Date.now() - phaseStartTime) / 1000);
-  const remaining = Math.max(0, phaseDurationSeconds - elapsedPhaseSeconds);
+  if (isPaused || phaseBusy) return;
+  const snap = { phaseStartTime, phaseDurationSeconds, isPaused, pauseStartedAt: pauseStartTime };
+  const remaining = Engine
+    ? Engine.remainingSeconds(snap, Date.now())
+    : Math.max(0, phaseDurationSeconds - Math.floor((Date.now() - phaseStartTime) / 1000));
+  elapsedPhaseSeconds = Math.max(0, (phaseDurationSeconds || 0) - remaining);
 
   if (phase === 'work') {
-    timerDisplayEl.textContent = formatTime(remaining);
+    if (timerDisplayEl) timerDisplayEl.textContent = formatTime(remaining);
     updatePhaseProgressBar(workProgressBar, remaining, phaseDurationSeconds);
     maybeCountdownCue('work', remaining);
     if (remaining === 0) {
@@ -1310,7 +1418,7 @@ function tick() {
       completeSet(false);
     }
   } else if (phase === 'rest') {
-    restTimerEl.textContent = formatTime(remaining);
+    if (restTimerEl) restTimerEl.textContent = formatTime(remaining);
     updatePhaseProgressBar(restProgressBar, remaining, phaseDurationSeconds);
     maybeCountdownCue('rest', remaining);
     if (remaining === 0) {
@@ -1324,24 +1432,56 @@ function tick() {
  * @param {boolean} early - user finished before the timer
  */
 function completeSet(early = false) {
-  if (isPaused || phase !== 'work') return;
-  stopDemoFlip();
+  if (isPaused || phase !== 'work' || phaseBusy) return;
   const ex = currentExercise();
-  const duration = Math.min(elapsedPhaseSeconds, phaseDurationSeconds);
-
+  if (!ex) return;
+  phaseBusy = true;
+  stopDemoFlip();
   clearInterval(timerInterval);
   if (navigator.vibrate) navigator.vibrate(40);
 
+  if (Engine) {
+    const snapshot = {
+      sessionExercises,
+      currentExerciseIndex,
+      currentSetIndex,
+      phase,
+      startTime,
+      phaseStartTime,
+      phaseDurationSeconds,
+      isPaused
+    };
+    const result = Engine.completeSet(snapshot, Date.now());
+    if (!result.ok) {
+      phaseBusy = false;
+      startTimer();
+      return;
+    }
+    currentExerciseIndex = snapshot.currentExerciseIndex;
+    currentSetIndex = snapshot.currentSetIndex;
+    phase = snapshot.phase;
+    phaseBusy = false;
+    if (result.action === 'finish') {
+      finishWorkout();
+      return;
+    }
+    enterRest();
+    return;
+  }
+
+  if (!Array.isArray(ex.completedSets)) ex.completedSets = [];
+  const duration = Math.min(elapsedPhaseSeconds, phaseDurationSeconds);
   ex.completedSets.push({
     reps: estimateTargetReps(ex),
     durationSeconds: Math.max(1, duration || phaseDurationSeconds)
   });
   saveSessionState();
 
-  const isLastSet = currentSetIndex + 1 >= ex.sets;
+  const isLastSet = currentSetIndex + 1 >= (ex.sets || 1);
   const isLastExercise = currentExerciseIndex + 1 >= sessionExercises.length;
 
   if (isLastSet && isLastExercise) {
+    phaseBusy = false;
     finishWorkout();
     return;
   }
@@ -1353,26 +1493,31 @@ function completeSet(early = false) {
     currentSetIndex++;
   }
 
+  phaseBusy = false;
   enterRest();
 }
 
 function enterRest() {
   document.body.classList.remove('work-phase');
+  const nextEx = currentExercise();
+  if (!nextEx) {
+    finishWorkout();
+    return;
+  }
   phase = 'rest';
   phaseStartTime = Date.now();
   elapsedPhaseSeconds = 0;
+  isPaused = false;
+  autoPaused = false;
   lastSpokenSecondKey = '';
   stopDemoFlip();
   announcePhase('rest');
 
-  // Rest uses the exercise we're about to do (already advanced set index)
-  const nextEx = currentExercise();
-  // Rest duration comes from the exercise we just finished when possible
   const prevIdx = currentSetIndex === 0 ? currentExerciseIndex - 1 : currentExerciseIndex;
   const restSource = sessionExercises[Math.max(0, prevIdx)] || nextEx;
-  phaseDurationSeconds = restSeconds(restSource);
+  phaseDurationSeconds = Engine ? Engine.restSeconds(restSource) : restSeconds(restSource);
 
-  nextExerciseNameEl.textContent = nextEx.name;
+  if (nextExerciseNameEl) nextExerciseNameEl.textContent = nextEx.name;
   if (isMobilityExercise(nextEx)) {
     const p = exercisePhase(nextEx);
     nextExerciseMetaEl.textContent = p === 'warmup'
