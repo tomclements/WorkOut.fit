@@ -5,7 +5,8 @@
   "main": "tailwind.config.js",
   "scripts": {
     "tailwind:build": "npx tailwindcss -i ./WorkoutPlanner.Api/wwwroot/css/tailwind.css -o ./WorkoutPlanner.Api/wwwroot/css/tailwind-compiled.css --minify",
-    "tailwind:watch": "npx tailwindcss -i ./WorkoutPlanner.Api/wwwroot/css/tailwind.css -o ./WorkoutPlanner.Api/wwwroot/css/tailwind-compiled.css --watch"
+    "tailwind:watch": "npx tailwindcss -i ./WorkoutPlanner.Api/wwwroot/css/tailwind.css -o ./WorkoutPlanner.Api/wwwroot/css/tailwind-compiled.css --watch",
+    "test:runner": "node --test WorkoutPlanner.Tests/runnerEngine.test.js"
   },
   "repository": {
     "type": "git",
