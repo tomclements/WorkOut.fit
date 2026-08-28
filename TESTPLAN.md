@@ -35,9 +35,35 @@ This injects a generated plan into `localStorage`, reloads the page, and asserts
 
 - the **workout-day dropdown populates** from localStorage without any network,
 - the **"My music"** handler reveals the Apple Music/Spotify links,
-- the **Start button transitions** from the setup screen to the active workout screen.
+- the **Start button transitions** from the setup screen to the active workout screen (via `.runner-screen.active`, **not** Tailwind `hidden` — that check was a false green),
+- the **exercise name and demo frame** render immediately (name is not the placeholder `"Exercise"`),
+- the **work timer ticks** within ~1.2s without requiring Pause → Resume,
+- **Done / Finish set** advances to rest with a live rest timer,
+- **Resume of a stale session** (expired `phaseStartTime` in localStorage) does **not** land at `00:00` with a dead Done button.
 
 It exits non-zero with a `FAIL` summary if any assertion fails, so it can gate a deploy.
+
+### Runner state machine (node)
+
+The workout clock, pause/resume, Done, and stale-session restore live in `WorkoutPlanner.Api/wwwroot/js/runnerEngine.js` so they can be tested without a browser:
+
+```powershell
+npm run test:runner
+```
+
+`dotnet test` also runs these via `RunnerEngineJsTests.cs` when `node` is on PATH (silent no-op otherwise).
+
+Bugs these tests are required to catch:
+
+| Symptom | Cause encoded in tests |
+|---|---|
+| Start shows a frozen timer, no name/demo | `createSession` must be unpaused; visibility flicker in the first 800ms is ignored |
+| Pause then Resume starts the clock | `remainingSeconds` must freeze while paused (`clockNow`) |
+| Done goes to the next screen frozen again | `beginWork` / `beginRest` clear pause flags |
+| Resume of an old session sits at `00:00`, Done dead | `restoreSession` restarts an expired interval and always backfills `completedSets` |
+| PascalCase plan payload shows `"Exercise"` | `workSeconds` / `normalizeExercise` accept `WorkDuration` / `Name` / `Id` |
+
+**Do not** assert `!classList.contains('hidden')` on runner screens. They use `.runner-screen` / `.active` (`display: none` vs `display: block`).
 
 ## Automated test coverage
 
