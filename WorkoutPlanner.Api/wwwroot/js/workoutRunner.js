@@ -95,44 +95,64 @@ let lastSpokenSecondKey = '';
 
 document.addEventListener('DOMContentLoaded', () => {
   // ------------------------------------------------------------------
-  // 1. Wire up ALL button/event listeners FIRST (synchronously).
-  //    This guarantees the controls always work even if a network fetch
-  //    (plan, preferences, music catalog, auth) hangs on a slow mobile
-  //    connection. Previously these were attached only after several
-  //    awaits, so a hanging request on iPhone left the runner dead.
+  // 1. Kick off async setup FIRST so the workout-day dropdown populates
+  //    immediately from localStorage. This must never be gated behind a
+  //    network/auth call, and must never be blocked by listener wiring.
   // ------------------------------------------------------------------
-  startBtn.addEventListener('click', startWorkout);
-  resumeBtn.addEventListener('click', resumeSession);
-  discardBtn.addEventListener('click', discardSession);
-  if (testSoundBtn) testSoundBtn.addEventListener('click', testSound);
-  completeSetBtn.addEventListener('click', () => completeSet(true));
-  skipRestBtn.addEventListener('click', endRest);
-  if (startSetBtn) startSetBtn.addEventListener('click', beginSetFromPreview);
-  if (musicBtn) musicBtn.addEventListener('click', toggleMusic);
-  if (musicStyleSelect) musicStyleSelect.addEventListener('change', onMusicStyleChange);
-  if (musicStyleActive) musicStyleActive.addEventListener('change', onMusicStyleActiveChange);
-  fullscreenBtn.addEventListener('click', toggleFullscreen);
-  if (contrastBtn) contrastBtn.addEventListener('click', toggleHighContrast);
-  if (tvModeBtn) tvModeBtn.addEventListener('click', openCastModal);
-  if (saveSessionBtn) saveSessionBtn.addEventListener('click', () => saveSession({ manual: true }));
-  document.getElementById('pauseBtn').addEventListener('click', () => pauseWorkout(false));
-  document.getElementById('resumeWorkoutBtn').addEventListener('click', resumeWorkout);
-  document.getElementById('restResumeWorkoutBtn').addEventListener('click', resumeWorkout);
-  document.getElementById('volumeSlider').addEventListener('input', onVolumeChange);
-  window.addEventListener('beforeunload', handleBeforeUnload);
+  try { initAsyncSetup(); } catch (e) { /* keep the UI alive */ }
+
+  // Music engine (non-blocking). Preferences load once the catalog is ready.
+  musicEngine = new PlaylistMusicEngine();
+  try {
+    musicEngine.loadCatalog().finally(() => {
+      try { loadUserPreferences(); } catch (e) { /* ignore */ }
+    });
+  } catch (e) { /* ignore */ }
+
+  // ------------------------------------------------------------------
+  // 2. Wire up ALL button/event listeners. Each is individually guarded
+  //    so a single failure cannot prevent the rest, nor block setup above.
+  //    This guarantees the controls always work even if a network fetch
+  //    (plan, preferences, music catalog, auth) hangs on a slow iPhone.
+  // ------------------------------------------------------------------
+  const wire = (el, type, fn) => {
+    try { if (el) el.addEventListener(type, fn); } catch (e) { /* noop */ }
+  };
+  const byId = (id) => document.getElementById(id);
+
+  wire(startBtn, 'click', startWorkout);
+  wire(resumeBtn, 'click', resumeSession);
+  wire(discardBtn, 'click', discardSession);
+  wire(testSoundBtn, 'click', testSound);
+  wire(completeSetBtn, 'click', () => completeSet(true));
+  wire(skipRestBtn, 'click', endRest);
+  wire(startSetBtn, 'click', beginSetFromPreview);
+  wire(musicBtn, 'click', toggleMusic);
+  wire(musicStyleSelect, 'change', onMusicStyleChange);
+  wire(musicStyleActive, 'change', onMusicStyleActiveChange);
+  wire(fullscreenBtn, 'click', toggleFullscreen);
+  wire(contrastBtn, 'click', toggleHighContrast);
+  wire(tvModeBtn, 'click', openCastModal);
+  wire(saveSessionBtn, 'click', () => saveSession({ manual: true }));
+  wire(byId('pauseBtn'), 'click', () => pauseWorkout(false));
+  wire(byId('resumeWorkoutBtn'), 'click', resumeWorkout);
+  wire(byId('restResumeWorkoutBtn'), 'click', resumeWorkout);
+  wire(byId('volumeSlider'), 'input', onVolumeChange);
+  wire(window, 'beforeunload', handleBeforeUnload);
 
   // Global auth: update local currentUser when auth state changes
-  window.addEventListener('auth-changed', (e) => {
+  wire(window, 'auth-changed', (e) => {
     const { user } = e.detail;
     currentUser = user;
     if (userLabel) userLabel.textContent = user || '';
   });
 
   // Session options overflow (⋯)
-  const overflowModal = document.getElementById('overflowModal');
+  const overflowModal = byId('overflowModal');
   let overflowWasPaused = false;
   const openOverflow = () => {
-    overflowModal?.classList.remove('hidden');
+    if (!overflowModal) return;
+    overflowModal.classList.remove('hidden');
     // Auto-pause when opening session options (unless already paused)
     if (!isPaused && (phase === 'work' || phase === 'rest')) {
       overflowWasPaused = false;
@@ -142,63 +162,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   const closeOverflow = () => {
-    overflowModal?.classList.add('hidden');
+    if (!overflowModal) return;
+    overflowModal.classList.add('hidden');
     // Auto-resume if we auto-paused
     if (autoPaused && !overflowWasPaused) {
       resumeWorkout();
     }
   };
-  document.getElementById('workOverflowBtn')?.addEventListener('click', openOverflow);
-  document.getElementById('restOverflowBtn')?.addEventListener('click', openOverflow);
-  document.getElementById('closeOverflow')?.addEventListener('click', closeOverflow);
-  document.getElementById('overflowViewAllBtn')?.addEventListener('click', () => {
+  wire(byId('workOverflowBtn'), 'click', openOverflow);
+  wire(byId('restOverflowBtn'), 'click', openOverflow);
+  wire(byId('closeOverflow'), 'click', closeOverflow);
+  wire(byId('overflowViewAllBtn'), 'click', () => {
     closeOverflow();
     openMovesList();
   });
-  overflowModal?.addEventListener('click', (e) => {
+  wire(overflowModal, 'click', (e) => {
     if (e.target === overflowModal) closeOverflow();
   });
 
   // TV / cast modal
   const closeCast = () => closeCastModal();
-  document.getElementById('closeCastModal')?.addEventListener('click', closeCast);
-  document.getElementById('dismissCastModal')?.addEventListener('click', closeCast);
-  document.getElementById('enableTvModeBtn')?.addEventListener('click', () => {
+  wire(byId('closeCastModal'), 'click', closeCast);
+  wire(byId('dismissCastModal'), 'click', closeCast);
+  wire(byId('enableTvModeBtn'), 'click', () => {
     setTvMode(true);
     closeCastModal();
     if (typeof showToast === 'function') {
       showToast('TV mode on \u2014 mirror this screen with AirPlay or Cast tab.', 'info', 4500);
     }
   });
-  castModal?.addEventListener('click', (e) => {
+  wire(castModal, 'click', (e) => {
     if (e.target === castModal) closeCastModal();
   });
 
-  // Skip exercise button (overflow)
-  const skipExerciseBtn = document.getElementById('overflowSkipBtn');
-  if (skipExerciseBtn) skipExerciseBtn.addEventListener('click', () => { closeOverflow(); skipCurrentExercise(); });
+  // Skip / previous exercise buttons (overflow)
+  wire(byId('overflowSkipBtn'), 'click', () => { closeOverflow(); skipCurrentExercise(); });
+  wire(byId('overflowPrevBtn'), 'click', () => { closeOverflow(); goBackExercise(); });
 
-  // Previous exercise button (overflow)
-  const prevExerciseBtn = document.getElementById('overflowPrevBtn');
-  if (prevExerciseBtn) prevExerciseBtn.addEventListener('click', () => { closeOverflow(); goBackExercise(); });
-
-  if (closeMovesListBtn) closeMovesListBtn.addEventListener('click', closeMovesList);
-  movesListModal?.addEventListener('click', (e) => {
+  wire(closeMovesListBtn, 'click', closeMovesList);
+  wire(movesListModal, 'click', (e) => {
     if (e.target === movesListModal) closeMovesList();
   });
-
-  const analyzeBtn = document.getElementById('analyzeBtn');
-  const closeAnalyze = document.getElementById('closeAnalyze');
-  const analyzeModal = document.getElementById('analyzeModal');
-  if (analyzeBtn) analyzeBtn.addEventListener('click', openAnalyze);
-  if (closeAnalyze) closeAnalyze.addEventListener('click', closeAnalyzeModal);
-  analyzeModal?.addEventListener('click', (e) => {
-    if (e.target === analyzeModal) closeAnalyzeModal();
+  wire(byId('analyzeBtn'), 'click', openAnalyze);
+  wire(byId('closeAnalyze'), 'click', closeAnalyzeModal);
+  wire(byId('analyzeModal'), 'click', (e) => {
+    if (e.target === byId('analyzeModal')) closeAnalyzeModal();
   });
-  if (daySelect) daySelect.addEventListener('change', renderDayPreview);
+  wire(daySelect, 'change', renderDayPreview);
 
   // Space / Enter: skip work/rest
-  document.addEventListener('keydown', (e) => {
+  wire(document, 'keydown', (e) => {
     if (e.code !== 'Space' && e.code !== 'Enter') return;
     if (phase === 'work') {
       e.preventDefault();
@@ -210,49 +223,50 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Escape closes the overflow modal
-  document.addEventListener('keydown', (e) => {
+  wire(document, 'keydown', (e) => {
     if (e.key === 'Escape' && overflowModal && !overflowModal.classList.contains('hidden')) closeOverflow();
   });
 
   // Restore dark-mode from storage
   if (localStorage.getItem('runnerHighContrast') === '1') {
-    document.body.classList.add('high-contrast');
-    if (contrastBtn) {
-      contrastBtn.classList.add('bg-blue-100');
-      contrastBtn.setAttribute('aria-pressed', 'true');
-      contrastBtn.title = 'Dark mode on (tap for light)';
-    }
-    const themeMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeMeta) themeMeta.setAttribute('content', '#0b0f14');
+    try {
+      document.body.classList.add('high-contrast');
+      if (contrastBtn) {
+        contrastBtn.classList.add('bg-blue-100');
+        contrastBtn.setAttribute('aria-pressed', 'true');
+        contrastBtn.title = 'Dark mode on (tap for light)';
+      }
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) themeMeta.setAttribute('content', '#0b0f14');
+    } catch (e) { /* ignore */ }
   }
 
   // Tone / voice cue toggles — no async dependency, init synchronously
-  initTonesToggle();
-  initVoiceCuesToggle();
-
-  // ------------------------------------------------------------------
-  // 2. Async setup — runs independently. If any of these hang on a slow
-  //    connection, the controls above are already live.
-  // ------------------------------------------------------------------
-  musicEngine = new PlaylistMusicEngine();
-  musicEngine.loadCatalog().finally(() => {
-    // Preferences may depend on loadUserPreferences for style/volume
-    loadUserPreferences();
-  });
-
-  initAsyncSetup();
+  try { initTonesToggle(); } catch (e) { /* ignore */ }
+  try { initVoiceCuesToggle(); } catch (e) { /* ignore */ }
 });
 
 async function initAsyncSetup() {
+  // Load the plan FIRST. A plan from localStorage is read synchronously and
+  // populates the day dropdown immediately — this must NOT wait on any
+  // network call. Previously this ran after await initGlobalAuth(), so a
+  // hanging /api/auth/me fetch (slow iPhone) left the dropdown empty.
+  try {
+    await loadPlan();
+  } catch (e) { /* keep UI alive; loadPlan shows its own error UI */ }
+
   try {
     await initGlobalAuth();
   } catch { /* ignore */ }
   currentUser = window.currentUser;
   if (userLabel && currentUser) userLabel.textContent = currentUser;
 
+  // With auth known, re-run day selection so saved plans can merge server
+  // completion history (cross-device). populateDaySelect already ran above.
   try {
-    await loadPlan();
+    await defaultToNextWorkoutDay();
   } catch { /* ignore */ }
+
   checkForResumableSession();
   // Warm speech voices (Chrome loads async)
   if (window.speechSynthesis) {

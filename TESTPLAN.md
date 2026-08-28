@@ -23,6 +23,22 @@ To run with full output:
 dotnet test --verbosity normal
 ```
 
+### Runner init regression (browser)
+
+Before deploying changes to the workout runner, verify the init flow end-to-end in a real browser — the regression that must not recur is that a hanging network/auth call leaves the **Start button, Analyze button, and day dropdown dead** (as happened on iPhone). With the app running (`dotnet run` on port 5198):
+
+```powershell
+node "C:\Users\tomcl\.claude\skills\browser-automation\browser.mjs" http://localhost:5198/workout.html --script .\scripts\verify-runner.mjs
+```
+
+This injects a generated plan into `localStorage`, reloads the page, and asserts:
+
+- the **workout-day dropdown populates** from localStorage without any network,
+- the **"My music"** handler reveals the Apple Music/Spotify links,
+- the **Start button transitions** from the setup screen to the active workout screen.
+
+It exits non-zero with a `FAIL` summary if any assertion fails, so it can gate a deploy.
+
 ## Automated test coverage
 
 ### 0. Health (`HealthTests.cs`)
@@ -153,9 +169,9 @@ The admin endpoints are covered by the existing auth and data tests, and are exe
 Last executed: `dotnet test --verbosity normal`
 
 ```text
-Total tests: 34
-     Passed: 34
+Total tests: 116
+     Passed: 116
      Failed: 0
 ```
 
-All automated tests pass.
+All automated tests pass. The runner init browser regression (`scripts/verify-runner.mjs`) also passes: `ok: true, dayOptionCount: 1`.
