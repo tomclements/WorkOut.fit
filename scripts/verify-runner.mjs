@@ -55,6 +55,20 @@ export default async function run(page, ui) {
   const results = { ok: true, failures: [] };
   const fail = (name, detail) => { results.ok = false; results.failures.push({ name, detail }); };
 
+  const boot = await page.evaluate(() => {
+    const s = document.createElement('script');
+    s.textContent = 'document.documentElement.dataset.hasRunnerEngine = (typeof window.RunnerEngine === "object" && !!window.RunnerEngine.createSession) ? "1" : "0";';
+    document.documentElement.appendChild(s);
+    return {
+      engine: document.documentElement.dataset.hasRunnerEngine === '1',
+      dayValue: document.getElementById('daySelect')?.value || '',
+      dayOptions: document.getElementById('daySelect')?.options.length || 0
+    };
+  });
+  results.boot = boot;
+  if (!boot.engine) fail('runner-engine', 'window.RunnerEngine missing');
+  if (!boot.dayValue) fail('day-selected', 'day dropdown has options but no selected value');
+
   const musicOk = await page.evaluate(() => {
     const sel = document.getElementById('musicStyleActive');
     const hint = document.getElementById('deviceMusicHintActive');

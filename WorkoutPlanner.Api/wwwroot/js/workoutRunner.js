@@ -25,7 +25,7 @@ let autoPaused = false;
 let pauseStartTime = 0;
 let ignoreVisibilityUntil = 0;
 let phaseBusy = false;
-const Engine = window.RunnerEngine || null;
+let Engine = window.RunnerEngine || null;
 let previewCache = null;      // cached exercise catalog (id -> exercise) for previews/analyze
 let previewCachePromise = null;
 
@@ -97,6 +97,7 @@ let lastSpokenSecondKey = '';
 // -------------------------- Init --------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (!Engine && window.RunnerEngine) Engine = window.RunnerEngine;
   // ------------------------------------------------------------------
   // 1. Kick off async setup FIRST so the workout-day dropdown populates
   //    immediately from localStorage. This must never be gated behind a
@@ -492,10 +493,11 @@ async function defaultToNextWorkoutDay() {
 
   let found = null;
   for (const week of currentPlan.plan) {
-    for (const day of week.days) {
+    for (let idx = 0; idx < week.days.length; idx++) {
+      const day = week.days[idx];
       if (day.type !== 'workout') continue;
       if (!completed.has(week.week + ':' + day.dayIndex)) {
-        found = { week: week.week, dayIndex: day.dayIndex };
+        found = { week: week.week, dayIndex: day.dayIndex ?? idx, arrayIndex: idx };
         break;
       }
     }
@@ -504,16 +506,30 @@ async function defaultToNextWorkoutDay() {
   // All complete -> start over at first workout day
   if (!found) {
     outer: for (const week of currentPlan.plan) {
-      for (const day of week.days) {
+      for (let idx = 0; idx < week.days.length; idx++) {
+        const day = week.days[idx];
         if (day.type === 'workout') {
-          found = { week: week.week, dayIndex: day.dayIndex };
+          found = { week: week.week, dayIndex: day.dayIndex ?? idx, arrayIndex: idx };
           break outer;
         }
       }
     }
   }
   if (found) {
-    daySelect.value = JSON.stringify(found);
+    const encoded = JSON.stringify(found);
+    const hasExact = [...daySelect.options].some(o => o.value === encoded);
+    daySelect.value = hasExact ? encoded : '';
+  }
+  if (!daySelect.value && daySelect.options.length) {
+    const match = found
+      ? [...daySelect.options].find(o => {
+          try {
+            const v = JSON.parse(o.value);
+            return v.week === found.week && (v.arrayIndex === found.arrayIndex || v.dayIndex === found.dayIndex);
+          } catch { return false; }
+        })
+      : null;
+    daySelect.value = match ? match.value : daySelect.options[0].value;
   }
 }
 
@@ -869,9 +885,9 @@ async function resumeSession() {
       return;
     }
 
-    await requestWakeLock();
     document.addEventListener('visibilitychange', handleVisibilityChange);
     startAudioKeepAlive();
+    requestWakeLock().catch(() => {});
 
     if (raw.musicStyle) {
       if (musicStyleSelect) musicStyleSelect.value = raw.musicStyle;
@@ -1008,7 +1024,6 @@ async function startWorkout() {
   sessionPlanName = currentSavedPlanName
     || (currentPlan.criteria ? `${currentPlan.criteria.weeks}-week ${currentPlan.criteria.goal} plan` : 'Plan4Strength');
 
-  await requestWakeLock();
   document.addEventListener('visibilitychange', handleVisibilityChange);
   startAudioKeepAlive();
 
@@ -1018,8 +1033,14 @@ async function startWorkout() {
   }
 
   showScreen(activeScreen);
-  enterWork();
-  saveSessionState();
+  try {
+    enterWork();
+    saveSessionState();
+  } catch (err) {
+    console.error(err);
+    showLoadError('Could not start the workout.');
+  }
+  requestWakeLock().catch(() => {});
 }
 
 async function requestWakeLock() {
@@ -1876,7 +1897,13 @@ function initTonesToggle() {
 
 function tonesEnabled() {
   if (tonesToggle) return !!tonesToggle.checked;
-  return localStorage.getItem('runnerTones') !== '0';
+  try { return localStorage.getItem('runnerTones') !== '0'; } catch { return true; }
+}
+
+function voiceCuesEnabled() {
+  if (voiceCuesToggle) return !!voiceCuesToggle.checked;
+  if (voiceCuesToggleActive) return !!voiceCuesToggleActive.checked;
+  try { return localStorage.getItem('runnerVoiceCues') === '1'; } catch { return false; }
 }
 
 function initVoiceCuesToggle() {
@@ -1920,8 +1947,8 @@ function stopSpeech() {
  * Short spoken cue. Cancels prior utterance so countdown stays crisp.
  */
 function speakCue(text) {
-  if (!voiceCuesEnabled() || !text) return;
   try {
+    if (!voiceCuesEnabled() || !text) return;
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(String(text));
