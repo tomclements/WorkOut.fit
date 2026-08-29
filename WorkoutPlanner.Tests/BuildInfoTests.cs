@@ -31,4 +31,22 @@ public class BuildInfoTests : IClassFixture<TestWebApplicationFactory>
         var response = await _client.GetAsync("/api/about");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
+
+    [Theory]
+    [InlineData("/privacy")]
+    [InlineData("/privacy.html")]
+    public async Task PrivacyPage_ReturnsPublicHtml(string path)
+    {
+        var response = await _client.GetAsync(path);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("text/html", response.Content.Headers.ContentType?.MediaType);
+
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("Privacy policy", html, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("WorkOut.fit", html);
+        Assert.Contains("Plan4Strength", html);
+        Assert.Contains("Strava", html);
+        Assert.Contains("Render", html);
+        Assert.Contains("body weight", html, StringComparison.OrdinalIgnoreCase);
+    }
 }

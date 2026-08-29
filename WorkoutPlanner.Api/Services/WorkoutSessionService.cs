@@ -30,6 +30,7 @@ public class WorkoutSessionService : IWorkoutSessionService
                 ExerciseId = e.ExerciseId,
                 ExerciseName = e.ExerciseName,
                 TargetSets = e.TargetSets,
+                WeightKg = NormalizeWeightKg(e.WeightKg),
                 Sets = e.Sets.Select(s => new CompletedSet
                 {
                     Reps = s.Reps,
@@ -71,5 +72,12 @@ public class WorkoutSessionService : IWorkoutSessionService
             .Include(s => s.Exercises)
             .ThenInclude(e => e.Sets)
             .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+    }
+
+    /// <summary>Blank/zero/negative means unknown. Canonical store is kg, 2 decimal places.</summary>
+    internal static decimal? NormalizeWeightKg(decimal? kg)
+    {
+        if (kg is null || kg.Value <= 0) return null;
+        return Math.Round(kg.Value, 2, MidpointRounding.AwayFromZero);
     }
 }

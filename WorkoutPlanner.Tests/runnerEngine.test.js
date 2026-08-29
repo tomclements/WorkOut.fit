@@ -111,6 +111,56 @@ test('normalize accepts PascalCase plan payloads', () => {
   assert.equal(ex.demoAnimUrl, '/demos/bench-press.webp');
 });
 
+test('requiresWorkingWeight is true only for loaded equipment, not bodyweight or mobility', () => {
+  assert.equal(engine.requiresWorkingWeight({
+    id: 'goblet-squat', name: 'Goblet Squat', phase: 'work', equipment: ['kettlebell']
+  }), true);
+  assert.equal(engine.requiresWorkingWeight({
+    id: 'bench-press', name: 'Bench Press', phase: 'work', equipment: ['barbell', 'bench']
+  }), true);
+  assert.equal(engine.requiresWorkingWeight({
+    id: 'cable-row', name: 'Seated Cable Row', phase: 'work', equipment: ['cable']
+  }), true);
+  assert.equal(engine.requiresWorkingWeight({
+    id: 'farmers-carry', name: "Farmer's Carry", phase: 'work', equipment: ['dumbbells'], isTimeBased: true
+  }), true);
+  assert.equal(engine.requiresWorkingWeight({
+    id: 'push-up', name: 'Push-Up', phase: 'work', equipment: ['bodyweight']
+  }), false);
+  assert.equal(engine.requiresWorkingWeight({
+    id: 'band-pull-apart', name: 'Band Pull-Apart', phase: 'work', equipment: ['bands']
+  }), false);
+  assert.equal(engine.requiresWorkingWeight({
+    id: 'plank', name: 'Plank', phase: 'work', equipment: []
+  }), false);
+  assert.equal(engine.requiresWorkingWeight({
+    id: 'goblet-squat', name: 'Goblet Squat', phase: 'warmup', equipment: ['kettlebell']
+  }), false);
+  assert.equal(engine.requiresWorkingWeight({
+    id: 'cd-breathe', name: 'Box Breathing', phase: 'cooldown', equipment: ['bodyweight']
+  }), false);
+});
+
+test('parseWorkingWeightKg treats blank as unknown, not zero', () => {
+  assert.equal(engine.parseWorkingWeightKg(''), null);
+  assert.equal(engine.parseWorkingWeightKg(null), null);
+  assert.equal(engine.parseWorkingWeightKg(0), null);
+  assert.equal(engine.parseWorkingWeightKg('  '), null);
+  assert.equal(engine.parseWorkingWeightKg(24.5), 24.5);
+  assert.equal(engine.parseWorkingWeightKg('40'), 40);
+});
+
+test('normalizeExercise keeps workingWeightKg and drops invalid load', () => {
+  const [loaded] = engine.normalizeExercises([
+    { id: 'goblet-squat', name: 'Goblet Squat', equipment: ['kettlebell'], workingWeightKg: 16 }
+  ]);
+  assert.equal(loaded.workingWeightKg, 16);
+  const [blank] = engine.normalizeExercises([
+    { id: 'bench-press', name: 'Bench Press', equipment: ['barbell'], workingWeightKg: '' }
+  ]);
+  assert.equal(blank.workingWeightKg, null);
+});
+
 test('completeSet on the last move finishes the session', () => {
   const t0 = 7_000_000;
   const state = engine.createSession(MOVES, t0);

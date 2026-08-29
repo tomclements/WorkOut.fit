@@ -78,8 +78,101 @@ public class RunnerSessionTests : IClassFixture<TestWebApplicationFactory>
         Assert.NotNull(detail);
         Assert.Single(detail!.Exercises);
         Assert.Equal(3, detail.Exercises[0].Sets.Count);
+        Assert.Null(detail.Exercises[0].WeightKg);
         Assert.Equal(2, detail.Week);
         Assert.Equal(3, detail.DayIndex);
+    }
+
+    [Fact]
+    public async Task SaveAndRetrieveSession_RoundTripsWorkingWeightKg()
+    {
+        var client = CreateAuthenticatedClient(out _);
+
+        var payload = new SaveSessionRequest
+        {
+            PlanName = "Weighted Day",
+            Week = 1,
+            DayIndex = 0,
+            StartedAt = DateTime.UtcNow.AddMinutes(-20),
+            CompletedAt = DateTime.UtcNow,
+            DurationSeconds = 1200,
+            Exercises = new List<CompletedExerciseDto>
+            {
+                new()
+                {
+                    ExerciseId = "goblet-squat",
+                    ExerciseName = "Goblet Squat",
+                    TargetSets = 3,
+                    WeightKg = 24.5m,
+                    Sets = new List<CompletedSetDto>
+                    {
+                        new() { Reps = 10, DurationSeconds = 30 },
+                        new() { Reps = 10, DurationSeconds = 30 },
+                        new() { Reps = 8, DurationSeconds = 30 }
+                    }
+                },
+                new()
+                {
+                    ExerciseId = "push-up",
+                    ExerciseName = "Push-Up",
+                    TargetSets = 2,
+                    WeightKg = null,
+                    Sets = new List<CompletedSetDto>
+                    {
+                        new() { Reps = 12, DurationSeconds = 30 }
+                    }
+                }
+            }
+        };
+
+        var saveResponse = await client.PostAsJsonAsync("/api/runner/sessions", payload);
+        saveResponse.EnsureSuccessStatusCode();
+        var saved = await saveResponse.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+        var id = int.Parse(saved!["id"].ToString()!);
+
+        var detail = await client.GetFromJsonAsync<WorkoutSession>($"/api/runner/sessions/{id}");
+        Assert.NotNull(detail);
+        Assert.Equal(2, detail!.Exercises.Count);
+
+        var squat = detail.Exercises.Single(e => e.ExerciseId == "goblet-squat");
+        Assert.Equal(24.5m, squat.WeightKg);
+        Assert.Equal(3, squat.Sets.Count);
+
+        var pushUp = detail.Exercises.Single(e => e.ExerciseId == "push-up");
+        Assert.Null(pushUp.WeightKg);
+    }
+
+    [Fact]
+    public async Task SaveSession_BlankOrZeroWeight_StoresUnknownNotZero()
+    {
+        var client = CreateAuthenticatedClient(out _);
+
+        var payload = new SaveSessionRequest
+        {
+            PlanName = "Unknown load",
+            StartedAt = DateTime.UtcNow,
+            DurationSeconds = 300,
+            Exercises = new List<CompletedExerciseDto>
+            {
+                new()
+                {
+                    ExerciseId = "bench-press",
+                    ExerciseName = "Bench Press",
+                    TargetSets = 1,
+                    WeightKg = 0,
+                    Sets = new List<CompletedSetDto> { new() { Reps = 5, DurationSeconds = 20 } }
+                }
+            }
+        };
+
+        var saveResponse = await client.PostAsJsonAsync("/api/runner/sessions", payload);
+        saveResponse.EnsureSuccessStatusCode();
+        var saved = await saveResponse.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+        var id = int.Parse(saved!["id"].ToString()!);
+
+        var detail = await client.GetFromJsonAsync<WorkoutSession>($"/api/runner/sessions/{id}");
+        Assert.NotNull(detail);
+        Assert.Null(detail!.Exercises[0].WeightKg);
     }
 
     [Fact]

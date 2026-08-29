@@ -1,4 +1,4 @@
-const CACHE_NAME = 'plan4strength-v5';
+const CACHE_NAME = 'plan4strength-v6';
 const PRECACHE = [
   '/',
   '/index.html',
@@ -7,6 +7,7 @@ const PRECACHE = [
   '/help.html',
   '/about.html',
   '/feedback.html',
+  '/privacy.html',
   '/css/tailwind-compiled.css',
   '/css/styles.css',
   '/css/workoutRunner.css',

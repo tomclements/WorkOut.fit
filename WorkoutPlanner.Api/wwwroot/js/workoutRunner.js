@@ -540,6 +540,58 @@ function checkForResumableSession() {
   }
 }
 
+// -------------------------- Working weight (kg canonical, UI follows body-weight unit) --------------------------
+
+const WEIGHT_UNIT_KEY = 'workoutWeightUnit';
+
+function getRunnerWeightUnit() {
+  try {
+    return localStorage.getItem(WEIGHT_UNIT_KEY) === 'lb' ? 'lb' : 'kg';
+  } catch {
+    return 'kg';
+  }
+}
+
+function displayWeightToKg(raw, unit) {
+  const parse = (Engine && typeof Engine.parseWorkingWeightKg === 'function')
+    ? Engine.parseWorkingWeightKg
+    : (v) => {
+        const n = parseFloat(v);
+        return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : null;
+      };
+  const n = parse(raw);
+  if (n == null) return null;
+  if ((unit || getRunnerWeightUnit()) === 'lb') {
+    return Math.round(n * 0.45359237 * 100) / 100;
+  }
+  return n;
+}
+
+function formatWorkingWeightLabel(kg) {
+  if (kg == null || !(kg > 0)) return '';
+  const unit = getRunnerWeightUnit();
+  const value = unit === 'lb' ? Math.round(kg * 2.20462 * 10) / 10 : Math.round(kg * 10) / 10;
+  const decimals = Number.isInteger(value) ? 0 : 1;
+  return `${value.toFixed(decimals)} ${unit}`;
+}
+
+function catalogEquipmentFor(ex) {
+  const cat = previewCache && ex && previewCache[ex.id];
+  if (ex && ex.equipment && ex.equipment.length) return ex.equipment;
+  return (cat && cat.equipment) || [];
+}
+
+function readPreviewWorkingWeights() {
+  const unit = getRunnerWeightUnit();
+  const byIndex = {};
+  document.querySelectorAll('[data-working-weight-index]').forEach(input => {
+    const idx = parseInt(input.getAttribute('data-working-weight-index'), 10);
+    if (!Number.isFinite(idx)) return;
+    byIndex[idx] = displayWeightToKg(input.value, unit);
+  });
+  return byIndex;
+}
+
 // -------------------------- Day preview + analyze --------------------------
 
 function previewSelectedDay() {
@@ -612,7 +664,9 @@ async function renderDayPreview() {
   const eqNames = await ensurePreviewCache().then(() => dayEquipmentNames(day));
   equip.textContent = 'Equipment: ' + eqNames.join(' · ');
 
-  const rows = (day.exercises || []).map(ex => {
+  const unit = getRunnerWeightUnit();
+  let anyWeightField = false;
+  const rows = (day.exercises || []).map((ex, i) => {
     const phase = (ex.phase || 'work').toLowerCase();
     const isWarmCool = phase === 'warmup' || phase === 'cooldown';
     const tag = isWarmCool
@@ -626,12 +680,37 @@ async function renderDayPreview() {
     } else {
       detail = `${ex.sets} sets × ${ex.repsDisplay || 'target reps'} <span class="text-gray-500">(${ex.rest}s rest)</span>`;
     }
-    return `<div class="flex items-start justify-between gap-2">
-      <span class="min-w-0">${tag} ${escapeHtmlRunner(ex.name)}</span>
-      <span class="text-gray-600 shrink-0 whitespace-nowrap">${detail}</span>
+    const cat = previewCache && previewCache[ex.id];
+    const merged = {
+      ...ex,
+      equipment: (ex.equipment && ex.equipment.length) ? ex.equipment : (cat && cat.equipment) || []
+    };
+    const showWeight = Engine && typeof Engine.requiresWorkingWeight === 'function'
+      ? Engine.requiresWorkingWeight(merged)
+      : false;
+    if (showWeight) anyWeightField = true;
+    const weightRow = showWeight
+      ? `<div class="mt-1.5 flex items-center gap-2">
+          <label class="text-xs text-gray-500" for="workingWeight-${i}">Weight</label>
+          <input id="workingWeight-${i}" type="number" inputmode="decimal" min="0" step="0.5"
+            data-working-weight-index="${i}"
+            class="w-20 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+            placeholder="—" aria-label="Working weight for ${escapeHtmlRunner(ex.name)}" />
+          <span class="text-xs text-gray-500">${escapeHtmlRunner(unit)}</span>
+        </div>`
+      : '';
+    return `<div>
+      <div class="flex items-start justify-between gap-2">
+        <span class="min-w-0">${tag} ${escapeHtmlRunner(ex.name)}</span>
+        <span class="text-gray-600 shrink-0 whitespace-nowrap">${detail}</span>
+      </div>
+      ${weightRow}
     </div>`;
   }).join('');
-  moves.innerHTML = rows || '<p class="text-sm text-gray-500">No moves in this day.</p>';
+  const hint = anyWeightField
+    ? `<p class="text-xs text-gray-500 mt-2">Working weight is optional. Blank means unknown — it will not be saved as zero.</p>`
+    : '';
+  moves.innerHTML = (rows || '<p class="text-sm text-gray-500">No moves in this day.</p>') + hint;
   if (preview) preview.classList.remove('hidden');
 }
 
@@ -945,11 +1024,13 @@ function setWorkLabel(ex) {
     const muscles = (ex.primary || []).filter(Boolean).join(', ');
     return muscles ? `Targets: ${muscles}` : (phase === 'warmup' ? 'Prep movement' : 'Recovery stretch');
   }
+  const load = formatWorkingWeightLabel(ex.workingWeightKg);
+  const loadSuffix = load ? ` · ${load}` : '';
   if (selectedDay?.sessionStyle === 'hiit' && phase === 'work') {
-    return `${ex.sets} rounds Â· ${ex.repsDisplay || workSeconds(ex) + 's'} work Â· ${restSeconds(ex)}s rest`;
+    return `${ex.sets} rounds · ${ex.repsDisplay || workSeconds(ex) + 's'} work · ${restSeconds(ex)}s rest${loadSuffix}`;
   }
   const reps = ex.repsDisplay || 'your target reps';
-  return `${ex.sets} sets Â· aim for ${reps} each set Â· ${restSeconds(ex)}s rest`;
+  return `${ex.sets} sets · aim for ${reps} each set · ${restSeconds(ex)}s rest${loadSuffix}`;
 }
 
 function exercisePhase(ex) {
@@ -991,9 +1072,15 @@ async function startWorkout() {
   if (typeof WorkoutMobility !== 'undefined') {
     WorkoutMobility.ensureDayMobility(selectedDay, currentPlan.criteria || {});
   }
+  const enteredKg = readPreviewWorkingWeights();
+  const enriched = (selectedDay.exercises || []).map((ex, i) => ({
+    ...ex,
+    equipment: catalogEquipmentFor(ex),
+    workingWeightKg: Object.prototype.hasOwnProperty.call(enteredKg, i) ? enteredKg[i] : (ex.workingWeightKg ?? null)
+  }));
   const mapped = Engine
-    ? Engine.normalizeExercises(selectedDay.exercises)
-    : selectedDay.exercises.map(ex => {
+    ? Engine.normalizeExercises(enriched)
+    : enriched.map(ex => {
         const p = (ex.phase || (ex.slot === 'warmup' || ex.slot === 'cooldown' ? ex.slot : 'work'));
         const id = ex.id || '';
         return {
@@ -1586,6 +1673,8 @@ function movesListHtml() {
     } else {
       meta = `${ex.sets} sets · ${ex.repsDisplay || 'target reps'} · ${restSeconds(ex)}s rest`;
     }
+    const load = formatWorkingWeightLabel(ex.workingWeightKg);
+    if (load) meta += ` · ${load}`;
     const tag = isWarmCool
       ? (movePhase === 'warmup' ? 'Warm-up' : 'Cool-down')
       : (isHiit ? 'HIIT' : 'Work');
@@ -1761,6 +1850,7 @@ async function saveSession(options = {}) {
       exerciseId: ex.id,
       exerciseName: ex.name,
       targetSets: ex.sets,
+      weightKg: ex.workingWeightKg == null ? null : ex.workingWeightKg,
       sets: ex.completedSets.map(s => ({
         reps: s.reps,
         durationSeconds: s.durationSeconds

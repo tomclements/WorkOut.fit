@@ -17,6 +17,8 @@ public class CompletedExerciseDto
     public string ExerciseId { get; set; } = string.Empty;
     public string ExerciseName { get; set; } = string.Empty;
     public int TargetSets { get; set; }
+    /// <summary>Working load in kilograms. Null/omitted means unknown, not zero.</summary>
+    public decimal? WeightKg { get; set; }
     public List<CompletedSetDto> Sets { get; set; } = new();
 }
 

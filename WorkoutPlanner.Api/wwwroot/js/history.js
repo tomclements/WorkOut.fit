@@ -284,7 +284,7 @@ async function showSessionDetails(index) {
       <div class="space-y-3">
         ${(s.exercises || []).map(ex => `
           <div class="border rounded-md p-3">
-            <div class="font-medium">${escapeHtml(ex.exerciseName || 'Exercise')}</div>
+            <div class="font-medium">${escapeHtml(ex.exerciseName || 'Exercise')}${ex.weightKg ? ` <span class="text-gray-500 font-normal text-sm">${escapeHtml(formatSessionWeight(ex.weightKg))}</span>` : ''}</div>
             <div class="text-sm text-gray-700 mt-1">
               ${(ex.sets || []).map((set, i) => `
                 <span class="inline-block bg-gray-100 rounded px-2 py-1 mr-2 mb-1 text-xs">
@@ -315,6 +315,14 @@ function formatDuration(seconds) {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function formatSessionWeight(kg) {
+  if (kg == null || !(Number(kg) > 0)) return '';
+  const unit = (typeof localStorage !== 'undefined' && localStorage.getItem('workoutWeightUnit') === 'lb') ? 'lb' : 'kg';
+  const value = unit === 'lb' ? Math.round(Number(kg) * 2.20462 * 10) / 10 : Math.round(Number(kg) * 10) / 10;
+  const decimals = Number.isInteger(value) ? 0 : 1;
+  return `${value.toFixed(decimals)} ${unit}`;
 }
 
 

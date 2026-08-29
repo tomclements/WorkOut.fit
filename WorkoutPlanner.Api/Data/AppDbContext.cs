@@ -75,6 +75,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
             entity.HasKey(e => e.Id);
             entity.Property(e => e.ExerciseId).HasMaxLength(100);
             entity.Property(e => e.ExerciseName).HasMaxLength(200);
+            entity.Property(e => e.WeightKg).HasPrecision(6, 2);
             entity.HasMany(e => e.Sets)
                 .WithOne()
                 .HasForeignKey(e => e.CompletedExerciseId)

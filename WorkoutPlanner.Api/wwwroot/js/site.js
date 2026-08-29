@@ -390,6 +390,7 @@
           '<span id="gAuthToggleText">Don\'t have an account?</span> ' +
           '<button type="button" id="gAuthToggle" class="text-blue-600 hover:underline font-medium ml-1">Register</button>' +
         '</p>' +
+        '<p class="mt-3 text-center text-xs text-gray-500"><a href="/privacy" class="hover:underline">Privacy policy</a></p>' +
       '</div>' +
       '<div id="gForgotPanel" class="hidden">' +
         '<form id="gForgotForm">' +

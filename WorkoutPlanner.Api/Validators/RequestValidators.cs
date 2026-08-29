@@ -92,6 +92,10 @@ public class CompletedExerciseDtoValidator : AbstractValidator<CompletedExercise
         RuleFor(x => x.ExerciseId).NotEmpty().MaximumLength(100);
         RuleFor(x => x.ExerciseName).NotEmpty().MaximumLength(200);
         RuleFor(x => x.TargetSets).GreaterThan(0);
+        RuleFor(x => x.WeightKg)
+            .InclusiveBetween(0.25m, 500m)
+            .When(x => x.WeightKg.HasValue && x.WeightKg.Value > 0)
+            .WithMessage("Working weight must be between 0.25 and 500 kg.");
     }
 }
 

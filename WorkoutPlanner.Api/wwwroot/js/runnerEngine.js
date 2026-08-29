@@ -41,6 +41,41 @@
     return p === 'warmup' || p === 'cooldown';
   }
 
+  /** Equipment that actually has a working load in kg (not bands/bodyweight/accessories). */
+  const LOADED_EQUIPMENT = {
+    barbell: true,
+    dumbbells: true,
+    kettlebell: true,
+    'ez-bar': true,
+    cable: true,
+    machines: true,
+    'medicine-ball': true
+  };
+
+  function equipmentList(ex) {
+    const raw = (ex && (ex.equipment || ex.Equipment)) || [];
+    return Array.isArray(raw) ? raw.map(e => String(e).toLowerCase()) : [];
+  }
+
+  /**
+   * True when the runner should offer a working-weight field.
+   * Bodyweight, no-equipment, bands, and warmup/cooldown (timed mobility) do not.
+   * Loaded time-based work (e.g. farmer's carry) still qualifies.
+   */
+  function requiresWorkingWeight(ex) {
+    if (!ex) return false;
+    if (isMobilityExercise(ex)) return false;
+    return equipmentList(ex).some(id => LOADED_EQUIPMENT[id]);
+  }
+
+  /** Blank/zero/invalid → null (unknown). Positive kg rounded to 2 dp. */
+  function parseWorkingWeightKg(value) {
+    if (value == null || value === '') return null;
+    const n = typeof value === 'number' ? value : parseFloat(value);
+    if (!Number.isFinite(n) || n <= 0) return null;
+    return Math.round(n * 100) / 100;
+  }
+
   function normalizeExercise(ex) {
     if (!ex || typeof ex !== 'object') return null;
     const id = ex.id || ex.Id || '';
@@ -55,9 +90,11 @@
       rest: restSeconds(ex),
       phase: exercisePhase(ex),
       primary: ex.primary || ex.Primary || ex.targets || [],
+      equipment: ex.equipment || ex.Equipment || [],
       demoAnimUrl: ex.demoAnimUrl || (id ? `/demos/${id}.webp` : null),
       imageUrl: ex.imageUrl || ex.ImageUrl || '',
       demoUrl: ex.demoUrl || ex.DemoUrl || '',
+      workingWeightKg: parseWorkingWeightKg(ex.workingWeightKg ?? ex.weightKg ?? ex.WeightKg),
       completedSets: Array.isArray(ex.completedSets) ? ex.completedSets.slice() : []
     };
   }
@@ -269,6 +306,8 @@
     restSeconds,
     exercisePhase,
     isMobilityExercise,
+    requiresWorkingWeight,
+    parseWorkingWeightKg,
     normalizeExercise,
     normalizeExercises,
     createSession,
