@@ -916,4 +916,107 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
         Assert.NotNull(result);
         Assert.Empty(result!.RehabProgressions);
     }
+
+    [Fact]
+    public async Task GeneratePlan_ShoulderRehab_NonAllowlistedExercise_IsExcluded()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 5,
+            SessionMinutes = 40,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "barbell", "bands", "cable" },
+            Restrictions = new List<string> { "shoulder" },
+            Rehab = new List<string> { "shoulder" },
+            Goal = "full-body",
+            Level = "intermediate",
+            Seed = 42
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var exerciseIds = result!.Plan
+            .SelectMany(w => w.Days)
+            .Where(d => d.Type == "workout")
+            .SelectMany(d => d.Exercises)
+            .Select(e => e.Id)
+            .ToList();
+
+        Assert.DoesNotContain(exerciseIds, id =>
+            id.Equals("lying-rear-delt-raise", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(exerciseIds, id =>
+            id.Equals("reverse-flyes", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(exerciseIds, id =>
+            id.Equals("face-pull", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task GeneratePlan_ShoulderRehab_AllowlistedExercise_CanBeIncluded()
+    {
+        for (int seed = 1; seed <= 30; seed++)
+        {
+            var request = new PlanRequest
+            {
+                Weeks = 1,
+                DaysPerWeek = 5,
+                SessionMinutes = 40,
+                Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "barbell", "bands", "cable" },
+                Restrictions = new List<string> { "shoulder" },
+                Rehab = new List<string> { "shoulder" },
+                Goal = "full-body",
+                Level = "intermediate",
+                Seed = seed
+            };
+
+            var response = await _client.PostAsJsonAsync("/api/plan", request);
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+            Assert.NotNull(result);
+
+            var exerciseIds = result!.Plan
+                .SelectMany(w => w.Days)
+                .Where(d => d.Type == "workout")
+                .SelectMany(d => d.Exercises)
+                .Select(e => e.Id)
+                .ToList();
+
+            if (exerciseIds.Any(id => id.Equals("band-pull-apart", StringComparison.OrdinalIgnoreCase) ||
+                                       id.Equals("external-rotation", StringComparison.OrdinalIgnoreCase) ||
+                                       id.Equals("external-rotation-with-band", StringComparison.OrdinalIgnoreCase)))
+                return;
+        }
+
+        Assert.Fail("Expected at least one allowlisted rehab exercise across seeds");
+    }
+
+    [Fact]
+    public async Task GeneratePlan_NoRestrictionsHealthyUser_NoExtraExclusions()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 3,
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "bands" },
+            Split = "full-body",
+            Goal = "hypertrophy",
+            Level = "beginner",
+            Seed = 5
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var workouts = result!.Plan
+            .SelectMany(w => w.Days)
+            .Where(d => d.Type == "workout")
+            .ToList();
+        Assert.NotEmpty(workouts);
+        Assert.All(workouts, d => Assert.NotEmpty(d.Exercises));
+    }
 }

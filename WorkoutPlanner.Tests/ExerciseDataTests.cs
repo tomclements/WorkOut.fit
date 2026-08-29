@@ -246,4 +246,89 @@ public class ExerciseDataTests
         Assert.All(exercises.Where(e => !string.IsNullOrWhiteSpace(e.ImageUrl)), ex =>
             Assert.StartsWith("http", ex.ImageUrl!));
     }
+
+    [Fact]
+    public void ComputeAvoidance_RotatorCuffExercise_AlwaysTagsShoulder()
+    {
+        var exercises = LoadExercises();
+        var rotatorCuff = exercises.Where(e =>
+            e.Mechanics?.Rehab == "rotator-cuff").ToList();
+        Assert.NotEmpty(rotatorCuff);
+        Assert.All(rotatorCuff, ex =>
+        {
+            var avoid = InjuryRules.ComputeAvoidance(ex);
+            Assert.Contains("shoulder", avoid);
+        });
+    }
+
+    [Fact]
+    public void ComputeAvoidance_HealthyExercise_NoExtraExclusions()
+    {
+        var exercises = LoadExercises();
+        var dbCurl = exercises.FirstOrDefault(e =>
+            e.Id.Equals("db-curl", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(dbCurl);
+        var avoid = InjuryRules.ComputeAvoidance(dbCurl!);
+        Assert.DoesNotContain("shoulder", avoid);
+    }
+
+    [Fact]
+    public void AllowlistedExercise_ForRehab_ShouldNotBeExcluded()
+    {
+        var exercises = LoadExercises();
+        var bandPullApart = exercises.FirstOrDefault(e =>
+            e.Id.Equals("band-pull-apart", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(bandPullApart);
+        var restrictions = new List<string> { "shoulder" };
+        var rehab = new List<string> { "shoulder" };
+        var avoid = InjuryRules.ComputeAvoidance(bandPullApart!);
+        Assert.Contains("shoulder", avoid);
+        // band-pull-apart is on the server allowlist for shoulder → not excluded
+        var isExcluded = avoid.Any(a =>
+            restrictions.Contains(a, StringComparer.OrdinalIgnoreCase) &&
+            !IsAllowlistedFor(a, bandPullApart!.Id, rehab));
+        Assert.False(isExcluded, "band-pull-apart should be allowlisted for shoulder rehab");
+    }
+
+    [Fact]
+    public void NonAllowlistedExercise_ForRehab_ShouldBeExcluded()
+    {
+        var exercises = LoadExercises();
+        var lyingRearDelt = exercises.FirstOrDefault(e =>
+            e.Id.Equals("lying-rear-delt-raise", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(lyingRearDelt);
+        var avoid = InjuryRules.ComputeAvoidance(lyingRearDelt!);
+        Assert.Contains("shoulder", avoid);
+        var restrictions = new List<string> { "shoulder" };
+        var rehab = new List<string> { "shoulder" };
+        var isExcluded = avoid.Any(a =>
+            restrictions.Contains(a, StringComparer.OrdinalIgnoreCase) &&
+            !IsAllowlistedFor(a, lyingRearDelt!.Id, rehab));
+        Assert.True(isExcluded, "lying-rear-delt-raise should be excluded for shoulder rehab");
+    }
+
+    [Fact]
+    public void FacePull_IsNotAllowlisted_ForShoulderRehab()
+    {
+        var exercises = LoadExercises();
+        var facePull = exercises.FirstOrDefault(e =>
+            e.Id.Equals("face-pull", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(facePull);
+        var avoid = InjuryRules.ComputeAvoidance(facePull!);
+        Assert.Contains("shoulder", avoid);
+        var restrictions = new List<string> { "shoulder" };
+        var rehab = new List<string> { "shoulder" };
+        var isExcluded = avoid.Any(a =>
+            restrictions.Contains(a, StringComparer.OrdinalIgnoreCase) &&
+            !IsAllowlistedFor(a, facePull!.Id, rehab));
+        Assert.True(isExcluded, "face-pull should be excluded for shoulder rehab");
+    }
+
+    private static bool IsAllowlistedFor(string injuryArea, string exerciseId, List<string> rehab)
+    {
+        if (rehab == null || rehab.Count == 0) return false;
+        if (!rehab.Contains(injuryArea, StringComparer.OrdinalIgnoreCase)) return false;
+        if (!InjuryRules.AllowlistedExerciseIds.TryGetValue(injuryArea, out var allowed)) return false;
+        return allowed.Contains(exerciseId);
+    }
 }

@@ -9353,7 +9353,9 @@
     "restSec": 45,
     "demoUrl": "https://exrx.net/WeightExercises/DeltoidPosterior/CBFacePull",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg",
-    "avoidFor": [],
+    "avoidFor": [
+      "shoulder"
+    ],
     "force": "pull",
     "mechanic": "compound",
     "mechanics": {

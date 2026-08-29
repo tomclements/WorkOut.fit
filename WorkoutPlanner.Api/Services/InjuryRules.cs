@@ -6,9 +6,8 @@ namespace WorkoutPlanner.Api.Services;
 /// Deterministic injury-tag engine driven by each exercise's anatomical
 /// <see cref="ExerciseMechanics"/> plus its primary muscle list. This is the single
 /// source of truth for <c>avoidFor</c> at catalog/DB seed time.
-/// A muscle-based pass runs unconditionally at the end so that exercises whose
-/// primary muscles target an injured area are always tagged — even when the
-/// mechanics-based check suppresses the tag for rehabilitative intent.
+/// Mechanics and muscle-based passes always run fully; rehabilitation is handled
+/// as a server-side allowlist during plan generation, not as tag suppression.
 /// </summary>
 public static class InjuryRules
 {
@@ -18,11 +17,10 @@ public static class InjuryRules
 
     /// <summary>
     /// Maps each injury area to the primary muscles that, when worked, stress that area.
-    /// Runs unconditionally so rehab intent never suppresses a genuine muscle→joint match.
     /// </summary>
     private static readonly Dictionary<string, string[]> MuscleToInjury = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["shoulder"] = new[] { "shoulders", "traps" },
+        ["shoulder"] = new[] { "shoulders", "rear-shoulders", "traps" },
         ["elbow"]    = new[] { "biceps", "triceps", "forearms" },
         ["wrist"]    = new[] { "forearms" },
         ["knee"]     = LegMuscles,
@@ -38,6 +36,21 @@ public static class InjuryRules
     {
         ["shoulder"] = new[] { "rotator-cuff" },
         ["knee"]     = new[] { "patellar" }
+    };
+
+    /// <summary>
+    /// Server-side allowlist of exercise IDs that are permitted for a given injury area
+    /// despite appearing in <c>avoidFor</c>. Only rehab-appropriate exercises should
+    /// be listed here; the list is conservative and will grow over time.
+    /// </summary>
+    public static readonly Dictionary<string, HashSet<string>> AllowlistedExerciseIds = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["shoulder"] = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "band-pull-apart",
+            "external-rotation",
+            "external-rotation-with-band"
+        }
     };
 
     /// <summary>
@@ -66,19 +79,14 @@ public static class InjuryRules
         var secondary = ex.Secondary ?? new List<string>();
         var allMuscles = primary.Concat(secondary).ToList();
 
-        bool rehabilitative =
-            !string.IsNullOrWhiteSpace(m?.Rehab) &&
-            (m!.Rehab.Equals("rotator-cuff", StringComparison.OrdinalIgnoreCase) ||
-             m.Rehab.Equals("patellar", StringComparison.OrdinalIgnoreCase));
-
-        Shoulder(avoid, m, primary, rehabilitative);
+        Shoulder(avoid, m, primary);
         Elbow(avoid, m, primary);
         Wrist(avoid, m);
         Knee(avoid, m, primary);
         LowerBack(avoid, m, primary);
         Neck(avoid, m, primary);
 
-        // Muscle-based safety net — always runs, never suppressed by rehab intent.
+        // Muscle-based safety net — always runs.
         // If an exercise's primary or secondary muscles target an injured area, tag it.
         foreach (var kvp in MuscleToInjury)
         {
@@ -90,10 +98,8 @@ public static class InjuryRules
     }
 
     private static void Shoulder(HashSet<string> avoid, ExerciseMechanics? m,
-        List<string> primary, bool rehabilitative)
+        List<string> primary)
     {
-        if (rehabilitative) return;
-
         if (m is null)
         {
             if (primary.Contains("shoulders", StringComparer.OrdinalIgnoreCase)) avoid.Add("shoulder");
