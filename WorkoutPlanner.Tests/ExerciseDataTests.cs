@@ -1,11 +1,24 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
+using WorkoutPlanner.Api.Data;
 using WorkoutPlanner.Api.Models;
 using WorkoutPlanner.Api.Services;
 
 namespace WorkoutPlanner.Tests;
 
-public class ExerciseDataTests
+public class ExerciseDataTests : IClassFixture<TestWebApplicationFactory>
 {
+    private readonly TestWebApplicationFactory _factory;
+
+    public ExerciseDataTests(TestWebApplicationFactory factory)
+    {
+        _factory = factory;
+    }
     [Fact]
     public void ExercisesJson_LoadsSuccessfully()
     {
@@ -330,5 +343,55 @@ public class ExerciseDataTests
         if (!rehab.Contains(injuryArea, StringComparer.OrdinalIgnoreCase)) return false;
         if (!InjuryRules.AllowlistedExerciseIds.TryGetValue(injuryArea, out var allowed)) return false;
         return allowed.Contains(exerciseId);
+    }
+
+    [Fact]
+    public async Task Seed_IsIdempotent_RunningTwiceDoesNotDuplicateExercisesOrEquipment()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        // First seed runs during startup via DbInitializer.InitializeAsync.
+        var exerciseCount1 = await db.Exercises.CountAsync();
+        var equipmentCount1 = await db.EquipmentOptions.CountAsync();
+        Assert.True(exerciseCount1 > 0, "Seed should have inserted exercises on first startup");
+        Assert.True(equipmentCount1 > 0, "Seed should have inserted equipment on first startup");
+
+        // Run seed a second time on the same database.
+        await DbInitializer.SeedDataAsync(scope.ServiceProvider);
+
+        var exerciseCount2 = await db.Exercises.CountAsync();
+        var equipmentCount2 = await db.EquipmentOptions.CountAsync();
+
+        Assert.Equal(exerciseCount1, exerciseCount2);
+        Assert.Equal(equipmentCount1, equipmentCount2);
+    }
+
+    [Fact]
+    public async Task InitializeAsync_SqliteInProduction_ThrowsBeforeSeed()
+    {
+        await using var connection = new SqliteConnection("DataSource=:memory:");
+        await connection.OpenAsync();
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IWebHostEnvironment>(new StubWebHostEnvironment
+        {
+            EnvironmentName = Environments.Production
+        });
+        services.AddDbContext<AppDbContext>(options => options.UseSqlite(connection));
+        await using var provider = services.BuildServiceProvider();
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => DbInitializer.InitializeAsync(provider));
+    }
+
+    private sealed class StubWebHostEnvironment : IWebHostEnvironment
+    {
+        public string ApplicationName { get; set; } = "WorkoutPlanner.Tests";
+        public string EnvironmentName { get; set; } = Environments.Production;
+        public string ContentRootPath { get; set; } = "";
+        public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
+        public string WebRootPath { get; set; } = "";
+        public IFileProvider WebRootFileProvider { get; set; } = new NullFileProvider();
     }
 }
