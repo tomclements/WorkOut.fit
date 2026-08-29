@@ -189,9 +189,10 @@
       startTime: saved.startTime || t,
       phaseStartTime: saved.phaseStartTime || t,
       phaseDurationSeconds: saved.phaseDurationSeconds || 30,
-      isPaused: false,
-      autoPaused: false,
-      pauseAccumulatedMs: 0,
+      isPaused: !!saved.isPaused,
+      autoPaused: !!saved.autoPaused,
+      pauseAccumulatedMs: saved.pauseAccumulatedMs || 0,
+      pauseStartedAt: saved.pauseStartedAt || 0,
       ignoreVisibilityUntil: t + 800,
       sessionSaved: false,
       planName: saved.planName,
@@ -213,6 +214,8 @@
 
     if (remainingSeconds(state, t) <= 0) {
       state.phaseStartTime = t;
+      state.pauseAccumulatedMs = 0;
+      if (state.isPaused) state.pauseStartedAt = t;
     }
     return state;
   }
@@ -223,13 +226,16 @@
     if (!state || !ex) return { ok: false, reason: 'no-exercise' };
     state.phase = 'work';
     state.phaseDurationSeconds = workSeconds(ex);
-    state.isPaused = false;
-    state.autoPaused = false;
     if (!resuming) {
       state.phaseStartTime = t;
       state.pauseAccumulatedMs = 0;
+      state.isPaused = false;
+      state.autoPaused = false;
+      state.pauseStartedAt = 0;
     } else if (remainingSeconds(state, t) <= 0) {
       state.phaseStartTime = t;
+      state.pauseAccumulatedMs = 0;
+      if (state.isPaused) state.pauseStartedAt = t;
     }
     return { ok: true, exercise: ex, remaining: remainingSeconds(state, t) };
   }
@@ -296,7 +302,13 @@
       sessionExercises: state.sessionExercises,
       planName: state.planName,
       musicStyle: state.musicStyle,
-      musicWasPlaying: state.musicWasPlaying
+      musicWasPlaying: state.musicWasPlaying,
+      isPaused: !!state.isPaused,
+      autoPaused: false,
+      pauseAccumulatedMs: state.pauseAccumulatedMs || 0,
+      pauseStartedAt: state.isPaused ? (state.pauseStartedAt || 0) : 0,
+      selectedWeek: state.selectedWeek,
+      selectedDayIndex: state.selectedDayIndex
     };
   }
 

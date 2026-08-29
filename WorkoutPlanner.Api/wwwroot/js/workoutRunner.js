@@ -23,6 +23,7 @@ let currentSavedPlanName = null;
 let isPaused = false;
 let autoPaused = false;
 let pauseStartTime = 0;
+let pauseAccumulatedMs = 0;
 let ignoreVisibilityUntil = 0;
 let phaseBusy = false;
 let Engine = window.RunnerEngine || null;
@@ -143,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
   wire(byId('restResumeWorkoutBtn'), 'click', resumeWorkout);
   wire(byId('volumeSlider'), 'input', onVolumeChange);
   wire(window, 'beforeunload', handleBeforeUnload);
+  wire(window, 'pagehide', persistSessionSnapshot);
 
   // Global auth: update local currentUser when auth state changes
   wire(window, 'auth-changed', (e) => {
@@ -535,9 +537,19 @@ async function defaultToNextWorkoutDay() {
 
 function checkForResumableSession() {
   const saved = localStorage.getItem('workoutSession');
-  if (saved) {
-    resumeBanner.classList.remove('hidden');
+  if (!saved) return;
+  let raw;
+  try { raw = JSON.parse(saved); } catch {
+    if (resumeBanner) resumeBanner.classList.remove('hidden');
+    return;
   }
+  const inProgress = (raw.phase === 'work' || raw.phase === 'rest')
+    && Array.isArray(raw.sessionExercises) && raw.sessionExercises.length;
+  if (inProgress) {
+    resumeSession();
+    return;
+  }
+  if (resumeBanner) resumeBanner.classList.remove('hidden');
 }
 
 // -------------------------- Working weight (kg canonical, UI follows body-weight unit) --------------------------
@@ -883,8 +895,23 @@ function closeAnalyzeModal() {
   if (modal) modal.classList.add('hidden');
 }
 
+function clockSnapshot() {
+  return {
+    phaseStartTime,
+    phaseDurationSeconds,
+    isPaused,
+    pauseStartedAt: pauseStartTime,
+    pauseAccumulatedMs
+  };
+}
+
+function persistSessionSnapshot() {
+  saveSessionState();
+}
+
 function saveSessionState() {
   if (phase !== 'work' && phase !== 'rest') return;
+  const userPaused = isPaused && !autoPaused;
   const state = {
     phase,
     currentExerciseIndex,
@@ -899,9 +926,13 @@ function saveSessionState() {
       ? `${currentPlan.criteria.weeks}-week ${currentPlan.criteria.goal} plan`
       : 'Plan4Strength',
     musicStyle: currentMusicStyle(),
-    musicWasPlaying: !!musicEngine?.isPlaying
+    musicWasPlaying: !!musicEngine?.isPlaying,
+    isPaused: userPaused,
+    autoPaused: false,
+    pauseAccumulatedMs: pauseAccumulatedMs || 0,
+    pauseStartedAt: userPaused ? (pauseStartTime || 0) : 0
   };
-  localStorage.setItem('workoutSession', JSON.stringify(state));
+  try { localStorage.setItem('workoutSession', JSON.stringify(state)); } catch { /* ignore */ }
 }
 
 function clearSessionState() {
@@ -925,6 +956,7 @@ function applyEngineState(state) {
   isPaused = !!state.isPaused;
   autoPaused = !!state.autoPaused;
   pauseStartTime = state.pauseStartedAt || 0;
+  pauseAccumulatedMs = state.pauseAccumulatedMs || 0;
   ignoreVisibilityUntil = state.ignoreVisibilityUntil || (Date.now() + 800);
 }
 
@@ -947,15 +979,25 @@ async function resumeSession() {
       currentSetIndex = raw.currentSetIndex || 0;
       phase = raw.phase === 'rest' ? 'rest' : 'work';
       startTime = raw.startTime || Date.now();
-      phaseStartTime = Date.now();
       phaseDurationSeconds = raw.phaseDurationSeconds || 30;
+      isPaused = !!raw.isPaused;
+      autoPaused = false;
+      pauseStartTime = raw.pauseStartedAt || 0;
+      pauseAccumulatedMs = raw.pauseAccumulatedMs || 0;
+      const savedStart = raw.phaseStartTime;
+      phaseStartTime = savedStart || Date.now();
+      const tNow = (isPaused && pauseStartTime) ? pauseStartTime : Date.now();
+      const remain = Math.max(0, phaseDurationSeconds - Math.floor(Math.max(0, tNow - phaseStartTime - pauseAccumulatedMs) / 1000));
+      if (!savedStart || remain <= 0) {
+        phaseStartTime = Date.now();
+        pauseAccumulatedMs = 0;
+        if (isPaused) pauseStartTime = Date.now();
+      }
       sessionPlanName = raw.planName || 'Plan4Strength';
     }
     selectedWeek = raw.selectedWeek ?? null;
     selectedDayIndex = raw.selectedDayIndex ?? null;
     sessionSaved = false;
-    isPaused = false;
-    autoPaused = false;
     ignoreVisibilityUntil = Date.now() + 800;
 
     if (!currentExercise()) {
@@ -980,7 +1022,7 @@ async function resumeSession() {
     }
 
     if (resumeBanner) resumeBanner.classList.add('hidden');
-    clearSessionState();
+    saveSessionState();
 
     if (phase === 'rest') {
       showScreen(restScreen);
@@ -992,17 +1034,17 @@ async function resumeSession() {
         startDemoFlip(nextDemoEl);
       }
       const remain = Engine
-        ? Engine.remainingSeconds({ phaseStartTime, phaseDurationSeconds, isPaused, pauseStartedAt: pauseStartTime }, Date.now())
+        ? Engine.remainingSeconds(clockSnapshot(), Date.now())
         : Math.max(0, phaseDurationSeconds - Math.floor((Date.now() - phaseStartTime) / 1000));
       if (restTimerEl) restTimerEl.textContent = formatTime(remain);
       startTimer();
+      updatePauseUI();
     } else {
       showScreen(activeScreen);
       enterWork(true);
     }
   } catch {
-    clearSessionState();
-    if (resumeBanner) resumeBanner.classList.add('hidden');
+    if (resumeBanner) resumeBanner.classList.remove('hidden');
   }
 }
 
@@ -1148,6 +1190,7 @@ function releaseWakeLock() {
 }
 
 function handleBeforeUnload(e) {
+  persistSessionSnapshot();
   if (phase === 'work' || phase === 'rest') {
     e.preventDefault();
     e.returnValue = '';
@@ -1163,6 +1206,7 @@ function pauseWorkout(auto = false) {
   stopSpeech();
   if (musicEngine && musicEngine.isPlaying) musicEngine.setVolume(0.05);
   updatePauseUI();
+  saveSessionState();
 }
 
 function resumeWorkout() {
@@ -1183,6 +1227,7 @@ function resumeWorkout() {
   }
   startTimer();
   updatePauseUI();
+  saveSessionState();
 }
 
 function updatePauseUI() {
@@ -1205,6 +1250,7 @@ function onVolumeChange(e) {
 async function handleVisibilityChange() {
   if (Date.now() < ignoreVisibilityUntil) return;
   if (document.visibilityState === 'hidden') {
+    persistSessionSnapshot();
     if (!isPaused && phase !== 'setup' && phase !== 'finish') {
       pauseWorkout(true);
     }
@@ -1437,7 +1483,7 @@ function enterWork(resuming = false) {
   }
 
   if (Engine) {
-    const snap = Engine.beginWork({
+    const snapshot = {
       sessionExercises,
       currentExerciseIndex,
       currentSetIndex,
@@ -1447,26 +1493,28 @@ function enterWork(resuming = false) {
       phaseDurationSeconds,
       isPaused,
       autoPaused,
-      pauseStartedAt: pauseStartTime
-    }, Date.now(), resuming);
+      pauseStartedAt: pauseStartTime,
+      pauseAccumulatedMs,
+      ignoreVisibilityUntil
+    };
+    const snap = Engine.beginWork(snapshot, Date.now(), resuming);
     if (!snap.ok) {
       showLoadError('No exercise to run.');
       showScreen(setupScreen);
       return;
     }
+    applyEngineState(snapshot);
     phase = 'work';
     phaseDurationSeconds = Engine.workSeconds(ex);
-    isPaused = false;
-    autoPaused = false;
-    if (!resuming || snap.remaining === Engine.workSeconds(ex)) {
-      phaseStartTime = Date.now();
-    }
   } else {
     phase = 'work';
     phaseDurationSeconds = workSeconds(ex);
-    if (!resuming) phaseStartTime = Date.now();
-    isPaused = false;
-    autoPaused = false;
+    if (!resuming) {
+      phaseStartTime = Date.now();
+      isPaused = false;
+      autoPaused = false;
+      pauseAccumulatedMs = 0;
+    }
   }
 
   setWorkChromeMode();
@@ -1477,10 +1525,11 @@ function enterWork(resuming = false) {
     announcePhase('work');
   } else {
     const remain = Engine
-      ? Engine.remainingSeconds({ phaseStartTime, phaseDurationSeconds, isPaused, pauseStartedAt: pauseStartTime }, Date.now())
+      ? Engine.remainingSeconds(clockSnapshot(), Date.now())
       : Math.max(0, phaseDurationSeconds - Math.floor((Date.now() - phaseStartTime) / 1000));
     if (remain <= 0) {
       phaseStartTime = Date.now();
+      pauseAccumulatedMs = 0;
     }
     elapsedPhaseSeconds = Math.max(0, phaseDurationSeconds - Math.max(0, remain <= 0 ? phaseDurationSeconds : remain));
   }
@@ -1488,13 +1537,14 @@ function enterWork(resuming = false) {
   fillExerciseHeader(ex);
 
   const remaining = Engine
-    ? Engine.remainingSeconds({ phaseStartTime, phaseDurationSeconds, isPaused, pauseStartedAt: pauseStartTime }, Date.now())
+    ? Engine.remainingSeconds(clockSnapshot(), Date.now())
     : Math.max(0, phaseDurationSeconds - elapsedPhaseSeconds);
   if (timerDisplayEl) timerDisplayEl.textContent = formatTime(remaining);
   updatePhaseProgressBar(workProgressBar, remaining, phaseDurationSeconds);
 
   updateProgress();
   startTimer();
+  updatePauseUI();
   saveSessionState();
 }
 
@@ -1511,7 +1561,7 @@ function updatePhaseProgressBar(bar, remaining, total) {
 
 function tick() {
   if (isPaused || phaseBusy) return;
-  const snap = { phaseStartTime, phaseDurationSeconds, isPaused, pauseStartedAt: pauseStartTime };
+  const snap = clockSnapshot();
   const remaining = Engine
     ? Engine.remainingSeconds(snap, Date.now())
     : Math.max(0, phaseDurationSeconds - Math.floor((Date.now() - phaseStartTime) / 1000));

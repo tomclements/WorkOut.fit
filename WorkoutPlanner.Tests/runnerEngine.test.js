@@ -172,3 +172,44 @@ test('completeSet on the last move finishes the session', () => {
   assert.equal(last.action, 'finish');
   assert.equal(state.phase, 'finish');
 });
+
+test('mid-interval restore: 10s into a 30s work keeps remaining and exercise/set', () => {
+  const t0 = 8_000_000;
+  const saved = {
+    phase: 'work',
+    currentExerciseIndex: 1,
+    currentSetIndex: 0,
+    startTime: t0,
+    phaseStartTime: t0,
+    phaseDurationSeconds: 30,
+    sessionExercises: MOVES
+  };
+  const t1 = t0 + 10_000;
+  const state = engine.restoreSession(saved, t1);
+  assert.ok(state);
+  assert.equal(engine.currentExercise(state).name, 'Goblet Squat');
+  assert.equal(state.currentExerciseIndex, 1);
+  assert.equal(state.currentSetIndex, 0);
+  assert.equal(state.phase, 'work');
+  assert.equal(engine.remainingSeconds(state, t1), 20);
+});
+
+test('serialize round-trip keeps paused remaining', () => {
+  const t0 = 9_000_000;
+  const state = engine.createSession(MOVES, t0);
+  // Arm Circles is 20s work; pause when 8s remain
+  engine.pause(state, t0 + 12_000, false);
+  assert.equal(state.isPaused, true);
+  assert.equal(engine.remainingSeconds(state, t0 + 12_000), 8);
+  const saved = engine.serialize(state);
+  assert.equal(saved.isPaused, true);
+  assert.ok(saved.pauseStartedAt);
+  assert.equal(saved.phase, 'work');
+  assert.equal(saved.currentExerciseIndex, 0);
+  const later = t0 + 60_000;
+  const restored = engine.restoreSession(saved, later);
+  assert.ok(restored);
+  assert.equal(restored.isPaused, true);
+  assert.equal(engine.currentExercise(restored).name, 'Arm Circles');
+  assert.equal(engine.remainingSeconds(restored, later), 8);
+});
