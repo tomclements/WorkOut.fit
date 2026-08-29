@@ -58,7 +58,7 @@ public static class AuthEndpoints
             return Results.Ok(new { email = user.Identity.Name, roles });
         }).RequireAuthorization();
 
-        app.MapPost("/api/auth/forgot-password", async (ForgotPasswordRequest req, HttpRequest request, UserManager<IdentityUser> userManager, IEmailService emailService) =>
+        app.MapPost("/api/auth/forgot-password", async (ForgotPasswordRequest req, HttpRequest request, UserManager<IdentityUser> userManager, IEmailService emailService, ILoggerFactory loggerFactory) =>
         {
             var user = await userManager.FindByEmailAsync(req.Email);
             if (user == null)
@@ -77,14 +77,21 @@ public static class AuthEndpoints
 <p><a href=""{absoluteLink}"">{absoluteLink}</a></p>
 <p>If you didn't request this, you can ignore this email.</p>";
 
-            var sent = await emailService.SendEmailAsync(req.Email, "Reset your Plan4Strength password", body);
-            if (sent)
+            var logger = loggerFactory.CreateLogger("WorkoutPlanner.Api.Endpoints.AuthEndpoints");
+            try
             {
-                return Results.Ok(new { message = "If that email is registered, a reset link has been sent." });
+                var sent = await emailService.SendEmailAsync(req.Email, "Reset your Plan4Strength password", body);
+                if (!sent)
+                {
+                    logger.LogWarning("Password reset email send returned false.");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Password reset email send failed with {ExceptionType}: {ExceptionMessage}", ex.GetType().Name, ex.Message);
             }
 
-            // Fallback when email is not configured: return the link directly so the user can still reset.
-            return Results.Ok(new { resetLink = callbackPath, message = "Email is not configured. Use this reset link." });
+            return Results.Ok(new { message = "If that email is registered, a reset link has been sent." });
         }).AllowAnonymous().WithValidation<ForgotPasswordRequest>().RequireRateLimiting("auth");
 
         app.MapPost("/api/auth/reset-password", async (ResetPasswordRequest req, UserManager<IdentityUser> userManager) =>
