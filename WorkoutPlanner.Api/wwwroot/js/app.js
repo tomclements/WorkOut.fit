@@ -141,10 +141,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('input[type=range]').forEach(input => {
     input.addEventListener('input', updateRangeLabel);
   });
-  const daysPerWeekEl = document.getElementById('daysPerWeek');
-  if (daysPerWeekEl) daysPerWeekEl.addEventListener('input', syncDaySelectorFromSlider);
   document.querySelectorAll('input[name="workoutDay"]').forEach(cb => {
-    cb.addEventListener('change', syncSliderFromDaySelector);
+    cb.addEventListener('change', updateDaysLabel);
   });
   renderPrograms();
   const splitEl = document.getElementById('split');
@@ -215,27 +213,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function updateRangeLabel(e) {
   const input = e.target;
-  const label = input.id === 'daysPerWeek' ? document.getElementById('daysLabel') : document.getElementById('minutesLabel');
+  const label = document.getElementById('minutesLabel');
   if (label) label.textContent = input.value;
 }
 
-function syncDaySelectorFromSlider() {
-  const daysPerWeekEl = document.getElementById('daysPerWeek');
-  if (!daysPerWeekEl) return;
-  const count = parseInt(daysPerWeekEl.value, 10);
-  const checkboxes = document.querySelectorAll('input[name="workoutDay"]');
-  checkboxes.forEach((cb, idx) => {
-    cb.checked = idx < count;
-  });
-  updateRangeLabel({ target: daysPerWeekEl });
+function updateDaysLabel() {
+  const checked = document.querySelectorAll('input[name="workoutDay"]:checked').length;
+  const label = document.getElementById('daysLabel');
+  if (label) label.textContent = checked;
 }
 
-function syncSliderFromDaySelector() {
-  const checked = document.querySelectorAll('input[name="workoutDay"]:checked').length;
-  const slider = document.getElementById('daysPerWeek');
-  if (!slider) return;
-  slider.value = checked;
-  updateRangeLabel({ target: slider });
+function setWorkoutDaysFromCount(count) {
+  document.querySelectorAll('input[name="workoutDay"]').forEach((cb, idx) => {
+    cb.checked = idx < count;
+  });
+  updateDaysLabel();
 }
 
 const SPLIT_HINTS = {
@@ -260,11 +252,9 @@ function onSplitChange(options = {}) {
   if (options.skipBroNudge) return;
 
   if (split === 'bro-split') {
-    const daysSlider = document.getElementById('daysPerWeek');
-    const days = parseInt(daysSlider.value, 10);
+    const days = document.querySelectorAll('input[name="workoutDay"]:checked').length;
     if (days < 4) {
-      daysSlider.value = 5;
-      syncDaySelectorFromSlider();
+      setWorkoutDaysFromCount(5);
     }
     const goal = document.getElementById('goal');
     if (goal && goal.value !== 'hypertrophy' && goal.value !== 'strength') {
@@ -297,7 +287,6 @@ function applyPlanDefaultsToForm(options = {}) {
   setSelectValue('goal', p.defaultGoal);
   setSelectValue('split', p.defaultSplit);
   setSelectValue('progression', p.defaultProgression);
-  setRangeValue('daysPerWeek', p.defaultDaysPerWeek, 'daysLabel');
   setRangeValue('sessionMinutes', p.defaultSessionMinutes, 'minutesLabel');
 
   const days = Array.isArray(p.defaultWorkoutDays) && p.defaultWorkoutDays.length
@@ -307,10 +296,10 @@ function applyPlanDefaultsToForm(options = {}) {
     document.querySelectorAll('input[name="workoutDay"]').forEach(cb => {
       cb.checked = days.map(Number).includes(parseInt(cb.value, 10));
     });
-    syncSliderFromDaySelector();
   } else {
-    syncDaySelectorFromSlider();
+    setWorkoutDaysFromCount(p.defaultDaysPerWeek || 5);
   }
+  updateDaysLabel();
 
   const warm = document.getElementById('includeWarmup');
   const cool = document.getElementById('includeCooldown');
@@ -452,9 +441,7 @@ function getCriteria(options = {}) {
 
   const criteria = {
     weeks: parseInt(document.getElementById('weeks').value, 10),
-    daysPerWeek: workoutDays.length > 0
-      ? workoutDays.length
-      : parseInt(document.getElementById('daysPerWeek').value, 10),
+    daysPerWeek: workoutDays.length,
     workoutDays,
     sessionMinutes: parseInt(document.getElementById('sessionMinutes').value, 10),
     equipment,
@@ -606,8 +593,7 @@ function applyProgram(p, opts) {
   setSelectValue('progression', p.progression);
   setSelectValue('mixMode', p.mixMode);
   setRangeValue('sessionMinutes', p.sessionMinutes, 'minutesLabel');
-  setRangeValue('daysPerWeek', p.daysPerWeek, 'daysLabel');
-  syncDaySelectorFromSlider();
+  setWorkoutDaysFromCount(p.daysPerWeek);
 
   document.querySelectorAll('input[data-protect]').forEach(cb => {
     cb.checked = p.restrictions.includes(cb.dataset.protect);
