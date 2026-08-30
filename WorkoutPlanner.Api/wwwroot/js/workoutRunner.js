@@ -39,6 +39,7 @@ const daySelect = document.getElementById('daySelect');
 const startBtn = document.getElementById('startBtn');
 const testSoundBtn = document.getElementById('testSoundBtn');
 const loadError = document.getElementById('loadError');
+const noPlanState = document.getElementById('noPlanState');
 const resumeBanner = document.getElementById('resumeBanner');
 const resumeBtn = document.getElementById('resumeBtn');
 const discardBtn = document.getElementById('discardBtn');
@@ -396,11 +397,11 @@ async function loadPlan() {
         try {
           currentPlan = JSON.parse(saved);
         } catch {
-          showLoadError('No workout plan found. Generate or save a plan first.');
+          showNoPlanState();
           return;
         }
       } else {
-        showLoadError('No workout plan found. Generate or save a plan first.');
+        showNoPlanState();
         return;
       }
     }
@@ -425,6 +426,15 @@ function showLoadError(message) {
   loadError.classList.remove('hidden');
   startBtn.disabled = true;
   startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+}
+
+function showNoPlanState() {
+  noPlanState.classList.remove('hidden');
+  startBtn.classList.add('hidden');
+  document.getElementById('daySelect').closest('div.mb-4').classList.add('hidden');
+  document.getElementById('dayPreview').classList.add('hidden');
+  document.querySelector('#setupScreen > h2').classList.add('hidden');
+  document.querySelector('#setupScreen > p.text-sm').classList.add('hidden');
 }
 
 function populateDaySelect() {
