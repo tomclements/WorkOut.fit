@@ -541,27 +541,46 @@ const PROGRAMS = [
   }
 ];
 
+let _programGenerating = false;
+
 function renderPrograms() {
   const grid = document.getElementById('programsGrid');
   if (!grid) return;
   grid.innerHTML = PROGRAMS.map(p => `
-    <button type="button" data-program="${escapeHtml(p.id)}"
-      class="text-left bg-white border border-gray-200 rounded-xl shadow-sm p-4 hover:border-blue-400 hover:shadow transition focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <div class="flex items-start justify-between gap-2">
-        <h3 class="font-semibold text-blue-900 leading-snug">${escapeHtml(p.name)}</h3>
-        <span class="shrink-0 text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-100 rounded-full px-2 py-0.5">${escapeHtml(p.chip)}</span>
-      </div>
-      <p class="text-sm text-gray-600 mt-2 leading-snug">${escapeHtml(p.blurb)}</p>
-    </button>`).join('');
+    <div class="relative bg-white border border-gray-200 rounded-xl shadow-sm p-4 hover:border-blue-400 hover:shadow transition">
+      <button type="button" data-program="${escapeHtml(p.id)}"
+        class="text-left w-full focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg program-start">
+        <div class="flex items-start justify-between gap-2">
+          <h3 class="font-semibold text-blue-900 leading-snug">${escapeHtml(p.name)}</h3>
+          <span class="shrink-0 text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-100 rounded-full px-2 py-0.5">${escapeHtml(p.chip)}</span>
+        </div>
+        <p class="text-sm text-gray-600 mt-2 leading-snug">${escapeHtml(p.blurb)}</p>
+      </button>
+      <button type="button" data-edit-program="${escapeHtml(p.id)}"
+        class="mt-2 text-xs text-blue-600 hover:underline font-medium program-edit">
+        Edit first
+      </button>
+    </div>`).join('');
   grid.querySelectorAll('[data-program]').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (_programGenerating) return;
       const p = PROGRAMS.find(x => x.id === btn.dataset.program);
+      if (!p) return;
+      applyProgram(p, { silent: true });
+      generate({ reshuffle: false, programName: p.name });
+    });
+  });
+  grid.querySelectorAll('[data-edit-program]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const p = PROGRAMS.find(x => x.id === btn.dataset.editProgram);
       if (p) applyProgram(p);
     });
   });
 }
 
-function applyProgram(p) {
+function applyProgram(p, opts) {
+  opts = opts || {};
   setSelectValue('weeks', p.weeks);
   setSelectValue('goal', p.goal);
   setSelectValue('level', p.level);
@@ -591,9 +610,9 @@ function applyProgram(p) {
     plannerSection.classList.remove('hidden');
     closePlannerBtn.classList.remove('hidden');
     togglePlannerBtn.classList.add('hidden');
-    plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!opts.silent) plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-  if (typeof showToast === 'function') {
+  if (typeof showToast === 'function' && !opts.silent) {
     showToast(`${p.name} loaded — tweak anything, then Create my plan.`, 'info');
   }
 }
@@ -1337,6 +1356,7 @@ async function saveCurrentPlan() {
 async function generate(options = {}) {
   clearStatus();
   const reshuffle = !!options.reshuffle;
+  const programName = options.programName || '';
   const criteria = getCriteria({ reshuffle });
 
   if (criteria.equipment.length === 0) {
@@ -1359,6 +1379,7 @@ async function generate(options = {}) {
     regenBtn.disabled = true;
     if (reshuffle) regenBtn.textContent = 'Shuffling...';
   }
+  _programGenerating = true;
 
   try {
     const response = await fetch('/api/plan', {
@@ -1398,14 +1419,19 @@ async function generate(options = {}) {
     // Remember form choices for next visit (level, goal, split, days, etc.)
     await savePlanFormDefaults(criteria);
     renderPlan(result);
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
     if (regenBtn) regenBtn.classList.remove('hidden');
     if (typeof showToast === 'function') {
-      showToast(
-        reshuffle
-          ? 'New exercise mix ready — scroll down to compare.'
-          : 'Plan ready — scroll down to review or start.',
-        'success'
-      );
+      if (programName) {
+        showToast(`${programName} — plan created.`, 'success');
+      } else {
+        showToast(
+          reshuffle
+            ? 'New exercise mix ready — scroll down to compare.'
+            : 'Plan ready — scroll down to review or start.',
+          'success'
+        );
+      }
     }
   } catch (err) {
     setStatus(`Could not create plan: ${err.message}`);
@@ -1414,6 +1440,7 @@ async function generate(options = {}) {
     btn.textContent = originalText;
     btn.disabled = false;
     btn.classList.remove('opacity-75', 'cursor-wait');
+    _programGenerating = false;
     if (regenBtn) {
       regenBtn.disabled = false;
       regenBtn.textContent = originalRegen || 'Try different exercises';
