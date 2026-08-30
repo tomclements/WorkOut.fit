@@ -84,14 +84,46 @@
           : path.endsWith('workout.html') ? 'run'
             : path.endsWith('help.html') ? 'help'
               : path.endsWith('admin.html') ? 'admin'
-                : 'planner';
+                : (path.endsWith('about.html') || path.endsWith('feedback.html') || path === '/privacy' || path.endsWith('privacy.html'))
+                  ? null
+                  : 'planner';
 
     document.querySelectorAll('[data-nav]').forEach(function (el) {
-      var isActive = el.getAttribute('data-nav') === page;
+      var isActive = page != null && el.getAttribute('data-nav') === page;
       el.classList.toggle('bottom-nav__item--active', isActive);
       if (isActive) el.setAttribute('aria-current', 'page');
       else el.removeAttribute('aria-current');
     });
+  }
+
+  /**
+   * Inject a shared footer (Help · About · Feedback · Privacy) on every
+   * consumer page except workout.html and admin.html.
+   */
+  function injectSiteFooter() {
+    if (document.getElementById('siteFooter')) return;
+    var path = (location.pathname || '').toLowerCase();
+    if (path.endsWith('workout.html') || path.endsWith('admin.html')) return;
+
+    var footer = document.createElement('footer');
+    footer.id = 'siteFooter';
+    footer.className = 'text-center text-sm text-gray-500 pb-8 pt-6';
+    footer.innerHTML =
+      '<a href="/help.html" class="text-blue-700 font-semibold hover:underline">Help</a>' +
+      ' · ' +
+      '<a href="/about.html" class="text-blue-700 font-semibold hover:underline">About</a>' +
+      ' · ' +
+      '<a href="/feedback.html" class="text-blue-700 font-semibold hover:underline">Feedback</a>' +
+      ' · ' +
+      '<a href="/privacy" class="text-blue-700 font-semibold hover:underline">Privacy</a>';
+
+    var bottomNav = document.getElementById('bottomNav');
+    if (bottomNav) {
+      bottomNav.parentNode.insertBefore(footer, bottomNav);
+    } else {
+      var wrapper = document.querySelector('.max-w-2xl, .max-w-3xl, .max-w-4xl, .max-w-6xl');
+      if (wrapper) wrapper.appendChild(footer);
+    }
   }
 
   /**
@@ -622,6 +654,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     markActiveNav();
+    injectSiteFooter();
 
     // Reduced motion
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
