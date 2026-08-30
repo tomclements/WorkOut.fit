@@ -185,11 +185,8 @@
               <option value="12">12 weeks</option>
             </select>
           </div>
-          <div>
-            <span class="block text-sm font-medium text-gray-700 mb-1">Days per week: <span id="daysLabel">5</span></span>
-          </div>
           <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Which days do you train?</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Which days do you train? (<span id="daysLabel">5</span>)</label>
             <div id="daySelector" class="flex flex-wrap gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
               <label class="inline-flex items-center"><input type="checkbox" name="workoutDay" value="0" class="rounded text-blue-600" checked /><span class="ml-2 text-sm">Mon</span></label>
               <label class="inline-flex items-center"><input type="checkbox" name="workoutDay" value="1" class="rounded text-blue-600" checked /><span class="ml-2 text-sm">Tue</span></label>
@@ -356,7 +353,7 @@
         <button id="printBtn" type="button" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-md transition no-print">Print</button>
         <a id="startWorkoutBtn" href="/workout.html" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition no-print">Start this workout</a>
       </div>
-      <p class="mt-2 text-xs text-gray-500">Not happy with the mix? Tap <strong>Try different exercises</strong> (or Create again) for a new random selection with the same settings.</p>
+      <p id="regenerateHint" class="mt-2 text-xs text-gray-500 hidden">Not happy with the mix? Tap <strong>Try different exercises</strong> (or Create again) for a new random selection with the same settings.</p>
 
       <div id="status" class="mt-4 text-sm text-red-600 hidden"></div>
     </section>

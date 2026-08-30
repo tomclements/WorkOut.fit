@@ -60,8 +60,8 @@
 
     <!-- Setup -->
     <section id="setupScreen" class="runner-screen active bg-white rounded-xl shadow p-6">
-      <h2 class="text-xl font-semibold mb-2">Ready to train</h2>
-      <p class="text-sm text-gray-600 mb-4">
+      <h2 id="setupHeading" class="text-xl font-semibold mb-2">Ready to train</h2>
+      <p id="setupIntro" class="text-sm text-gray-600 mb-4">
         Timer-based sets: work countdown → rest countdown → next set. Aim for the listed reps during each work interval.
         For weighted moves you can enter a working weight before you start — leave it blank if you do not know yet.
       </p>
@@ -111,7 +111,7 @@
       </button>
 
       <!-- Sound & music settings -->
-      <div class="mt-4 border rounded-lg bg-white p-4 space-y-3">
+      <div id="setupMusic" class="mt-4 border rounded-lg bg-white p-4 space-y-3">
         <h3 class="text-sm font-semibold text-gray-700">Sound &amp; music</h3>
           <div class="flex items-center justify-between gap-3">
             <label class="text-sm font-medium" for="musicStyle">Background music</label>

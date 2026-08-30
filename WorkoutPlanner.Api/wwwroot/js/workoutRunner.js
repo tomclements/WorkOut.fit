@@ -326,7 +326,7 @@ function setMusicStyleUI(style) {
   if (deviceMusicHintActive) deviceMusicHintActive.classList.toggle('hidden', s !== 'device');
   if (musicStyleHint) {
     musicStyleHint.textContent = s === 'device'
-      ? 'Use your own app for music â€” we only play beeps.'
+      ? 'Use your own app for music — we only play beeps.'
       : s === 'off'
         ? 'Music off. You can turn a style on during the session.'
         : 'Built-in playlist will start when you begin the workout.';
@@ -433,8 +433,9 @@ function showNoPlanState() {
   startBtn.classList.add('hidden');
   document.getElementById('daySelect').closest('div.mb-4').classList.add('hidden');
   document.getElementById('dayPreview').classList.add('hidden');
-  document.querySelector('#setupScreen > h2').classList.add('hidden');
-  document.querySelector('#setupScreen > p.text-sm').classList.add('hidden');
+  document.getElementById('setupHeading').classList.add('hidden');
+  document.getElementById('setupIntro').classList.add('hidden');
+  document.getElementById('setupMusic').classList.add('hidden');
 }
 
 function populateDaySelect() {
@@ -1228,7 +1229,7 @@ async function requestWakeLock() {
     try {
       wakeLock = await navigator.wakeLock.request('screen');
     } catch {
-      // denied â€” continue
+      // denied — continue
     }
   }
 }
@@ -1339,7 +1340,7 @@ function currentExercise() {
   return (sessionExercises || [])[currentExerciseIndex] || null;
 }
 
-/** free-exercise-db often has 0.jpg + 1.jpg â€” flip them as a JS fallback. */
+/** free-exercise-db often has 0.jpg + 1.jpg — flip them as a JS fallback. */
 function demoImageUrls(ex) {
   const primary = ex?.imageUrl || '';
   if (!primary) return [];
@@ -1357,7 +1358,7 @@ function demoWebpUrl(ex) {
   if (!ex) return null;
   if (ex.demoAnimUrl) return ex.demoAnimUrl;
   if (!ex.id) return null;
-  // Always try /demos/{id}.webp â€” onerror falls back to still flip / placeholder
+  // Always try /demos/{id}.webp — onerror falls back to still flip / placeholder
   return `/demos/${encodeURIComponent(ex.id)}.webp`;
 }
 
@@ -1433,7 +1434,7 @@ window.onDemoImgError = function onDemoImgError(img) {
   startDemoFlip(frame);
 };
 
-/** Animated WebP missing â†’ fall back to free-exercise-db still flip. */
+/** Animated WebP missing — fall back to free-exercise-db still flip. */
 window.onDemoWebpError = function onDemoWebpError(img) {
   const frame = img.closest('.demo-frame');
   if (!frame) return;
@@ -1903,14 +1904,14 @@ function finishWorkout() {
 
   if (currentUser) {
     if (saveSessionStatus) {
-      saveSessionStatus.textContent = 'Saving your session to historyâ€¦';
+      saveSessionStatus.textContent = 'Saving your session to history…';
       saveSessionStatus.className = 'text-sm mb-2 text-gray-600';
       saveSessionStatus.classList.remove('hidden');
     }
     // Fire-and-forget; UI updates when done
     saveSession({ auto: true });
   } else if (saveSessionStatus) {
-    saveSessionStatus.textContent = 'Signed-out sessions arenâ€™t stored in History. Sign in next time for auto-save.';
+    saveSessionStatus.textContent = 'Signed-out sessions aren’t stored in History. Sign in next time for auto-save.';
     saveSessionStatus.className = 'text-sm mb-2 text-amber-800';
     if (signInToSaveLink) signInToSaveLink.classList.remove('hidden');
   }
@@ -1930,7 +1931,7 @@ async function saveSession(options = {}) {
   }
 
   if (saveSessionStatus) {
-    saveSessionStatus.textContent = 'Saving your session to historyâ€¦';
+    saveSessionStatus.textContent = 'Saving your session to history…';
     saveSessionStatus.className = 'text-sm mb-2 text-gray-600';
   }
   if (saveSessionBtn) {
@@ -2008,7 +2009,7 @@ function updateMusicButton() {
     if (currentMusicStyle() === 'device') {
       nowPlayingEl.textContent = 'Using your own music app';
     } else if (musicEngine.isPlaying) {
-      nowPlayingEl.textContent = musicEngine.nowPlayingLabel() || 'Playingâ€¦';
+      nowPlayingEl.textContent = musicEngine.nowPlayingLabel() || 'Playing…';
     } else {
       nowPlayingEl.textContent = currentMusicStyle() === 'off' ? 'Music off' : 'Music paused';
     }
@@ -2375,7 +2376,7 @@ class PlaylistMusicEngine {
       this.isPlaying = true;
       updateMusicButton();
     }).catch(() => {
-      // Autoplay blocked or file missing â€” try fallback once
+      // Autoplay blocked or file missing — try fallback once
       if (!this._usingFallback && track.fallback) {
         this._usingFallback = true;
         this._playCurrent();

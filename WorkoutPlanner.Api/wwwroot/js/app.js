@@ -110,6 +110,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       closePlannerBtn.classList.remove('hidden');
       togglePlannerBtn.classList.add('hidden');
       plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!currentPlan) {
+        const genBtn = document.getElementById('generateBtn');
+        if (genBtn) {
+          genBtn.classList.remove('bg-gray-200', 'hover:bg-gray-300', 'text-gray-800');
+          genBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'text-white');
+        }
+      }
     });
 
     closePlannerBtn.addEventListener('click', () => {
@@ -126,6 +133,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       closePlannerBtn.classList.remove('hidden');
       togglePlannerBtn.classList.add('hidden');
       plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!currentPlan) {
+        const genBtn = document.getElementById('generateBtn');
+        if (genBtn) {
+          genBtn.classList.remove('bg-gray-200', 'hover:bg-gray-300', 'text-gray-800');
+          genBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'text-white');
+        }
+      }
     });
   }
 
@@ -224,8 +238,17 @@ function updateDaysLabel() {
 }
 
 function setWorkoutDaysFromCount(count) {
+  const spreadMap = {
+    2: [0, 3],
+    3: [0, 2, 4],
+    4: [0, 1, 3, 4],
+    5: [0, 1, 2, 3, 4],
+    6: [0, 1, 2, 3, 4, 5],
+    7: [0, 1, 2, 3, 4, 5, 6]
+  };
+  const indices = spreadMap[count] || Array.from({ length: count }, (_, i) => i);
   document.querySelectorAll('input[name="workoutDay"]').forEach((cb, idx) => {
-    cb.checked = idx < count;
+    cb.checked = indices.includes(idx);
   });
   updateDaysLabel();
 }
@@ -926,6 +949,11 @@ function showLoggedIn(email, roles) {
   plannerSection.classList.add('hidden');
   togglePlannerBtn.classList.remove('hidden');
   closePlannerBtn.classList.add('hidden');
+
+  if (currentPlan) {
+    const saveBtn = document.getElementById('savePlanBtn');
+    if (saveBtn) saveBtn.classList.remove('hidden');
+  }
 
   loadDashboard();
   loadBodyWeight();
@@ -1640,10 +1668,17 @@ function renderPlan(result) {
   startWorkoutBtn.href = currentPlanId ? `/workout.html?planId=${currentPlanId}` : '/workout.html';
   const regenBtn = document.getElementById('regenerateBtn');
   if (regenBtn) regenBtn.classList.remove('hidden');
+  const regenHint = document.getElementById('regenerateHint');
+  if (regenHint) regenHint.classList.remove('hidden');
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.classList.remove('hidden');
   const saveBtn = document.getElementById('savePlanBtn');
   if (saveBtn && currentUser) saveBtn.classList.remove('hidden');
+  const genBtn = document.getElementById('generateBtn');
+  if (genBtn) {
+    genBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'text-white');
+    genBtn.classList.add('bg-gray-200', 'hover:bg-gray-300', 'text-gray-800');
+  }
   document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
 }
 
