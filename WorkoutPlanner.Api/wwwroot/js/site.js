@@ -358,6 +358,7 @@
 
   window.currentUser = null;
   window.currentRoles = [];
+  var _hadSession = false; // true once we confirm the user was authenticated this page load
   var _authModal = null;
   var _authLoginMode = true;
   var _authCleanup = null;
@@ -569,6 +570,7 @@
         var data = await res.json();
         window.currentUser = data.email;
         window.currentRoles = data.roles || [];
+        _hadSession = true;
         window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user: data.email, roles: data.roles } }));
       } else {
         window.currentUser = null;
@@ -583,6 +585,7 @@
 
   /** Global fetch interceptor: open login modal on 401 for auth-required endpoints. */
   var _originalFetch = window.fetch;
+  var _guestOptionalEndpoints = ['/api/user/preferences', '/api/user/ratings', '/api/user/favorites', '/api/runner/sessions'];
   window.fetch = function () {
     var args = arguments;
     return _originalFetch.apply(this, args).then(function (response) {
@@ -594,9 +597,21 @@
         }
         // Only intercept API calls (not static assets)
         if (url.startsWith('/api/')) {
+          var isOptional = _guestOptionalEndpoints.some(function (ep) { return url.startsWith(ep); });
+          if (isOptional && !_hadSession) {
+            // Guest hitting an optional endpoint — silently ignore
+            return response;
+          }
           window.currentUser = null;
           window.openLoginModal();
-          if (typeof showToast === 'function') showToast('Your session has expired. Please sign in again.', 'error');
+          if (typeof showToast === 'function') {
+            if (_hadSession) {
+              showToast('Your session has expired. Please sign in again.', 'error');
+            } else {
+              showToast('Sign in to continue.', 'info');
+            }
+          }
+          _hadSession = false;
         }
       }
       return response;
