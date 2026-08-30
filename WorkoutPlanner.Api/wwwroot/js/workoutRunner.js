@@ -450,8 +450,8 @@ function populateDaySelect() {
       const summary = typeof WorkoutMobility !== 'undefined'
         ? WorkoutMobility.dayMobilitySummary(day)
         : '';
-      const styleTag = day.sessionStyle === 'hiit' ? 'HIIT Â· ' : (day.sessionStyle === 'strength' ? 'Strength Â· ' : '');
-      option.textContent = `Week ${week.week} - ${day.day} (${styleTag}${day.focus || 'Training'})${summary ? ' Â· ' + summary : ''}`;
+      const styleTag = day.sessionStyle === 'hiit' ? 'HIIT · ' : (day.sessionStyle === 'strength' ? 'Strength · ' : '');
+      option.textContent = `Week ${week.week} - ${day.day} (${styleTag}${day.focus || 'Training'})${summary ? ' · ' + summary : ''}`;
       daySelect.appendChild(option);
     });
   });
@@ -1368,7 +1368,7 @@ function exerciseMediaHtml(ex, options = {}) {
   const cue = ex.progression && isMobilityExercise(ex)
     ? `<div class="demo-caption">${escapeHtmlRunner(ex.progression)}</div>`
     : (ex.primary && ex.primary.length
-      ? `<div class="demo-caption">${escapeHtmlRunner((ex.primary || []).join(' Â· '))}</div>`
+      ? `<div class="demo-caption">${escapeHtmlRunner((ex.primary || []).join(' · '))}</div>`
       : '');
 
   let frame;
@@ -1730,11 +1730,11 @@ function enterRest() {
   if (isMobilityExercise(nextEx)) {
     const p = exercisePhase(nextEx);
     nextExerciseMetaEl.textContent = p === 'warmup'
-      ? `Next warm-up Â· ${workSeconds(nextEx)}s`
-      : `Next cool-down Â· ${workSeconds(nextEx)}s`;
+      ? `Next warm-up · ${workSeconds(nextEx)}s`
+      : `Next cool-down · ${workSeconds(nextEx)}s`;
   } else {
     const unit = selectedDay?.sessionStyle === 'hiit' ? 'Round' : 'Set';
-    nextExerciseMetaEl.textContent = `${unit} ${currentSetIndex + 1} / ${nextEx.sets} Â· ${nextEx.repsDisplay || 'target'} Â· ${workSeconds(nextEx)}s work`;
+    nextExerciseMetaEl.textContent = `${unit} ${currentSetIndex + 1} / ${nextEx.sets} · ${nextEx.repsDisplay || 'target'} · ${workSeconds(nextEx)}s work`;
   }
   if (nextDemoEl) {
     nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
