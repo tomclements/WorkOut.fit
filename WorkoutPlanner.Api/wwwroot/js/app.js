@@ -918,8 +918,8 @@ function showLoggedOut() {
 
   welcomeSection.classList.remove('hidden');
   dashboardSection.classList.add('hidden');
-  plannerSection.classList.remove('hidden');
-  togglePlannerBtn.classList.add('hidden');
+  plannerSection.classList.add('hidden');
+  togglePlannerBtn.classList.remove('hidden');
   closePlannerBtn.classList.add('hidden');
   document.getElementById('savePlanBtn').classList.add('hidden');
 }
