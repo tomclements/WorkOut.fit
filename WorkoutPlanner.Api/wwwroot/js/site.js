@@ -77,14 +77,14 @@
 
   function markActiveNav() {
     var path = (location.pathname || '/').replace(/\/+$/, '') || '/';
+    var openParam = (new URLSearchParams(location.search)).get('open');
     var page =
-      path.endsWith('history.html') ? 'history'
-        : path.endsWith('workout.html') ? 'run'
-          : path.endsWith('help.html') ? 'help'
-            : path.endsWith('about.html') ? 'about'
-              : path.endsWith('feedback.html') ? 'feedback'
-                : path.endsWith('admin.html') ? 'admin'
-                  : 'planner';
+      openParam === 'account' || openParam === 'preferences' ? 'account'
+        : path.endsWith('history.html') ? 'history'
+          : path.endsWith('workout.html') ? 'run'
+            : path.endsWith('help.html') ? 'help'
+              : path.endsWith('admin.html') ? 'admin'
+                : 'planner';
 
     document.querySelectorAll('[data-nav]').forEach(function (el) {
       var isActive = el.getAttribute('data-nav') === page;
@@ -639,5 +639,18 @@
 
     // Global auth check
     initGlobalAuth();
+
+    // Account tab in bottom nav: open preferences when logged in, login when logged out
+    var bottomNavAccount = document.getElementById('bottomNavAccount');
+    if (bottomNavAccount) {
+      bottomNavAccount.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (window.currentUser) {
+          window.location.href = '/?open=account';
+        } else {
+          window.openLoginModal();
+        }
+      });
+    }
   });
 })();

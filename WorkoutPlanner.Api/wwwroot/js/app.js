@@ -31,10 +31,6 @@ let dislikedExerciseIds = [];
 const welcomeSection = document.getElementById('welcomeSection');
 const dashboardSection = document.getElementById('dashboardSection');
 const plannerSection = document.getElementById('plannerSection');
-const adminLink = document.getElementById('adminLink');
-const historyLink = document.getElementById('historyLink');
-const feedbackLink = document.getElementById('feedbackLink');
-const preferencesLink = document.getElementById('preferencesLink');
 const togglePlannerBtn = document.getElementById('togglePlannerBtn');
 const closePlannerBtn = document.getElementById('closePlannerBtn');
 const savedPlansTable = document.getElementById('savedPlansTable');
@@ -77,8 +73,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (savePlanBtn) savePlanBtn.addEventListener('click', saveCurrentPlan);
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', () => window.print());
-  const welcomeSignInBtn = document.getElementById('welcomeSignInBtn');
-  if (welcomeSignInBtn) welcomeSignInBtn.addEventListener('click', openLoginModal);
   initBodyWeight();
   // Dark mode toggle (matches runner's Aa button)
   const contrastBtn = document.getElementById('contrastBtn');
@@ -135,15 +129,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  const bottomNavAccount = document.getElementById('bottomNavAccount');
-  if (bottomNavAccount) {
-    bottomNavAccount.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (currentUser) openPreferencesModal();
-      else openLoginModal();
-    });
-  }
-
   // Deep-link: /?open=account | preferences | auth
   const openParam = new URLSearchParams(window.location.search).get('open');
   if (openParam === 'account' || openParam === 'preferences' || openParam === 'auth') {
@@ -184,8 +169,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const openAuthBtnEl = document.getElementById('openAuthBtn');
   if (openAuthBtnEl) openAuthBtnEl.addEventListener('click', openLoginModal);
 
-  const preferencesLinkEl = document.getElementById('preferencesLink');
-  if (preferencesLinkEl) preferencesLinkEl.addEventListener('click', openPreferencesModal);
   const closePreferencesModalEl = document.getElementById('closePreferencesModal');
   if (closePreferencesModalEl) closePreferencesModalEl.addEventListener('click', closePreferencesModal);
   const preferencesModalEl = document.getElementById('preferencesModal');
@@ -915,16 +898,6 @@ function showLoggedIn(email, roles) {
   `;
   document.getElementById('logoutBtn').addEventListener('click', logout);
 
-  historyLink.classList.remove('hidden');
-  feedbackLink.classList.remove('hidden');
-  preferencesLink.classList.remove('hidden');
-
-  if (roles.includes('Admin')) {
-    adminLink.classList.remove('hidden');
-  } else {
-    adminLink.classList.add('hidden');
-  }
-
   welcomeSection.classList.add('hidden');
   dashboardSection.classList.remove('hidden');
   plannerSection.classList.add('hidden');
@@ -943,10 +916,6 @@ function showLoggedOut() {
   section.innerHTML = `<button id="openAuthBtn" class="text-sm bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-semibold py-2 px-4 rounded-md transition">Sign in / Register</button>`;
   document.getElementById('openAuthBtn').addEventListener('click', openLoginModal);
 
-  adminLink.classList.add('hidden');
-  historyLink.classList.add('hidden');
-  feedbackLink.classList.add('hidden');
-  preferencesLink.classList.add('hidden');
   welcomeSection.classList.remove('hidden');
   dashboardSection.classList.add('hidden');
   plannerSection.classList.remove('hidden');
