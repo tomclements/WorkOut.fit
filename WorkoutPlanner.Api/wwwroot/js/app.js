@@ -165,6 +165,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Joint protect / rehab wiring: rehab checks Protect; unchecking Protect unchecks rehab
+  document.querySelectorAll('input[data-rehab]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (cb.checked) {
+        const protect = document.querySelector(`input[data-protect="${cb.dataset.rehab}"]`);
+        if (protect) protect.checked = true;
+      }
+    });
+  });
+  document.querySelectorAll('input[data-protect]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (!cb.checked) {
+        const rehab = document.querySelector(`input[data-rehab="${cb.dataset.protect}"]`);
+        if (rehab) rehab.checked = false;
+      }
+    });
+  });
+
   // Auth modal
   const openAuthBtnEl = document.getElementById('openAuthBtn');
   if (openAuthBtnEl) openAuthBtnEl.addEventListener('click', openLoginModal);
@@ -413,8 +431,8 @@ function collectPreviousExerciseIds() {
 
 function getCriteria(options = {}) {
   const equipment = Array.from(document.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value);
-  const restrictions = Array.from(document.querySelectorAll('input[name="restrictions"]:checked')).map(cb => cb.value);
-  const rehab = Array.from(document.querySelectorAll('input[name="rehab"]:checked')).map(cb => cb.value);
+  const restrictions = Array.from(document.querySelectorAll('input[data-protect]:checked')).map(cb => cb.dataset.protect);
+  const rehab = Array.from(document.querySelectorAll('input[data-rehab]:checked')).map(cb => cb.dataset.rehab);
   const workoutDays = Array.from(document.querySelectorAll('input[name="workoutDay"]:checked'))
     .map(cb => parseInt(cb.value, 10))
     .filter(d => !Number.isNaN(d))
@@ -591,11 +609,11 @@ function applyProgram(p, opts) {
   setRangeValue('daysPerWeek', p.daysPerWeek, 'daysLabel');
   syncDaySelectorFromSlider();
 
-  document.querySelectorAll('input[name="restrictions"]').forEach(cb => {
-    cb.checked = p.restrictions.includes(cb.value);
+  document.querySelectorAll('input[data-protect]').forEach(cb => {
+    cb.checked = p.restrictions.includes(cb.dataset.protect);
   });
-  document.querySelectorAll('input[name="rehab"]').forEach(cb => {
-    cb.checked = p.rehab.includes(cb.value);
+  document.querySelectorAll('input[data-rehab]').forEach(cb => {
+    cb.checked = p.rehab.includes(cb.dataset.rehab);
   });
 
   onSplitChange({ skipBroNudge: true });
