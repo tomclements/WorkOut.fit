@@ -732,7 +732,47 @@ async function renderDayPreview() {
   const hint = anyWeightField
     ? `<p class="text-xs text-gray-500 mt-2">Working weight is optional. Blank means unknown — it will not be saved as zero.</p>`
     : '';
-  moves.innerHTML = (rows || '<p class="text-sm text-gray-500">No moves in this day.</p>') + hint;
+  const unitToggle = anyWeightField
+    ? `<div class="flex items-center gap-2 mt-2">
+        <span class="text-xs text-gray-500">Unit:</span>
+        <div class="inline-flex rounded-md border border-gray-300 overflow-hidden text-xs">
+          <button type="button" data-runner-unit="kg" class="px-2 py-1 ${unit === 'kg' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'} transition">kg</button>
+          <button type="button" data-runner-unit="lb" class="px-2 py-1 ${unit === 'lb' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'} transition border-l border-gray-300">lb</button>
+        </div>
+      </div>`
+    : '';
+  moves.innerHTML = (rows || '<p class="text-sm text-gray-500">No moves in this day.</p>') + hint + unitToggle;
+
+  if (anyWeightField) {
+    moves.querySelectorAll('[data-runner-unit]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const newUnit = btn.getAttribute('data-runner-unit');
+        if (newUnit === unit) return;
+        try { localStorage.setItem(WEIGHT_UNIT_KEY, newUnit); } catch { /* ignore */ }
+        const converter = newUnit === 'lb'
+          ? (kg) => Math.round(kg * 2.20462 * 10) / 10
+          : (lb) => Math.round(lb * 0.45359237 * 100) / 100;
+        moves.querySelectorAll('[data-working-weight-index]').forEach(input => {
+          const raw = input.value.trim();
+          if (!raw) return;
+          const n = parseFloat(raw);
+          if (!Number.isFinite(n)) return;
+          const converted = converter(n);
+          const decimals = newUnit === 'lb' ? 1 : (Number.isInteger(converted) ? 0 : 2);
+          input.value = converted.toFixed(decimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+        });
+        moves.querySelectorAll('[data-working-weight-index]').forEach(input => {
+          const span = input.parentElement && input.parentElement.querySelector('span.text-xs.text-gray-500');
+          if (span) span.textContent = newUnit;
+        });
+        document.querySelectorAll('[data-runner-unit]').forEach(b => {
+          const isSelected = b.getAttribute('data-runner-unit') === newUnit;
+          b.className = `px-2 py-1 ${isSelected ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'} transition${isSelected ? '' : ' border-l border-gray-300'}`;
+        });
+      });
+    });
+  }
+
   if (preview) preview.classList.remove('hidden');
 }
 
