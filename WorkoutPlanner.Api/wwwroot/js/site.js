@@ -107,7 +107,7 @@
 
     var footer = document.createElement('footer');
     footer.id = 'siteFooter';
-    footer.className = 'text-center text-sm text-gray-500 pb-8 pt-6';
+    footer.className = 'text-center text-sm text-gray-500 pt-6 pb-4 mt-4 mb-12';
     footer.innerHTML =
       '<a href="/help.html" class="text-blue-700 font-semibold hover:underline">Help</a>' +
       ' · ' +
@@ -117,12 +117,12 @@
       ' · ' +
       '<a href="/privacy" class="text-blue-700 font-semibold hover:underline">Privacy</a>';
 
-    var bottomNav = document.getElementById('bottomNav');
-    if (bottomNav) {
-      bottomNav.parentNode.insertBefore(footer, bottomNav);
+    var wrapper = document.querySelector('.max-w-2xl, .max-w-3xl, .max-w-4xl, .max-w-6xl');
+    if (wrapper) {
+      wrapper.appendChild(footer);
     } else {
-      var wrapper = document.querySelector('.max-w-2xl, .max-w-3xl, .max-w-4xl, .max-w-6xl');
-      if (wrapper) wrapper.appendChild(footer);
+      var bottomNav = document.getElementById('bottomNav');
+      if (bottomNav) bottomNav.parentNode.insertBefore(footer, bottomNav);
     }
   }
 
