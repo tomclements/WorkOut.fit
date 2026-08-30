@@ -747,7 +747,7 @@ async function renderDayPreview() {
     moves.querySelectorAll('[data-runner-unit]').forEach(btn => {
       btn.addEventListener('click', () => {
         const newUnit = btn.getAttribute('data-runner-unit');
-        if (newUnit === unit) return;
+        if (newUnit === getRunnerWeightUnit()) return;
         try { localStorage.setItem(WEIGHT_UNIT_KEY, newUnit); } catch { /* ignore */ }
         const converter = newUnit === 'lb'
           ? (kg) => Math.round(kg * 2.20462 * 10) / 10
@@ -767,7 +767,8 @@ async function renderDayPreview() {
         });
         document.querySelectorAll('[data-runner-unit]').forEach(b => {
           const isSelected = b.getAttribute('data-runner-unit') === newUnit;
-          b.className = `px-2 py-1 ${isSelected ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'} transition${isSelected ? '' : ' border-l border-gray-300'}`;
+          const isLb = b.getAttribute('data-runner-unit') === 'lb';
+          b.className = `px-2 py-1 ${isSelected ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'} transition${isLb ? ' border-l border-gray-300' : ''}`;
         });
       });
     });
