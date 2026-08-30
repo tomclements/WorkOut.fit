@@ -926,7 +926,6 @@ function showLoggedIn(email, roles) {
   plannerSection.classList.add('hidden');
   togglePlannerBtn.classList.remove('hidden');
   closePlannerBtn.classList.add('hidden');
-  document.getElementById('savePlanBtn').classList.remove('hidden');
 
   loadDashboard();
   loadBodyWeight();
@@ -1641,6 +1640,10 @@ function renderPlan(result) {
   startWorkoutBtn.href = currentPlanId ? `/workout.html?planId=${currentPlanId}` : '/workout.html';
   const regenBtn = document.getElementById('regenerateBtn');
   if (regenBtn) regenBtn.classList.remove('hidden');
+  const printBtn = document.getElementById('printBtn');
+  if (printBtn) printBtn.classList.remove('hidden');
+  const saveBtn = document.getElementById('savePlanBtn');
+  if (saveBtn && currentUser) saveBtn.classList.remove('hidden');
   document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
 }
 
