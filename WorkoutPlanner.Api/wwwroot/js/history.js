@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.id === 'sessionModal') closeSessionModal();
   });
 
+  document.getElementById('loginLink').addEventListener('click', () => window.openLoginModal());
+
   // Global auth: show/hide history based on auth state
   window.addEventListener('auth-changed', async (e) => {
     const { user } = e.detail;
@@ -24,8 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       loginSection.classList.remove('hidden');
       historySection.classList.add('hidden');
-      const returnUrl = '/?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
-      document.getElementById('loginLink').href = returnUrl;
     }
   });
   initGlobalAuth();

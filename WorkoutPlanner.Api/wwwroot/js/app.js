@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', () => window.print());
   initBodyWeight();
-  // Dark mode toggle (matches runner's Aa button)
+  // Dark mode toggle (matches runner Dark button)
   const contrastBtn = document.getElementById('contrastBtn');
   if (contrastBtn) {
     contrastBtn.addEventListener('click', () => {
