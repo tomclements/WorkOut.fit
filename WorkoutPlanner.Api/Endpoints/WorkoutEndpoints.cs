@@ -56,7 +56,7 @@ public static class WorkoutEndpoints
             {
                 return Results.Problem($"Failed to generate plan: {ex.Message}");
             }
-        }).AllowAnonymous().WithValidation<PlanRequest>();
+        }).AllowAnonymous().WithValidation<PlanRequest>().RequireRateLimiting("plan");
 
         return app;
     }
