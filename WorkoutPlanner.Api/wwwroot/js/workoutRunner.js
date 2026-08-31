@@ -30,6 +30,7 @@ let Engine = window.RunnerEngine || null;
 let previewCache = null;      // cached exercise catalog (id -> exercise) for previews/analyze
 let previewCachePromise = null;
 let lastLoads = null;         // { exerciseId: kg } from most recent session
+let lastLoadsFetchPromise = null;  // dedup: track in-flight fetch
 
 const setupScreen = document.getElementById('setupScreen');
 const activeScreen = document.getElementById('activeScreen');
@@ -803,16 +804,31 @@ function applyLastLoads() {
 }
 
 async function fetchLastLoadsIfSignedIn() {
+  // Already fetched — just apply prefills
+  if (lastLoads && typeof lastLoads === 'object') {
+    applyLastLoads();
+    return;
+  }
+  // Fetch in flight — piggyback on it
+  if (lastLoadsFetchPromise) return lastLoadsFetchPromise;
+
   const user = currentUser || window.currentUser;
   if (!user) return;
   if (noPlanState && !noPlanState.classList.contains('hidden')) return;
-  try {
-    const res = await fetch('/api/runner/last-loads', { credentials: 'include' });
-    if (res.ok) {
-      lastLoads = await res.json();
-      renderDayPreview();
-    }
-  } catch { /* ignore; fields stay blank */ }
+
+  lastLoadsFetchPromise = fetch('/api/runner/last-loads', { credentials: 'include' })
+    .then(res => {
+      if (res.ok) return res.json();
+      return null;
+    })
+    .then(data => {
+      if (data && typeof data === 'object') lastLoads = data;
+      applyLastLoads();
+    })
+    .catch(() => { /* ignore; fields stay blank */ })
+    .finally(() => { lastLoadsFetchPromise = null; });
+
+  return lastLoadsFetchPromise;
 }
 
 function analyzeMuscleSets(day) {

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plan4Strength</title>
+</head>
+<body>
+  <script>
+    try {
+      var saved = localStorage.getItem('workoutPlan');
+      if (saved) {
+        var plan = JSON.parse(saved);
+        if (plan && Array.isArray(plan.plan)) {
+          location.replace('/workout.html');
+          throw 'redirecting';
+        }
+      }
+    } catch (e) {
+      if (e === 'redirecting') throw e;
+    }
+    location.replace('/');
+  </script>
+</body>
+</html>

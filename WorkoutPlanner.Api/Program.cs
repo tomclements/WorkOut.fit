@@ -206,6 +206,8 @@ MapHtmlPage(app, webRoot, "/feedback.html", "feedback.html");
 MapHtmlPage(app, webRoot, "/feedback", "feedback.html");
 MapHtmlPage(app, webRoot, "/privacy.html", "privacy.html");
 MapHtmlPage(app, webRoot, "/privacy", "privacy.html");
+MapHtmlPage(app, webRoot, "/pwa.html", "pwa.html");
+MapHtmlPage(app, webRoot, "/pwa", "pwa.html");
 
 // Endpoint modules
 app.MapHealthEndpoints();

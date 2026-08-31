@@ -153,12 +153,43 @@ async function run() {
     {
       const r = await get('/sw.js');
       assert(r.status === 200, `GET /sw.js → ${r.status}`);
-      assert(r.body.includes('plan4strength-v7'), `GET /sw.js missing "plan4strength-v7"`);
+      assert(r.body.includes('plan4strength-v8'), `GET /sw.js missing "plan4strength-v8"`);
       assert(!r.body.includes('workoutRunner.js'), `GET /sw.js still lists workoutRunner.js in PRECACHE`);
       console.log('  ✓ GET /sw.js');
     }
 
-    // 7. POST /api/plan
+    // 7. GET /manifest.json — 200, lists 192 PNG icon
+    {
+      const r = await get('/manifest.json');
+      assert(r.status === 200, `GET /manifest.json → ${r.status}`);
+      assert(r.body.includes('icon-192.png'), `GET /manifest.json missing icon-192.png`);
+      assert(r.body.includes('/pwa.html'), `GET /manifest.json start_url not /pwa.html`);
+      console.log('  ✓ GET /manifest.json');
+    }
+
+    // 8. GET /icon-192.png — 200 image/png
+    {
+      const r = await get('/icon-192.png');
+      assert(r.status === 200, `GET /icon-192.png → ${r.status}`);
+      console.log('  ✓ GET /icon-192.png');
+    }
+
+    // 9. GET /icon-512.png — 200 image/png
+    {
+      const r = await get('/icon-512.png');
+      assert(r.status === 200, `GET /icon-512.png → ${r.status}`);
+      console.log('  ✓ GET /icon-512.png');
+    }
+
+    // 10. GET /pwa.html — 200
+    {
+      const r = await get('/pwa.html');
+      assert(r.status === 200, `GET /pwa.html → ${r.status}`);
+      assert(r.body.includes('workoutPlan'), `GET /pwa.html missing localStorage check`);
+      console.log('  ✓ GET /pwa.html');
+    }
+
+    // 11. POST /api/plan
     {
       const r = await postJSON('/api/plan', {
         weeks: 1,
@@ -176,7 +207,7 @@ async function run() {
       console.log('  ✓ POST /api/plan');
     }
 
-    // 8. GET /api/equipment
+    // 12. GET /api/equipment
     {
       const r = await get('/api/equipment');
       assert(r.status === 200, `GET /api/equipment → ${r.status}`);
