@@ -48,6 +48,48 @@ function formatDuration(seconds) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Delegated click handler for data-action buttons
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const action = btn.dataset.action;
+    switch (action) {
+      case 'rate':
+        setExerciseRating(btn.dataset.exerciseId, btn.dataset.desired, e);
+        break;
+      case 'run-plan':
+        runPlan(parseInt(btn.dataset.planId, 10));
+        break;
+      case 'load-plan':
+        loadSavedPlan(parseInt(btn.dataset.planId, 10));
+        break;
+      case 'delete-plan':
+        deleteSavedPlan(parseInt(btn.dataset.planId, 10));
+        break;
+      case 'open-planner':
+        document.getElementById('togglePlannerBtn')?.click();
+        break;
+      case 'delete-weight':
+        deleteWeightEntry(parseInt(btn.dataset.id, 10));
+        break;
+      case 'toggle-day':
+        toggleDayType(parseInt(btn.dataset.week, 10), parseInt(btn.dataset.day, 10));
+        break;
+      case 'make-recovery':
+        makeRecoveryDay(parseInt(btn.dataset.week, 10), parseInt(btn.dataset.day, 10));
+        break;
+      case 'remove-ex':
+        deleteExerciseFromDay(parseInt(btn.dataset.week, 10), parseInt(btn.dataset.day, 10), parseInt(btn.dataset.ex, 10));
+        break;
+      case 'add-ex':
+        openExercisePicker(parseInt(btn.dataset.week, 10), parseInt(btn.dataset.day, 10));
+        break;
+      case 'pick-ex':
+        selectExerciseForDay(btn.dataset.exerciseId);
+        break;
+    }
+  });
+
   // Local defaults first (works for guests), then server prefs overlay when signed in
   loadLocalPlanDefaults();
   await loadPreferences();
@@ -748,11 +790,11 @@ function ratingButtonsHtml(exerciseId) {
   return `<span class="rating-btns" role="group" aria-label="Exercise rating">
     <button type="button" class="rate-btn rate-btn--like ${liked ? 'rate-btn--on' : ''}"
       title="${liked ? 'Clear like' : 'I like this'}"
-      onclick="setExerciseRating('${id}', 'like', event)"
+      data-action="rate" data-exercise-id="${id}" data-desired="like"
       aria-pressed="${liked}"><span aria-hidden="true">👍</span><span class="rate-btn__label">Like</span></button>
     <button type="button" class="rate-btn rate-btn--dislike ${disliked ? 'rate-btn--on' : ''}"
       title="${disliked ? 'Clear dislike' : 'I dislike this'}"
-      onclick="setExerciseRating('${id}', 'dislike', event)"
+      data-action="rate" data-exercise-id="${id}" data-desired="dislike"
       aria-pressed="${disliked}"><span aria-hidden="true">👎</span><span class="rate-btn__label">Dislike</span></button>
   </span>`;
 }
@@ -1021,9 +1063,9 @@ function renderDashboard(data) {
           <div class="text-xs text-gray-500">Created ${formatDate(p.createdAt)} • Used ${p.useCount} time${p.useCount === 1 ? '' : 's'} • Last used ${p.lastUsed ? formatDate(p.lastUsed) : 'never'}</div>
         </div>
         <div class="flex items-center gap-2">
-          <button class="text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1 px-3 rounded-md" onclick="runPlan(${p.id})">Run</button>
-          <button class="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-3 rounded-md" onclick="loadSavedPlan(${p.id})">Load</button>
-          <button class="text-sm bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md" onclick="deleteSavedPlan(${p.id})">Delete</button>
+          <button class="text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1 px-3 rounded-md" type="button" data-action="run-plan" data-plan-id="${p.id}">Run</button>
+          <button class="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-3 rounded-md" type="button" data-action="load-plan" data-plan-id="${p.id}">Load</button>
+          <button class="text-sm bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md" type="button" data-action="delete-plan" data-plan-id="${p.id}">Delete</button>
         </div>
       </div>
     `).join('');
@@ -1033,7 +1075,7 @@ function renderDashboard(data) {
       <div class="p-4 text-sm text-gray-600">
         <p class="font-medium text-gray-800 mb-1">No saved plans yet</p>
         <p class="text-gray-500 mb-3">Create a plan below, then save it so you can re-run it anytime.</p>
-        <button type="button" class="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-md" onclick="document.getElementById('togglePlannerBtn').click()">Create a plan</button>
+        <button type="button" class="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-md" data-action="open-planner">Create a plan</button>
       </div>`;
   }
 
@@ -1222,7 +1264,7 @@ function renderBodyWeight(data) {
       <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
         <span class="text-gray-600">${formatDate(e.weighedAt)}</span>
         <span class="font-semibold">${weightToLabel(e.weightKg)}</span>
-        <button type="button" class="text-xs text-gray-400 hover:text-red-600" onclick="deleteWeightEntry(${e.id})">Remove</button>
+        <button type="button" class="text-xs text-gray-400 hover:text-red-600" data-action="delete-weight" data-id="${e.id}">Remove</button>
       </div>
     `).join('');
     list.innerHTML = `<div class="max-h-48 overflow-y-auto">${rows}</div>`;
@@ -1560,8 +1602,8 @@ function renderPlan(result) {
           <div class="font-semibold text-gray-500">${day.day}</div>
           <div class="text-sm text-gray-600">${day.note || 'Rest / mobility'}</div>
           <div class="mt-3 flex flex-wrap gap-2">
-            <button onclick="toggleDayType(${weekIndex}, ${dayIndex})" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-2 rounded">Make workout day</button>
-            <button onclick="makeRecoveryDay(${weekIndex}, ${dayIndex})" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1 px-2 rounded">Make recovery day</button>
+            <button type="button" data-action="toggle-day" data-week="${weekIndex}" data-day="${dayIndex}" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-2 rounded">Make workout day</button>
+            <button type="button" data-action="make-recovery" data-week="${weekIndex}" data-day="${dayIndex}" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1 px-2 rounded">Make recovery day</button>
           </div>
         `;
       } else {
@@ -1598,7 +1640,7 @@ function renderPlan(result) {
                   ${(ex.demoAnimUrl || (ex.imageUrl && ex.id && !String(ex.id).startsWith('wu-') && !String(ex.id).startsWith('cd-')))
                     ? `<a href="${escapeHtml(ex.demoAnimUrl || ('/demos/' + encodeURIComponent(ex.id) + '.webp'))}" target="_blank" rel="noopener" class="text-xs text-indigo-600 hover:underline whitespace-nowrap">WebP</a>`
                     : ''}
-                  <button onclick="deleteExerciseFromDay(${weekIndex}, ${dayIndex}, ${exIndex})" class="text-xs text-red-600 hover:underline">Remove</button>
+                  <button type="button" data-action="remove-ex" data-week="${weekIndex}" data-day="${dayIndex}" data-ex="${exIndex}" class="text-xs text-red-600 hover:underline">Remove</button>
                 </div>
               </div>
               <div>${setsLine}</div>
@@ -1664,8 +1706,8 @@ function renderPlan(result) {
           ${day.note ? `<p class="text-xs text-gray-600 mb-2 italic">${escapeHtml(day.note)}</p>` : ''}
           <ul class="text-sm">${listHtml}</ul>
           <div class="mt-3 flex flex-wrap gap-2">
-            ${isMobilityDay ? '' : `<button onclick="openExercisePicker(${weekIndex}, ${dayIndex})" class="text-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-2 rounded">+ Add exercise</button>`}
-            <button onclick="toggleDayType(${weekIndex}, ${dayIndex})" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-2 rounded">Make rest day</button>
+            ${isMobilityDay ? '' : `<button type="button" data-action="add-ex" data-week="${weekIndex}" data-day="${dayIndex}" class="text-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-2 rounded">+ Add exercise</button>`}
+            <button type="button" data-action="toggle-day" data-week="${weekIndex}" data-day="${dayIndex}" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-2 rounded">Make rest day</button>
           </div>
           ${isMobilityDay ? '' : `<div class="mt-2 text-xs ${isHiitDay ? 'text-rose-800' : 'text-blue-700'} italic">${escapeHtml(workHint?.progression || '')}</div>`}
         `;
@@ -1871,7 +1913,7 @@ function renderExerciseList() {
   container.innerHTML = filtered.map(ex => `
     <div class="flex items-stretch gap-2 border rounded-md p-2 hover:bg-blue-50 transition ${isDisliked(ex.id) ? 'opacity-75' : ''}">
       ${exerciseThumbHtml(ex.imageUrl, ex.name, 'ex-thumb ex-thumb--sm')}
-      <button type="button" onclick="selectExerciseForDay('${escapeHtml(ex.id)}')" class="flex-1 text-left min-w-0">
+      <button type="button" data-action="pick-ex" data-exercise-id="${escapeHtml(ex.id)}" class="flex-1 text-left min-w-0">
         <div class="font-medium flex items-center gap-1">
           ${escapeHtml(ex.name)}
           ${isFavorite(ex.id) ? '<span class="text-xs" title="Liked">👍</span>' : ''}

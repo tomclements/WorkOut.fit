@@ -7,19 +7,17 @@
 </head>
 <body>
   <script>
+    var go = '/';
     try {
       var saved = localStorage.getItem('workoutPlan');
       if (saved) {
         var plan = JSON.parse(saved);
         if (plan && Array.isArray(plan.plan)) {
-          location.replace('/workout.html');
-          throw 'redirecting';
+          go = '/workout.html';
         }
       }
-    } catch (e) {
-      if (e === 'redirecting') throw e;
-    }
-    location.replace('/');
+    } catch (e) { /* JSON parse failure → stay on / */ }
+    location.replace(go);
   </script>
 </body>
 </html>
