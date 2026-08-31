@@ -1702,12 +1702,11 @@ function renderPlan(result) {
         if (!loads || typeof loads !== 'object') return;
         const unit = getWeightUnit();
         Object.entries(loads).forEach(([exerciseId, kg]) => {
-          const el = document.querySelector(`[data-last-load-for="${exerciseId}"]`);
-          if (el) {
+          document.querySelectorAll(`[data-last-load-for="${exerciseId}"]`).forEach(el => {
             const display = weightToLabel(kg);
             el.textContent = `Last: ${display}`;
             el.classList.remove('hidden');
-          }
+          });
         });
       })
       .catch(() => {});

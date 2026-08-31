@@ -153,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const { user } = e.detail;
     currentUser = user;
     if (userLabel) userLabel.textContent = user || '';
+    if (user) fetchLastLoadsIfSignedIn();
   });
 
   // Session options overflow (⋯)
@@ -268,6 +269,9 @@ async function initAsyncSetup() {
   } catch { /* ignore */ }
   currentUser = window.currentUser;
   if (userLabel && currentUser) userLabel.textContent = currentUser;
+
+  // Prefill working weights from last session now that auth is known
+  fetchLastLoadsIfSignedIn();
 
   // With auth known, re-run day selection so saved plans can merge server
   // completion history (cross-device). populateDaySelect already ran above.
@@ -419,14 +423,6 @@ async function loadPlan() {
 
   populateDaySelect();
   await defaultToNextWorkoutDay();
-
-  // Fetch last loads for prefilling working weight fields
-  if (currentUser) {
-    try {
-      const llRes = await fetch('/api/runner/last-loads', { credentials: 'include' });
-      if (llRes.ok) lastLoads = await llRes.json();
-    } catch { /* ignore; fields stay blank */ }
-  }
 
   renderDayPreview();
 }
@@ -787,20 +783,36 @@ async function renderDayPreview() {
   }
 
   // Prefill blank working-weight fields from last session loads
-  if (lastLoads && typeof lastLoads === 'object') {
-    const unit = getRunnerWeightUnit();
-    moves.querySelectorAll('[data-working-weight-index]').forEach(input => {
-      if (input.value.trim()) return; // don't overwrite user-entered values
-      const eid = input.getAttribute('data-exercise-id');
-      const kg = lastLoads[eid];
-      if (!kg || kg <= 0) return;
-      const display = unit === 'lb' ? Math.round(kg * 2.20462 * 10) / 10 : kg;
-      const decimals = unit === 'lb' ? 1 : (Number.isInteger(display) ? 0 : 2);
-      input.value = display.toFixed(decimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
-    });
-  }
+  applyLastLoads();
 
   if (preview) preview.classList.remove('hidden');
+}
+
+function applyLastLoads() {
+  if (!lastLoads || typeof lastLoads !== 'object') return;
+  const unit = getRunnerWeightUnit();
+  document.querySelectorAll('[data-working-weight-index]').forEach(input => {
+    if (input.value.trim()) return;
+    const eid = input.getAttribute('data-exercise-id');
+    const kg = lastLoads[eid];
+    if (!kg || kg <= 0) return;
+    const display = unit === 'lb' ? Math.round(kg * 2.20462 * 10) / 10 : kg;
+    const decimals = unit === 'lb' ? 1 : (Number.isInteger(display) ? 0 : 2);
+    input.value = display.toFixed(decimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+  });
+}
+
+async function fetchLastLoadsIfSignedIn() {
+  const user = currentUser || window.currentUser;
+  if (!user) return;
+  if (noPlanState && !noPlanState.classList.contains('hidden')) return;
+  try {
+    const res = await fetch('/api/runner/last-loads', { credentials: 'include' });
+    if (res.ok) {
+      lastLoads = await res.json();
+      renderDayPreview();
+    }
+  } catch { /* ignore; fields stay blank */ }
 }
 
 function analyzeMuscleSets(day) {
