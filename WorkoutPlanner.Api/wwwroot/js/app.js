@@ -1431,12 +1431,10 @@ async function generate(options = {}) {
     });
 
     if (!response.ok) {
-      let msg;
       if (response.status === 429) {
-        msg = 'Too many plans — wait a minute and try again.';
-      } else {
-        msg = `Server returned ${response.status}`;
+        throw new Error('Too many plans — wait a minute and try again.');
       }
+      let msg = `Server returned ${response.status}`;
       try {
         const raw = await response.text();
         try {
