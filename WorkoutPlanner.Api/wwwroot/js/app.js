@@ -946,13 +946,23 @@ function showLoggedIn(email, roles) {
 
   welcomeSection.classList.add('hidden');
   dashboardSection.classList.remove('hidden');
-  plannerSection.classList.add('hidden');
-  togglePlannerBtn.classList.remove('hidden');
-  closePlannerBtn.classList.add('hidden');
 
   if (currentPlan) {
+    // Guest generated a plan, then signed in — keep the plan visible
+    plannerSection.classList.remove('hidden');
+    togglePlannerBtn.classList.add('hidden');
+    closePlannerBtn.classList.remove('hidden');
+    const resultsEl = document.getElementById('results');
+    if (resultsEl) {
+      resultsEl.classList.remove('hidden');
+      resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
     const saveBtn = document.getElementById('savePlanBtn');
     if (saveBtn) saveBtn.classList.remove('hidden');
+  } else {
+    plannerSection.classList.add('hidden');
+    togglePlannerBtn.classList.remove('hidden');
+    closePlannerBtn.classList.add('hidden');
   }
 
   loadDashboard();

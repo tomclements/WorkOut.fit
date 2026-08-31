@@ -237,7 +237,7 @@ public static class DbInitializer
         try
         {
             var cols = await db.Database.SqlQueryRaw<string>("""
-                SELECT name FROM pragma_table_info("WorkoutSessions")
+                SELECT name FROM pragma_table_info('WorkoutSessions')
                 """).ToListAsync();
             if (!cols.Contains("Week"))
             {
@@ -285,8 +285,14 @@ public static class DbInitializer
     {
         try
         {
-            await db.Database.ExecuteSqlRawAsync(
-                """ALTER TABLE "CompletedExercises" ADD COLUMN "WeightKg" TEXT NULL;""");
+            var cols = await db.Database.SqlQueryRaw<string>("""
+                SELECT name FROM pragma_table_info('CompletedExercises')
+                """).ToListAsync();
+            if (!cols.Contains("WeightKg"))
+            {
+                await db.Database.ExecuteSqlRawAsync(
+                    """ALTER TABLE "CompletedExercises" ADD COLUMN "WeightKg" TEXT NULL;""");
+            }
         }
         catch
         {
