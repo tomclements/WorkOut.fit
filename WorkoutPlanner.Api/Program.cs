@@ -198,6 +198,8 @@ MapHtmlPage(app, webRoot, "/about", "about.html");
 MapHtmlPage(app, webRoot, "/help.html", "help.html");
 MapHtmlPage(app, webRoot, "/help", "help.html");
 MapHtmlPage(app, webRoot, "/history.html", "history.html");
+MapHtmlPage(app, webRoot, "/account.html", "account.html");
+MapHtmlPage(app, webRoot, "/account", "account.html");
 MapHtmlPage(app, webRoot, "/workout.html", "workout.html");
 MapHtmlPage(app, webRoot, "/admin.html", "admin.html");
 MapHtmlPage(app, webRoot, "/feedback.html", "feedback.html");

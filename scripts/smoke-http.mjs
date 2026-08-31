@@ -22,6 +22,15 @@ function killApi() {
   apiProc = null;
 }
 
+// Clean up on SIGINT / SIGTERM so CI never leaves a zombie dotnet host
+function handleSignal(sig) {
+  console.error(`\nCaught ${sig} — killing API process…`);
+  killApi();
+  process.exit(1);
+}
+process.on('SIGINT', handleSignal);
+process.on('SIGTERM', handleSignal);
+
 function get(path) {
   return new Promise((resolve, reject) => {
     const req = http.get(`${BASE}${path}`, { timeout: 10_000 }, (res) => {
@@ -93,6 +102,7 @@ async function run() {
   if (!ready) {
     console.error('API did not become healthy within 60s.');
     console.error('Startup log:\n' + startupLog);
+    killApi();
     process.exit(1);
   }
   console.log('API is up.');
@@ -131,7 +141,15 @@ async function run() {
       console.log('  ✓ GET /history.html');
     }
 
-    // 5. GET /sw.js
+    // 5. GET /account.html
+    {
+      const r = await get('/account.html');
+      assert(r.status === 200, `GET /account.html → ${r.status}`);
+      assert(r.body.includes('Save your training'), `GET /account.html missing "Save your training"`);
+      console.log('  ✓ GET /account.html');
+    }
+
+    // 6. GET /sw.js
     {
       const r = await get('/sw.js');
       assert(r.status === 200, `GET /sw.js → ${r.status}`);
@@ -140,7 +158,7 @@ async function run() {
       console.log('  ✓ GET /sw.js');
     }
 
-    // 6. POST /api/plan
+    // 7. POST /api/plan
     {
       const r = await postJSON('/api/plan', {
         weeks: 1,
@@ -158,7 +176,7 @@ async function run() {
       console.log('  ✓ POST /api/plan');
     }
 
-    // 7. GET /api/equipment
+    // 8. GET /api/equipment
     {
       const r = await get('/api/equipment');
       assert(r.status === 200, `GET /api/equipment → ${r.status}`);
