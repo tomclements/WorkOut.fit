@@ -1588,7 +1588,7 @@ function renderPlan(result) {
             ? `<div class="text-xs text-gray-600 italic mt-0.5">${escapeHtml(ex.progression)}</div>`
             : '';
           return `
-          <li class="mb-3 flex gap-3 ${isMobility ? 'opacity-95' : ''}">
+          <li class="mb-3 flex gap-3 ${isMobility ? 'opacity-95' : ''}" ${!isMobility ? `data-exercise-id="${escapeHtml(ex.id)}"` : ''}>
             ${exerciseThumbHtml(ex.imageUrl, ex.name)}
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between gap-2">
@@ -1602,6 +1602,7 @@ function renderPlan(result) {
                 </div>
               </div>
               <div>${setsLine}</div>
+              <div data-last-load-for="${escapeHtml(ex.id)}" class="text-xs text-blue-600 mt-0.5 hidden"></div>
               <div class="text-xs text-gray-500 mb-1.5">${escapeHtml((ex.primary || []).join(', '))}</div>
               ${cue}
               ${rating}
@@ -1693,6 +1694,24 @@ function renderPlan(result) {
     genBtn.classList.add('bg-gray-200', 'hover:bg-gray-300', 'text-gray-800');
   }
   document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+
+  if (currentUser) {
+    fetch('/api/runner/last-loads', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(loads => {
+        if (!loads || typeof loads !== 'object') return;
+        const unit = getWeightUnit();
+        Object.entries(loads).forEach(([exerciseId, kg]) => {
+          const el = document.querySelector(`[data-last-load-for="${exerciseId}"]`);
+          if (el) {
+            const display = weightToLabel(kg);
+            el.textContent = `Last: ${display}`;
+            el.classList.remove('hidden');
+          }
+        });
+      })
+      .catch(() => {});
+  }
 }
 
 /**

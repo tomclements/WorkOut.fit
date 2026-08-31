@@ -29,6 +29,7 @@ let phaseBusy = false;
 let Engine = window.RunnerEngine || null;
 let previewCache = null;      // cached exercise catalog (id -> exercise) for previews/analyze
 let previewCachePromise = null;
+let lastLoads = null;         // { exerciseId: kg } from most recent session
 
 const setupScreen = document.getElementById('setupScreen');
 const activeScreen = document.getElementById('activeScreen');
@@ -418,6 +419,15 @@ async function loadPlan() {
 
   populateDaySelect();
   await defaultToNextWorkoutDay();
+
+  // Fetch last loads for prefilling working weight fields
+  if (currentUser) {
+    try {
+      const llRes = await fetch('/api/runner/last-loads', { credentials: 'include' });
+      if (llRes.ok) lastLoads = await llRes.json();
+    } catch { /* ignore; fields stay blank */ }
+  }
+
   renderDayPreview();
 }
 
@@ -717,6 +727,7 @@ async function renderDayPreview() {
           <label class="text-xs text-gray-500" for="workingWeight-${i}">Weight</label>
           <input id="workingWeight-${i}" type="number" inputmode="decimal" min="0" step="0.5"
             data-working-weight-index="${i}"
+            data-exercise-id="${escapeHtmlRunner(ex.id)}"
             class="w-20 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
             placeholder="—" aria-label="Working weight for ${escapeHtmlRunner(ex.name)}" />
           <span class="text-xs text-gray-500">${escapeHtmlRunner(unit)}</span>
@@ -772,6 +783,20 @@ async function renderDayPreview() {
           b.className = `px-2 py-1 ${isSelected ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'} transition${isLb ? ' border-l border-gray-300' : ''}`;
         });
       });
+    });
+  }
+
+  // Prefill blank working-weight fields from last session loads
+  if (lastLoads && typeof lastLoads === 'object') {
+    const unit = getRunnerWeightUnit();
+    moves.querySelectorAll('[data-working-weight-index]').forEach(input => {
+      if (input.value.trim()) return; // don't overwrite user-entered values
+      const eid = input.getAttribute('data-exercise-id');
+      const kg = lastLoads[eid];
+      if (!kg || kg <= 0) return;
+      const display = unit === 'lb' ? Math.round(kg * 2.20462 * 10) / 10 : kg;
+      const decimals = unit === 'lb' ? 1 : (Number.isInteger(display) ? 0 : 2);
+      input.value = display.toFixed(decimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
     });
   }
 

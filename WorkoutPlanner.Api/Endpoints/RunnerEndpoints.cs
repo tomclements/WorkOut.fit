@@ -38,6 +38,15 @@ public static class RunnerEndpoints
             return Results.Ok(session);
         }).RequireAuthorization();
 
+        app.MapGet("/api/runner/last-loads", async (ClaimsPrincipal user, IWorkoutSessionService service) =>
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+
+            var loads = await service.GetLastLoadsAsync(userId);
+            return Results.Ok(loads);
+        }).RequireAuthorization();
+
         return app;
     }
 }

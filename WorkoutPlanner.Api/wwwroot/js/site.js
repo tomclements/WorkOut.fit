@@ -618,7 +618,7 @@
 
   /** Global fetch interceptor: open login modal on 401 for auth-required endpoints. */
   var _originalFetch = window.fetch;
-  var _guestOptionalEndpoints = ['/api/user/preferences', '/api/user/ratings', '/api/user/favorites', '/api/runner/sessions'];
+  var _guestOptionalEndpoints = ['/api/user/preferences', '/api/user/ratings', '/api/user/favorites', '/api/runner/sessions', '/api/runner/last-loads'];
   window.fetch = function () {
     var args = arguments;
     return _originalFetch.apply(this, args).then(function (response) {

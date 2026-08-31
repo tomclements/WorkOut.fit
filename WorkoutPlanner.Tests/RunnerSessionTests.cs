@@ -197,4 +197,92 @@ public class RunnerSessionTests : IClassFixture<TestWebApplicationFactory>
         var detail = await user2.GetAsync($"/api/runner/sessions/{id}");
         Assert.Equal(HttpStatusCode.NotFound, detail.StatusCode);
     }
+
+    [Fact]
+    public async Task LastLoads_ReturnsLatestWeightPerExercise()
+    {
+        var client = CreateAuthenticatedClient(out _);
+
+        // Earlier session: goblet-squat 20 kg
+        var earlier = new SaveSessionRequest
+        {
+            PlanName = "Early",
+            StartedAt = DateTime.UtcNow.AddDays(-2),
+            DurationSeconds = 1200,
+            Exercises = new List<CompletedExerciseDto>
+            {
+                new()
+                {
+                    ExerciseId = "goblet-squat",
+                    ExerciseName = "Goblet Squat",
+                    TargetSets = 3,
+                    WeightKg = 20m,
+                    Sets = new List<CompletedSetDto> { new() { Reps = 10, DurationSeconds = 30 } }
+                }
+            }
+        };
+        (await client.PostAsJsonAsync("/api/runner/sessions", earlier)).EnsureSuccessStatusCode();
+
+        // Later session: goblet-squat 30 kg
+        var later = new SaveSessionRequest
+        {
+            PlanName = "Late",
+            StartedAt = DateTime.UtcNow,
+            DurationSeconds = 1200,
+            Exercises = new List<CompletedExerciseDto>
+            {
+                new()
+                {
+                    ExerciseId = "goblet-squat",
+                    ExerciseName = "Goblet Squat",
+                    TargetSets = 3,
+                    WeightKg = 30m,
+                    Sets = new List<CompletedSetDto> { new() { Reps = 10, DurationSeconds = 30 } }
+                }
+            }
+        };
+        (await client.PostAsJsonAsync("/api/runner/sessions", later)).EnsureSuccessStatusCode();
+
+        var loads = await client.GetFromJsonAsync<Dictionary<string, decimal>>("/api/runner/last-loads");
+        Assert.NotNull(loads);
+        Assert.Single(loads!);
+        Assert.Equal(30m, loads["goblet-squat"]);
+    }
+
+    [Fact]
+    public async Task LastLoads_OmitsExercisesWithOnlyNullWeight()
+    {
+        var client = CreateAuthenticatedClient(out _);
+
+        var payload = new SaveSessionRequest
+        {
+            PlanName = "No weights",
+            StartedAt = DateTime.UtcNow,
+            DurationSeconds = 600,
+            Exercises = new List<CompletedExerciseDto>
+            {
+                new()
+                {
+                    ExerciseId = "push-up",
+                    ExerciseName = "Push-Up",
+                    TargetSets = 2,
+                    WeightKg = null,
+                    Sets = new List<CompletedSetDto> { new() { Reps = 12, DurationSeconds = 30 } }
+                }
+            }
+        };
+        (await client.PostAsJsonAsync("/api/runner/sessions", payload)).EnsureSuccessStatusCode();
+
+        var loads = await client.GetFromJsonAsync<Dictionary<string, decimal>>("/api/runner/last-loads");
+        Assert.NotNull(loads);
+        Assert.Empty(loads!);
+    }
+
+    [Fact]
+    public async Task LastLoads_RequiresAuthentication()
+    {
+        var client = _factory.CreateClient();
+        var response = await client.GetAsync("/api/runner/last-loads");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
 }

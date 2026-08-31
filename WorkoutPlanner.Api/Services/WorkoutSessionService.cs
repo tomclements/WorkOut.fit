@@ -80,4 +80,27 @@ public class WorkoutSessionService : IWorkoutSessionService
         if (kg is null || kg.Value <= 0) return null;
         return Math.Round(kg.Value, 2, MidpointRounding.AwayFromZero);
     }
+
+    public async Task<Dictionary<string, decimal>> GetLastLoadsAsync(string userId)
+    {
+        var sessions = await _db.WorkoutSessions
+            .Where(s => s.UserId == userId)
+            .OrderByDescending(s => s.StartedAt)
+            .Include(s => s.Exercises)
+            .Select(s => new { s.StartedAt, s.Exercises })
+            .ToListAsync();
+
+        var result = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+        foreach (var session in sessions)
+        {
+            foreach (var ex in session.Exercises)
+            {
+                if (ex.WeightKg is > 0 && !result.ContainsKey(ex.ExerciseId))
+                {
+                    result[ex.ExerciseId] = ex.WeightKg.Value;
+                }
+            }
+        }
+        return result;
+    }
 }
