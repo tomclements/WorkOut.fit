@@ -1167,7 +1167,7 @@ async function updateNextWorkoutCard() {
     const focus = nextDay.focus || nextDay.sessionStyle || 'Strength';
     document.getElementById('nextWorkoutInfo').textContent =
       `Week ${nextWeek.week} — ${nextDay.day} · ${focus} · ${split} · ${goal}`;
-    document.getElementById('nextWorkoutBtn').href = '/workout.html';
+    document.getElementById('nextWorkoutBtn').href = '/workout.html?setup=1';
     card.classList.remove('hidden');
   } catch {
     card.classList.add('hidden');
@@ -1403,7 +1403,7 @@ async function deleteSavedPlan(id) {
 
 function runPlan(id) {
   try { localStorage.setItem('workoutPlanSavedId', String(id)); } catch { /* ignore */ }
-  window.location.href = `/workout.html?planId=${id}`;
+  window.location.href = `/workout.html?planId=${id}&setup=1`;
 }
 
 async function saveCurrentPlan() {
@@ -1721,7 +1721,7 @@ function renderPlan(result) {
 
   document.getElementById('results').classList.remove('hidden');
   startWorkoutBtn.classList.remove('hidden');
-  startWorkoutBtn.href = currentPlanId ? `/workout.html?planId=${currentPlanId}` : '/workout.html';
+  startWorkoutBtn.href = currentPlanId ? `/workout.html?planId=${currentPlanId}&setup=1` : '/workout.html?setup=1';
   const regenBtn = document.getElementById('regenerateBtn');
   if (regenBtn) regenBtn.classList.remove('hidden');
   const regenHint = document.getElementById('regenerateHint');

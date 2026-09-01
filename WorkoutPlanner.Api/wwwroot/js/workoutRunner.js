@@ -638,6 +638,14 @@ async function defaultToNextWorkoutDay() {
 }
 
 function checkForResumableSession() {
+  const params = new URLSearchParams(window.location.search);
+  const setupMode = params.get('setup') === '1';
+  // Strip setup flag so a later refresh can still auto-resume
+  if (setupMode) {
+    const clean = window.location.pathname;
+    window.history.replaceState({}, '', clean);
+  }
+
   const saved = localStorage.getItem('workoutSession');
   if (!saved) return;
   let raw;
@@ -648,7 +656,13 @@ function checkForResumableSession() {
   const inProgress = (raw.phase === 'work' || raw.phase === 'rest')
     && Array.isArray(raw.sessionExercises) && raw.sessionExercises.length;
   if (inProgress) {
-    resumeSession();
+    if (setupMode) {
+      // From planner/dashboard/saved-plan: show resume banner, do not auto-resume
+      if (resumeBanner) resumeBanner.classList.remove('hidden');
+    } else {
+      // Refresh mid-workout, PWA, bottom-nav: auto-resume
+      resumeSession();
+    }
     return;
   }
   if (resumeBanner) resumeBanner.classList.remove('hidden');
