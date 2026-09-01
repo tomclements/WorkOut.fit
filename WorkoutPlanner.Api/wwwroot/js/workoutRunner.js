@@ -170,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       overflowWasPaused = true;
     }
+    syncOverflowWeightRow();
   };
   const closeOverflow = () => {
     if (!overflowModal) return;
@@ -179,6 +180,71 @@ document.addEventListener('DOMContentLoaded', () => {
       resumeWorkout();
     }
   };
+
+  // Working-weight row in overflow panel
+  const overflowWeightRow = byId('overflowWeightRow');
+  const overflowWeightInput = byId('overflowWorkingWeight');
+  const overflowWeightUnit = byId('overflowWeightUnit');
+  const overflowWeightHint = byId('overflowWeightHint');
+
+  function syncOverflowWeightRow() {
+    if (!overflowWeightRow) return;
+    const ex = sessionExercises[currentExerciseIndex];
+    if (!ex || phase === 'setup' || phase === 'finish') {
+      overflowWeightRow.classList.add('hidden');
+      return;
+    }
+    const cat = previewCache && previewCache[ex.id];
+    const merged = { ...ex, equipment: (ex.equipment && ex.equipment.length) ? ex.equipment : (cat && cat.equipment) || [] };
+    const needsWeight = Engine && typeof Engine.requiresWorkingWeight === 'function'
+      ? Engine.requiresWorkingWeight(merged)
+      : false;
+    if (!needsWeight) {
+      overflowWeightRow.classList.add('hidden');
+      return;
+    }
+    overflowWeightRow.classList.remove('hidden');
+    const unit = getRunnerWeightUnit();
+    if (overflowWeightUnit) overflowWeightUnit.textContent = unit;
+    const currentKg = ex.workingWeightKg;
+    if (currentKg != null && currentKg > 0) {
+      const display = unit === 'lb' ? Math.round(currentKg * 2.20462 * 10) / 10 : currentKg;
+      const decimals = unit === 'lb' ? 1 : (Number.isInteger(display) ? 0 : 2);
+      overflowWeightInput.value = display.toFixed(decimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+    } else {
+      overflowWeightInput.value = '';
+    }
+    // Progressive overload hint
+    if (overflowWeightHint && lastLoads && typeof lastLoads === 'object') {
+      const lastKg = lastLoads[ex.id];
+      if (lastKg && lastKg > 0) {
+        const suggestionKg = lastKg >= 20 ? lastKg + 2.5 : lastKg + 1;
+        const suggestDisplay = unit === 'lb' ? Math.round(suggestionKg * 2.20462 * 10) / 10 : suggestionKg;
+        const lastDisplay = unit === 'lb' ? Math.round(lastKg * 2.20462 * 10) / 10 : lastKg;
+        const sugDecimals = unit === 'lb' ? 1 : (Number.isInteger(suggestDisplay) ? 0 : 2);
+        const lastDecimals = unit === 'lb' ? 1 : (Number.isInteger(lastDisplay) ? 0 : 2);
+        overflowWeightHint.textContent = `Last: ${lastDisplay.toFixed(lastDecimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1')} ${unit} \u00b7 Try ${suggestDisplay.toFixed(sugDecimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1')} ${unit}`;
+        overflowWeightHint.classList.remove('hidden');
+      } else {
+        overflowWeightHint.classList.add('hidden');
+      }
+    }
+  }
+
+  if (overflowWeightInput) {
+    wire(overflowWeightInput, 'input', () => {
+      const ex = sessionExercises[currentExerciseIndex];
+      if (!ex) return;
+      const unit = getRunnerWeightUnit();
+      const raw = overflowWeightInput.value.trim();
+      if (!raw) {
+        ex.workingWeightKg = undefined;
+      } else {
+        ex.workingWeightKg = displayWeightToKg(raw, unit);
+      }
+      if (exerciseMetaEl) exerciseMetaEl.textContent = setWorkLabel(ex);
+    });
+  }
   wire(byId('workOverflowBtn'), 'click', openOverflow);
   wire(byId('restOverflowBtn'), 'click', openOverflow);
   wire(byId('closeOverflow'), 'click', closeOverflow);
@@ -223,6 +289,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Space / Enter: skip work/rest
   wire(document, 'keydown', (e) => {
     if (e.code !== 'Space' && e.code !== 'Enter') return;
+    const tag = e.target && e.target.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+    if (overflowModal && !overflowModal.classList.contains('hidden')) return;
     if (phase === 'work') {
       e.preventDefault();
       completeSet(true);
@@ -720,15 +789,32 @@ async function renderDayPreview() {
       : false;
     if (showWeight) anyWeightField = true;
     const weightRow = showWeight
-      ? `<div class="mt-1.5 flex items-center gap-2">
-          <label class="text-xs text-gray-500" for="workingWeight-${i}">Weight</label>
-          <input id="workingWeight-${i}" type="number" inputmode="decimal" min="0" step="0.5"
-            data-working-weight-index="${i}"
-            data-exercise-id="${escapeHtmlRunner(ex.id)}"
-            class="w-20 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
-            placeholder="—" aria-label="Working weight for ${escapeHtmlRunner(ex.name)}" />
-          <span class="text-xs text-gray-500">${escapeHtmlRunner(unit)}</span>
-        </div>`
+      ? (() => {
+          let hint = '';
+          if (lastLoads && typeof lastLoads === 'object') {
+            const lastKg = lastLoads[ex.id];
+            if (lastKg && lastKg > 0) {
+              const suggestionKg = lastKg >= 20 ? lastKg + 2.5 : lastKg + 1;
+              const lastDisplay = unit === 'lb' ? Math.round(lastKg * 2.20462 * 10) / 10 : lastKg;
+              const sugDisplay = unit === 'lb' ? Math.round(suggestionKg * 2.20462 * 10) / 10 : suggestionKg;
+              const ld = unit === 'lb' ? 1 : (Number.isInteger(lastDisplay) ? 0 : 2);
+              const sd = unit === 'lb' ? 1 : (Number.isInteger(sugDisplay) ? 0 : 2);
+              hint = `<div class="text-xs text-blue-600 mt-0.5">Last: ${lastDisplay.toFixed(ld).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1')} \u00b7 Try ${sugDisplay.toFixed(sd).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1')} ${unit}</div>`;
+            }
+          }
+          return `<div class="mt-1.5">
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-gray-500" for="workingWeight-${i}">Weight</label>
+            <input id="workingWeight-${i}" type="number" inputmode="decimal" min="0" step="0.5"
+              data-working-weight-index="${i}"
+              data-exercise-id="${escapeHtmlRunner(ex.id)}"
+              class="w-20 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+              placeholder="\u2014" aria-label="Working weight for ${escapeHtmlRunner(ex.name)}" />
+            <span class="text-xs text-gray-500">${escapeHtmlRunner(unit)}</span>
+          </div>
+          ${hint}
+        </div>`;
+        })()
       : '';
     return `<div>
       <div class="flex items-start justify-between gap-2">
@@ -919,7 +1005,7 @@ function swapAlternatives(ex) {
   const levelNum = { beginner: 1, intermediate: 2, advanced: 3 }[criteria.level] || 1;
   const usedIds = new Set((previewSelectedDay()?.exercises || []).map(e => e.id));
   // Rehab-to-mechanics mapping (mirrors InjuryRules.RehabToMechanics on the server)
-  const rehabToMechanics = { shoulder: ['rotator-cuff'], knee: ['patellar'] };
+  const rehabToMechanics = { shoulder: ['rotator-cuff'], knee: ['patellar'], 'rotator-cuff': ['rotator-cuff'], patellar: ['patellar'] };
   function matchesRehab(c) {
     if (!rehabAreas.length || !c.mechanics?.rehab) return false;
     const mr = c.mechanics.rehab.toLowerCase();

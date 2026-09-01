@@ -687,19 +687,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         if (restrictions == null || restrictions.Count == 0) return false;
         return ex.AvoidFor.Any(a =>
             restrictions.Contains(a, StringComparer.OrdinalIgnoreCase) &&
-            !IsAllowlisted(ex.Id, a, rehab));
-    }
-
-    /// <summary>
-    /// Returns true when the exercise ID is on the server-side allowlist for the given
-    /// injury area AND the user has selected that area for rehab.
-    /// </summary>
-    private static bool IsAllowlisted(string exerciseId, string injuryArea, List<string>? rehab)
-    {
-        if (rehab == null || rehab.Count == 0) return false;
-        if (!rehab.Contains(injuryArea, StringComparer.OrdinalIgnoreCase)) return false;
-        if (!InjuryRules.AllowlistedExerciseIds.TryGetValue(injuryArea, out var allowed)) return false;
-        return allowed.Contains(exerciseId);
+            !InjuryRules.IsAllowlisted(ex.Id, a, rehab));
     }
 
     /// <summary>Mobility/warm rolls that stress a restricted body part, so warm-up/cool-down
@@ -707,15 +695,17 @@ public class WorkoutPlannerService : IWorkoutPlannerService
     private static readonly Dictionary<string, string[]> RestrictedMobilityGroups = new(StringComparer.OrdinalIgnoreCase)
     {
         ["shoulder"] = new[] { "shoulders", "triceps", "biceps", "chest", "forearms" },
+        ["rotator-cuff"] = new[] { "shoulders", "triceps", "biceps", "chest", "forearms" },
         ["elbow"] = new[] { "triceps", "biceps", "forearms", "chest" },
         ["wrist"] = new[] { "forearms", "biceps", "triceps" },
         ["neck"] = new[] { "neck", "shoulders" },
         ["knee"] = new[] { "quads", "hamstrings", "glutes", "calves" },
+        ["patellar"] = new[] { "quads", "hamstrings", "glutes", "calves" },
         ["lower-back"] = new[] { "back", "hamstrings", "hips", "glutes" }
     };
 
     /// <summary>Mobility moves that load weight through the arms/hands during pressing, so they stress
-    /// shoulder and wrist even when their muscle targets are core/back (e.g. prone press-up / cobra).</summary>
+    /// shoulder, wrist, and rotator-cuff even when their muscle targets are core/back (e.g. prone press-up / cobra).</summary>
     private static readonly HashSet<string> MobilityWeightBearingUpper = new(StringComparer.OrdinalIgnoreCase)
     {
         "cd-cobra"
@@ -726,14 +716,15 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         if (ex?.Primary == null || restrictions == null || restrictions.Count == 0) return false;
         if (ex.Id != null && MobilityWeightBearingUpper.Contains(ex.Id) &&
             restrictions.Any(r => r.Equals("shoulder", StringComparison.OrdinalIgnoreCase) ||
-                                  r.Equals("wrist", StringComparison.OrdinalIgnoreCase)))
+                                  r.Equals("wrist", StringComparison.OrdinalIgnoreCase) ||
+                                  r.Equals("rotator-cuff", StringComparison.OrdinalIgnoreCase)))
             return true;
         foreach (var r in restrictions)
         {
             if (!RestrictedMobilityGroups.TryGetValue(r, out var groups)) continue;
             if (groups.Any(g => ex.Primary.Contains(g, StringComparer.OrdinalIgnoreCase)))
             {
-                if (!IsAllowlisted(ex.Id ?? "", r, rehab)) return true;
+                if (!InjuryRules.IsAllowlisted(ex.Id ?? "", r, rehab)) return true;
             }
         }
         return false;

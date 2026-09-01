@@ -30,9 +30,31 @@ public static class RehabProgressionCatalog
                     Cue = "Pull the band apart to chest height, squeezing your shoulder blades together.",
                     StopIf = "Stop if pain climbs during the set.",
                     DemoExerciseId = "band-pull-apart" },
-                new() { Stage = 4, Name = "Controlled row → light press",
+                new() { Stage = 4, Name = "Controlled row \u2192 light press",
                     Cue = "Reintroduce rowing, then pressing, only once rows are completely pain-free.",
-                    StopIf = "Stop if pressing brings back the original pain — go back a stage." }
+                    StopIf = "Stop if pressing brings back the original pain \u2014 go back a stage." }
+            }
+        },
+        ["rotator-cuff"] = new RehabProgressionArea
+        {
+            Area = "rotator-cuff",
+            Label = "Rotator cuff",
+            Stages = new List<RehabProgressionStage>
+            {
+                new() { Stage = 1, Name = "Pendulum swings",
+                    Cue = "Lean forward, let the arm hang, swing gently in small circles. Keep it passive.",
+                    StopIf = "Stop if the shoulder pinches or aches sharply." },
+                new() { Stage = 2, Name = "Band external rotation",
+                    Cue = "Elbow glued to your side, rotate the hand outward against a light band, slow on the way back.",
+                    StopIf = "Stop if the shoulder aches for hours afterwards.",
+                    DemoExerciseId = "external-rotation-with-band" },
+                new() { Stage = 3, Name = "Band pull-apart",
+                    Cue = "Pull the band apart to chest height, squeezing your shoulder blades together.",
+                    StopIf = "Stop if pain climbs during the set.",
+                    DemoExerciseId = "band-pull-apart" },
+                new() { Stage = 4, Name = "Light rows (no overhead)",
+                    Cue = "Reintroduce rowing at light load; avoid overhead pressing until pain-free.",
+                    StopIf = "Stop if pressing brings back the original pain \u2014 go back a stage." }
             }
         },
         ["knee"] = new RehabProgressionArea
@@ -45,13 +67,33 @@ public static class RehabProgressionCatalog
                     Cue = "Tighten the thigh with the leg straight, hold 5s, then progress to raising the leg.",
                     StopIf = "Stop if the knee swells or locks." },
                 new() { Stage = 2, Name = "Shallow wall sit",
-                    Cue = "Back to a wall, slide down only 30–40°, hold. Keep the angle small and pain-free.",
+                    Cue = "Back to a wall, slide down only 30\u201340\u00b0, hold. Keep the angle small and pain-free.",
                     StopIf = "Stop if you feel pain under or around the kneecap." },
                 new() { Stage = 3, Name = "Low step-up",
                     Cue = "Step up onto a low stair, drive through the whole foot, step down slowly.",
                     StopIf = "Stop if the knee feels unstable or painful on the way down." },
-                new() { Stage = 4, Name = "Split squat → squat",
+                new() { Stage = 4, Name = "Split squat \u2192 squat",
                     Cue = "Build depth gradually; only add load once bodyweight squats are pain-free.",
+                    StopIf = DefaultStop }
+            }
+        },
+        ["patellar"] = new RehabProgressionArea
+        {
+            Area = "patellar",
+            Label = "Kneecap",
+            Stages = new List<RehabProgressionStage>
+            {
+                new() { Stage = 1, Name = "Quad sets",
+                    Cue = "Tighten the thigh muscle with the leg straight, hold 5s, repeat. This activates the VMO without loading the kneecap.",
+                    StopIf = "Stop if you feel pain behind or around the kneecap." },
+                new() { Stage = 2, Name = "Shallow wall sit",
+                    Cue = "Back against a wall, slide down only 30\u201340\u00b0. Keep the angle shallow and pain-free.",
+                    StopIf = "Stop if the kneecap aches during or after the hold." },
+                new() { Stage = 3, Name = "Low step-up",
+                    Cue = "Step onto a low box, drive through the whole foot, step down under control.",
+                    StopIf = "Stop if the knee feels unstable or the kneecap tracks poorly." },
+                new() { Stage = 4, Name = "Partial squat",
+                    Cue = "Bodyweight squat to a comfortable depth; do not push through kneecap pain.",
                     StopIf = DefaultStop }
             }
         },

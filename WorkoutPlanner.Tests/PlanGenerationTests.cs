@@ -993,6 +993,42 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
+    public async Task GeneratePlan_RotatorCuffRestriction_ExcludesReverseFlyesAndFacePull()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 5,
+            SessionMinutes = 40,
+            Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "barbell", "bands", "cable" },
+            Restrictions = new List<string> { "rotator-cuff" },
+            Rehab = new List<string> { "rotator-cuff" },
+            Goal = "full-body",
+            Level = "intermediate",
+            Seed = 42
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var exerciseIds = result!.Plan
+            .SelectMany(w => w.Days)
+            .Where(d => d.Type == "workout")
+            .SelectMany(d => d.Exercises)
+            .Select(e => e.Id)
+            .ToList();
+
+        Assert.DoesNotContain(exerciseIds, id =>
+            id.Equals("reverse-flyes", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(exerciseIds, id =>
+            id.Equals("lying-rear-delt-raise", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(exerciseIds, id =>
+            id.Equals("face-pull", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public async Task GeneratePlan_NoRestrictionsHealthyUser_NoExtraExclusions()
     {
         var request = new PlanRequest

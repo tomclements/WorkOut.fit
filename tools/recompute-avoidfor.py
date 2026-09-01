@@ -15,10 +15,14 @@ Rules of thumb per joint:
   lower-back : spinal flexion / axial compression / rotation / lateral buckling,
              or any hip-hinge pattern.
   neck     : cervical compression (shrugs, neck work, behind-the-neck).
+  rotator-cuff : overhead/elevated/horizontal mechanics, or rehab == rotator-cuff.
+  patellar : deep knee mechanics, or rehab == patellar.
 
 Usage:
-  python tools/recompute-avoidfor.py --dry-run   # preview tag diffs
-  python tools/recompute-avoidfor.py --write     # persist mechanics + avoidFor
+  python tools/recompute-avoidfor.py --dry-run      # preview tag diffs
+  python tools/recompute-avoidfor.py --write        # persist mechanics + avoidFor
+  python tools/recompute-avoidfor.py --avoid-only   # recompute avoidFor only (no mechanics rewrite)
+  python tools/recompute-avoidfor.py --avoid-only --write  # persist avoidFor only
 """
 import json
 import re
@@ -244,19 +248,18 @@ def author_mechanics(ex):
     return m
 
 
-def compute_avoidance(primary, m):
+def compute_avoidance(primary, m, secondary=None):
     """Mirror of InjuryRules.ComputeAvoidance (must stay in lockstep)."""
     primary = {p.lower() for p in primary}
-    rehab = (m.get("rehab") or "").lower()
-    rehabilitative = rehab in {"rotator-cuff", "patellar"}
+    secondary = {s.lower() for s in (secondary or [])}
+    all_muscles = primary | secondary
     avoid = set()
 
-    # shoulder
-    if not rehabilitative:
-        supported = m["handSupport"]
-        pos = m["shoulder"]
-        if supported or pos in {"overhead", "elevated", "horizontal"} or "shoulders" in primary:
-            avoid.add("shoulder")
+    # shoulder (C# never suppresses for rehab — allowlist gates inclusion)
+    supported = m["handSupport"]
+    pos = m["shoulder"]
+    if supported or pos in {"overhead", "elevated", "horizontal"} or "shoulders" in primary:
+        avoid.add("shoulder")
 
     # elbow
     arm_primary = bool(primary & ARM)
@@ -284,24 +287,52 @@ def compute_avoidance(primary, m):
     if m["neckCompress"]:
         avoid.add("neck")
 
+    # rotator-cuff: overhead/elevated/horizontal mechanics or rehab == rotator-cuff
+    rehab = (m.get("rehab") or "").lower()
+    if pos in {"overhead", "elevated", "horizontal"} or rehab == "rotator-cuff":
+        avoid.add("rotator-cuff")
+
+    # patellar: deep knee mechanics or rehab == patellar
+    if m["knee"] == "deep" or rehab == "patellar":
+        avoid.add("patellar")
+
+    # Muscle-based safety net — always runs (mirrors C# ComputeAvoidance).
+    muscle_to_injury = {
+        "shoulder": ["shoulders", "rear-shoulders", "traps"],
+        "elbow": ["biceps", "triceps", "forearms"],
+        "wrist": ["forearms"],
+        "knee": ["quadriceps", "hamstrings", "glutes", "calves", "adductors", "abductors"],
+        "lower-back": ["lower back"],
+        "neck": ["neck"],
+    }
+    for injury, muscles in muscle_to_injury.items():
+        if any(m in all_muscles for m in muscles):
+            avoid.add(injury)
+
     return sorted(avoid, key=str.lower)
 
 
 def main():
+    avoid_only = "--avoid-only" in sys.argv
     dry = "--write" not in sys.argv
     with open(SEED, encoding="utf-8") as f:
         data = json.load(f)
 
     gained = Counter()
     removed = Counter()
-    gained_ex = {t: [] for t in ["shoulder", "elbow", "wrist", "knee", "lower-back", "neck"]}
-    removed_ex = {t: [] for t in ["shoulder", "elbow", "wrist", "knee", "lower-back", "neck"]}
+    all_tags = ["shoulder", "elbow", "wrist", "knee", "lower-back", "neck", "rotator-cuff", "patellar"]
+    gained_ex = {t: [] for t in all_tags}
+    removed_ex = {t: [] for t in all_tags}
 
     for ex in data:
         before = set(ex.get("avoidFor", []))
-        m = author_mechanics(ex)
-        ex["mechanics"] = m
-        after = set(compute_avoidance(ex.get("primary", []), m))
+        if avoid_only:
+            # --avoid-only: use existing mechanics, only recompute avoidFor
+            m = ex.get("mechanics") or _default_mechanics()
+        else:
+            m = author_mechanics(ex)
+            ex["mechanics"] = m
+        after = set(compute_avoidance(ex.get("primary", []), m, ex.get("secondary", [])))
         ex["avoidFor"] = sorted(after, key=str.lower)
         gained.update(after - before)
         removed.update(before - after)
@@ -314,8 +345,8 @@ def main():
 
     print("exercise count:", len(data))
     print("-- net tag changes --")
-    for t in ["shoulder", "elbow", "wrist", "knee", "lower-back", "neck"]:
-        print(f"{t:10s} +{gained[t]:4d}  -{removed[t]:4d}  gained eg: {gained_ex[t]}  removed eg: {removed_ex[t]}")
+    for t in all_tags:
+        print(f"{t:12s} +{gained[t]:4d}  -{removed[t]:4d}  gained eg: {gained_ex[t]}  removed eg: {removed_ex[t]}")
 
     if dry:
         print("\n(dry run — pass --write to persist)")

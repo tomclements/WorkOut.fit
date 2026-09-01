@@ -1746,7 +1746,9 @@ function renderPlan(result) {
         Object.entries(loads).forEach(([exerciseId, kg]) => {
           document.querySelectorAll(`[data-last-load-for="${exerciseId}"]`).forEach(el => {
             const display = weightToLabel(kg);
-            el.textContent = `Last: ${display}`;
+            const suggestionKg = kg >= 20 ? kg + 2.5 : kg + 1;
+            const tryDisplay = weightToLabel(suggestionKg);
+            el.textContent = `Last: ${display} \u00b7 try ${tryDisplay}`;
             el.classList.remove('hidden');
           });
         });

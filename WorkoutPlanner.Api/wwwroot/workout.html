@@ -62,8 +62,8 @@
     <section id="setupScreen" class="runner-screen active bg-white rounded-xl shadow p-6">
       <h2 id="setupHeading" class="text-xl font-semibold mb-2">Ready to train</h2>
       <p id="setupIntro" class="text-sm text-gray-600 mb-4">
-        Timer-based sets: work countdown → rest countdown → next set. Aim for the listed reps during each work interval.
-        For weighted moves you can enter a working weight before you start — leave it blank if you do not know yet.
+        Review your weights and pick your music, then tap Start.
+        Working weight is optional — leave it blank if you do not know yet.
       </p>
 
       <div id="loadError" class="text-sm text-red-600 mb-4 hidden"></div>
@@ -106,10 +106,6 @@
         <div id="previewEquipment" class="text-xs text-gray-500 mt-3"></div>
       </div>
 
-      <button id="startBtn" class="cta-start w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation shadow-md">
-        Start workout
-      </button>
-
       <!-- Sound & music settings -->
       <div id="setupMusic" class="mt-4 border rounded-lg bg-white p-4 space-y-3">
         <h3 class="text-sm font-semibold text-gray-700">Sound &amp; music</h3>
@@ -147,6 +143,10 @@
             Test sound &amp; beeps
           </button>
       </div>
+
+      <button id="startBtn" class="cta-start w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation shadow-md mt-4">
+        Start workout
+      </button>
 
       <p class="text-xs text-gray-500 mt-3 text-center">
         Screen stays awake during the session. Timers auto-advance; skip anytime.
@@ -285,6 +285,16 @@
           <div class="flex items-center justify-between gap-3">
             <label class="text-sm font-medium text-gray-700" for="voiceCuesToggleActive">Voice cues</label>
             <input id="voiceCuesToggleActive" type="checkbox" class="rounded text-blue-600 w-5 h-5" />
+          </div>
+          <div id="overflowWeightRow" class="hidden">
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="overflowWorkingWeight">Working weight</label>
+            <div class="flex items-center gap-2">
+              <input id="overflowWorkingWeight" type="number" inputmode="decimal" min="0" step="0.5"
+                class="w-24 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+                placeholder="—" aria-label="Working weight for current exercise" />
+              <span id="overflowWeightUnit" class="text-xs text-gray-500">kg</span>
+            </div>
+            <div id="overflowWeightHint" class="text-xs text-gray-500 mt-1 hidden"></div>
           </div>
           <button id="overflowViewAllBtn" type="button" class="w-full bg-gray-100 active:bg-gray-200 text-blue-700 font-semibold py-3 px-4 rounded-lg touch-manipulation min-h-[3rem]">
             View all moves
