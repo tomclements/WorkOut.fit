@@ -31,6 +31,7 @@ let previewCache = null;      // cached exercise catalog (id -> exercise) for pr
 let previewCachePromise = null;
 let lastLoads = null;         // { exerciseId: kg } from most recent session
 let lastLoadsFetchPromise = null;  // dedup: track in-flight fetch
+let previewRenderInFlight = false; // guard: avoid concurrent preview renders
 
 const setupScreen = document.getElementById('setupScreen');
 const activeScreen = document.getElementById('activeScreen');
@@ -756,6 +757,12 @@ async function ensurePreviewCache() {
 }
 
 async function renderDayPreview() {
+  if (previewRenderInFlight) return;
+  previewRenderInFlight = true;
+  try { await _renderDayPreviewInner(); } finally { previewRenderInFlight = false; }
+}
+
+async function _renderDayPreviewInner() {
   const day = previewSelectedDay();
   const preview = document.getElementById('dayPreview');
   if (!day || day.type !== 'workout') {
@@ -863,27 +870,16 @@ async function renderDayPreview() {
         const newUnit = btn.getAttribute('data-runner-unit');
         if (newUnit === getRunnerWeightUnit()) return;
         try { localStorage.setItem(WEIGHT_UNIT_KEY, newUnit); } catch { /* ignore */ }
-        const converter = newUnit === 'lb'
-          ? (kg) => Math.round(kg * 2.20462 * 10) / 10
-          : (lb) => Math.round(lb * 0.45359237 * 100) / 100;
-        moves.querySelectorAll('[data-working-weight-index]').forEach(input => {
-          const raw = input.value.trim();
-          if (!raw) return;
-          const n = parseFloat(raw);
-          if (!Number.isFinite(n)) return;
-          const converted = converter(n);
-          const decimals = newUnit === 'lb' ? 1 : (Number.isInteger(converted) ? 0 : 2);
-          input.value = converted.toFixed(decimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
-        });
-        moves.querySelectorAll('[data-working-weight-index]').forEach(input => {
-          const span = input.parentElement && input.parentElement.querySelector('span.text-xs.text-gray-500');
-          if (span) span.textContent = newUnit;
-        });
+        // Update unit toggle button styles
         document.querySelectorAll('[data-runner-unit]').forEach(b => {
           const isSelected = b.getAttribute('data-runner-unit') === newUnit;
           const isLb = b.getAttribute('data-runner-unit') === 'lb';
           b.className = `px-2 py-1 ${isSelected ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'} transition${isLb ? ' border-l border-gray-300' : ''}`;
         });
+        // Re-render to refresh Try Y labels with the new unit (preserves typed values)
+        refreshPreviewHints();
+        // If overflow is open, re-sync its weight row for the new unit
+        if (overflowModal && !overflowModal.classList.contains('hidden')) syncOverflowWeightRow();
       });
     });
   }
@@ -924,6 +920,21 @@ function applyLastLoads() {
   });
 }
 
+async function refreshPreviewHints() {
+  // Save current input values so the user doesn't lose what they typed
+  const saved = {};
+  document.querySelectorAll('[data-working-weight-index]').forEach(input => {
+    const idx = input.getAttribute('data-working-weight-index');
+    if (input.value.trim()) saved[idx] = input.value;
+  });
+  await renderDayPreview();
+  // Restore saved values (applyLastLoads inside renderDayPreview only fills blanks)
+  Object.entries(saved).forEach(([idx, val]) => {
+    const input = document.querySelector(`[data-working-weight-index="${idx}"]`);
+    if (input) input.value = val;
+  });
+}
+
 async function fetchLastLoadsIfSignedIn() {
   // Already fetched — just apply prefills
   if (lastLoads && typeof lastLoads === 'object') {
@@ -944,7 +955,8 @@ async function fetchLastLoadsIfSignedIn() {
     })
     .then(data => {
       if (data && typeof data === 'object') lastLoads = data;
-      applyLastLoads();
+      // Re-render so Try Y buttons appear (applyLastLoads fills blank inputs after render)
+      refreshPreviewHints();
     })
     .catch(() => { /* ignore; fields stay blank */ })
     .finally(() => { lastLoadsFetchPromise = null; });
