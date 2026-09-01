@@ -383,12 +383,20 @@ public class ExerciseDataTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
-    public void AllowlistedExercise_ForPatellarRehab_ShouldNotBeExcluded()
+    public void ComputeAvoidance_ModerateHinge_HasKneeButNotPatellar()
     {
-        // band-pull-apart is NOT patellar-related, so use a valid allowlisted ID check
-        // Just verify IsAllowlisted works for patellar parent coverage
-        var allowlisted = InjuryRules.IsAllowlisted("band-pull-apart", "rotator-cuff", new List<string> { "shoulder" });
-        Assert.True(allowlisted, "shoulder rehab should cover rotator-cuff allowlist");
+        var exercises = LoadExercises();
+        // Reverse Band Deadlift has mechanics.knee == moderate, hip == hinge
+        var rdl = exercises.FirstOrDefault(e =>
+            e.Id.Equals("reverse-band-deadlift", StringComparison.OrdinalIgnoreCase))
+            ?? exercises.FirstOrDefault(e =>
+                e.Id.Equals("barbell-rdl", StringComparison.OrdinalIgnoreCase))
+            ?? exercises.FirstOrDefault(e =>
+                e.Mechanics?.Knee == "moderate" && e.Mechanics?.Hip == "hinge");
+        Assert.NotNull(rdl);
+        var avoid = InjuryRules.ComputeAvoidance(rdl!);
+        Assert.Contains("knee", avoid);
+        Assert.DoesNotContain("patellar", avoid);
     }
 
     private static bool IsAllowlistedFor(string injuryArea, string exerciseId, List<string> rehab)

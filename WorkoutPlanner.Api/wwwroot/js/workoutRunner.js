@@ -138,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
   wire(musicBtn, 'click', toggleMusic);
   wire(musicStyleSelect, 'change', onMusicStyleChange);
   wire(musicStyleActive, 'change', onMusicStyleActiveChange);
+  wire(musicStyleActive, 'input', onMusicStyleActiveChange);
   wire(fullscreenBtn, 'click', toggleFullscreen);
   wire(contrastBtn, 'click', toggleHighContrast);
   wire(tvModeBtn, 'click', openCastModal);
@@ -223,8 +224,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const lastDisplay = unit === 'lb' ? Math.round(lastKg * 2.20462 * 10) / 10 : lastKg;
         const sugDecimals = unit === 'lb' ? 1 : (Number.isInteger(suggestDisplay) ? 0 : 2);
         const lastDecimals = unit === 'lb' ? 1 : (Number.isInteger(lastDisplay) ? 0 : 2);
-        overflowWeightHint.textContent = `Last: ${lastDisplay.toFixed(lastDecimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1')} ${unit} \u00b7 Try ${suggestDisplay.toFixed(sugDecimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1')} ${unit}`;
+        const lastStr = lastDisplay.toFixed(lastDecimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+        const sugStr = suggestDisplay.toFixed(sugDecimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+        overflowWeightHint.innerHTML = `<span>Last: ${lastStr} ${unit}</span> <button type="button" id="overflowTryWeight" class="underline font-medium hover:text-blue-800">Try ${sugStr} ${unit}</button>`;
         overflowWeightHint.classList.remove('hidden');
+        const tryBtn = overflowWeightHint.querySelector('#overflowTryWeight');
+        if (tryBtn) {
+          wire(tryBtn, 'click', () => {
+            if (!overflowWeightInput) return;
+            const tryKg = suggestionKg;
+            const tryDisplayVal = unit === 'lb' ? Math.round(tryKg * 2.20462 * 10) / 10 : tryKg;
+            const td = unit === 'lb' ? 1 : (Number.isInteger(tryDisplayVal) ? 0 : 2);
+            overflowWeightInput.value = tryDisplayVal.toFixed(td).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+            overflowWeightInput.dispatchEvent(new Event('input', { bubbles: true }));
+          });
+        }
       } else {
         overflowWeightHint.classList.add('hidden');
       }
@@ -799,7 +813,12 @@ async function renderDayPreview() {
               const sugDisplay = unit === 'lb' ? Math.round(suggestionKg * 2.20462 * 10) / 10 : suggestionKg;
               const ld = unit === 'lb' ? 1 : (Number.isInteger(lastDisplay) ? 0 : 2);
               const sd = unit === 'lb' ? 1 : (Number.isInteger(sugDisplay) ? 0 : 2);
-              hint = `<div class="text-xs text-blue-600 mt-0.5">Last: ${lastDisplay.toFixed(ld).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1')} \u00b7 Try ${sugDisplay.toFixed(sd).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1')} ${unit}</div>`;
+              const lastStr = lastDisplay.toFixed(ld).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+              const sugStr = sugDisplay.toFixed(sd).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+              hint = `<div class="text-xs text-blue-600 mt-0.5 flex items-center gap-1">
+                <span>Last: ${lastStr} ${unit}</span>
+                <button type="button" data-try-weight="${i}" data-try-kg="${suggestionKg}" class="underline font-medium hover:text-blue-800">Try ${sugStr} ${unit}</button>
+              </div>`;
             }
           }
           return `<div class="mt-1.5">
@@ -868,6 +887,22 @@ async function renderDayPreview() {
       });
     });
   }
+
+  // Try Y button: fills the weight input with the suggested value
+  moves.querySelectorAll('[data-try-weight]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = btn.getAttribute('data-try-weight');
+      const kg = parseFloat(btn.getAttribute('data-try-kg'));
+      if (!Number.isFinite(kg) || kg <= 0) return;
+      const input = moves.querySelector(`[data-working-weight-index="${idx}"]`);
+      if (!input) return;
+      const unit = getRunnerWeightUnit();
+      const display = unit === 'lb' ? Math.round(kg * 2.20462 * 10) / 10 : kg;
+      const decimals = unit === 'lb' ? 1 : (Number.isInteger(display) ? 0 : 2);
+      input.value = display.toFixed(decimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  });
 
   // Prefill blank working-weight fields from last session loads
   applyLastLoads();
