@@ -640,10 +640,11 @@ async function defaultToNextWorkoutDay() {
 function checkForResumableSession() {
   const params = new URLSearchParams(window.location.search);
   const setupMode = params.get('setup') === '1';
-  // Strip setup flag so a later refresh can still auto-resume
+  // Strip only setup flag so a later refresh can still auto-resume; keep planId etc.
   if (setupMode) {
-    const clean = window.location.pathname;
-    window.history.replaceState({}, '', clean);
+    params.delete('setup');
+    const qs = params.toString();
+    window.history.replaceState({}, '', qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
   }
 
   const saved = localStorage.getItem('workoutSession');
