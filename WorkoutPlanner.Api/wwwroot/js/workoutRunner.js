@@ -27,6 +27,7 @@ let pauseAccumulatedMs = 0;
 let ignoreVisibilityUntil = 0;
 let phaseBusy = false;
 let Engine = window.RunnerEngine || null;
+let OverflowSettings = window.OverflowSettings || null;
 let previewCache = null;      // cached exercise catalog (id -> exercise) for previews/analyze
 let previewCachePromise = null;
 let lastLoads = null;         // { exerciseId: kg } from most recent session
@@ -270,15 +271,14 @@ document.addEventListener('DOMContentLoaded', () => {
     openMovesList();
   });
   const overflowPanel = byId('overflowPanel') || (overflowModal && overflowModal.querySelector(':scope > div'));
-  const stopPanelEvent = (e) => e.stopPropagation();
-  ['click', 'pointerdown', 'pointerup', 'mousedown', 'mouseup', 'touchstart', 'touchend', 'change', 'input'].forEach((ev) => {
-    wire(overflowPanel, ev, stopPanelEvent);
-  });
+  const Overflow = OverflowSettings || window.OverflowSettings;
+  // Panel click may stopPropagation so overlay click-outside does not fire.
+  // Do NOT stop pointerdown/touchstart/mousedown (iOS native widgets).
+  // Do NOT attach stopPropagation on select/input/label/button/a/span.
   if (overflowPanel) {
-    overflowPanel.querySelectorAll('select, input, label, button, a, span').forEach((el) => {
-      ['click', 'pointerdown', 'touchstart', 'touchend', 'change', 'input'].forEach((ev) => {
-        wire(el, ev, stopPanelEvent);
-      });
+    wire(overflowPanel, 'click', (e) => {
+      const policy = Overflow && Overflow.overflowEventPolicy('panel', 'click');
+      if (!policy || policy.stopPropagation) e.stopPropagation();
     });
   }
   let ignoreOverlayCloseUntil = 0;
@@ -292,7 +292,9 @@ document.addEventListener('DOMContentLoaded', () => {
   wire(overflowPanel, 'focusin', bumpOverlayIgnore);
   wire(overflowModal, 'click', (e) => {
     if (Date.now() < ignoreOverlayCloseUntil) return;
-    if (overflowPanel && overflowPanel.contains(e.target)) return;
+    if (Overflow && overflowPanel) {
+      if (!Overflow.shouldCloseOverflow(e.target, overflowPanel)) return;
+    } else if (overflowPanel && overflowPanel.contains(e.target)) return;
     if (e.target === overflowModal) closeOverflow();
   });
 
@@ -451,23 +453,37 @@ function setMusicStyleUI(style) {
 function onMusicStyleChange() {
   const style = musicStyleSelect?.value || 'off';
   setMusicStyleUI(style);
-  if (musicEngine) musicEngine.setStyle(style);
-  try { localStorage.setItem('runnerMusicStyle', style); } catch { /* ignore */ }
+  const Overflow = OverflowSettings || window.OverflowSettings;
+  if (Overflow) {
+    Overflow.persistMusicStyle(style, localStorage, (s) => {
+      if (musicEngine) musicEngine.setStyle(s);
+    });
+  } else {
+    if (musicEngine) musicEngine.setStyle(style);
+    try { localStorage.setItem('runnerMusicStyle', style); } catch { /* ignore */ }
+  }
 }
 
 function onMusicStyleActiveChange() {
   const style = musicStyleActive?.value || 'off';
   setMusicStyleUI(style);
-  if (musicEngine) {
-    musicEngine.setStyle(style);
-    if (style === 'off' || style === 'device') {
-      musicEngine.stop();
-    } else if (phase === 'work' || phase === 'rest') {
-      musicEngine.start();
+  const Overflow = OverflowSettings || window.OverflowSettings;
+  const applyStyle = (s) => {
+    if (musicEngine) {
+      musicEngine.setStyle(s);
+      if (s === 'off' || s === 'device') {
+        musicEngine.stop();
+      } else if (phase === 'work' || phase === 'rest') {
+        musicEngine.start();
+      }
     }
+  };
+  if (Overflow) Overflow.persistMusicStyle(style, localStorage, applyStyle);
+  else {
+    applyStyle(style);
+    try { localStorage.setItem('runnerMusicStyle', style); } catch { /* ignore */ }
   }
   updateMusicButton();
-  try { localStorage.setItem('runnerMusicStyle', style); } catch { /* ignore */ }
 }
 
 function currentMusicStyle() {
@@ -1583,7 +1599,9 @@ function onVolumeChange(e) {
   const value = parseInt(e.target.value, 10);
   document.getElementById('volumeValue').textContent = value + '%';
   if (musicEngine) musicEngine.setBaseVolume(value / 100);
-  try { localStorage.setItem('runnerMusicVolume', String(value)); } catch { /* ignore */ }
+  const Overflow = OverflowSettings || window.OverflowSettings;
+  if (Overflow) Overflow.persistMusicVolume(value, localStorage);
+  else try { localStorage.setItem('runnerMusicVolume', String(value)); } catch { /* ignore */ }
 }
 
 async function handleVisibilityChange() {
@@ -2390,13 +2408,16 @@ function formatTime(totalSeconds) {
 // -------------------------- Voice + beeps --------------------------
 
 function initTonesToggle() {
+  const Overflow = OverflowSettings || window.OverflowSettings;
+  const pair = () => ({ setup: tonesToggle, overflow: tonesToggleActive });
   // Setup screen toggle
   if (tonesToggle) {
     const stored = localStorage.getItem('runnerTones');
     // Default ON if never set
     tonesToggle.checked = stored !== '0';
     tonesToggle.addEventListener('change', () => {
-      localStorage.setItem('runnerTones', tonesToggle.checked ? '1' : '0');
+      if (Overflow) Overflow.persistTones(tonesToggle.checked, localStorage, pair());
+      else localStorage.setItem('runnerTones', tonesToggle.checked ? '1' : '0');
       syncCueToggles();
     });
   }
@@ -2404,7 +2425,8 @@ function initTonesToggle() {
   if (tonesToggleActive) {
     tonesToggleActive.checked = tonesEnabled();
     const persistTonesActive = () => {
-      localStorage.setItem('runnerTones', tonesToggleActive.checked ? '1' : '0');
+      if (Overflow) Overflow.persistTones(tonesToggleActive.checked, localStorage, pair());
+      else localStorage.setItem('runnerTones', tonesToggleActive.checked ? '1' : '0');
       syncCueToggles();
     };
     tonesToggleActive.addEventListener('change', persistTonesActive);
@@ -2424,13 +2446,18 @@ function voiceCuesEnabled() {
 }
 
 function initVoiceCuesToggle() {
+  const Overflow = OverflowSettings || window.OverflowSettings;
+  const pair = () => ({ setup: voiceCuesToggle, overflow: voiceCuesToggleActive });
   // Setup screen toggle
   if (voiceCuesToggle) {
     const stored = localStorage.getItem('runnerVoiceCues');
     voiceCuesToggle.checked = stored === '1';
     voiceCuesToggle.addEventListener('change', () => {
-      localStorage.setItem('runnerVoiceCues', voiceCuesToggle.checked ? '1' : '0');
-      if (!voiceCuesToggle.checked) stopSpeech();
+      if (Overflow) Overflow.persistVoiceCues(voiceCuesToggle.checked, localStorage, pair(), stopSpeech);
+      else {
+        localStorage.setItem('runnerVoiceCues', voiceCuesToggle.checked ? '1' : '0');
+        if (!voiceCuesToggle.checked) stopSpeech();
+      }
       syncCueToggles();
     });
   }
@@ -2438,8 +2465,11 @@ function initVoiceCuesToggle() {
   if (voiceCuesToggleActive) {
     voiceCuesToggleActive.checked = voiceCuesEnabled();
     const persistVoiceActive = () => {
-      localStorage.setItem('runnerVoiceCues', voiceCuesToggleActive.checked ? '1' : '0');
-      if (!voiceCuesToggleActive.checked) stopSpeech();
+      if (Overflow) Overflow.persistVoiceCues(voiceCuesToggleActive.checked, localStorage, pair(), stopSpeech);
+      else {
+        localStorage.setItem('runnerVoiceCues', voiceCuesToggleActive.checked ? '1' : '0');
+        if (!voiceCuesToggleActive.checked) stopSpeech();
+      }
       syncCueToggles();
     };
     voiceCuesToggleActive.addEventListener('change', persistVoiceActive);
