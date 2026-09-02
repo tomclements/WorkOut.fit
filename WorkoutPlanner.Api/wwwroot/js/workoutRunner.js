@@ -62,6 +62,9 @@ const demoLinkEl = document.getElementById('demoLink');
 const timerDisplayEl = document.getElementById('timerDisplay');
 const workCueEl = document.getElementById('workCue');
 const workProgressBar = document.getElementById('workProgressBar');
+const workStatMoveEl = document.getElementById('workStatMove');
+const workStatSessionEl = document.getElementById('workStatSession');
+const workNextEl = document.getElementById('workNext');
 const completeSetBtn = document.getElementById('completeSetBtn');
 const musicBtn = document.getElementById('musicBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -1623,7 +1626,6 @@ async function handleVisibilityChange() {
     if (audioCtx && audioCtx.state === 'suspended') {
       try { await audioCtx.resume(); } catch { /* ignore */ }
     }
-    if (phase === 'work') startDemoFlip(demoLinkEl);
     if (phase === 'rest') startDemoFlip(nextDemoEl);
   }
 }
@@ -1824,10 +1826,7 @@ function fillExerciseHeader(ex) {
     workCueEl.textContent = `Aim for ${ex.repsDisplay || 'your target'} reps this set`;
     completeSetBtn.textContent = 'Finish set early';
   }
-  if (demoLinkEl) {
-    demoLinkEl.innerHTML = exerciseMediaHtml(ex);
-    startDemoFlip(demoLinkEl);
-  }
+  updateWorkStats();
 }
 
 // Preview phase removed — functions kept as no-ops for call-site compatibility
@@ -1931,6 +1930,7 @@ function tick() {
   if (phase === 'work') {
     if (timerDisplayEl) timerDisplayEl.textContent = formatTime(remaining);
     updatePhaseProgressBar(workProgressBar, remaining, phaseDurationSeconds);
+    updateWorkStats();
     maybeCountdownCue('work', remaining);
     if (remaining === 0) {
       if (navigator.vibrate) navigator.vibrate([40, 40, 40]);
@@ -2362,7 +2362,63 @@ function updateProgress() {
   const completedSets = sessionExercises.reduce((sum, ex) => sum + ex.completedSets.length, 0);
   const percent = Math.min(100, Math.round((completedSets / totalSets) * 100));
   progressBar.style.width = `${percent}%`;
-  progressText.textContent = `${percent}%`;
+  const moveNum = currentExerciseIndex + 1;
+  const totalMoves = sessionExercises.length;
+  progressText.textContent = totalMoves > 1
+    ? `${percent}% \u00B7 move ${moveNum} of ${totalMoves}`
+    : `${percent}%`;
+}
+
+function estimateRemainingSeconds() {
+  let secs = 0;
+  for (let i = currentExerciseIndex; i < sessionExercises.length; i++) {
+    const ex = sessionExercises[i];
+    const setsLeft = i === currentExerciseIndex
+      ? ex.sets - (ex.completedSets?.length || 0)
+      : ex.sets;
+    if (setsLeft <= 0) continue;
+    const work = ex.workDuration || 30;
+    const rest = ex.rest || 0;
+    for (let s = 0; s < setsLeft; s++) {
+      secs += work;
+      if (s < setsLeft - 1) secs += rest;
+    }
+  }
+  return secs;
+}
+
+function formatRemainingTime(secs) {
+  if (secs <= 0) return 'almost done';
+  const m = Math.ceil(secs / 60);
+  return m <= 1 ? 'about 1 min left' : `about ${m} min left`;
+}
+
+function updateWorkStats() {
+  const ex = currentExercise();
+  if (!ex) return;
+  if (workStatMoveEl) {
+    if (isMobilityExercise(ex)) {
+      const p = exercisePhase(ex);
+      workStatMoveEl.textContent = p === 'warmup' ? 'Warm-up move' : 'Cool-down move';
+    } else {
+      workStatMoveEl.textContent = `Set ${currentSetIndex + 1} of ${ex.sets}`;
+    }
+  }
+  if (workStatSessionEl) {
+    workStatSessionEl.textContent = formatRemainingTime(estimateRemainingSeconds());
+  }
+  if (workNextEl) {
+    const nextIdx = currentExerciseIndex + 1;
+    if (nextIdx < sessionExercises.length) {
+      const next = sessionExercises[nextIdx];
+      const meta = isMobilityExercise(next)
+        ? (exercisePhase(next) === 'warmup' ? 'warm-up' : 'cool-down')
+        : `${next.sets} \u00D7 ${next.repsDisplay || next.workDuration + 's'}`;
+      workNextEl.textContent = `Next: ${next.name} \u00B7 ${meta}`;
+    } else {
+      workNextEl.textContent = 'Last move';
+    }
+  }
 }
 
 

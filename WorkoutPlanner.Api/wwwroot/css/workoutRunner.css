@@ -36,7 +36,7 @@ body.tv-mode .big-timer {
 body.tv-mode #exerciseName {
   font-size: clamp(1.75rem, 5vw, 2.75rem);
 }
-body.tv-mode .demo-panel {
+body.tv-mode .demo-panel--rest {
   max-height: 28vh;
 }
 body.tv-mode .bottom-nav,
@@ -69,7 +69,6 @@ body.work-phase.tv-mode #activeScreen #timerDisplay,
 body.rest-phase.tv-mode #restTimer {
   font-size: clamp(7rem, 20vw, 14rem) !important;
 }
-body.tv-mode.work-phase #activeScreen .demo-frame,
 body.tv-mode.rest-phase #restScreen .demo-frame {
   max-height: 28vh;
   height: auto;
@@ -367,7 +366,7 @@ body.high-contrast .demo-actions a {
   }
 }
 
-/* Phone-optimized work mode — name·set, hero timer, target, demo, Done/Pause */
+/* Phone-optimized work mode — name·set, hero timer, target, Done/Pause */
 body.work-phase #activeScreen > .mb-4:first-child {
   display: none !important;
 }
@@ -438,19 +437,12 @@ body.work-phase #activeScreen #workCue {
   text-align: center !important;
 }
 
-body.work-phase #activeScreen .demo-panel {
-  max-width: min(100%, 16rem) !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  margin-bottom: 0.5rem !important;
-  flex: 0 1 auto;
-  min-height: 0;
+body.work-phase #activeScreen #workStats {
+  color: #94a3b8 !important;
 }
-body.work-phase #activeScreen .demo-frame {
-  max-width: min(100%, 16rem);
-  max-height: 28vh;
-  height: 28vh;
-  aspect-ratio: auto;
+body.work-phase #activeScreen #workNext {
+  color: #64748b !important;
+  font-style: italic;
 }
 
 /* Fat controls pinned to the thumb zone */
@@ -625,12 +617,12 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 
 /* ---------- Landscape (phone on side) ---------- */
 @media (orientation: landscape) and (max-height: 500px) {
-  /* Work screen landscape: name+target | hero timer | demo */
+  /* Work screen landscape: name+target | hero timer */
   body.work-phase #activeScreen {
     min-height: 100vh !important;
     padding: 0.5rem 1.25rem 4.75rem !important;
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, auto);
     align-items: center !important;
     justify-items: start;
     column-gap: 1.25rem;
@@ -660,27 +652,12 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
     margin-bottom: 0 !important;
   }
 
-  body.work-phase #activeScreen #demoLink {
-    grid-column: 3;
-    grid-row: 1 / span 2;
-    justify-self: center;
-  }
-
   body.work-phase #activeScreen #exerciseName {
     font-size: clamp(1.5rem, 4.5vw, 2.6rem) !important;
   }
 
   body.work-phase #activeScreen #timerDisplay {
     font-size: clamp(4.5rem, 20vw, 8.5rem) !important;
-  }
-
-  body.work-phase #activeScreen .demo-panel {
-    max-width: min(100%, 34vh) !important;
-  }
-
-  body.work-phase #activeScreen .demo-panel img,
-  body.work-phase #activeScreen .demo-panel video {
-    max-height: 38vh !important;
   }
 
   body.work-phase #activeScreen .grid-cols-2 {
@@ -1012,19 +989,6 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   body.work-phase:not(.tv-mode) #activeScreen .text-center.mb-4 {
     margin-bottom: 0.35rem !important;
   }
-  body.work-phase:not(.tv-mode) #activeScreen .demo-panel {
-    max-width: min(100%, 11rem) !important;
-    margin-bottom: 0.25rem !important;
-  }
-  body.work-phase:not(.tv-mode) #activeScreen .demo-frame {
-    max-width: min(100%, 11rem);
-    height: 20vh;
-    max-height: 20vh;
-  }
-  body.work-phase:not(.tv-mode) #activeScreen .demo-caption,
-  body.work-phase:not(.tv-mode) #activeScreen .demo-actions {
-    display: none !important;
-  }
   body.work-phase:not(.tv-mode) #activeScreen .grid-cols-2 {
     bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)) !important;
   }
@@ -1068,10 +1032,6 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   body.rest-phase:not(.tv-mode) #restTimer,
   body:not(.tv-mode) .big-timer {
     font-size: clamp(2.75rem, 13vw, 4rem) !important;
-  }
-  body.work-phase:not(.tv-mode) #activeScreen .demo-frame {
-    height: 14vh;
-    max-height: 14vh;
   }
   body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
   body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
