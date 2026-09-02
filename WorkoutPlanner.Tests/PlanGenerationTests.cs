@@ -832,6 +832,77 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
         Assert.Contains("HIIT", result.ProgressionSummary, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public async Task GeneratePlan_Hybrid5Days2Hiit_NotAdjacent()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 5,
+            WorkoutDays = new List<int> { 0, 1, 2, 3, 4 },
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight" },
+            Split = "full-body",
+            Goal = "hypertrophy",
+            Level = "beginner",
+            MixMode = "hybrid",
+            Progression = "none",
+            Seed = 7
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var workouts = result!.Plan.SelectMany(w => w.Days).Where(d => d.Type == "workout").ToList();
+        Assert.Equal(5, workouts.Count);
+        var hiitOrdinals = workouts.Select((w, i) => new { w.SessionStyle, Ordinal = i })
+            .Where(x => x.SessionStyle == "hiit")
+            .Select(x => x.Ordinal)
+            .ToList();
+        Assert.Equal(2, hiitOrdinals.Count);
+        Assert.True(Math.Abs(hiitOrdinals[0] - hiitOrdinals[1]) >= 2,
+            $"HIIT ordinals {string.Join(",", hiitOrdinals)} are adjacent");
+    }
+
+    [Fact]
+    public async Task GeneratePlan_Conditioning5Days3Hiit_NotThreeInARow()
+    {
+        var request = new PlanRequest
+        {
+            Weeks = 1,
+            DaysPerWeek = 5,
+            WorkoutDays = new List<int> { 0, 1, 2, 3, 4 },
+            SessionMinutes = 30,
+            Equipment = new List<string> { "dumbbells", "bodyweight" },
+            Split = "full-body",
+            Goal = "fat-loss",
+            Level = "beginner",
+            MixMode = "conditioning",
+            Progression = "none",
+            Seed = 9
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/plan", request);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PlanResponse>();
+        Assert.NotNull(result);
+
+        var workouts = result!.Plan.SelectMany(w => w.Days).Where(d => d.Type == "workout").ToList();
+        Assert.Equal(5, workouts.Count);
+        int hiit = workouts.Count(d => d.SessionStyle == "hiit");
+        Assert.Equal(3, hiit);
+
+        var hiitOrdinals = workouts.Select((w, i) => new { w.SessionStyle, Ordinal = i })
+            .Where(x => x.SessionStyle == "hiit")
+            .Select(x => x.Ordinal)
+            .ToList();
+        bool threeInARow = hiitOrdinals[0] == 0 && hiitOrdinals[1] == 1 && hiitOrdinals[2] == 2;
+        Assert.False(threeInARow,
+            $"HIIT ordinals {string.Join(",", hiitOrdinals)} — three in a row at the start");
+    }
+
     [Theory]
     [InlineData("bro-split")]
     [InlineData("ppl")]

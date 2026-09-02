@@ -548,7 +548,12 @@ public class WorkoutPlannerService : IWorkoutPlannerService
     }
 
     /// <summary>
-    /// Space HIIT days through the training week so hard sessions recover (not clustered).
+    /// Spread HIIT days through the training week so hard sessions don't sit
+    /// on consecutive training days.  Evenly divides workout slots into equal
+    /// segments and places each HIIT session at the segment centre, walking
+    /// forward (wrapping) if the slot is taken or neighbours an existing HIIT.
+    /// When hiitCount == workoutCount all days are HIIT; when one fewer than
+    /// workoutCount exactly one pair of consecutive HIIT is unavoidable.
     /// </summary>
     private static bool[] AssignHiitMask(int workoutCount, int hiitCount)
     {
@@ -563,15 +568,26 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
         for (int h = 0; h < hiitCount; h++)
         {
-            int pos = (int)Math.Round((h + 1.0) * workoutCount / (hiitCount + 1.0)) - 1;
-            pos = Math.Clamp(pos, 0, workoutCount - 1);
+            int ideal = workoutCount == hiitCount
+                ? h
+                : (int)Math.Round((double)h * workoutCount / hiitCount);
+            ideal = Math.Clamp(ideal, 0, workoutCount - 1);
+
+            int pos = ideal;
             int tries = 0;
-            while (mask[pos] && tries < workoutCount)
+            while (tries < workoutCount)
             {
+                if (!mask[pos])
+                {
+                    bool leftHiit  = pos > 0 && mask[pos - 1];
+                    bool rightHiit = pos < workoutCount - 1 && mask[pos + 1];
+                    if (!leftHiit && !rightHiit) break;
+                }
                 pos = (pos + 1) % workoutCount;
                 tries++;
             }
-            mask[pos] = true;
+
+            if (tries < workoutCount) mask[pos] = true;
         }
 
         return mask;
