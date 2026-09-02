@@ -148,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
   wire(byId('resumeWorkoutBtn'), 'click', resumeWorkout);
   wire(byId('restResumeWorkoutBtn'), 'click', resumeWorkout);
   wire(byId('volumeSlider'), 'input', onVolumeChange);
+  wire(byId('volumeSlider'), 'change', onVolumeChange);
   wire(window, 'beforeunload', handleBeforeUnload);
   wire(window, 'pagehide', persistSessionSnapshot);
 
@@ -269,9 +270,29 @@ document.addEventListener('DOMContentLoaded', () => {
     openMovesList();
   });
   const overflowPanel = byId('overflowPanel') || (overflowModal && overflowModal.querySelector(':scope > div'));
-  wire(overflowPanel, 'click', (e) => e.stopPropagation());
-  wire(overflowPanel, 'pointerdown', (e) => e.stopPropagation());
+  const stopPanelEvent = (e) => e.stopPropagation();
+  ['click', 'pointerdown', 'pointerup', 'mousedown', 'mouseup', 'touchstart', 'touchend', 'change', 'input'].forEach((ev) => {
+    wire(overflowPanel, ev, stopPanelEvent);
+  });
+  if (overflowPanel) {
+    overflowPanel.querySelectorAll('select, input, label, button, a, span').forEach((el) => {
+      ['click', 'pointerdown', 'touchstart', 'touchend', 'change', 'input'].forEach((ev) => {
+        wire(el, ev, stopPanelEvent);
+      });
+    });
+  }
+  let ignoreOverlayCloseUntil = 0;
+  const bumpOverlayIgnore = () => { ignoreOverlayCloseUntil = Date.now() + 800; };
+  ['pointerdown', 'touchstart', 'focus', 'blur', 'change', 'input'].forEach((ev) => {
+    wire(musicStyleActive, ev, bumpOverlayIgnore);
+    wire(byId('volumeSlider'), ev, bumpOverlayIgnore);
+    wire(tonesToggleActive, ev, bumpOverlayIgnore);
+    wire(voiceCuesToggleActive, ev, bumpOverlayIgnore);
+  });
+  wire(overflowPanel, 'focusin', bumpOverlayIgnore);
   wire(overflowModal, 'click', (e) => {
+    if (Date.now() < ignoreOverlayCloseUntil) return;
+    if (overflowPanel && overflowPanel.contains(e.target)) return;
     if (e.target === overflowModal) closeOverflow();
   });
 
@@ -1347,7 +1368,7 @@ async function startWorkout() {
 
   // Unlock audio / speech on the Start user gesture so rest 3-2-1 beeps can fire on iOS
   try {
-    const ctx = getAudioContext();
+    const ctx = await ensureAudioRunning();
     if (ctx) {
       await ctx.resume();
       const buf = ctx.createBuffer(1, 1, 22050);
@@ -1355,6 +1376,7 @@ async function startWorkout() {
       src.buffer = buf;
       src.connect(ctx.destination);
       src.start(0);
+      startSilentAudioKeepAlive(ctx);
     }
   } catch { /* ignore */ }
   if (window.speechSynthesis) window.speechSynthesis.getVoices();
@@ -1428,21 +1450,81 @@ async function startWorkout() {
   requestWakeLock().catch(() => {});
 }
 
-async function requestWakeLock() {
-  if ('wakeLock' in navigator) {
-    try {
-      wakeLock = await navigator.wakeLock.request('screen');
-    } catch {
-      // denied — continue
-    }
+let wakeLockWanted = false;
+let noSleepVideo = null;
+
+function ensureNoSleepVideo() {
+  if (noSleepVideo) return noSleepVideo;
+  const v = document.createElement('video');
+  v.setAttribute('playsinline', '');
+  v.setAttribute('webkit-playsinline', '');
+  v.setAttribute('muted', '');
+  v.muted = true;
+  v.defaultMuted = true;
+  v.loop = true;
+  v.playsInline = true;
+  v.autoplay = true;
+  v.setAttribute('aria-hidden', 'true');
+  v.tabIndex = -1;
+  v.style.cssText = 'position:fixed;width:2px;height:2px;opacity:0.01;pointer-events:none;bottom:0;left:0;z-index:0;';
+  v.src = '/nosleep.mp4';
+  document.body.appendChild(v);
+  noSleepVideo = v;
+  return v;
+}
+
+function pauseNoSleepVideo() {
+  if (noSleepVideo) {
+    try { noSleepVideo.pause(); } catch { /* ignore */ }
   }
 }
 
+function startNoSleepVideo() {
+  const v = ensureNoSleepVideo();
+  const play = () => v.play().catch(() => {});
+  play();
+  setTimeout(play, 50);
+}
+
+function stopNoSleepVideo() {
+  if (!noSleepVideo) return;
+  try { noSleepVideo.pause(); } catch { /* ignore */ }
+  try { noSleepVideo.remove(); } catch { /* ignore */ }
+  noSleepVideo = null;
+}
+
+async function requestWakeLock() {
+  wakeLockWanted = true;
+  let gotLock = false;
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      gotLock = !!wakeLock;
+      if (wakeLock && typeof wakeLock.addEventListener === 'function') {
+        wakeLock.addEventListener('release', () => {
+          if (wakeLockWanted && document.visibilityState === 'visible' && phase !== 'setup' && phase !== 'finish') {
+            requestWakeLock().catch(() => {});
+          }
+        });
+      }
+    } catch {
+      // denied — iOS Safari typically has no Screen Wake Lock
+    }
+  }
+  if (gotLock) {
+    pauseNoSleepVideo();
+    return;
+  }
+  startNoSleepVideo();
+}
+
 function releaseWakeLock() {
+  wakeLockWanted = false;
   if (wakeLock) {
     wakeLock.release().catch(() => {});
     wakeLock = null;
   }
+  stopNoSleepVideo();
 }
 
 function handleBeforeUnload(e) {
@@ -1484,6 +1566,7 @@ function resumeWorkout() {
   startTimer();
   updatePauseUI();
   saveSessionState();
+  requestWakeLock().catch(() => {});
 }
 
 function updatePauseUI() {
@@ -1510,14 +1593,18 @@ async function handleVisibilityChange() {
     if (!isPaused && phase !== 'setup' && phase !== 'finish') {
       pauseWorkout(true);
     }
+    pauseNoSleepVideo();
   } else {
-    if (autoPaused) {
-      resumeWorkout();
-    } else if (phase !== 'setup' && phase !== 'finish') {
+    if (phase !== 'setup' && phase !== 'finish') {
       await requestWakeLock();
     }
+    if (autoPaused) {
+      resumeWorkout();
+    }
     const audioCtx = sharedAudioCtx;
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+    if (audioCtx && audioCtx.state === 'suspended') {
+      try { await audioCtx.resume(); } catch { /* ignore */ }
+    }
     if (phase === 'work') startDemoFlip(demoLinkEl);
     if (phase === 'rest') startDemoFlip(nextDemoEl);
   }
@@ -2440,6 +2527,31 @@ function getAudioContext() {
   return sharedAudioCtx;
 }
 
+let silentKeepAliveNode = null;
+function startSilentAudioKeepAlive(ctx) {
+  if (!ctx || silentKeepAliveNode || ctx.state !== 'running') return;
+  try {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    gain.gain.value = 0.00001;
+    osc.frequency.value = 20;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    silentKeepAliveNode = osc;
+  } catch { /* ignore */ }
+}
+
+async function ensureAudioRunning() {
+  const ctx = getAudioContext();
+  if (!ctx) return null;
+  if (ctx.state !== 'running') {
+    try { await ctx.resume(); } catch { /* ignore */ }
+  }
+  if (ctx.state === 'running') startSilentAudioKeepAlive(ctx);
+  return ctx;
+}
+
 /**
  * Browsers (notably iOS/Android) suspend the AudioContext when the tab or
  * screen goes idle, and resume() needs a user gesture in some cases. Hook
@@ -2469,13 +2581,10 @@ function stopAudioKeepAlive() {
   audioKeepAliveInterval = null;
 }
 
-function beep(frequency = 880, duration = 0.15, volume = 0.7) {
+async function beep(frequency = 880, duration = 0.15, volume = 0.7) {
   try {
-    const ctx = getAudioContext();
-    // Kick off resume if needed (non-blocking — won't help this call but
-    // the keep-alive + pointer handler will catch future calls)
-    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
-    if (ctx.state !== 'running') return;
+    const ctx = await ensureAudioRunning();
+    if (!ctx || ctx.state !== 'running') return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'square';
@@ -2497,9 +2606,9 @@ function beep(frequency = 880, duration = 0.15, volume = 0.7) {
  * Verify audio before a session: unlocks the AudioContext on the button tap
  * and plays the same cue sounds the timers use.
  */
-function testSound() {
-  getAudioContext();
-  beep(1245, 0.25, 0.7);
+async function testSound() {
+  await ensureAudioRunning();
+  await beep(1245, 0.25, 0.7);
   setTimeout(() => beep(880, 0.2, 0.7), 300);
   setTimeout(() => beep(660, 0.3, 0.7), 600);
   setTimeout(() => speakCue('Test'), 150);

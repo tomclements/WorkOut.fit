@@ -65,8 +65,14 @@ body.tv-mode .demo-actions {
   display: none !important;
 }
 body.tv-mode #timerDisplay,
+body.work-phase.tv-mode #activeScreen #timerDisplay,
 body.rest-phase.tv-mode #restTimer {
   font-size: clamp(7rem, 20vw, 14rem) !important;
+}
+body.tv-mode.work-phase #activeScreen .demo-frame,
+body.tv-mode.rest-phase #restScreen .demo-frame {
+  max-height: 28vh;
+  height: auto;
 }
 
 .rep-display {
@@ -366,14 +372,34 @@ body.work-phase #activeScreen > .mb-4:first-child {
   display: none !important;
 }
 
+body.work-phase,
+body.rest-phase {
+  overflow: hidden;
+  height: 100dvh;
+  height: 100svh;
+}
+body.work-phase header,
+body.rest-phase header {
+  display: none !important;
+}
+
 body.work-phase #activeScreen {
-  padding: 0.9rem 1rem calc(7.5rem + env(safe-area-inset-bottom)) !important;
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  padding: 0.6rem 0.85rem calc(5.75rem + env(safe-area-inset-bottom, 0px)) !important;
+  padding-top: calc(0.55rem + env(safe-area-inset-top, 0px)) !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
-  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: 100svh;
+  height: 100dvh;
+  height: 100svh;
+  overflow: hidden;
   background: #0f172a !important;
   color: #f1f5f9 !important;
+  border-radius: 0 !important;
 }
 
 body.work-phase #activeScreen #exerciseName {
@@ -398,7 +424,7 @@ body.work-phase #activeScreen #setBadge {
 }
 
 body.work-phase #activeScreen #timerDisplay {
-  font-size: clamp(5.5rem, 27vw, 12rem) !important;
+  font-size: clamp(4rem, 18vw, 7.5rem) !important;
   line-height: 1 !important;
   text-align: center !important;
   color: #34d399 !important;
@@ -413,9 +439,18 @@ body.work-phase #activeScreen #workCue {
 }
 
 body.work-phase #activeScreen .demo-panel {
-  max-width: min(100%, 21rem) !important;
+  max-width: min(100%, 16rem) !important;
   margin-left: auto !important;
   margin-right: auto !important;
+  margin-bottom: 0.5rem !important;
+  flex: 0 1 auto;
+  min-height: 0;
+}
+body.work-phase #activeScreen .demo-frame {
+  max-width: min(100%, 16rem);
+  max-height: 28vh;
+  height: 28vh;
+  aspect-ratio: auto;
 }
 
 /* Fat controls pinned to the thumb zone */
@@ -429,8 +464,9 @@ body.work-phase #activeScreen .grid-cols-2 {
 }
 
 body.work-phase #activeScreen .grid-cols-2 button {
-  min-height: 4.75rem !important;
-  font-size: 1.45rem !important;
+  min-height: 3.5rem !important;
+  min-height: max(3.5rem, 44px) !important;
+  font-size: 1.25rem !important;
   border-radius: 1.1rem !important;
 }
 
@@ -502,11 +538,19 @@ body.rest-phase #restPausedOverlay:not(.hidden) button {
 
 /* ---------- Rest screen — phone on floor (portrait) ---------- */
 body.rest-phase #restScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  overflow: hidden;
   background: #0b1526 !important;
   color: #f1f5f9 !important;
-  padding-top: 1rem !important;
-  padding-bottom: calc(7.5rem + env(safe-area-inset-bottom)) !important;
-  min-height: 100vh !important;
+  padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px)) !important;
+  min-height: 100dvh !important;
+  min-height: 100svh !important;
+  height: 100dvh !important;
+  height: 100svh !important;
+  border-radius: 0 !important;
 }
 
 body.rest-phase #restScreen .text-center .uppercase {
@@ -516,7 +560,7 @@ body.rest-phase #restScreen .text-center .uppercase {
 }
 
 body.rest-phase #restTimer {
-  font-size: clamp(6rem, 24vw, 11rem) !important;
+  font-size: clamp(4rem, 18vw, 7.5rem) !important;
   line-height: 1 !important;
   color: #60a5fa !important;
   margin-bottom: 0.5rem !important;
@@ -941,4 +985,100 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 }
 #movesList .moves-item__meta {
   font-size: 0.9rem;
+}
+
+
+/* ---------- Short phone viewports: keep work/rest on-screen (not TV) ---------- */
+@media (max-height: 860px) {
+  body.work-phase:not(.tv-mode) #activeScreen {
+    padding: 0.4rem 0.7rem calc(5.15rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding-top: calc(0.4rem + env(safe-area-inset-top, 0px)) !important;
+    justify-content: flex-start !important;
+    gap: 0.25rem;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen #exerciseName {
+    font-size: clamp(1.2rem, 5vw, 1.7rem) !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen #exerciseMeta {
+    font-size: 0.9rem !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen #timerDisplay,
+  body.work-phase:not(.tv-mode) .big-timer {
+    font-size: clamp(3.25rem, 15vw, 5.25rem) !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen #workCue {
+    font-size: 1rem !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen .text-center.mb-4 {
+    margin-bottom: 0.35rem !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen .demo-panel {
+    max-width: min(100%, 11rem) !important;
+    margin-bottom: 0.25rem !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen .demo-frame {
+    max-width: min(100%, 11rem);
+    height: 20vh;
+    max-height: 20vh;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen .demo-caption,
+  body.work-phase:not(.tv-mode) #activeScreen .demo-actions {
+    display: none !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen .grid-cols-2 {
+    bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen .grid-cols-2 button {
+    min-height: 44px !important;
+    font-size: 1.05rem !important;
+    padding-top: 0.55rem !important;
+    padding-bottom: 0.55rem !important;
+  }
+
+  body.rest-phase:not(.tv-mode) #restScreen {
+    padding-top: calc(0.4rem + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: calc(5.15rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.rest-phase:not(.tv-mode) #restTimer,
+  body.rest-phase:not(.tv-mode) .big-timer {
+    font-size: clamp(3.25rem, 15vw, 5.25rem) !important;
+  }
+  body.rest-phase:not(.tv-mode) #nextExerciseName {
+    font-size: clamp(1.15rem, 4.5vw, 1.6rem) !important;
+  }
+  body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
+  body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
+    max-height: 18vh;
+    height: 18vh;
+    aspect-ratio: auto;
+  }
+  body.rest-phase:not(.tv-mode) #skipRestBtn {
+    min-height: 44px !important;
+    font-size: 1.1rem !important;
+  }
+  body.rest-phase:not(.tv-mode) #restOverflowBtn {
+    width: 44px !important;
+    min-width: 44px;
+    min-height: 44px !important;
+  }
+}
+
+@media (max-height: 700px) {
+  body.work-phase:not(.tv-mode) #activeScreen #timerDisplay,
+  body.rest-phase:not(.tv-mode) #restTimer,
+  body:not(.tv-mode) .big-timer {
+    font-size: clamp(2.75rem, 13vw, 4rem) !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen .demo-frame {
+    height: 14vh;
+    max-height: 14vh;
+  }
+  body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
+  body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
+    height: 12vh;
+    max-height: 12vh;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen #workCue {
+    font-size: 0.95rem !important;
+  }
 }
