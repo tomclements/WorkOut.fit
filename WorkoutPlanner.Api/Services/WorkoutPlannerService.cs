@@ -448,7 +448,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 Name = ex.Name,
                 Slot = ex.Slot,
                 Phase = "work",
-                Sets = rounds,
+                Sets = ApplyUnilateralEvenRounds(rounds, 5, ex),
                 RepsDisplay = $"{workSec}s",
                 Rest = restSec,
                 WorkDuration = workSec,
@@ -904,6 +904,39 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         return core;
     }
 
+
+    internal static readonly string[] UnilateralNameTokens =
+    {
+        "alternate", "alternating", "one-arm", "single-arm", "single-leg",
+        "per-arm", "each-arm", "pistol", "bulgarian", "see-saw", "seesaw", "renegade"
+    };
+
+    internal static bool IsUnilateralByTokens(string? id, string? name)
+    {
+        var hay = $"{id} {name}".ToLowerInvariant();
+        var spaced = hay.Replace('-', ' ');
+        foreach (var token in UnilateralNameTokens)
+        {
+            if (hay.Contains(token, StringComparison.Ordinal))
+                return true;
+            var spacedToken = token.Replace('-', ' ');
+            if (spacedToken != token && spaced.Contains(spacedToken, StringComparison.Ordinal))
+                return true;
+        }
+        return false;
+    }
+
+    internal static bool IsUnilateralExercise(Exercise ex) =>
+        ex != null && IsUnilateralByTokens(ex.Id, ex.Name);
+
+    internal static int ApplyUnilateralEvenRounds(int sets, int maxSets, Exercise ex)
+    {
+        if (!IsUnilateralExercise(ex)) return sets;
+        if (sets % 2 == 1 && sets < maxSets)
+            return sets + 1;
+        return sets;
+    }
+
     private static int ComputeSets(Exercise ex, string goal, int userLevelNum, bool broSplit, WeekProgression mods)
     {
         int sets = ex.BaseSets;
@@ -915,7 +948,8 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         sets += mods.SetDelta;
         int maxSets = broSplit ? 6 : 5;
         if (mods.Phase == "deload") maxSets = 4;
-        return Math.Clamp(sets, 1, maxSets);
+        int clamped = Math.Clamp(sets, 1, maxSets);
+        return ApplyUnilateralEvenRounds(clamped, maxSets, ex);
     }
 
     private static string ComputeReps(Exercise ex, string goal, WeekProgression mods)

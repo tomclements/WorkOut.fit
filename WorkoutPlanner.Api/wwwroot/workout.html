@@ -215,7 +215,7 @@
     <!-- Rest -->
     <section id="restScreen" class="runner-screen rest-bg rounded-xl shadow p-6">
       <div class="text-center mb-4">
-        <div class="text-base sm:text-lg font-semibold text-blue-800 uppercase tracking-wider mb-2">Rest</div>
+        <div id="restHeading" class="text-base sm:text-lg font-semibold text-blue-800 uppercase tracking-wider mb-2">Rest</div>
         <div id="restTimer" class="big-timer text-blue-800" aria-live="polite" aria-atomic="true">00:00</div>
       </div>
 
@@ -245,7 +245,7 @@
 
     <!-- Session options overflow (music / skip / previous / view all) -->
     <div id="overflowModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="overflowTitle">
-      <div class="bg-white rounded-t-2xl sm:rounded-xl shadow-lg p-5 w-full sm:max-w-md max-h-[85vh] overflow-y-auto">
+      <div id="overflowPanel" class="bg-white rounded-t-2xl sm:rounded-xl shadow-lg p-5 w-full sm:max-w-md max-h-[85vh] overflow-y-auto">
         <div class="flex justify-between items-center gap-3 mb-4">
           <h2 id="overflowTitle" class="text-lg font-bold text-blue-900">Session options</h2>
           <button id="closeOverflow" type="button" class="text-gray-500 hover:text-gray-800 text-2xl leading-none px-1" aria-label="Close">&times;</button>

@@ -172,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       overflowWasPaused = true;
     }
+    syncOverflowControls();
     syncOverflowWeightRow();
   };
   const closeOverflow = () => {
@@ -267,6 +268,9 @@ document.addEventListener('DOMContentLoaded', () => {
     closeOverflow();
     openMovesList();
   });
+  const overflowPanel = byId('overflowPanel') || (overflowModal && overflowModal.querySelector(':scope > div'));
+  wire(overflowPanel, 'click', (e) => e.stopPropagation());
+  wire(overflowPanel, 'pointerdown', (e) => e.stopPropagation());
   wire(overflowModal, 'click', (e) => {
     if (e.target === overflowModal) closeOverflow();
   });
@@ -1279,6 +1283,7 @@ async function resumeSession() {
 
     if (phase === 'rest') {
       showScreen(restScreen);
+      updateRestHeading();
       const nextEx = currentExercise();
       if (nextExerciseNameEl) nextExerciseNameEl.textContent = nextEx.name;
       if (nextExerciseMetaEl) nextExerciseMetaEl.textContent = setWorkLabel(nextEx);
@@ -1340,11 +1345,11 @@ function isMobilityExercise(ex) {
 async function startWorkout() {
   if (!currentPlan) return;
 
-  // Unlock audio / speech on user gesture
+  // Unlock audio / speech on the Start user gesture so rest 3-2-1 beeps can fire on iOS
   try {
     const ctx = getAudioContext();
-    // Warm up: play a silent buffer so the browser marks audio as user-initiated
-    if (ctx && ctx.state === 'running') {
+    if (ctx) {
+      await ctx.resume();
       const buf = ctx.createBuffer(1, 1, 22050);
       const src = ctx.createBufferSource();
       src.buffer = buf;
@@ -1414,10 +1419,8 @@ async function startWorkout() {
     updateMusicButton();
   }
 
-  showScreen(activeScreen);
   try {
-    enterWork();
-    saveSessionState();
+    enterRest();
   } catch (err) {
     console.error(err);
     showLoadError('Could not start the workout.');
@@ -1942,6 +1945,7 @@ function enterRest() {
     nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
     startDemoFlip(nextDemoEl);
   }
+  updateRestHeading();
   restTimerEl.textContent = formatTime(phaseDurationSeconds);
   updatePhaseProgressBar(restProgressBar, phaseDurationSeconds, phaseDurationSeconds);
 
@@ -2256,6 +2260,37 @@ function updateProgress() {
   progressText.textContent = `${percent}%`;
 }
 
+
+function noSetsCompletedYet() {
+  return !sessionExercises.some(ex => (ex.completedSets && ex.completedSets.length > 0));
+}
+
+function updateRestHeading() {
+  const el = document.getElementById('restHeading');
+  if (!el) return;
+  el.textContent = noSetsCompletedYet() ? 'Get ready' : 'Rest';
+}
+
+function syncOverflowControls() {
+  let style = null;
+  try { style = localStorage.getItem('runnerMusicStyle'); } catch { /* ignore */ }
+  if (!style) style = (musicStyleSelect && musicStyleSelect.value) || currentMusicStyle();
+  if (musicStyleActive) musicStyleActive.value = style;
+  if (musicStyleSelect && style) musicStyleSelect.value = style;
+  syncCueToggles();
+  const volEl = document.getElementById('volumeSlider');
+  const volVal = document.getElementById('volumeValue');
+  let vol = volEl ? volEl.value : null;
+  try {
+    const stored = localStorage.getItem('runnerMusicVolume');
+    if (stored != null && stored !== '') vol = stored;
+  } catch { /* ignore */ }
+  if (volEl && vol != null) {
+    volEl.value = vol;
+    if (volVal) volVal.textContent = vol + '%';
+  }
+}
+
 // -------------------------- Helpers --------------------------
 
 function formatTime(totalSeconds) {
@@ -2281,10 +2316,12 @@ function initTonesToggle() {
   // Active session toggle (overflow modal)
   if (tonesToggleActive) {
     tonesToggleActive.checked = tonesEnabled();
-    tonesToggleActive.addEventListener('change', () => {
+    const persistTonesActive = () => {
       localStorage.setItem('runnerTones', tonesToggleActive.checked ? '1' : '0');
       syncCueToggles();
-    });
+    };
+    tonesToggleActive.addEventListener('change', persistTonesActive);
+    tonesToggleActive.addEventListener('input', persistTonesActive);
   }
 }
 
@@ -2313,11 +2350,13 @@ function initVoiceCuesToggle() {
   // Active session toggle (overflow modal)
   if (voiceCuesToggleActive) {
     voiceCuesToggleActive.checked = voiceCuesEnabled();
-    voiceCuesToggleActive.addEventListener('change', () => {
+    const persistVoiceActive = () => {
       localStorage.setItem('runnerVoiceCues', voiceCuesToggleActive.checked ? '1' : '0');
       if (!voiceCuesToggleActive.checked) stopSpeech();
       syncCueToggles();
-    });
+    };
+    voiceCuesToggleActive.addEventListener('change', persistVoiceActive);
+    voiceCuesToggleActive.addEventListener('input', persistVoiceActive);
   }
 }
 
