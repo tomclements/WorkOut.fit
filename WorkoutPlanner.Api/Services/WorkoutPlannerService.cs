@@ -252,7 +252,9 @@ public class WorkoutPlannerService : IWorkoutPlannerService
 
             if (candidates.Count == 0) continue;
 
-            var ex = PickWeightedExercise(candidates, favoriteIds, avoidIds, planWideRecent, isBro, slot, rng, rehab);            if (ex == null) continue;
+            bool isFirstFill = !session.Exercises.Any(e =>
+                string.Equals(e.Slot, slot, StringComparison.OrdinalIgnoreCase));
+            var ex = PickWeightedExercise(candidates, favoriteIds, avoidIds, planWideRecent, isBro, slot, rng, rehab, isFirstFill);            if (ex == null) continue;
 
             int sets = ComputeSets(ex, goal, userLevelNum, isBro, mods);
             string reps = ComputeReps(ex, goal, mods);
@@ -605,7 +607,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
     /// Weighted random pick: favorites get a boost, recently used / avoided get a penalty.
     /// Still allows avoided items if the pool is thin so sessions never go empty.
     /// </summary>
-    private static Exercise? PickWeightedExercise(
+    internal static Exercise? PickWeightedExercise(
         List<Exercise> candidates,
         HashSet<string> favoriteIds,
         HashSet<string> avoidIds,
@@ -613,12 +615,18 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         bool isBro,
         string slot,
         Random rng,
-        List<string>? rehab = null)
+        List<string>? rehab = null,
+        bool isFirstFillOfSlot = false)
     {
         if (candidates.Count == 0) return null;
         if (candidates.Count == 1) return candidates[0];
 
         var recentSet = new HashSet<string>(planWideRecent.TakeLast(24), StringComparer.OrdinalIgnoreCase);
+
+        // Compound bump only on first fill of a slot when there are enough compounds
+        bool compoundBump = isFirstFillOfSlot
+            && candidates.Count(e => string.Equals(e.Mechanic, "compound", StringComparison.OrdinalIgnoreCase)) >= 2;
+
         var weights = new int[candidates.Count];
         int total = 0;
 
@@ -636,6 +644,10 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 w += Math.Min(3, BroMuscleMatchScore(e, slot));
             else
                 w += Math.Min(2, e.Primary.Count);
+
+            // Modest compound preference on first fill of a slot
+            if (compoundBump && string.Equals(e.Mechanic, "compound", StringComparison.OrdinalIgnoreCase))
+                w += 3;
 
             // Rehab boost: prefer exercises targeting the user's recovery areas
             if (rehab != null && rehab.Count > 0 && InjuryRules.MatchesRehab(e, rehab))
