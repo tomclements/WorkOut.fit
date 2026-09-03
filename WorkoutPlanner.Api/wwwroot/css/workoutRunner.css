@@ -402,13 +402,13 @@ body.work-phase #activeScreen {
 }
 
 body.work-phase #activeScreen #exerciseName {
-  font-size: clamp(1.9rem, 7vw, 3rem) !important;
+  font-size: clamp(2.25rem, 8vw, 3.5rem) !important;
   text-align: left !important;
   color: #f1f5f9 !important;
 }
 
 body.work-phase #activeScreen #exerciseMeta {
-  font-size: 1.05rem !important;
+  font-size: 1.15rem !important;
   color: #94a3b8 !important;
   text-align: left !important;
   margin-top: 0.15rem !important;
@@ -432,7 +432,7 @@ body.work-phase #activeScreen #timerDisplay {
 }
 
 body.work-phase #activeScreen #workCue {
-  font-size: 1.3rem !important;
+  font-size: 1.5rem !important;
   color: #cbd5e1 !important;
   text-align: center !important;
 }
@@ -974,17 +974,17 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
     gap: 0.25rem;
   }
   body.work-phase:not(.tv-mode) #activeScreen #exerciseName {
-    font-size: clamp(1.2rem, 5vw, 1.7rem) !important;
+    font-size: clamp(1.65rem, 6.5vw, 2.35rem) !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #exerciseMeta {
-    font-size: 0.9rem !important;
+    font-size: 1rem !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #timerDisplay,
   body.work-phase:not(.tv-mode) .big-timer {
     font-size: clamp(3.25rem, 15vw, 5.25rem) !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #workCue {
-    font-size: 1rem !important;
+    font-size: 1.2rem !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen .text-center.mb-4 {
     margin-bottom: 0.35rem !important;
@@ -1039,6 +1039,6 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
     max-height: 12vh;
   }
   body.work-phase:not(.tv-mode) #activeScreen #workCue {
-    font-size: 0.95rem !important;
+    font-size: 1.1rem !important;
   }
 }
