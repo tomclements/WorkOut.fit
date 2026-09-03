@@ -6,7 +6,7 @@
   "scripts": {
     "tailwind:build": "npx tailwindcss -i ./WorkoutPlanner.Api/wwwroot/css/tailwind.css -o ./WorkoutPlanner.Api/wwwroot/css/tailwind-compiled.css --minify",
     "tailwind:watch": "npx tailwindcss -i ./WorkoutPlanner.Api/wwwroot/css/tailwind.css -o ./WorkoutPlanner.Api/wwwroot/css/tailwind-compiled.css --watch",
-    "test:runner": "node --test WorkoutPlanner.Tests/runnerEngine.test.js WorkoutPlanner.Tests/overflowSettings.test.js",
+    "test:runner": "node --test WorkoutPlanner.Tests/runnerEngine.test.js WorkoutPlanner.Tests/overflowSettings.test.js WorkoutPlanner.Tests/feedbackReturnUrl.test.js",
     "test:smoke": "node scripts/smoke-http.mjs"
   },
   "repository": {
