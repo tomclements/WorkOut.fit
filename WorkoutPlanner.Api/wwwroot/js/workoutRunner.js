@@ -28,6 +28,7 @@ let ignoreVisibilityUntil = 0;
 let phaseBusy = false;
 let Engine = window.RunnerEngine || null;
 let OverflowSettings = window.OverflowSettings || null;
+let StartWeightGate = window.StartWeightGate || null;
 let previewCache = null;      // cached exercise catalog (id -> exercise) for previews/analyze
 let previewCachePromise = null;
 let lastLoads = null;         // { exerciseId: kg } from most recent session
@@ -943,6 +944,13 @@ async function _renderDayPreviewInner() {
     });
   }
 
+  moves.querySelectorAll('[data-working-weight-index]').forEach(input => {
+    input.addEventListener('input', () => {
+      input.style.boxShadow = '';
+      input.removeAttribute('aria-invalid');
+    });
+  });
+
   // Try Y button: fills the weight input with the suggested value
   moves.querySelectorAll('[data-try-weight]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1382,6 +1390,50 @@ function isMobilityExercise(ex) {
   return p === 'warmup' || p === 'cooldown';
 }
 
+function clearWeightGatePrompt() {
+  const msg = document.getElementById('weightGateMessage');
+  if (msg) {
+    msg.textContent = '';
+    msg.classList.add('hidden');
+  }
+  document.querySelectorAll('[data-working-weight-index]').forEach(el => {
+    el.style.boxShadow = '';
+    el.removeAttribute('aria-invalid');
+  });
+}
+
+function promptMissingWorkingWeights(indexes) {
+  const msg = document.getElementById('weightGateMessage');
+  if (msg) {
+    msg.textContent = 'Enter a weight for each loaded move, then tap Start.';
+    msg.classList.remove('hidden');
+  }
+  const want = new Set((indexes || []).map(n => Number(n)));
+  let first = null;
+  document.querySelectorAll('[data-working-weight-index]').forEach(input => {
+    const idx = parseInt(input.getAttribute('data-working-weight-index'), 10);
+    const empty = want.has(idx);
+    input.style.boxShadow = empty ? '0 0 0 2px #dc2626' : '';
+    if (empty) {
+      input.setAttribute('aria-invalid', 'true');
+      if (!first) first = input;
+    } else {
+      input.removeAttribute('aria-invalid');
+    }
+  });
+  (indexes || []).forEach(i => {
+    const tryBtn = document.querySelector('[data-try-weight="' + i + '"]');
+    if (tryBtn) tryBtn.style.boxShadow = '0 0 0 2px #2563eb';
+  });
+  const preview = document.getElementById('dayPreview');
+  if (preview) preview.classList.remove('hidden');
+  if (typeof showScreen === 'function') showScreen(setupScreen);
+  if (first && typeof first.scrollIntoView === 'function') {
+    first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  try { if (first) first.focus(); } catch { /* ignore */ }
+}
+
 async function startWorkout() {
   if (!currentPlan) return;
 
@@ -1435,6 +1487,20 @@ async function startWorkout() {
     showLoadError('This day has no exercises to run. Generate the plan again.');
     return;
   }
+  const requires = Engine && typeof Engine.requiresWorkingWeight === 'function'
+    ? Engine.requiresWorkingWeight
+    : null;
+  const parseKg = Engine && typeof Engine.parseWorkingWeightKg === 'function'
+    ? Engine.parseWorkingWeightKg
+    : null;
+  const decision = (StartWeightGate && typeof StartWeightGate.startDecision === 'function' && requires && parseKg)
+    ? StartWeightGate.startDecision(enriched, enteredKg, requires, parseKg)
+    : { canBegin: true, missing: [], next: 'enterRest' };
+  if (!decision.canBegin) {
+    promptMissingWorkingWeights(decision.missing || []);
+    return;
+  }
+  clearWeightGatePrompt();
   if (Engine) {
     applyEngineState(Engine.createSession(mapped, Date.now()));
   } else {
