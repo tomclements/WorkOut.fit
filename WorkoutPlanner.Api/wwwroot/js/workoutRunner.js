@@ -338,6 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tag = e.target && e.target.tagName;
     if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
     if (overflowModal && !overflowModal.classList.contains('hidden')) return;
+    if (byId('weightSheetModal') && !byId('weightSheetModal').classList.contains('hidden')) return;
     if (phase === 'work') {
       e.preventDefault();
       completeSet(true);
@@ -350,6 +351,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // Escape closes the overflow modal
   wire(document, 'keydown', (e) => {
     if (e.key === 'Escape' && overflowModal && !overflowModal.classList.contains('hidden')) closeOverflow();
+  });
+
+  // Working-weight sheet on Start
+  const weightSheetModal = byId('weightSheetModal');
+  wire(byId('weightSheetClose'), 'click', () => closeWeightSheet(true));
+  wire(byId('weightSheetSkip'), 'click', () => proceedAfterWeightSheet(true));
+  wire(byId('weightSheetContinue'), 'click', () => proceedAfterWeightSheet(false));
+  wire(weightSheetModal, 'click', (e) => {
+    if (e.target === weightSheetModal) closeWeightSheet(true); // close without starting
+  });
+  wire(document, 'keydown', (e) => {
+    if (e.key === 'Escape' && weightSheetModal && !weightSheetModal.classList.contains('hidden')) {
+      closeWeightSheet(true);
+    }
   });
 
   // Restore dark-mode from storage
@@ -1390,48 +1405,196 @@ function isMobilityExercise(ex) {
   return p === 'warmup' || p === 'cooldown';
 }
 
-function clearWeightGatePrompt() {
-  const msg = document.getElementById('weightGateMessage');
-  if (msg) {
-    msg.textContent = '';
-    msg.classList.add('hidden');
-  }
-  document.querySelectorAll('[data-working-weight-index]').forEach(el => {
-    el.style.boxShadow = '';
-    el.removeAttribute('aria-invalid');
-  });
+let pendingWeightSheet = null; // { mapped, missingIndexes } while sheet is open
+
+function closeWeightSheet(clearPending) {
+  const modal = document.getElementById('weightSheetModal');
+  if (modal) modal.classList.add('hidden');
+  if (clearPending !== false) pendingWeightSheet = null;
 }
 
-function promptMissingWorkingWeights(indexes) {
-  const msg = document.getElementById('weightGateMessage');
-  if (msg) {
-    msg.textContent = 'Enter a weight for each loaded move, then tap Start.';
-    msg.classList.remove('hidden');
+function syncSheetInputToPreview(index, displayValue) {
+  const preview = document.querySelector('[data-working-weight-index="' + index + '"]')
+    || document.getElementById('workingWeight-' + index);
+  if (preview) {
+    preview.value = displayValue;
+    preview.dispatchEvent(new Event('input', { bubbles: true }));
   }
-  const want = new Set((indexes || []).map(n => Number(n)));
-  let first = null;
-  document.querySelectorAll('[data-working-weight-index]').forEach(input => {
-    const idx = parseInt(input.getAttribute('data-working-weight-index'), 10);
-    const empty = want.has(idx);
-    input.style.boxShadow = empty ? '0 0 0 2px #dc2626' : '';
-    if (empty) {
-      input.setAttribute('aria-invalid', 'true');
-      if (!first) first = input;
-    } else {
-      input.removeAttribute('aria-invalid');
+}
+
+function formatSheetDisplayFromKg(kg) {
+  if (kg == null || !(kg > 0)) return '';
+  const unit = getRunnerWeightUnit();
+  const value = unit === 'lb' ? Math.round(kg * 2.20462 * 10) / 10 : kg;
+  const decimals = unit === 'lb' ? 1 : (Number.isInteger(value) ? 0 : 2);
+  return value.toFixed(decimals).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+}
+
+function updateWeightSheetContinueEnabled() {
+  const btn = document.getElementById('weightSheetContinue');
+  const list = document.getElementById('weightSheetList');
+  if (!btn || !list) return;
+  const inputs = list.querySelectorAll('[data-sheet-weight-index]');
+  let allFilled = inputs.length > 0;
+  const parseKg = (Engine && typeof Engine.parseWorkingWeightKg === 'function')
+    ? Engine.parseWorkingWeightKg
+    : null;
+  inputs.forEach(input => {
+    const unit = getRunnerWeightUnit();
+    const kg = displayWeightToKg(input.value, unit);
+    if (parseKg ? parseKg(kg) == null : !(kg > 0)) allFilled = false;
+  });
+  btn.disabled = !allFilled;
+}
+
+function renderWeightSheetList(indexes, exercises) {
+  const list = document.getElementById('weightSheetList');
+  if (!list) return;
+  const unit = getRunnerWeightUnit();
+  const rows = (indexes || []).map(i => {
+    const ex = exercises[i] || {};
+    const name = escapeHtmlRunner(ex.name || ('Move ' + (i + 1)));
+    let hint = '';
+    if (lastLoads && typeof lastLoads === 'object' && ex.id) {
+      const lastKg = lastLoads[ex.id];
+      if (lastKg && lastKg > 0) {
+        const suggestionKg = lastKg >= 20 ? lastKg + 2.5 : lastKg + 1;
+        const lastDisplay = unit === 'lb' ? Math.round(lastKg * 2.20462 * 10) / 10 : lastKg;
+        const sugDisplay = unit === 'lb' ? Math.round(suggestionKg * 2.20462 * 10) / 10 : suggestionKg;
+        const ld = unit === 'lb' ? 1 : (Number.isInteger(lastDisplay) ? 0 : 2);
+        const sd = unit === 'lb' ? 1 : (Number.isInteger(sugDisplay) ? 0 : 2);
+        const lastStr = lastDisplay.toFixed(ld).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+        const sugStr = sugDisplay.toFixed(sd).replace(/\.0+$/, '').replace(/(\.\d)0+$/, '$1');
+        hint = `<div class="text-xs text-blue-600 mt-0.5 flex items-center gap-1">
+          <span>Last: ${lastStr} ${escapeHtmlRunner(unit)}</span>
+          <button type="button" data-sheet-try-weight="${i}" data-sheet-try-kg="${suggestionKg}" class="underline font-medium hover:text-blue-800">Try ${sugStr} ${escapeHtmlRunner(unit)}</button>
+        </div>`;
+      }
     }
+    const preview = document.querySelector('[data-working-weight-index="' + i + '"]');
+    const existing = preview && preview.value ? preview.value : '';
+    return `<div class="border border-gray-200 rounded-lg p-3" data-sheet-row="${i}">
+      <div class="text-sm font-medium text-gray-900 mb-1.5">${name}</div>
+      <div class="flex items-center gap-2">
+        <label class="text-xs text-gray-500" for="sheetWeight-${i}">Weight</label>
+        <input id="sheetWeight-${i}" type="number" inputmode="decimal" min="0" step="0.5"
+          data-sheet-weight-index="${i}"
+          class="w-24 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+          placeholder="—" aria-label="Working weight for ${name}" value="${escapeHtmlRunner(existing)}" />
+        <span class="text-xs text-gray-500">${escapeHtmlRunner(unit)}</span>
+      </div>
+      ${hint}
+    </div>`;
+  }).join('');
+  list.innerHTML = rows || '<p class="text-sm text-gray-500">No loaded moves need a weight.</p>';
+
+  list.querySelectorAll('[data-sheet-weight-index]').forEach(input => {
+    input.addEventListener('input', () => {
+      const idx = parseInt(input.getAttribute('data-sheet-weight-index'), 10);
+      syncSheetInputToPreview(idx, input.value);
+      updateWeightSheetContinueEnabled();
+    });
   });
-  (indexes || []).forEach(i => {
-    const tryBtn = document.querySelector('[data-try-weight="' + i + '"]');
-    if (tryBtn) tryBtn.style.boxShadow = '0 0 0 2px #2563eb';
+  list.querySelectorAll('[data-sheet-try-weight]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-sheet-try-weight'), 10);
+      const kg = parseFloat(btn.getAttribute('data-sheet-try-kg'));
+      const display = formatSheetDisplayFromKg(kg);
+      const input = list.querySelector('[data-sheet-weight-index="' + idx + '"]');
+      if (input) {
+        input.value = display;
+        syncSheetInputToPreview(idx, display);
+        updateWeightSheetContinueEnabled();
+      }
+    });
   });
-  const preview = document.getElementById('dayPreview');
-  if (preview) preview.classList.remove('hidden');
-  if (typeof showScreen === 'function') showScreen(setupScreen);
-  if (first && typeof first.scrollIntoView === 'function') {
-    first.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
+  updateWeightSheetContinueEnabled();
+}
+
+function openWeightSheet(mapped, missingIndexes) {
+  pendingWeightSheet = { mapped, missingIndexes: (missingIndexes || []).slice() };
+  renderWeightSheetList(pendingWeightSheet.missingIndexes, mapped);
+  const modal = document.getElementById('weightSheetModal');
+  if (modal) modal.classList.remove('hidden');
+  const first = document.querySelector('#weightSheetList [data-sheet-weight-index]');
   try { if (first) first.focus(); } catch { /* ignore */ }
+}
+
+function applySheetWeightsIntoMapped(mapped) {
+  const unit = getRunnerWeightUnit();
+  document.querySelectorAll('#weightSheetList [data-sheet-weight-index]').forEach(input => {
+    const idx = parseInt(input.getAttribute('data-sheet-weight-index'), 10);
+    if (!Number.isFinite(idx) || !mapped[idx]) return;
+    syncSheetInputToPreview(idx, input.value);
+    mapped[idx].workingWeightKg = displayWeightToKg(input.value, unit);
+  });
+  return mapped;
+}
+
+function proceedAfterWeightSheet(skip) {
+  if (!pendingWeightSheet || !pendingWeightSheet.mapped) {
+    closeWeightSheet(true);
+    return;
+  }
+  let mapped = pendingWeightSheet.mapped;
+  mapped = applySheetWeightsIntoMapped(mapped);
+  if (!skip) {
+    const enteredKg = readPreviewWorkingWeights();
+    const requires = Engine && typeof Engine.requiresWorkingWeight === 'function'
+      ? Engine.requiresWorkingWeight
+      : null;
+    const parseKg = Engine && typeof Engine.parseWorkingWeightKg === 'function'
+      ? Engine.parseWorkingWeightKg
+      : null;
+    if (StartWeightGate && requires && parseKg) {
+      const decision = StartWeightGate.startDecision(mapped, enteredKg, requires, parseKg);
+      if (!decision.canBegin) {
+        renderWeightSheetList(decision.missing || pendingWeightSheet.missingIndexes, mapped);
+        return;
+      }
+    }
+  }
+  closeWeightSheet(true);
+  beginWorkoutFromMapped(mapped);
+}
+
+function beginWorkoutFromMapped(mapped) {
+  if (!mapped || !mapped.length) {
+    showLoadError('This day has no exercises to run. Generate the plan again.');
+    return;
+  }
+  if (Engine) {
+    applyEngineState(Engine.createSession(mapped, Date.now()));
+  } else {
+    sessionExercises = mapped;
+    currentExerciseIndex = 0;
+    currentSetIndex = 0;
+    phase = 'work';
+    startTime = Date.now();
+    isPaused = false;
+    autoPaused = false;
+  }
+  ignoreVisibilityUntil = Date.now() + 800;
+  sessionSaved = false;
+  if (resumeBanner) resumeBanner.classList.add('hidden');
+  sessionPlanName = currentSavedPlanName
+    || (currentPlan.criteria ? `${currentPlan.criteria.weeks}-week ${currentPlan.criteria.goal} plan` : 'Plan4Strength');
+
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  startAudioKeepAlive();
+  requestWakeLock().catch(() => {});
+
+  if (shouldAutoStartMusic()) {
+    musicEngine.start();
+    updateMusicButton();
+  }
+
+  try {
+    enterRest();
+  } catch (err) {
+    console.error(err);
+    showLoadError('Could not start the workout.');
+  }
 }
 
 async function startWorkout() {
@@ -1496,43 +1659,11 @@ async function startWorkout() {
   const decision = (StartWeightGate && typeof StartWeightGate.startDecision === 'function' && requires && parseKg)
     ? StartWeightGate.startDecision(enriched, enteredKg, requires, parseKg)
     : { canBegin: true, missing: [], next: 'enterRest' };
-  if (!decision.canBegin) {
-    promptMissingWorkingWeights(decision.missing || []);
+  if (!decision.canBegin || decision.next === 'showWeightSheet') {
+    openWeightSheet(mapped, decision.missing || []);
     return;
   }
-  clearWeightGatePrompt();
-  if (Engine) {
-    applyEngineState(Engine.createSession(mapped, Date.now()));
-  } else {
-    sessionExercises = mapped;
-    currentExerciseIndex = 0;
-    currentSetIndex = 0;
-    phase = 'work';
-    startTime = Date.now();
-    isPaused = false;
-    autoPaused = false;
-  }
-  ignoreVisibilityUntil = Date.now() + 800;
-  sessionSaved = false;
-  if (resumeBanner) resumeBanner.classList.add('hidden');
-  sessionPlanName = currentSavedPlanName
-    || (currentPlan.criteria ? `${currentPlan.criteria.weeks}-week ${currentPlan.criteria.goal} plan` : 'Plan4Strength');
-
-  document.addEventListener('visibilitychange', handleVisibilityChange);
-  startAudioKeepAlive();
-
-  if (shouldAutoStartMusic()) {
-    musicEngine.start();
-    updateMusicButton();
-  }
-
-  try {
-    enterRest();
-  } catch (err) {
-    console.error(err);
-    showLoadError('Could not start the workout.');
-  }
-  requestWakeLock().catch(() => {});
+  beginWorkoutFromMapped(mapped);
 }
 
 let wakeLockWanted = false;

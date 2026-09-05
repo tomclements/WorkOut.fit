@@ -2,8 +2,11 @@
  * DOM-free Start weight-gate. Used by workoutRunner.js and node:test.
  *
  * Loaded moves (requiresWorkingWeight) with parseWorkingWeightKg === null
- * block Start. Bodyweight / bands / mobility never block.
- * Callers inject the engine helpers so this does not fork runnerEngine.
+ * need a weight sheet before Start proceeds. Bodyweight / bands / mobility
+ * never appear in the missing list. Callers inject the engine helpers so
+ * this does not fork runnerEngine.
+ *
+ * Success / Skip path is always enterRest (Get-ready), never enterWork.
  */
 (function (root, factory) {
   const api = factory();
@@ -40,20 +43,34 @@
   }
 
   /**
-   * Start decision. Success path is always enterRest (Get-ready), never enterWork.
+   * Start decision.
+   * opts.skip === true → proceed to enterRest even when weights are missing.
+   * Otherwise missing weights → showWeightSheet (canBegin false).
+   * Filled / no missing → enterRest (canBegin true).
    */
-  function startDecision(exercises, kgByIndex, requiresWorkingWeight, parseWorkingWeightKg) {
+  function startDecision(exercises, kgByIndex, requiresWorkingWeight, parseWorkingWeightKg, opts) {
     const missing = missingWorkingWeightIndexes(
       exercises, kgByIndex, requiresWorkingWeight, parseWorkingWeightKg
     );
+    if (opts && opts.skip) {
+      return { canBegin: true, missing: missing, next: 'enterRest' };
+    }
     if (missing.length) {
-      return { canBegin: false, missing: missing, next: 'staySetup' };
+      return { canBegin: false, missing: missing, next: 'showWeightSheet' };
     }
     return { canBegin: true, missing: [], next: 'enterRest' };
   }
 
+  /**
+   * Skip path: dismiss sheet and continue without requiring kg.
+   */
+  function skipDecision(exercises, kgByIndex, requiresWorkingWeight, parseWorkingWeightKg) {
+    return startDecision(exercises, kgByIndex, requiresWorkingWeight, parseWorkingWeightKg, { skip: true });
+  }
+
   return {
     missingWorkingWeightIndexes,
-    startDecision
+    startDecision,
+    skipDecision
   };
 });
