@@ -386,8 +386,8 @@ body.work-phase #activeScreen {
   position: fixed;
   inset: 0;
   z-index: 20;
-  padding: 0.6rem 0.85rem calc(5.75rem + env(safe-area-inset-bottom, 0px)) !important;
-  padding-top: calc(0.55rem + env(safe-area-inset-top, 0px)) !important;
+  padding: 0.45rem 0.75rem calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;
+  padding-top: calc(0.4rem + env(safe-area-inset-top, 0px)) !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
@@ -402,13 +402,13 @@ body.work-phase #activeScreen {
 }
 
 body.work-phase #activeScreen #exerciseName {
-  font-size: clamp(2.25rem, 8vw, 3.5rem) !important;
+  font-size: clamp(2.5rem, 9vw, 3.75rem) !important;
   text-align: left !important;
   color: #f1f5f9 !important;
 }
 
 body.work-phase #activeScreen #exerciseMeta {
-  font-size: 1.15rem !important;
+  font-size: 1.3rem !important;
   color: #94a3b8 !important;
   text-align: left !important;
   margin-top: 0.15rem !important;
@@ -432,15 +432,17 @@ body.work-phase #activeScreen #timerDisplay {
 }
 
 body.work-phase #activeScreen #workCue {
-  font-size: 1.5rem !important;
+  font-size: 1.7rem !important;
   color: #cbd5e1 !important;
   text-align: center !important;
 }
 
 body.work-phase #activeScreen #workStats {
+  font-size: 1.15rem !important;
   color: #94a3b8 !important;
 }
 body.work-phase #activeScreen #workNext {
+  font-size: 1.05rem !important;
   color: #64748b !important;
   font-style: italic;
 }
@@ -536,8 +538,8 @@ body.rest-phase #restScreen {
   overflow: hidden;
   background: #0b1526 !important;
   color: #f1f5f9 !important;
-  padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)) !important;
-  padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px)) !important;
+  padding-top: calc(0.5rem + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;
   min-height: 100dvh !important;
   min-height: 100svh !important;
   height: 100dvh !important;
@@ -545,17 +547,18 @@ body.rest-phase #restScreen {
   border-radius: 0 !important;
 }
 
+body.rest-phase #restScreen #restHeading,
 body.rest-phase #restScreen .text-center .uppercase {
-  font-size: 1.3rem !important;
+  font-size: 1.55rem !important;
   color: #60a5fa !important;
-  margin-bottom: 0.25rem !important;
+  margin-bottom: 0.15rem !important;
 }
 
 body.rest-phase #restTimer {
   font-size: clamp(4rem, 18vw, 7.5rem) !important;
   line-height: 1 !important;
   color: #60a5fa !important;
-  margin-bottom: 0.5rem !important;
+  margin-bottom: 0.3rem !important;
 }
 
 body.rest-phase #restScreen .bg-blue-100,
@@ -573,11 +576,12 @@ body.rest-phase #restScreen .bg-white {
 }
 
 body.rest-phase #nextExerciseName {
-  font-size: clamp(1.5rem, 5vw, 2.25rem) !important;
+  font-size: clamp(1.85rem, 6vw, 2.6rem) !important;
   color: #f1f5f9 !important;
 }
 
 body.rest-phase #nextExerciseMeta {
+  font-size: 1.3rem !important;
   color: #cbd5e1 !important;
 }
 
@@ -968,26 +972,38 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 /* ---------- Short phone viewports: keep work/rest on-screen (not TV) ---------- */
 @media (max-height: 860px) {
   body.work-phase:not(.tv-mode) #activeScreen {
-    padding: 0.4rem 0.7rem calc(5.15rem + env(safe-area-inset-bottom, 0px)) !important;
-    padding-top: calc(0.4rem + env(safe-area-inset-top, 0px)) !important;
+    padding: 0.25rem 0.6rem calc(4.85rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding-top: calc(0.25rem + env(safe-area-inset-top, 0px)) !important;
     justify-content: flex-start !important;
-    gap: 0.25rem;
+    gap: 0.12rem;
   }
   body.work-phase:not(.tv-mode) #activeScreen #exerciseName {
-    font-size: clamp(1.65rem, 6.5vw, 2.35rem) !important;
+    font-size: clamp(1.9rem, 7vw, 2.6rem) !important;
+    line-height: 1.1 !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #exerciseMeta {
-    font-size: 1rem !important;
+    font-size: 1.15rem !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen #setBadge {
+    font-size: 1.05rem !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #timerDisplay,
   body.work-phase:not(.tv-mode) .big-timer {
     font-size: clamp(3.25rem, 15vw, 5.25rem) !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #workCue {
-    font-size: 1.2rem !important;
+    font-size: 1.4rem !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen #workStats {
+    font-size: 1.05rem !important;
+    margin-bottom: 0.15rem !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen #workNext {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.25rem !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen .text-center.mb-4 {
-    margin-bottom: 0.35rem !important;
+    margin-bottom: 0.2rem !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen .grid-cols-2 {
     bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)) !important;
@@ -1000,20 +1016,31 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   }
 
   body.rest-phase:not(.tv-mode) #restScreen {
-    padding-top: calc(0.4rem + env(safe-area-inset-top, 0px)) !important;
-    padding-bottom: calc(5.15rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding-top: calc(0.25rem + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: calc(4.85rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.rest-phase:not(.tv-mode) #restScreen #restHeading,
+  body.rest-phase:not(.tv-mode) #restScreen .text-center .uppercase {
+    font-size: 1.35rem !important;
+    margin-bottom: 0.1rem !important;
   }
   body.rest-phase:not(.tv-mode) #restTimer,
   body.rest-phase:not(.tv-mode) .big-timer {
     font-size: clamp(3.25rem, 15vw, 5.25rem) !important;
+    margin-bottom: 0.2rem !important;
   }
   body.rest-phase:not(.tv-mode) #nextExerciseName {
-    font-size: clamp(1.15rem, 4.5vw, 1.6rem) !important;
+    font-size: clamp(1.45rem, 5.5vw, 1.95rem) !important;
+    line-height: 1.15 !important;
+  }
+  body.rest-phase:not(.tv-mode) #nextExerciseMeta {
+    font-size: 1.1rem !important;
+    margin-bottom: 0.35rem !important;
   }
   body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
   body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
-    max-height: 18vh;
-    height: 18vh;
+    max-height: 14vh;
+    height: 14vh;
     aspect-ratio: auto;
   }
   body.rest-phase:not(.tv-mode) #skipRestBtn {
@@ -1028,17 +1055,39 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 }
 
 @media (max-height: 700px) {
+  body.work-phase:not(.tv-mode) #activeScreen {
+    padding: 0.15rem 0.55rem calc(4.65rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding-top: calc(0.15rem + env(safe-area-inset-top, 0px)) !important;
+    gap: 0.08rem;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen #exerciseName {
+    font-size: clamp(1.75rem, 6.5vw, 2.25rem) !important;
+  }
+  body.work-phase:not(.tv-mode) #activeScreen #exerciseMeta {
+    font-size: 1.05rem !important;
+  }
   body.work-phase:not(.tv-mode) #activeScreen #timerDisplay,
   body.rest-phase:not(.tv-mode) #restTimer,
   body:not(.tv-mode) .big-timer {
-    font-size: clamp(2.75rem, 13vw, 4rem) !important;
+    font-size: clamp(2.5rem, 12vw, 3.6rem) !important;
+  }
+  body.rest-phase:not(.tv-mode) #restScreen {
+    padding-top: calc(0.15rem + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: calc(4.65rem + env(safe-area-inset-bottom, 0px)) !important;
   }
   body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
   body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
-    height: 12vh;
-    max-height: 12vh;
+    height: 9vh;
+    max-height: 9vh;
   }
   body.work-phase:not(.tv-mode) #activeScreen #workCue {
-    font-size: 1.1rem !important;
+    font-size: 1.25rem !important;
+  }
+  body.rest-phase:not(.tv-mode) #nextExerciseName {
+    font-size: clamp(1.35rem, 5vw, 1.75rem) !important;
+  }
+  body.rest-phase:not(.tv-mode) #restScreen #restHeading,
+  body.rest-phase:not(.tv-mode) #restScreen .text-center .uppercase {
+    font-size: 1.4rem !important;
   }
 }
