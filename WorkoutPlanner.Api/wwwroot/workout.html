@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#1e3a8a" />
+  <meta name="theme-color" content="#0B1220" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" href="/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/icon-192.png" />
@@ -153,10 +153,10 @@
       </p>
     </section>
 
-    <!-- Active exercise (work interval) -->
+    <!-- Active exercise (work interval) — floor-readable Work screen -->
     <section id="activeScreen" class="runner-screen bg-white rounded-xl shadow p-5 sm:p-6">
-      <!-- Thin whole-workout progress: one glance -->
-      <div class="mb-4">
+      <!-- Thin whole-workout progress (hidden in work-phase CSS) -->
+      <div class="mb-4 runner-progress-chrome">
         <div class="w-full bg-gray-200 rounded-full h-1.5">
           <div id="progressBar" class="bg-blue-600 h-1.5 rounded-full transition-all" style="width:0%"></div>
         </div>
@@ -166,50 +166,54 @@
         </div>
       </div>
 
-      <!-- Name · set · overflow -->
-      <div class="flex justify-between items-start gap-3 mb-3">
-        <div class="min-w-0">
-          <div id="exerciseName" class="text-2xl sm:text-3xl font-bold text-blue-900 leading-tight">Exercise</div>
-          <div id="exerciseMeta" class="text-sm sm:text-base text-gray-600 mt-1"></div>
+      <div class="runner-work-layout">
+        <!-- Context + name + overflow -->
+        <div class="runner-work-header flex justify-between items-start gap-3">
+          <div class="min-w-0">
+            <div id="exerciseMeta" class="runner-phase-context" aria-live="polite"></div>
+            <div id="exerciseName" class="runner-exercise-name text-2xl sm:text-3xl font-bold text-blue-900 leading-tight">Exercise</div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <div id="setBadge" class="runner-set-badge-legacy text-sm font-semibold bg-gray-100 text-gray-800 px-3 py-2 rounded-full" hidden></div>
+            <button id="workOverflowBtn" type="button" class="overflow-btn" title="Music, skip, view all moves" aria-label="More options">&#8943;</button>
+          </div>
         </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <div id="setBadge" class="text-sm font-semibold bg-gray-100 text-gray-800 px-3 py-2 rounded-full"></div>
-          <button id="workOverflowBtn" type="button" class="overflow-btn" title="Music, skip, view all moves" aria-label="More options">&#8943;</button>
+
+        <!-- MoveTimer (hero) -->
+        <div id="workTimerBlock" class="runner-move-timer">
+          <div class="flex justify-center">
+            <div id="timerDisplay" class="big-timer text-green-700" aria-live="polite" aria-atomic="true">00:30</div>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2 mt-2 mb-1">
+            <div id="workProgressBar" class="bg-green-500 h-2 rounded-full transition-all" style="width:100%"></div>
+          </div>
         </div>
-      </div>
 
-      <!-- Hero work timer -->
-      <div id="workTimerBlock">
-        <div class="flex justify-center mb-3">
-          <div id="timerDisplay" class="big-timer text-green-700" aria-live="polite" aria-atomic="true">00:30</div>
+        <!-- SessionTimer (live countdown) -->
+        <div id="workStats" class="runner-session-timer">
+          <div class="runner-session-label">SESSION</div>
+          <div id="workStatSession" class="runner-session-clock" aria-live="polite">00:00</div>
+          <div id="workStatMove" class="hidden" aria-hidden="true"></div>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-          <div id="workProgressBar" class="bg-green-500 h-2 rounded-full transition-all" style="width:100%"></div>
+
+        <!-- UpNext -->
+        <div id="workNext" class="runner-up-next">
+          <div class="runner-up-next-label">UP NEXT</div>
+          <div id="workNextName" class="runner-up-next-name"></div>
         </div>
-      </div>
 
-      <!-- Target -->
-      <div class="text-center mb-3">
-        <div id="workCue" class="text-base sm:text-lg font-medium text-gray-800">Aim for your target reps</div>
-      </div>
+        <!-- Coaching/form cues live on Rest only; keep node for JS compat -->
+        <div id="workCue" class="hidden" aria-hidden="true"></div>
 
-      <!-- Work stats: this move + session remaining -->
-      <div id="workStats" class="text-center text-sm text-gray-600 space-y-0.5 mb-3">
-        <div id="workStatMove"></div>
-        <div id="workStatSession"></div>
-      </div>
-
-      <!-- Next exercise hint -->
-      <div id="workNext" class="text-center text-xs text-gray-500 mb-4"></div>
-
-      <!-- Fat controls, thumb zone -->
-      <div class="grid grid-cols-2 gap-3 mb-4">
-        <button id="pauseBtn" type="button" class="bg-gray-200 active:bg-gray-300 text-gray-800 font-semibold py-4 px-6 rounded-xl transition touch-manipulation min-h-[4rem]">
-          Pause
-        </button>
-        <button id="completeSetBtn" type="button" class="complete-set-btn w-full bg-green-600 active:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation min-h-[4rem]">
-          Finish set early
-        </button>
+        <!-- Controls -->
+        <div class="grid grid-cols-2 gap-3 runner-work-controls">
+          <button id="pauseBtn" type="button" class="runner-btn runner-btn--secondary bg-gray-200 active:bg-gray-300 text-gray-800 font-bold py-4 px-6 rounded-xl transition touch-manipulation min-h-[4rem]">
+            PAUSE
+          </button>
+          <button id="completeSetBtn" type="button" class="complete-set-btn runner-btn runner-btn--primary w-full bg-green-600 active:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition touch-manipulation min-h-[4rem]">
+            DONE
+          </button>
+        </div>
       </div>
 
       <div id="pausedOverlay" class="hidden text-center mt-4">
@@ -218,29 +222,44 @@
       </div>
     </section>
 
-    <!-- Rest -->
+    <!-- Rest / preview — floor-readable Rest screen -->
     <section id="restScreen" class="runner-screen rest-bg rounded-xl shadow p-6">
-      <div class="text-center mb-4">
-        <div id="restHeading" class="text-base sm:text-lg font-semibold text-blue-800 uppercase tracking-wider mb-2">Rest</div>
-        <div id="restTimer" class="big-timer text-blue-800" aria-live="polite" aria-atomic="true">00:00</div>
-      </div>
+      <div class="runner-rest-layout">
+        <div class="text-center runner-rest-timer-block">
+          <div id="restHeading" class="runner-rest-heading text-base sm:text-lg font-semibold text-blue-800 uppercase tracking-wider mb-2">Rest</div>
+          <div id="restTimer" class="big-timer text-blue-800" aria-live="polite" aria-atomic="true">00:00</div>
+        </div>
 
-      <div class="w-full bg-blue-100 rounded-full h-2 mb-6">
-        <div id="restProgressBar" class="bg-blue-500 h-2 rounded-full transition-all" style="width:100%"></div>
-      </div>
+        <div class="w-full bg-blue-100 rounded-full h-2 mb-3">
+          <div id="restProgressBar" class="bg-blue-500 h-2 rounded-full transition-all" style="width:100%"></div>
+        </div>
 
-      <div class="bg-white rounded-lg p-4 mb-6">
-        <div id="nextExerciseName" class="text-2xl font-semibold text-gray-900 mb-1"></div>
-        <div id="nextExerciseMeta" class="text-base text-gray-700 mb-3"></div>
-        <div class="text-sm text-gray-600 uppercase tracking-wider mb-2">Demo</div>
-        <div id="nextDemo" class="demo-panel demo-panel--rest"></div>
-      </div>
+        <div class="runner-rest-card bg-white rounded-lg p-4 mb-3">
+          <div id="nextExerciseName" class="runner-rest-next-name text-2xl font-semibold text-gray-900 mb-2"></div>
+          <!-- RestCoaching: tags + form cue (moved off Work) -->
+          <div id="restCoaching" class="runner-rest-coaching">
+            <div id="restCoachingTags" class="runner-rest-coaching-tags"></div>
+            <div id="restCoachingForm" class="runner-rest-coaching-form"></div>
+          </div>
+          <!-- legacy meta node kept for JS; filled with coaching summary -->
+          <div id="nextExerciseMeta" class="hidden" aria-hidden="true"></div>
+          <div id="nextDemo" class="demo-panel demo-panel--rest mt-3"></div>
+        </div>
 
-      <div id="restControls" class="grid gap-3" style="grid-template-columns: auto 1fr;">
-        <button id="restOverflowBtn" type="button" class="overflow-btn overflow-btn--lg" title="Music, skip, view all moves" aria-label="More options">&#8943;</button>
-        <button id="skipRestBtn" type="button" class="w-full bg-blue-600 active:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition touch-manipulation min-h-[3.5rem]">
-          Skip rest
-        </button>
+        <div id="restSessionClock" class="runner-session-timer runner-session-timer--rest">
+          <span class="runner-session-label">SESSION</span>
+          <span id="restStatSession" class="runner-session-clock" aria-live="polite">00:00</span>
+        </div>
+
+        <div id="restControls" class="grid gap-3 runner-rest-controls" style="grid-template-columns: auto 1fr 1fr;">
+          <button id="restOverflowBtn" type="button" class="overflow-btn overflow-btn--lg" title="Music, skip, view all moves" aria-label="More options">&#8943;</button>
+          <button id="skipRestBtn" type="button" class="runner-btn runner-btn--secondary w-full bg-slate-700 active:bg-slate-600 text-white font-bold py-4 px-4 rounded-xl transition touch-manipulation min-h-[3.5rem]">
+            SKIP REST
+          </button>
+          <button id="startNextBtn" type="button" class="runner-btn runner-btn--primary w-full bg-blue-600 active:bg-blue-700 text-white font-bold py-4 px-4 rounded-xl transition touch-manipulation min-h-[3.5rem]">
+            START NEXT
+          </button>
+        </div>
       </div>
 
       <div id="restPausedOverlay" class="hidden text-center mt-4">

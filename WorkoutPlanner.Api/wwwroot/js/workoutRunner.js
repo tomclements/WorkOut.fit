@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
   wire(testSoundBtn, 'click', testSound);
   wire(completeSetBtn, 'click', () => completeSet(true));
   wire(skipRestBtn, 'click', endRest);
+  wire(byId('startNextBtn'), 'click', endRest);
   wire(startSetBtn, 'click', beginSetFromPreview);
   wire(musicBtn, 'click', toggleMusic);
   wire(musicStyleSelect, 'change', onMusicStyleChange);
@@ -264,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         ex.workingWeightKg = displayWeightToKg(raw, unit);
       }
-      if (exerciseMetaEl) exerciseMetaEl.textContent = setWorkLabel(ex);
+      if (exerciseMetaEl) exerciseMetaEl.textContent = phaseContextLabel(ex);
     });
   }
   wire(byId('workOverflowBtn'), 'click', openOverflow);
@@ -1349,7 +1350,7 @@ async function resumeSession() {
       updateRestHeading();
       const nextEx = currentExercise();
       if (nextExerciseNameEl) nextExerciseNameEl.textContent = nextEx.name;
-      if (nextExerciseMetaEl) nextExerciseMetaEl.textContent = setWorkLabel(nextEx);
+      fillRestCoaching(nextEx);
       if (nextDemoEl) {
         nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
         startDemoFlip(nextDemoEl);
@@ -2009,20 +2010,64 @@ function estimateTargetReps(ex) {
   return n ? parseInt(n[1], 10) : 0;
 }
 
+function phaseContextLabel(ex) {
+  if (!ex) return '';
+  const p = exercisePhase(ex);
+  const peers = sessionExercises.filter(e => exercisePhase(e) === p);
+  const idx = Math.max(1, peers.indexOf(ex) + 1);
+  const total = Math.max(peers.length, 1);
+  const title = p === 'warmup' ? 'WARM-UP' : (p === 'cooldown' ? 'COOL-DOWN' : 'WORK');
+  return `${title} ${idx}/${total}`;
+}
+
+function formCueForExercise(ex) {
+  if (!ex) return '';
+  if (isMobilityExercise(ex)) {
+    const p = exercisePhase(ex);
+    return ex.progression || (p === 'warmup' ? 'Move easily — prepare the muscles' : 'Breathe and ease tension');
+  }
+  return `Aim for ${ex.repsDisplay || 'your target'} reps this set`;
+}
+
+function coachingTagsForExercise(ex) {
+  if (!ex) return '';
+  const p = exercisePhase(ex);
+  const phaseTag = p === 'warmup' ? 'Warm-up' : (p === 'cooldown' ? 'Cool-down' : 'Work');
+  const muscles = (ex.primary || []).filter(Boolean);
+  let region = 'Full body';
+  if (muscles.length === 1) {
+    region = String(muscles[0]).replace(/^\w/, c => c.toUpperCase());
+  } else if (muscles.length > 1 && muscles.length <= 3) {
+    region = muscles.map(m => String(m).replace(/^\w/, c => c.toUpperCase())).join(', ');
+  }
+  return `${phaseTag}. ${region}. Scale anytime.`;
+}
+
+function fillRestCoaching(ex) {
+  const tagsEl = document.getElementById('restCoachingTags');
+  const formEl = document.getElementById('restCoachingForm');
+  const tags = coachingTagsForExercise(ex);
+  const form = formCueForExercise(ex);
+  if (tagsEl) tagsEl.textContent = tags;
+  if (formEl) formEl.textContent = form;
+  if (nextExerciseMetaEl) nextExerciseMetaEl.textContent = [tags, form].filter(Boolean).join(' ');
+}
+
 function fillExerciseHeader(ex) {
   if (!ex) return;
   if (exerciseNameEl) exerciseNameEl.textContent = ex.name || 'Exercise';
-  if (exerciseMetaEl) exerciseMetaEl.textContent = setWorkLabel(ex);
-  if (isMobilityExercise(ex)) {
-    const p = exercisePhase(ex);
-    setBadgeEl.textContent = p === 'warmup' ? 'Warm-up' : 'Cool-down';
-    workCueEl.textContent = ex.progression || (p === 'warmup' ? 'Move easily — prepare the muscles' : 'Breathe and ease tension');
-    completeSetBtn.textContent = 'Done with this move';
-  } else {
-    setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
-    workCueEl.textContent = `Aim for ${ex.repsDisplay || 'your target'} reps this set`;
-    completeSetBtn.textContent = 'Finish set early';
+  if (exerciseMetaEl) exerciseMetaEl.textContent = phaseContextLabel(ex);
+  if (setBadgeEl) {
+    if (isMobilityExercise(ex)) {
+      const p = exercisePhase(ex);
+      setBadgeEl.textContent = p === 'warmup' ? 'Warm-up' : 'Cool-down';
+    } else {
+      setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
+    }
   }
+  // Form / scale / coaching cues render on Rest only
+  if (workCueEl) workCueEl.textContent = formCueForExercise(ex);
+  if (completeSetBtn) completeSetBtn.textContent = 'DONE';
   updateWorkStats();
 }
 
@@ -2136,6 +2181,7 @@ function tick() {
   } else if (phase === 'rest') {
     if (restTimerEl) restTimerEl.textContent = formatTime(remaining);
     updatePhaseProgressBar(restProgressBar, remaining, phaseDurationSeconds);
+    updateSessionClocks();
     maybeCountdownCue('rest', remaining);
     if (remaining === 0) {
       if (navigator.vibrate) navigator.vibrate(50);
@@ -2234,20 +2280,13 @@ function enterRest() {
   phaseDurationSeconds = Engine ? Engine.restSeconds(restSource) : restSeconds(restSource);
 
   if (nextExerciseNameEl) nextExerciseNameEl.textContent = nextEx.name;
-  if (isMobilityExercise(nextEx)) {
-    const p = exercisePhase(nextEx);
-    nextExerciseMetaEl.textContent = p === 'warmup'
-      ? `Next warm-up · ${workSeconds(nextEx)}s`
-      : `Next cool-down · ${workSeconds(nextEx)}s`;
-  } else {
-    const unit = selectedDay?.sessionStyle === 'hiit' ? 'Round' : 'Set';
-    nextExerciseMetaEl.textContent = `${unit} ${currentSetIndex + 1} / ${nextEx.sets} · ${nextEx.repsDisplay || 'target'} · ${workSeconds(nextEx)}s work`;
-  }
+  fillRestCoaching(nextEx);
   if (nextDemoEl) {
     nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
     startDemoFlip(nextDemoEl);
   }
   updateRestHeading();
+  updateSessionClocks();
   restTimerEl.textContent = formatTime(phaseDurationSeconds);
   updatePhaseProgressBar(restProgressBar, phaseDurationSeconds, phaseDurationSeconds);
 
@@ -2584,10 +2623,44 @@ function estimateRemainingSeconds() {
   return secs;
 }
 
+/** Current phase remaining seconds (respects pause via Engine / pauseAccumulatedMs). */
+function phaseRemainingSeconds() {
+  if (phase !== 'work' && phase !== 'rest') return 0;
+  if (Engine) {
+    try { return Math.max(0, Engine.remainingSeconds(clockSnapshot(), Date.now())); } catch { /* fall through */ }
+  }
+  if (!phaseStartTime) return Math.max(0, phaseDurationSeconds || 0);
+  const elapsedMs = Math.max(0, Date.now() - phaseStartTime - (pauseAccumulatedMs || 0));
+  return Math.max(0, (phaseDurationSeconds || 0) - Math.floor(elapsedMs / 1000));
+}
+
+/**
+ * Live session remaining: sum of remaining work/rest intervals,
+ * with the in-progress phase using its live countdown (not full duration).
+ */
+function liveSessionRemainingSeconds() {
+  let secs = estimateRemainingSeconds();
+  const remain = phaseRemainingSeconds();
+  if (phase === 'work') {
+    const ex = currentExercise();
+    const fullWork = (ex && (ex.workDuration || 30)) || phaseDurationSeconds || 0;
+    secs = secs - fullWork + remain;
+  } else if (phase === 'rest') {
+    // estimateRemainingSeconds excludes the in-progress rest after a completed set
+    secs += remain;
+  }
+  return Math.max(0, Math.floor(secs));
+}
+
 function formatRemainingTime(secs) {
-  if (secs <= 0) return 'almost done';
-  const m = Math.ceil(secs / 60);
-  return m <= 1 ? 'about 1 min left' : `about ${m} min left`;
+  return formatTime(Math.max(0, secs));
+}
+
+function updateSessionClocks() {
+  const clock = formatRemainingTime(liveSessionRemainingSeconds());
+  if (workStatSessionEl) workStatSessionEl.textContent = clock;
+  const restStat = document.getElementById('restStatSession');
+  if (restStat) restStat.textContent = clock;
 }
 
 function updateWorkStats() {
@@ -2601,23 +2674,18 @@ function updateWorkStats() {
       workStatMoveEl.textContent = `Set ${currentSetIndex + 1} of ${ex.sets}`;
     }
   }
-  if (workStatSessionEl) {
-    workStatSessionEl.textContent = formatRemainingTime(estimateRemainingSeconds());
-  }
-  if (workNextEl) {
-    const nextIdx = currentExerciseIndex + 1;
-    if (nextIdx < sessionExercises.length) {
-      const next = sessionExercises[nextIdx];
-      const meta = isMobilityExercise(next)
-        ? (exercisePhase(next) === 'warmup' ? 'warm-up' : 'cool-down')
-        : `${next.sets} \u00D7 ${next.repsDisplay || next.workDuration + 's'}`;
-      workNextEl.textContent = `Next: ${next.name} \u00B7 ${meta}`;
-    } else {
-      workNextEl.textContent = 'Last move';
-    }
+  updateSessionClocks();
+  const nextNameEl = document.getElementById('workNextName');
+  const nextIdx = currentExerciseIndex + 1;
+  if (nextIdx < sessionExercises.length) {
+    const next = sessionExercises[nextIdx];
+    if (nextNameEl) nextNameEl.textContent = next.name || '';
+    else if (workNextEl) workNextEl.textContent = next.name || '';
+  } else {
+    if (nextNameEl) nextNameEl.textContent = 'Last move';
+    else if (workNextEl) workNextEl.textContent = 'Last move';
   }
 }
-
 
 function noSetsCompletedYet() {
   return !sessionExercises.some(ex => (ex.completedSets && ex.completedSets.length > 0));
@@ -2626,7 +2694,7 @@ function noSetsCompletedYet() {
 function updateRestHeading() {
   const el = document.getElementById('restHeading');
   if (!el) return;
-  el.textContent = noSetsCompletedYet() ? 'Get ready' : 'Rest';
+  el.textContent = noSetsCompletedYet() ? 'GET READY' : 'REST';
 }
 
 function syncOverflowControls() {
