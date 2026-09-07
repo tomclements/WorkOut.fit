@@ -1112,62 +1112,47 @@ async function updateNextWorkoutCard() {
     const plan = JSON.parse(saved);
     if (!plan || !plan.plan || !plan.criteria) { card.classList.add('hidden'); return; }
 
-    // Find the plan ID for completed-days tracking
+    const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
     let planId = null;
-    const plansKey = 'workoutPlanSavedId';
-    try { planId = localStorage.getItem(plansKey); } catch { /* ignore */ }
-    const completedKey = planId ? 'runnerCompleted_saved-' + planId : 'runnerCompleted_gen-' + (plan.generatedAt || 'unknown');
+    try { planId = localStorage.getItem('workoutPlanSavedId'); } catch { /* ignore */ }
+    const completedKey = NW
+      ? NW.completedStorageKey({ savedPlanId: planId, generatedAt: plan.generatedAt })
+      : (planId ? 'runnerCompleted_saved-' + planId : 'runnerCompleted_gen-' + (plan.generatedAt || 'unknown'));
     let completed = new Set();
     try { completed = new Set(JSON.parse(localStorage.getItem(completedKey) || '[]')); } catch { /* ignore */ }
 
-    // Merge server-side history for cross-device accuracy
     if (currentUser && planId) {
       try {
         const res = await fetch('/api/runner/sessions', { credentials: 'include' });
         if (res.ok) {
           const sessions = await res.json();
-          sessions.forEach(s => {
-            if (s.savedPlanId == planId && s.week && s.dayIndex != null) {
-              completed.add(s.week + ':' + s.dayIndex);
-            }
-          });
+          if (NW) NW.addSessionCompletionKeys(completed, sessions, planId);
+          else {
+            sessions.forEach(s => {
+              if (s.savedPlanId == planId && s.week != null && s.dayIndex != null) {
+                completed.add(s.week + ':' + s.dayIndex);
+              }
+            });
+          }
         }
       } catch { /* ignore */ }
     }
 
-    // Find first uncompleted workout day
-    let nextDay = null;
-    let nextWeek = null;
-    for (const week of plan.plan) {
-      for (const day of week.days) {
-        if (day.type !== 'workout') continue;
-        if (!completed.has(week.week + ':' + day.dayIndex)) {
-          nextDay = day;
-          nextWeek = week;
-          break;
-        }
-      }
-      if (nextDay) break;
-    }
+    const found = NW
+      ? NW.findNextWorkoutDay(plan.plan, completed)
+      : null;
+    if (!found) { card.classList.add('hidden'); return; }
 
-    if (!nextDay) {
-      // All done — suggest restarting from week 1
-      for (const week of plan.plan) {
-        for (const day of week.days) {
-          if (day.type === 'workout') { nextDay = day; nextWeek = week; break; }
-        }
-        if (nextDay) break;
-      }
-    }
-
-    if (!nextDay) { card.classList.add('hidden'); return; }
-
+    const nextDay = found.day;
+    const nextWeekNum = found.week;
     const goal = capitalize(plan.criteria.goal || 'training');
     const split = capitalize(plan.criteria.split || 'full-body');
     const focus = nextDay.focus || nextDay.sessionStyle || 'Strength';
     document.getElementById('nextWorkoutInfo').textContent =
-      `Week ${nextWeek.week} — ${nextDay.day} · ${focus} · ${split} · ${goal}`;
-    document.getElementById('nextWorkoutBtn').href = '/workout.html?setup=1';
+      `Week ${nextWeekNum} — ${nextDay.day} · ${focus} · ${split} · ${goal}`;
+    document.getElementById('nextWorkoutBtn').href = NW
+      ? NW.runnerSetupHref({ planId, week: found.week, dayIndex: found.dayIndex })
+      : '/workout.html?setup=1';
     card.classList.remove('hidden');
   } catch {
     card.classList.add('hidden');
@@ -1501,7 +1486,9 @@ async function generate(options = {}) {
     }
     currentPlan = result;
     currentPlanId = null;
+    try { localStorage.removeItem('workoutPlanSavedId'); } catch { /* ignore */ }
     localStorage.setItem('workoutPlan', JSON.stringify(result));
+    updateNextWorkoutCard();
     // Remember form choices for next visit (level, goal, split, days, etc.)
     await savePlanFormDefaults(criteria);
     renderPlan(result);

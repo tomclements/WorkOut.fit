@@ -1,4 +1,4 @@
-﻿let currentPlan = null;
+let currentPlan = null;
 let currentUser = null;
 let selectedDay = null;
 let selectedWeek = null;
@@ -599,7 +599,7 @@ function populateDaySelect() {
       if (day.type !== 'workout') return;
       hasWorkout = true;
       const option = document.createElement('option');
-      option.value = JSON.stringify({ week: week.week, dayIndex: day.dayIndex ?? idx, arrayIndex: idx });
+      option.value = JSON.stringify({ week: week.week, dayIndex: (typeof NextWorkout !== 'undefined' ? NextWorkout.canonicalDayIndex(day, idx) : (day.dayIndex ?? day.DayIndex ?? idx)), arrayIndex: idx });
       const summary = typeof WorkoutMobility !== 'undefined'
         ? WorkoutMobility.dayMobilitySummary(day)
         : '';
@@ -616,6 +616,12 @@ function populateDaySelect() {
 
 
 function completedDaysKey() {
+  if (typeof NextWorkout !== 'undefined') {
+    return NextWorkout.completedStorageKey({
+      savedPlanId: currentSavedPlanId,
+      generatedAt: currentPlan?.generatedAt
+    });
+  }
   const id = currentSavedPlanId ? 'saved-' + currentSavedPlanId : 'gen-' + (currentPlan?.generatedAt || 'unknown');
   return 'runnerCompleted_' + id;
 }
@@ -640,6 +646,7 @@ function markDayCompleted() {
 
 async function defaultToNextWorkoutDay() {
   const completed = getCompletedDayKeys();
+  const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
 
   // Merge server history for saved plans (cross-device)
   if (currentUser && currentSavedPlanId) {
@@ -647,39 +654,76 @@ async function defaultToNextWorkoutDay() {
       const res = await fetch('/api/runner/sessions', { credentials: 'include' });
       if (res.ok) {
         const sessions = await res.json();
-        sessions.forEach(s => {
-          if (s.savedPlanId === currentSavedPlanId && s.week && s.dayIndex != null) {
-            completed.add(s.week + ':' + s.dayIndex);
-          }
-        });
+        if (NW) NW.addSessionCompletionKeys(completed, sessions, currentSavedPlanId);
+        else {
+          sessions.forEach(s => {
+            if (s.savedPlanId == currentSavedPlanId && s.week != null && s.dayIndex != null) {
+              completed.add(s.week + ':' + s.dayIndex);
+            }
+          });
+        }
       }
     } catch { /* ignore */ }
   }
 
+  // Honor deep-link week/dayIndex from Start href (alongside setup strip elsewhere)
+  const params = new URLSearchParams(window.location.search);
+  const urlWeek = params.get('week');
+  const urlDayIndex = params.get('dayIndex');
   let found = null;
-  for (const week of currentPlan.plan) {
-    for (let idx = 0; idx < week.days.length; idx++) {
-      const day = week.days[idx];
-      if (day.type !== 'workout') continue;
-      if (!completed.has(week.week + ':' + day.dayIndex)) {
-        found = { week: week.week, dayIndex: day.dayIndex ?? idx, arrayIndex: idx };
-        break;
-      }
-    }
-    if (found) break;
-  }
-  // All complete -> start over at first workout day
-  if (!found) {
-    outer: for (const week of currentPlan.plan) {
-      for (let idx = 0; idx < week.days.length; idx++) {
-        const day = week.days[idx];
-        if (day.type === 'workout') {
-          found = { week: week.week, dayIndex: day.dayIndex ?? idx, arrayIndex: idx };
-          break outer;
+  if (urlWeek != null && urlDayIndex != null) {
+    const weekNum = parseInt(urlWeek, 10);
+    const dayIndex = parseInt(urlDayIndex, 10);
+    if (Number.isFinite(weekNum) && Number.isFinite(dayIndex)) {
+      const weekObj = (currentPlan.plan || []).find(w => w.week === weekNum);
+      if (weekObj) {
+        const days = weekObj.days || [];
+        for (let idx = 0; idx < days.length; idx++) {
+          const day = days[idx];
+          if (!day || day.type !== 'workout') continue;
+          const cidx = NW ? NW.canonicalDayIndex(day, idx) : (day.dayIndex ?? day.DayIndex ?? idx);
+          if (cidx === dayIndex) {
+            found = { week: weekNum, dayIndex: cidx, arrayIndex: idx };
+            break;
+          }
         }
       }
     }
   }
+
+  if (!found) {
+    if (NW) {
+      const next = NW.findNextWorkoutDay(currentPlan.plan, completed);
+      if (next) {
+        found = { week: next.week, dayIndex: next.dayIndex, arrayIndex: next.arrayIndex };
+      }
+    } else {
+      for (const week of currentPlan.plan) {
+        for (let idx = 0; idx < week.days.length; idx++) {
+          const day = week.days[idx];
+          if (day.type !== 'workout') continue;
+          const cidx = day.dayIndex ?? day.DayIndex ?? idx;
+          if (!completed.has(week.week + ':' + cidx)) {
+            found = { week: week.week, dayIndex: cidx, arrayIndex: idx };
+            break;
+          }
+        }
+        if (found) break;
+      }
+      if (!found) {
+        outer: for (const week of currentPlan.plan) {
+          for (let idx = 0; idx < week.days.length; idx++) {
+            const day = week.days[idx];
+            if (day.type === 'workout') {
+              found = { week: week.week, dayIndex: day.dayIndex ?? day.DayIndex ?? idx, arrayIndex: idx };
+              break outer;
+            }
+          }
+        }
+      }
+    }
+  }
+
   if (found) {
     const encoded = JSON.stringify(found);
     const hasExact = [...daySelect.options].some(o => o.value === encoded);
