@@ -29,6 +29,7 @@ let phaseBusy = false;
 let Engine = window.RunnerEngine || null;
 let OverflowSettings = window.OverflowSettings || null;
 let StartWeightGate = window.StartWeightGate || null;
+let StayAwake = window.StayAwake || null;
 let previewCache = null;      // cached exercise catalog (id -> exercise) for previews/analyze
 let previewCachePromise = null;
 let lastLoads = null;         // { exerciseId: kg } from most recent session
@@ -59,6 +60,7 @@ const nowPlayingEl = document.getElementById('nowPlaying');
 const exerciseNameEl = document.getElementById('exerciseName');
 const exerciseMetaEl = document.getElementById('exerciseMeta');
 const setBadgeEl = document.getElementById('setBadge');
+const restSetBadgeEl = document.getElementById('restSetBadge');
 const demoLinkEl = document.getElementById('demoLink');
 const timerDisplayEl = document.getElementById('timerDisplay');
 const workCueEl = document.getElementById('workCue');
@@ -1856,7 +1858,11 @@ async function handleVisibilityChange() {
     if (!isPaused && phase !== 'setup' && phase !== 'finish') {
       pauseWorkout(true);
     }
-    pauseNoSleepVideo();
+    // Keep nosleep armed while mid-session; pausing here kills the iOS fallback.
+    const pauseVideo = (StayAwake && typeof StayAwake.shouldPauseNoSleepOnHidden === 'function')
+      ? StayAwake.shouldPauseNoSleepOnHidden(phase, wakeLockWanted)
+      : !(wakeLockWanted && (phase === 'work' || phase === 'rest'));
+    if (pauseVideo) pauseNoSleepVideo();
   } else {
     if (phase !== 'setup' && phase !== 'finish') {
       await requestWakeLock();
@@ -2097,18 +2103,27 @@ function fillRestCoaching(ex) {
   if (nextExerciseMetaEl) nextExerciseMetaEl.textContent = [tags, form].filter(Boolean).join(' ');
 }
 
+function roundBadgeLabel(ex) {
+  if (!ex) return '';
+  if (isMobilityExercise(ex)) {
+    const p = exercisePhase(ex);
+    return p === 'warmup' ? 'Warm-up' : 'Cool-down';
+  }
+  const total = Math.max(1, ex.sets || 1);
+  return `Round ${currentSetIndex + 1} / ${total}`;
+}
+
+function fillRoundBadges(ex) {
+  const label = roundBadgeLabel(ex);
+  if (setBadgeEl) setBadgeEl.textContent = label;
+  if (restSetBadgeEl) restSetBadgeEl.textContent = label;
+}
+
 function fillExerciseHeader(ex) {
   if (!ex) return;
   if (exerciseNameEl) exerciseNameEl.textContent = ex.name || 'Exercise';
   if (exerciseMetaEl) exerciseMetaEl.textContent = phaseContextLabel(ex);
-  if (setBadgeEl) {
-    if (isMobilityExercise(ex)) {
-      const p = exercisePhase(ex);
-      setBadgeEl.textContent = p === 'warmup' ? 'Warm-up' : 'Cool-down';
-    } else {
-      setBadgeEl.textContent = `Set ${currentSetIndex + 1} / ${ex.sets}`;
-    }
-  }
+  fillRoundBadges(ex);
   // Form / scale / coaching cues render on Rest only
   if (workCueEl) workCueEl.textContent = formCueForExercise(ex);
   if (completeSetBtn) completeSetBtn.textContent = 'DONE';
@@ -2163,6 +2178,7 @@ function enterWork(resuming = false) {
     }
   }
 
+  requestWakeLock().catch(() => {});
   setWorkChromeMode();
   lastSpokenSecondKey = '';
 
@@ -2325,6 +2341,7 @@ function enterRest() {
 
   if (nextExerciseNameEl) nextExerciseNameEl.textContent = nextEx.name;
   fillRestCoaching(nextEx);
+  fillRoundBadges(nextEx);
   if (nextDemoEl) {
     nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
     startDemoFlip(nextDemoEl);
@@ -2336,6 +2353,7 @@ function enterRest() {
 
   if (musicEngine.isPlaying) musicEngine.setVolume(0.35);
   showScreen(restScreen);
+  requestWakeLock().catch(() => {});
   startTimer();
   saveSessionState();
 }
@@ -2969,6 +2987,12 @@ function startAudioKeepAlive() {
   audioKeepAliveInterval = setInterval(() => {
     const ctx = sharedAudioCtx;
     if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+    const keep = (StayAwake && typeof StayAwake.shouldKeepAwake === 'function')
+      ? StayAwake.shouldKeepAwake(phase, wakeLockWanted)
+      : (wakeLockWanted && (phase === 'work' || phase === 'rest'));
+    if (keep && document.visibilityState === 'visible') {
+      requestWakeLock().catch(() => {});
+    }
   }, 4000);
 }
 function stopAudioKeepAlive() {

@@ -158,8 +158,33 @@ button, a {
   text-transform: uppercase;
 }
 
-.runner-set-badge-legacy[hidden] {
-  display: none !important;
+.runner-set-badge {
+  font-size: clamp(1rem, 3.5vw, 1.25rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: #1e293b;
+  color: #a7f3d0;
+  border: 1px solid #064e3b;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.runner-set-badge--rest {
+  background: #1e3a5f;
+  color: #7DD3FC;
+  border-color: #1d4ed8;
+}
+.runner-rest-heading-row {
+  flex-wrap: wrap;
+}
+.runner-rest-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.runner-rest-card {
+  padding: 0.75rem 0.9rem !important;
+  margin-bottom: 0.35rem !important;
 }
 
 
@@ -552,8 +577,16 @@ body.work-phase #activeScreen .runner-phase-context {
 }
 
 body.work-phase #activeScreen #setBadge,
-body.work-phase #activeScreen .runner-set-badge-legacy {
-  display: none !important;
+body.work-phase #activeScreen .runner-set-badge {
+  display: inline-flex !important;
+  align-items: center;
+  font-size: clamp(1.05rem, 3.8vw, 1.35rem) !important;
+  background: #1e293b !important;
+  color: #a7f3d0 !important;
+  border: 1px solid #064e3b !important;
+  padding: 0.45rem 0.75rem !important;
+  border-radius: 999px !important;
+  white-space: nowrap;
 }
 
 body.work-phase #activeScreen #timerDisplay {
@@ -692,7 +725,7 @@ body.rest-phase #restScreen {
   overflow: hidden;
   background: #0B1220 !important;
   color: #FFFFFF !important;
-  padding-top: calc(0.5rem + env(safe-area-inset-top, 0px)) !important;
+  padding-top: calc(0.35rem + env(safe-area-inset-top, 0px)) !important;
   padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;
   min-height: 100dvh !important;
   min-height: 100svh !important;
@@ -704,10 +737,17 @@ body.rest-phase #restScreen {
 body.rest-phase #restScreen #restHeading,
 body.rest-phase #restScreen .runner-rest-heading,
 body.rest-phase #restScreen .text-center .uppercase {
-  font-size: 1.55rem !important;
+  font-size: 1.75rem !important;
   color: #7DD3FC !important;
-  margin-bottom: 0.15rem !important;
+  margin-bottom: 0 !important;
   letter-spacing: 0.14em !important;
+}
+body.rest-phase #restScreen #restSetBadge,
+body.rest-phase #restScreen .runner-set-badge--rest {
+  display: inline-flex !important;
+  align-items: center;
+  font-size: clamp(1.05rem, 3.8vw, 1.35rem) !important;
+  padding: 0.4rem 0.7rem !important;
 }
 
 body.rest-phase #restTimer {
@@ -735,9 +775,10 @@ body.rest-phase #restScreen .bg-white {
 
 body.rest-phase #nextExerciseName,
 body.rest-phase .runner-rest-next-name {
-  font-size: clamp(2rem, 7vw, 2.5rem) !important; /* ~32–40px */
+  font-size: clamp(2.25rem, 7.5vw, 2.85rem) !important; /* denser floor reading */
   color: #FFFFFF !important;
   font-weight: 800 !important;
+  margin-bottom: 0.35rem !important;
 }
 
 body.rest-phase #nextExerciseMeta {
@@ -746,9 +787,25 @@ body.rest-phase #nextExerciseMeta {
 
 body.rest-phase .runner-rest-coaching-tags,
 body.rest-phase .runner-rest-coaching-form {
-  font-size: clamp(1.35rem, 5vw, 1.75rem) !important; /* ~22–28px */
+  font-size: clamp(1.45rem, 5.2vw, 1.9rem) !important; /* denser + larger */
   font-weight: 700 !important;
   color: #E8EEF7 !important;
+}
+body.rest-phase .runner-rest-coaching {
+  margin-top: 0.2rem;
+}
+body.rest-phase #restScreen .runner-rest-card {
+  padding: 0.65rem 0.85rem !important;
+  margin-bottom: 0.25rem !important;
+}
+body.rest-phase #restScreen .demo-panel--rest {
+  margin-top: 0.35rem !important;
+}
+body.rest-phase #restScreen .demo-panel--rest .demo-frame {
+  max-height: 16vh;
+}
+body.rest-phase #restScreen .runner-session-timer--rest {
+  margin: 0.2rem 0 0.4rem;
 }
 
 body.rest-phase #restScreen .runner-rest-card {
