@@ -629,6 +629,12 @@ function completedDaysKey() {
 }
 
 function getCompletedDayKeys() {
+  if (typeof NextWorkout !== 'undefined' && NextWorkout.readCompletedKeys) {
+    return NextWorkout.readCompletedKeys({
+      savedPlanId: currentSavedPlanId,
+      generatedAt: currentPlan?.generatedAt
+    }, localStorage);
+  }
   try {
     return new Set(JSON.parse(localStorage.getItem(completedDaysKey()) || '[]'));
   } catch {

@@ -116,3 +116,95 @@ test('runnerSetupHref includes dayIndex=0 when Monday', () => {
   assert.ok(noPlan.includes('dayIndex=4'));
   assert.ok(!noPlan.includes('planId='));
 });
+
+test('readCompletedKeys unions gen + saved', () => {
+  const store = {
+    data: {
+      'runnerCompleted_gen-ts1': JSON.stringify(['1:0']),
+      'runnerCompleted_saved-9': JSON.stringify(['1:2'])
+    },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  const set = nw.readCompletedKeys({ savedPlanId: 9, generatedAt: 'ts1' }, store);
+  assert.ok(set.has('1:0'));
+  assert.ok(set.has('1:2'));
+});
+
+test('migrateGenCompletionsToSaved copies gen into saved', () => {
+  const store = {
+    data: {
+      'runnerCompleted_gen-ts1': JSON.stringify(['1:0', '1:2']),
+      'runnerCompleted_saved-9': JSON.stringify(['1:4'])
+    },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  const union = nw.migrateGenCompletionsToSaved({ generatedAt: 'ts1', savedPlanId: 9 }, store);
+  assert.ok(union.has('1:0'));
+  assert.ok(union.has('1:2'));
+  assert.ok(union.has('1:4'));
+  const saved = JSON.parse(store.getItem('runnerCompleted_saved-9'));
+  assert.ok(saved.includes('1:0'));
+  assert.ok(saved.includes('1:2'));
+  assert.ok(saved.includes('1:4'));
+});
+
+test('loadCompletedSetForPlan + runnerStartHrefForPlan deep-link next day', () => {
+  const plan = {
+    generatedAt: 'ts1',
+    plan: [monWedFriWeek(1)]
+  };
+  const store = {
+    data: {
+      workoutPlanSavedId: '9',
+      'runnerCompleted_gen-ts1': JSON.stringify(['1:0'])
+    },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  const completed = nw.loadCompletedSetForPlan(plan, store);
+  assert.ok(completed.has('1:0'));
+  const href = nw.runnerStartHrefForPlan(plan, 9, store);
+  assert.ok(href.includes('setup=1'));
+  assert.ok(href.includes('planId=9'));
+  assert.ok(href.includes('week=1'));
+  assert.ok(href.includes('dayIndex=2'));
+  assert.ok(!href.includes('dayIndex=0'));
+});
+
+test('runnerStartHrefForPlan all-done wraps to first day', () => {
+  const plan = {
+    generatedAt: 'ts1',
+    plan: [monWedFriWeek(1)]
+  };
+  const store = {
+    data: {
+      'runnerCompleted_gen-ts1': JSON.stringify(['1:0', '1:2', '1:4'])
+    },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  const href = nw.runnerStartHrefForPlan(plan, null, store);
+  assert.ok(href.includes('week=1'));
+  assert.ok(href.includes('dayIndex=0'));
+});
+
+test('after migrate, Start href still advances from gen completions', () => {
+  const plan = {
+    generatedAt: 'ts1',
+    plan: [monWedFriWeek(1), monWedFriWeek(2)]
+  };
+  const store = {
+    data: {
+      'runnerCompleted_gen-ts1': JSON.stringify(['1:0'])
+    },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  nw.migrateGenCompletionsToSaved({ generatedAt: 'ts1', savedPlanId: '42' }, store);
+  store.setItem('workoutPlanSavedId', '42');
+  const href = nw.runnerStartHrefForPlan(plan, 42, store);
+  assert.ok(href.includes('dayIndex=2'));
+  assert.ok(href.includes('planId=42'));
+});

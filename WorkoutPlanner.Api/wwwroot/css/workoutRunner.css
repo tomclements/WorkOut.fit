@@ -526,8 +526,15 @@ body.high-contrast .demo-actions a {
 }
 
 /* Phone-optimized work mode — name·set, hero timer, target, Done/Pause */
-body.work-phase #activeScreen > .mb-4:first-child {
-  display: none !important;
+body.work-phase #activeScreen > .mb-4:first-child,
+body.work-phase #activeScreen .runner-progress-chrome {
+  display: block !important;
+  margin-bottom: 0.35rem !important;
+}
+body.work-phase #activeScreen .runner-progress-chrome .text-xs,
+body.work-phase #activeScreen .runner-progress-chrome .sm\:text-sm {
+  font-size: 0.75rem !important;
+  color: #A7B4C8 !important;
 }
 
 body.work-phase,
@@ -560,12 +567,21 @@ body.work-phase #activeScreen {
   border-radius: 0 !important;
 }
 
+body.work-phase #activeScreen .runner-work-header {
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+body.work-phase #activeScreen .runner-work-header-top {
+  margin-bottom: 0.2rem;
+}
 body.work-phase #activeScreen #exerciseName,
 body.work-phase #activeScreen .runner-exercise-name {
-  font-size: clamp(2.25rem, 8vw, 2.75rem) !important; /* ~36–44px */
-  text-align: left !important;
+  font-size: clamp(2.5rem, 9vw, 2.75rem) !important; /* ~40–44px */
+  text-align: center !important;
   color: #FFFFFF !important;
   font-weight: 800 !important;
+  width: 100%;
+  line-height: 1.1 !important;
 }
 
 body.work-phase #activeScreen #exerciseMeta,
@@ -589,14 +605,23 @@ body.work-phase #activeScreen .runner-set-badge {
   white-space: nowrap;
 }
 
+body.work-phase #activeScreen #workTimerBlock,
+body.work-phase #activeScreen .runner-move-timer {
+  width: 100%;
+}
 body.work-phase #activeScreen #timerDisplay {
-  font-size: clamp(6rem, 22vw, 7.5rem) !important; /* ~96–120px */
+  font-size: clamp(5.5rem, 20vw, 6rem) !important; /* ~88–96px */
   line-height: 1 !important;
   text-align: center !important;
   color: #3DDC97 !important;
   font-variant-numeric: tabular-nums !important;
   letter-spacing: -0.02em;
   white-space: nowrap !important;
+  width: 100%;
+}
+body.work-phase #activeScreen #workProgressBar,
+body.work-phase #activeScreen .runner-move-timer .bg-gray-200 {
+  display: block !important;
 }
 
 body.work-phase #activeScreen #workCue {
@@ -751,12 +776,18 @@ body.rest-phase #restScreen .runner-set-badge--rest {
 }
 
 body.rest-phase #restTimer {
-  font-size: clamp(4.5rem, 18vw, 6rem) !important; /* ~72–96px */
+  font-size: clamp(5.5rem, 20vw, 6rem) !important; /* ~88–96px */
   line-height: 1 !important;
   color: #7DD3FC !important;
   margin-bottom: 0.3rem !important;
   font-variant-numeric: tabular-nums !important;
   white-space: nowrap !important;
+  width: 100%;
+  text-align: center !important;
+}
+body.rest-phase #restProgressBar,
+body.rest-phase #restScreen .bg-blue-100 {
+  display: block !important;
 }
 
 body.rest-phase #restScreen .bg-blue-100,
@@ -775,10 +806,12 @@ body.rest-phase #restScreen .bg-white {
 
 body.rest-phase #nextExerciseName,
 body.rest-phase .runner-rest-next-name {
-  font-size: clamp(2.25rem, 7.5vw, 2.85rem) !important; /* denser floor reading */
+  font-size: clamp(2.5rem, 9vw, 2.75rem) !important; /* ~40–44px centered */
   color: #FFFFFF !important;
   font-weight: 800 !important;
   margin-bottom: 0.35rem !important;
+  text-align: center !important;
+  width: 100%;
 }
 
 body.rest-phase #nextExerciseMeta {
@@ -787,9 +820,11 @@ body.rest-phase #nextExerciseMeta {
 
 body.rest-phase .runner-rest-coaching-tags,
 body.rest-phase .runner-rest-coaching-form {
-  font-size: clamp(1.45rem, 5.2vw, 1.9rem) !important; /* denser + larger */
+  font-size: clamp(1.65rem, 5.8vw, 2.1rem) !important; /* much larger instructions */
   font-weight: 700 !important;
   color: #E8EEF7 !important;
+  line-height: 1.3 !important;
+  text-align: center !important;
 }
 body.rest-phase .runner-rest-coaching {
   margin-top: 0.2rem;
@@ -1222,15 +1257,20 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
     gap: 0.12rem;
   }
   body.work-phase:not(.tv-mode) #activeScreen #exerciseName {
-    font-size: clamp(2.1rem, 7vw, 2.5rem) !important; /* keep >= ~36px */
+    font-size: clamp(2.4rem, 8vw, 2.65rem) !important; /* keep ~40px */
     line-height: 1.1 !important;
+    text-align: center !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #exerciseMeta {
     font-size: 0.9rem !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #timerDisplay,
   body.work-phase:not(.tv-mode) .big-timer {
-    font-size: clamp(5.5rem, 18vw, 6.5rem) !important; /* keep near 96px floor */
+    font-size: clamp(5.5rem, 18vw, 6rem) !important; /* ~88–96px */
+  }
+  body.work-phase:not(.tv-mode) #activeScreen .runner-progress-chrome {
+    display: block !important;
+    margin-bottom: 0.2rem !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #workCue {
     display: none !important;
@@ -1263,21 +1303,22 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   }
   body.rest-phase:not(.tv-mode) #restTimer,
   body.rest-phase:not(.tv-mode) .big-timer {
-    font-size: clamp(4.25rem, 16vw, 5.5rem) !important; /* ~72px floor */
-    margin-bottom: 0.2rem !important;
+    font-size: clamp(5.5rem, 18vw, 6rem) !important; /* ~88-96px */
+    margin-bottom: 0.15rem !important;
   }
   body.rest-phase:not(.tv-mode) #nextExerciseName {
-    font-size: clamp(1.85rem, 6vw, 2.25rem) !important;
-    line-height: 1.15 !important;
+    font-size: clamp(2.4rem, 8vw, 2.65rem) !important;
+    text-align: center !important;
   }
   body.rest-phase:not(.tv-mode) .runner-rest-coaching-tags,
   body.rest-phase:not(.tv-mode) .runner-rest-coaching-form {
-    font-size: clamp(1.25rem, 4.5vw, 1.5rem) !important;
+    font-size: clamp(1.55rem, 5.5vw, 1.95rem) !important;
+    text-align: center !important;
   }
   body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
   body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
-    max-height: 12vh;
-    height: 12vh;
+    max-height: 9vh;
+    height: 9vh;
     aspect-ratio: auto;
   }
   body.rest-phase:not(.tv-mode) #skipRestBtn,

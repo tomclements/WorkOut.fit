@@ -1103,6 +1103,26 @@ function renderDashboard(data) {
 }
 
 // --- Next workout suggestion ---
+function migrateCompletionsOnSave(savedPlanId, plan) {
+  const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
+  if (!NW || savedPlanId == null || savedPlanId === '') return;
+  const generatedAt = (plan && plan.generatedAt) || (() => {
+    try {
+      const raw = localStorage.getItem('workoutPlan');
+      return raw ? JSON.parse(raw).generatedAt : null;
+    } catch { return null; }
+  })();
+  NW.migrateGenCompletionsToSaved({ generatedAt, savedPlanId }, localStorage);
+}
+
+function buildStartWorkoutHref(plan, planId) {
+  const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
+  if (NW && plan && plan.plan) {
+    return NW.runnerStartHrefForPlan(plan, planId, localStorage);
+  }
+  return planId ? `/workout.html?planId=${planId}&setup=1` : '/workout.html?setup=1';
+}
+
 async function updateNextWorkoutCard() {
   const card = document.getElementById('nextWorkoutCard');
   if (!card) return;
@@ -1115,11 +1135,15 @@ async function updateNextWorkoutCard() {
     const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
     let planId = null;
     try { planId = localStorage.getItem('workoutPlanSavedId'); } catch { /* ignore */ }
-    const completedKey = NW
-      ? NW.completedStorageKey({ savedPlanId: planId, generatedAt: plan.generatedAt })
-      : (planId ? 'runnerCompleted_saved-' + planId : 'runnerCompleted_gen-' + (plan.generatedAt || 'unknown'));
-    let completed = new Set();
-    try { completed = new Set(JSON.parse(localStorage.getItem(completedKey) || '[]')); } catch { /* ignore */ }
+    let completed = NW
+      ? NW.loadCompletedSetForPlan(plan, localStorage)
+      : (() => {
+          const completedKey = planId
+            ? 'runnerCompleted_saved-' + planId
+            : 'runnerCompleted_gen-' + (plan.generatedAt || 'unknown');
+          try { return new Set(JSON.parse(localStorage.getItem(completedKey) || '[]')); }
+          catch { return new Set(); }
+        })();
 
     if (currentUser && planId) {
       try {
@@ -1362,6 +1386,7 @@ async function loadSavedPlan(id) {
     currentPlan = result;
     currentPlanId = id;
     localStorage.setItem('workoutPlan', JSON.stringify(currentPlan));
+    migrateCompletionsOnSave(id, currentPlan);
     try { localStorage.setItem('workoutPlanSavedId', String(id)); } catch { /* ignore */ }
     renderPlan(currentPlan);
     plannerSection.classList.remove('hidden');
@@ -1386,9 +1411,26 @@ async function deleteSavedPlan(id) {
   }
 }
 
-function runPlan(id) {
+async function runPlan(id) {
+  let plan = (currentPlanId == id && currentPlan) ? currentPlan : null;
+  if (!plan) {
+    try {
+      const raw = localStorage.getItem('workoutPlan');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.plan) plan = parsed;
+      }
+    } catch { /* ignore */ }
+  }
+  if (!plan) {
+    try {
+      const response = await fetch(`/api/plans/${id}`, { credentials: 'include' });
+      if (response.ok) plan = await response.json();
+    } catch { /* ignore */ }
+  }
+  migrateCompletionsOnSave(id, plan);
   try { localStorage.setItem('workoutPlanSavedId', String(id)); } catch { /* ignore */ }
-  window.location.href = `/workout.html?planId=${id}&setup=1`;
+  window.location.href = buildStartWorkoutHref(plan, id);
 }
 
 async function saveCurrentPlan() {
@@ -1411,6 +1453,7 @@ async function saveCurrentPlan() {
     });
     if (!response.ok) throw new Error('Server error');
     const saved = await response.json();
+    migrateCompletionsOnSave(saved.id, currentPlan);
     try { localStorage.setItem('workoutPlanSavedId', String(saved.id)); } catch { /* ignore */ }
     setStatus('Plan saved.', false);
     if (typeof showToast === 'function') showToast('Plan saved to your account.', 'success');
@@ -1708,7 +1751,11 @@ function renderPlan(result) {
 
   document.getElementById('results').classList.remove('hidden');
   startWorkoutBtn.classList.remove('hidden');
-  startWorkoutBtn.href = currentPlanId ? `/workout.html?planId=${currentPlanId}&setup=1` : '/workout.html?setup=1';
+  let startPlanId = currentPlanId;
+  if (startPlanId == null) {
+    try { startPlanId = localStorage.getItem('workoutPlanSavedId'); } catch { /* ignore */ }
+  }
+  startWorkoutBtn.href = buildStartWorkoutHref(result, startPlanId);
   const regenBtn = document.getElementById('regenerateBtn');
   if (regenBtn) regenBtn.classList.remove('hidden');
   const regenHint = document.getElementById('regenerateHint');

@@ -61,6 +61,90 @@
     return 'runnerCompleted_gen-' + (generatedAt || 'unknown');
   }
 
+  function parseCompletedList(raw) {
+    try {
+      const arr = JSON.parse(raw || '[]');
+      return Array.isArray(arr) ? arr : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function defaultStorage(storage) {
+    if (storage) return storage;
+    if (typeof localStorage !== 'undefined') return localStorage;
+    return null;
+  }
+
+  /**
+   * Union of gen + saved completion keys for the same plan when both exist.
+   * Prevents orphaning runnerCompleted_gen-* after workoutPlanSavedId is set.
+   */
+  function readCompletedKeys(opts, storage) {
+    const store = defaultStorage(storage);
+    const set = new Set();
+    if (!store || typeof store.getItem !== 'function') return set;
+
+    const savedPlanId = opts && opts.savedPlanId;
+    const generatedAt = opts && opts.generatedAt;
+    const hasSaved = savedPlanId != null && savedPlanId !== '';
+    const hasGen = generatedAt != null && generatedAt !== '';
+
+    if (hasGen) {
+      for (const k of parseCompletedList(store.getItem(completedStorageKey({ generatedAt })))) {
+        set.add(k);
+      }
+    }
+    if (hasSaved) {
+      for (const k of parseCompletedList(store.getItem(completedStorageKey({ savedPlanId })))) {
+        set.add(k);
+      }
+    }
+    if (!hasSaved && !hasGen) {
+      for (const k of parseCompletedList(store.getItem(completedStorageKey({})))) {
+        set.add(k);
+      }
+    }
+    return set;
+  }
+
+  /**
+   * Copy/union gen keys into the saved key when a plan gets a savedPlanId.
+   */
+  function migrateGenCompletionsToSaved(opts, storage) {
+    const store = defaultStorage(storage);
+    const savedPlanId = opts && opts.savedPlanId;
+    if (!store || typeof store.getItem !== 'function' || savedPlanId == null || savedPlanId === '') {
+      return new Set();
+    }
+    const generatedAt = opts && opts.generatedAt;
+    const genKey = completedStorageKey({ generatedAt });
+    const savedKey = completedStorageKey({ savedPlanId });
+    const union = new Set([
+      ...parseCompletedList(store.getItem(genKey)),
+      ...parseCompletedList(store.getItem(savedKey))
+    ]);
+    try {
+      store.setItem(savedKey, JSON.stringify([...union]));
+    } catch { /* ignore */ }
+    return union;
+  }
+
+  /**
+   * Load completed keys for a plan object using storage workoutPlanSavedId + plan.generatedAt.
+   */
+  function loadCompletedSetForPlan(plan, storage) {
+    const store = defaultStorage(storage);
+    let savedPlanId = null;
+    if (store && typeof store.getItem === 'function') {
+      try { savedPlanId = store.getItem('workoutPlanSavedId'); } catch { /* ignore */ }
+    }
+    return readCompletedKeys({
+      savedPlanId,
+      generatedAt: plan && plan.generatedAt
+    }, store);
+  }
+
   /**
    * Merge runner session records for this plan into completedSet.
    * Uses loose == so string vs numeric savedPlanId both match.
@@ -89,12 +173,28 @@
     return '/workout.html?' + params.toString();
   }
 
+  /**
+   * Build Start/Run href with next incomplete day deep-linked.
+   */
+  function runnerStartHrefForPlan(plan, planId, storage) {
+    const completed = loadCompletedSetForPlan(plan, storage);
+    const found = findNextWorkoutDay(plan && plan.plan, completed);
+    if (!found) {
+      return runnerSetupHref({ planId });
+    }
+    return runnerSetupHref({ planId, week: found.week, dayIndex: found.dayIndex });
+  }
+
   return {
     canonicalDayIndex,
     dayCompletionKey,
     findNextWorkoutDay,
     completedStorageKey,
+    readCompletedKeys,
+    migrateGenCompletionsToSaved,
+    loadCompletedSetForPlan,
     addSessionCompletionKeys,
-    runnerSetupHref
+    runnerSetupHref,
+    runnerStartHrefForPlan
   };
 });

@@ -168,15 +168,15 @@
 
       <div class="runner-work-layout">
         <!-- Context + name + overflow -->
-        <div class="runner-work-header flex justify-between items-start gap-3">
-          <div class="min-w-0">
-            <div id="exerciseMeta" class="runner-phase-context" aria-live="polite"></div>
-            <div id="exerciseName" class="runner-exercise-name text-2xl sm:text-3xl font-bold text-blue-900 leading-tight">Exercise</div>
+        <div class="runner-work-header">
+          <div class="runner-work-header-top flex justify-between items-center gap-3">
+            <div id="exerciseMeta" class="runner-phase-context min-w-0" aria-live="polite"></div>
+            <div class="flex items-center gap-2 shrink-0">
+              <div id="setBadge" class="runner-set-badge text-sm font-semibold px-3 py-2 rounded-full" aria-live="polite"></div>
+              <button id="workOverflowBtn" type="button" class="overflow-btn" title="Music, skip, view all moves" aria-label="More options">&#8943;</button>
+            </div>
           </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <div id="setBadge" class="runner-set-badge text-sm font-semibold px-3 py-2 rounded-full" aria-live="polite"></div>
-            <button id="workOverflowBtn" type="button" class="overflow-btn" title="Music, skip, view all moves" aria-label="More options">&#8943;</button>
-          </div>
+          <div id="exerciseName" class="runner-exercise-name text-2xl sm:text-3xl font-bold text-blue-900 leading-tight text-center">Exercise</div>
         </div>
 
         <!-- MoveTimer (hero) -->
@@ -238,7 +238,7 @@
         </div>
 
         <div class="runner-rest-card bg-white rounded-lg p-4 mb-3">
-          <div id="nextExerciseName" class="runner-rest-next-name text-2xl font-semibold text-gray-900 mb-2"></div>
+          <div id="nextExerciseName" class="runner-rest-next-name text-2xl font-semibold text-gray-900 mb-2 text-center"></div>
           <!-- RestCoaching: tags + form cue (moved off Work) -->
           <div id="restCoaching" class="runner-rest-coaching">
             <div id="restCoachingTags" class="runner-rest-coaching-tags"></div>

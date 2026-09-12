@@ -936,6 +936,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
     internal static readonly string[] UnilateralNameTokens =
     {
         "alternate", "alternating", "one-arm", "single-arm", "single-leg",
+        "one-leg", "one-legged",
         "per-arm", "each-arm", "pistol", "bulgarian", "see-saw", "seesaw", "renegade"
     };
 
@@ -960,9 +961,11 @@ public class WorkoutPlannerService : IWorkoutPlannerService
     internal static int ApplyUnilateralEvenRounds(int sets, int maxSets, Exercise ex)
     {
         if (!IsUnilateralExercise(ex)) return sets;
-        if (sets % 2 == 1 && sets < maxSets)
+        if (sets % 2 == 0) return sets;
+        // Odd: bump when room under max; otherwise step down so L+R stay even (never leave odd at max).
+        if (sets < maxSets)
             return sets + 1;
-        return sets;
+        return Math.Max(2, sets - 1);
     }
 
     private static int ComputeSets(Exercise ex, string goal, int userLevelNum, bool broSplit, WeekProgression mods)

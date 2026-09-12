@@ -10,6 +10,10 @@ public class UnilateralSetsTests
     [InlineData("one-arm-row", "One-Arm Dumbbell Row", true)]
     [InlineData("single-arm-press", "Single-Arm Press", true)]
     [InlineData("single-leg-rdl", "Single-Leg RDL", true)]
+    [InlineData("single-leg-glute-bridge", "Single-Leg Glute Bridge", true)]
+    [InlineData("one-leg-barbell-squat", "One-Leg Barbell Squat", true)]
+    [InlineData("one-legged-cable-kickback", "One-Legged Cable Kickback", true)]
+    [InlineData("kettlebell-one-legged-deadlift", "Kettlebell One-Legged Deadlift", true)]
     [InlineData("per-arm-curl", "Per-Arm Curl", true)]
     [InlineData("each-arm-raise", "Each-Arm Raise", true)]
     [InlineData("pistol-squat", "Pistol Squat", true)]
@@ -51,13 +55,24 @@ public class UnilateralSetsTests
     }
 
     [Fact]
-    public void UnilateralOddAtMaxStaysAtMax()
+    public void UnilateralOddAtMaxStepsDownToEven()
     {
         var curl = new Exercise
         {
             Id = "alternating-dumbbell-curl",
             Name = "Alternating Dumbbell Curl"
         };
-        Assert.Equal(5, WorkoutPlannerService.ApplyUnilateralEvenRounds(5, 5, curl));
+        Assert.Equal(4, WorkoutPlannerService.ApplyUnilateralEvenRounds(5, 5, curl));
+    }
+
+    [Fact]
+    public void OneLegTokenAtMaxIsEven()
+    {
+        var bridge = new Exercise
+        {
+            Id = "single-leg-glute-bridge",
+            Name = "Single-Leg Glute Bridge"
+        };
+        Assert.Equal(4, WorkoutPlannerService.ApplyUnilateralEvenRounds(5, 5, bridge));
     }
 }
