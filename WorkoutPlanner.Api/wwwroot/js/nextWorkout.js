@@ -185,6 +185,33 @@
     return runnerSetupHref({ planId, week: found.week, dayIndex: found.dayIndex });
   }
 
+  /**
+   * Match a daySelect option value to found { week, dayIndex, arrayIndex }.
+   * Number()-coerces week/dayIndex/arrayIndex so string vs number still match.
+   * Returns the matching option value string, or null. When found is set but
+   * no option matches, callers must NOT silently fall back to options[0].
+   */
+  function matchDaySelectOption(optionValues, found) {
+    if (!found || !optionValues || !optionValues.length) return null;
+    const fw = Number(found.week);
+    const fd = found.dayIndex != null && found.dayIndex !== '' ? Number(found.dayIndex) : NaN;
+    const fa = found.arrayIndex != null && found.arrayIndex !== '' ? Number(found.arrayIndex) : NaN;
+    if (!Number.isFinite(fw)) return null;
+    for (const raw of optionValues) {
+      let v;
+      try { v = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch { continue; }
+      if (!v) continue;
+      if (Number(v.week) !== fw) continue;
+      if (Number.isFinite(fa) && Number(v.arrayIndex) === fa) {
+        return typeof raw === 'string' ? raw : JSON.stringify(v);
+      }
+      if (Number.isFinite(fd) && Number(v.dayIndex) === fd) {
+        return typeof raw === 'string' ? raw : JSON.stringify(v);
+      }
+    }
+    return null;
+  }
+
   return {
     canonicalDayIndex,
     dayCompletionKey,
@@ -195,6 +222,7 @@
     loadCompletedSetForPlan,
     addSessionCompletionKeys,
     runnerSetupHref,
-    runnerStartHrefForPlan
+    runnerStartHrefForPlan,
+    matchDaySelectOption
   };
 });

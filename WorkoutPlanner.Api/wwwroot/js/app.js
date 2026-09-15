@@ -1091,13 +1091,20 @@ function renderDashboard(data) {
         <a href="/history.html" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View history &rarr;</a>
       </div>`;
   } else {
+    let openRunnerHref = '/workout.html';
+    try {
+      const planRaw = localStorage.getItem('workoutPlan');
+      const plan = planRaw ? JSON.parse(planRaw) : null;
+      const planId = localStorage.getItem('workoutPlanSavedId');
+      if (plan && plan.plan) openRunnerHref = buildStartWorkoutHref(plan, planId);
+    } catch { /* ignore */ }
     recentActivity.innerHTML = `
       <div class="flex items-center justify-between">
         <div>
           <span class="text-2xl font-bold text-blue-700">0</span>
           <span class="text-sm text-gray-600 ml-1">workouts this week</span>
         </div>
-        <a href="/workout.html" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Open runner &rarr;</a>
+        <a href="${openRunnerHref}" data-soft-runner="1" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Open runner &rarr;</a>
       </div>`;
   }
 }
@@ -1121,6 +1128,14 @@ function buildStartWorkoutHref(plan, planId) {
     return NW.runnerStartHrefForPlan(plan, planId, localStorage);
   }
   return planId ? `/workout.html?planId=${planId}&setup=1` : '/workout.html?setup=1';
+}
+
+/** Belt-and-suspenders: soft entries (bottom-nav Run, Open runner) deep-link next day. */
+function rewriteSoftRunnerHrefs(plan, planId, href) {
+  const target = href || (plan ? buildStartWorkoutHref(plan, planId) : null);
+  if (!target) return;
+  document.querySelectorAll('a[data-nav="run"]').forEach(a => { a.href = target; });
+  document.querySelectorAll('a[data-soft-runner="1"]').forEach(a => { a.href = target; });
 }
 
 async function updateNextWorkoutCard() {
@@ -1174,9 +1189,11 @@ async function updateNextWorkoutCard() {
     const focus = nextDay.focus || nextDay.sessionStyle || 'Strength';
     document.getElementById('nextWorkoutInfo').textContent =
       `Week ${nextWeekNum} — ${nextDay.day} · ${focus} · ${split} · ${goal}`;
-    document.getElementById('nextWorkoutBtn').href = NW
+    const startHref = NW
       ? NW.runnerSetupHref({ planId, week: found.week, dayIndex: found.dayIndex })
       : '/workout.html?setup=1';
+    document.getElementById('nextWorkoutBtn').href = startHref;
+    rewriteSoftRunnerHrefs(plan, planId, startHref);
     card.classList.remove('hidden');
   } catch {
     card.classList.add('hidden');

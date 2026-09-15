@@ -208,3 +208,56 @@ test('after migrate, Start href still advances from gen completions', () => {
   assert.ok(href.includes('dayIndex=2'));
   assert.ok(href.includes('planId=42'));
 });
+
+test('gen-only completions + savedPlanId: findNext is next day not first', () => {
+  const plan = {
+    generatedAt: 'ts1',
+    plan: [monWedFriWeek(1)]
+  };
+  const store = {
+    data: {
+      workoutPlanSavedId: '9',
+      'runnerCompleted_gen-ts1': JSON.stringify(['1:0'])
+      // intentionally no runnerCompleted_saved-9
+    },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  nw.migrateGenCompletionsToSaved({ generatedAt: 'ts1', savedPlanId: 9 }, store);
+  const completed = nw.loadCompletedSetForPlan(plan, store);
+  assert.ok(completed.has('1:0'));
+  const next = nw.findNextWorkoutDay(plan.plan, completed);
+  assert.ok(next);
+  assert.equal(next.dayIndex, 2);
+  assert.notEqual(next.dayIndex, 0);
+  assert.equal(next.day.day, 'Wednesday');
+  const href = nw.runnerStartHrefForPlan(plan, 9, store);
+  assert.ok(href.includes('dayIndex=2'));
+  assert.ok(!href.includes('dayIndex=0'));
+});
+
+test('matchDaySelectOption Number coercion; no forced options[0] when found set', () => {
+  const options = [
+    JSON.stringify({ week: 1, dayIndex: 0, arrayIndex: 0 }),
+    JSON.stringify({ week: '1', dayIndex: '2', arrayIndex: '2' }),
+    JSON.stringify({ week: 1, dayIndex: 4, arrayIndex: 4 })
+  ];
+  // numbers vs string option fields
+  const match = nw.matchDaySelectOption(options, { week: 1, dayIndex: 2, arrayIndex: 2 });
+  assert.equal(match, options[1]);
+
+  // string found vs numeric option fields
+  const match2 = nw.matchDaySelectOption(
+    [JSON.stringify({ week: 1, dayIndex: 0, arrayIndex: 0 }), JSON.stringify({ week: 1, dayIndex: 2, arrayIndex: 2 })],
+    { week: '1', dayIndex: '2', arrayIndex: '2' }
+  );
+  assert.ok(match2.includes('"dayIndex":2') || match2.includes('"dayIndex": 2'));
+
+  // found resolved but no option match → null (caller must not use options[0])
+  const miss = nw.matchDaySelectOption(options, { week: 9, dayIndex: 0, arrayIndex: 0 });
+  assert.equal(miss, null);
+  assert.notEqual(miss, options[0]);
+
+  // !found → null
+  assert.equal(nw.matchDaySelectOption(options, null), null);
+});

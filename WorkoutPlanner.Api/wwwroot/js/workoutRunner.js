@@ -570,6 +570,20 @@ async function loadPlan() {
   }
 
   populateDaySelect();
+  // Migrate gen→saved completions before daySelect default (same as app.js on save).
+  // Prefer gen+saved union via loadCompletedSetForPlan inside defaultToNextWorkoutDay.
+  if (currentSavedPlanId && typeof NextWorkout !== 'undefined' && NextWorkout.migrateGenCompletionsToSaved) {
+    const generatedAt = (currentPlan && currentPlan.generatedAt) || (() => {
+      try {
+        const raw = localStorage.getItem('workoutPlan');
+        return raw ? JSON.parse(raw).generatedAt : null;
+      } catch { return null; }
+    })();
+    if (generatedAt && currentPlan && !currentPlan.generatedAt) {
+      currentPlan.generatedAt = generatedAt;
+    }
+    NextWorkout.migrateGenCompletionsToSaved({ generatedAt, savedPlanId: currentSavedPlanId }, localStorage);
+  }
   await defaultToNextWorkoutDay();
 
   renderDayPreview();
@@ -628,12 +642,42 @@ function completedDaysKey() {
   return 'runnerCompleted_' + id;
 }
 
+function resolvePlanGeneratedAt() {
+  if (currentPlan?.generatedAt) return currentPlan.generatedAt;
+  try {
+    const raw = localStorage.getItem('workoutPlan');
+    return raw ? JSON.parse(raw).generatedAt : null;
+  } catch { return null; }
+}
+
 function getCompletedDayKeys() {
-  if (typeof NextWorkout !== 'undefined' && NextWorkout.readCompletedKeys) {
-    return NextWorkout.readCompletedKeys({
-      savedPlanId: currentSavedPlanId,
-      generatedAt: currentPlan?.generatedAt
-    }, localStorage);
+  if (typeof NextWorkout !== 'undefined') {
+    const generatedAt = resolvePlanGeneratedAt();
+    if (generatedAt && currentPlan && !currentPlan.generatedAt) {
+      currentPlan.generatedAt = generatedAt;
+    }
+    let storeSavedId = null;
+    try { storeSavedId = localStorage.getItem('workoutPlanSavedId'); } catch { /* ignore */ }
+    // Prefer loadCompletedSetForPlan (gen+saved union) when storage id matches runner plan.
+    if (NextWorkout.loadCompletedSetForPlan && currentPlan
+        && (currentSavedPlanId == null || storeSavedId == null
+          || String(storeSavedId) === String(currentSavedPlanId))) {
+      const set = NextWorkout.loadCompletedSetForPlan(currentPlan, localStorage);
+      // Also merge currentSavedPlanId key when store id was null but runner has one
+      if (currentSavedPlanId != null && NextWorkout.readCompletedKeys) {
+        for (const k of NextWorkout.readCompletedKeys({
+          savedPlanId: currentSavedPlanId,
+          generatedAt
+        }, localStorage)) set.add(k);
+      }
+      return set;
+    }
+    if (NextWorkout.readCompletedKeys) {
+      return NextWorkout.readCompletedKeys({
+        savedPlanId: currentSavedPlanId,
+        generatedAt
+      }, localStorage);
+    }
   }
   try {
     return new Set(JSON.parse(localStorage.getItem(completedDaysKey()) || '[]'));
@@ -683,14 +727,14 @@ async function defaultToNextWorkoutDay() {
     const weekNum = parseInt(urlWeek, 10);
     const dayIndex = parseInt(urlDayIndex, 10);
     if (Number.isFinite(weekNum) && Number.isFinite(dayIndex)) {
-      const weekObj = (currentPlan.plan || []).find(w => w.week === weekNum);
+      const weekObj = (currentPlan.plan || []).find(w => Number(w.week) === weekNum);
       if (weekObj) {
         const days = weekObj.days || [];
         for (let idx = 0; idx < days.length; idx++) {
           const day = days[idx];
           if (!day || day.type !== 'workout') continue;
           const cidx = NW ? NW.canonicalDayIndex(day, idx) : (day.dayIndex ?? day.DayIndex ?? idx);
-          if (cidx === dayIndex) {
+          if (Number(cidx) === dayIndex) {
             found = { week: weekNum, dayIndex: cidx, arrayIndex: idx };
             break;
           }
@@ -732,21 +776,33 @@ async function defaultToNextWorkoutDay() {
     }
   }
 
+  // Apply found to #daySelect with Number coercion. If found is resolved, never
+  // silently reset to options[0] when exact/fuzzy match fails.
   if (found) {
-    const encoded = JSON.stringify(found);
-    const hasExact = [...daySelect.options].some(o => o.value === encoded);
-    daySelect.value = hasExact ? encoded : '';
-  }
-  if (!daySelect.value && daySelect.options.length) {
-    const match = found
-      ? [...daySelect.options].find(o => {
+    const optionValues = [...daySelect.options].map(o => o.value);
+    let matched = null;
+    if (NW && NW.matchDaySelectOption) {
+      matched = NW.matchDaySelectOption(optionValues, found);
+    } else {
+      const encoded = JSON.stringify(found);
+      if (optionValues.includes(encoded)) matched = encoded;
+      else {
+        const fuzzy = [...daySelect.options].find(o => {
           try {
             const v = JSON.parse(o.value);
-            return v.week === found.week && (v.arrayIndex === found.arrayIndex || v.dayIndex === found.dayIndex);
+            return Number(v.week) === Number(found.week)
+              && (Number(v.arrayIndex) === Number(found.arrayIndex)
+                || Number(v.dayIndex) === Number(found.dayIndex));
           } catch { return false; }
-        })
-      : null;
-    daySelect.value = match ? match.value : daySelect.options[0].value;
+        });
+        matched = fuzzy ? fuzzy.value : null;
+      }
+    }
+    if (matched) daySelect.value = matched;
+    return;
+  }
+  if (!daySelect.value && daySelect.options.length) {
+    daySelect.value = daySelect.options[0].value;
   }
 }
 
