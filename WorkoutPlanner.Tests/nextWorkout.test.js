@@ -261,3 +261,38 @@ test('matchDaySelectOption Number coercion; no forced options[0] when found set'
   // !found → null
   assert.equal(nw.matchDaySelectOption(options, null), null);
 });
+
+test('stale URL dayIndex=0 with completed 1:0 → ignore URL, next is Wed dayIndex 2', () => {
+  const plan = [monWedFriWeek(1)];
+  const completed = new Set(['1:0']);
+  const deep = nw.resolveDeepLinkDay(plan, completed, '1', '0');
+  assert.equal(deep, null);
+  const next = nw.findNextWorkoutDay(plan, completed);
+  assert.equal(next.week, 1);
+  assert.equal(next.dayIndex, 2);
+  assert.equal(next.day.day, 'Wednesday');
+});
+
+test('URL dayIndex honored when day not completed', () => {
+  const plan = [monWedFriWeek(1)];
+  const deep = nw.resolveDeepLinkDay(plan, new Set(), 1, 2);
+  assert.ok(deep);
+  assert.equal(deep.dayIndex, 2);
+  assert.equal(deep.arrayIndex, 2);
+  assert.equal(deep.day.day, 'Wednesday');
+});
+
+test('URL rest day (not workout) ignored → null', () => {
+  const plan = [monWedFriWeek(1)];
+  assert.equal(nw.resolveDeepLinkDay(plan, new Set(), '1', '1'), null);
+});
+
+test('stripWeekDayIndexFromSearch keeps planId, drops week/dayIndex', () => {
+  const qs = nw.stripWeekDayIndexFromSearch('planId=9&week=1&dayIndex=0&setup=1');
+  assert.ok(qs.includes('planId=9'));
+  assert.ok(qs.includes('setup=1'));
+  assert.ok(!qs.includes('week='));
+  assert.ok(!qs.includes('dayIndex='));
+  const afterSelect = nw.stripWeekDayIndexFromSearch('?planId=9&week=1&dayIndex=0');
+  assert.equal(afterSelect, 'planId=9');
+});

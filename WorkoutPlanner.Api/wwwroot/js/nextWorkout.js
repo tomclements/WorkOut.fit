@@ -185,6 +185,51 @@
     return runnerSetupHref({ planId, week: found.week, dayIndex: found.dayIndex });
   }
 
+
+  /**
+   * Honor deep-link week/dayIndex only when that day is still an incomplete workout.
+   * Returns { week, dayIndex, arrayIndex, day } or null (fall through to findNextWorkoutDay).
+   * Same completion key as markDayCompleted / dayCompletionKey.
+   */
+  function resolveDeepLinkDay(planWeeks, completedSet, urlWeek, urlDayIndex) {
+    if (urlWeek == null || urlDayIndex == null || urlWeek === '' || urlDayIndex === '') return null;
+    const weekNum = typeof urlWeek === 'number' ? urlWeek : parseInt(urlWeek, 10);
+    const dayIndex = typeof urlDayIndex === 'number' ? urlDayIndex : parseInt(urlDayIndex, 10);
+    if (!Number.isFinite(weekNum) || !Number.isFinite(dayIndex)) return null;
+
+    const weeks = planWeeks || [];
+    const done = completedSet || new Set();
+    const weekObj = weeks.find(w => Number(w.week) === weekNum);
+    if (!weekObj) return null;
+
+    const days = weekObj.days || [];
+    for (let idx = 0; idx < days.length; idx++) {
+      const day = days[idx];
+      if (!isWorkoutDay(day)) continue;
+      const cidx = canonicalDayIndex(day, idx);
+      if (Number(cidx) !== dayIndex) continue;
+      const key = dayCompletionKey(weekNum, day, idx);
+      if (done.has(key)) return null; // already completed — ignore URL
+      return { week: weekNum, dayIndex: cidx, arrayIndex: idx, day: day };
+    }
+    // URL day is not a workout day (or not found)
+    return null;
+  }
+
+  /**
+   * Strip week & dayIndex from a query string / URLSearchParams (keep planId etc.).
+   * Returns params.toString() without leading '?'.
+   */
+  function stripWeekDayIndexFromSearch(search) {
+    const raw = typeof search === 'string'
+      ? (search.startsWith('?') ? search.slice(1) : search)
+      : (search && typeof search.toString === 'function' ? String(search) : '');
+    const params = new URLSearchParams(raw);
+    params.delete('week');
+    params.delete('dayIndex');
+    return params.toString();
+  }
+
   /**
    * Match a daySelect option value to found { week, dayIndex, arrayIndex }.
    * Number()-coerces week/dayIndex/arrayIndex so string vs number still match.
@@ -223,6 +268,8 @@
     addSessionCompletionKeys,
     runnerSetupHref,
     runnerStartHrefForPlan,
-    matchDaySelectOption
+    matchDaySelectOption,
+    resolveDeepLinkDay,
+    stripWeekDayIndexFromSearch
   };
 });
