@@ -117,7 +117,8 @@
     if (!store || typeof store.getItem !== 'function' || savedPlanId == null || savedPlanId === '') {
       return new Set();
     }
-    const generatedAt = opts && opts.generatedAt;
+    // Prefer explicit opts.generatedAt; else pull from localStorage workoutPlan.
+    const generatedAt = (opts && opts.generatedAt) || resolveGeneratedAt(null, store);
     const genKey = completedStorageKey({ generatedAt });
     const savedKey = completedStorageKey({ savedPlanId });
     const union = new Set([
@@ -126,12 +127,40 @@
     ]);
     try {
       store.setItem(savedKey, JSON.stringify([...union]));
+      // Keep gen in sync when timestamp known (dual-write after migrate).
+      if (generatedAt != null && generatedAt !== '') {
+        store.setItem(genKey, JSON.stringify([...union]));
+      }
     } catch { /* ignore */ }
     return union;
   }
 
   /**
-   * Load completed keys for a plan object using storage workoutPlanSavedId + plan.generatedAt.
+   * Resolve generatedAt from plan JSON and/or localStorage workoutPlan.
+   * API-loaded saved plans often omit generatedAt; gen-* keys still live under the
+   * timestamp that was stored with the local plan copy.
+   */
+  function resolveGeneratedAt(plan, storage) {
+    if (plan && plan.generatedAt != null && plan.generatedAt !== '') {
+      return plan.generatedAt;
+    }
+    const store = defaultStorage(storage);
+    if (!store || typeof store.getItem !== 'function') return null;
+    try {
+      const raw = store.getItem('workoutPlan');
+      if (!raw) return null;
+      const local = JSON.parse(raw);
+      if (local && local.generatedAt != null && local.generatedAt !== '') {
+        return local.generatedAt;
+      }
+    } catch { /* ignore */ }
+    return null;
+  }
+
+  /**
+   * Load completed keys for a plan object using storage workoutPlanSavedId +
+   * generatedAt from plan JSON and/or localStorage workoutPlan.
+   * Missing generatedAt on an API plan must not drop runnerCompleted_gen-* keys.
    */
   function loadCompletedSetForPlan(plan, storage) {
     const store = defaultStorage(storage);
@@ -139,25 +168,86 @@
     if (store && typeof store.getItem === 'function') {
       try { savedPlanId = store.getItem('workoutPlanSavedId'); } catch { /* ignore */ }
     }
+    const generatedAt = resolveGeneratedAt(plan, store);
+    // Carry timestamp onto plan so callers (migrate, dual-write) see it.
+    if (generatedAt && plan && !plan.generatedAt) {
+      try { plan.generatedAt = generatedAt; } catch { /* ignore */ }
+    }
     return readCompletedKeys({
       savedPlanId,
-      generatedAt: plan && plan.generatedAt
+      generatedAt
     }, store);
+  }
+
+  function planHasWorkoutDay(planWeeks, week, dayIndex) {
+    const weeks = planWeeks || [];
+    const weekNum = Number(week);
+    const dayNum = Number(dayIndex);
+    if (!Number.isFinite(weekNum) || !Number.isFinite(dayNum)) return false;
+    for (const weekObj of weeks) {
+      if (Number(weekObj.week) !== weekNum) continue;
+      const days = weekObj.days || [];
+      for (let idx = 0; idx < days.length; idx++) {
+        const day = days[idx];
+        if (!isWorkoutDay(day)) continue;
+        if (Number(canonicalDayIndex(day, idx)) === dayNum) return true;
+      }
+    }
+    return false;
   }
 
   /**
    * Merge runner session records for this plan into completedSet.
    * Uses loose == so string vs numeric savedPlanId both match.
+   * When local completed is empty/sparse and planWeeks is provided, also credit
+   * finished sessions with null savedPlanId whose week:dayIndex exist on the
+   * current plan (guest finish before save, then save attaches plan id).
+   * Without planWeeks, null-savedPlanId sessions remain ignored (documented).
    */
-  function addSessionCompletionKeys(completedSet, sessions, planId) {
+  function addSessionCompletionKeys(completedSet, sessions, planId, planWeeks) {
     if (!completedSet || !sessions || planId == null || planId === '') return completedSet;
+    const localSparse = completedSet.size === 0;
     for (const s of sessions) {
       if (!s) continue;
-      if (s.savedPlanId == planId && s.week != null && s.dayIndex != null) {
+      if (s.week == null || s.dayIndex == null) continue;
+      if (s.savedPlanId == planId) {
+        completedSet.add(s.week + ':' + s.dayIndex);
+        continue;
+      }
+      // Gap fill: null savedPlanId after guest finish → later save, only when local empty
+      // and the day exists on the current plan (product-safe fingerprint).
+      if (localSparse && (s.savedPlanId == null || s.savedPlanId === '')
+          && planWeeks && planHasWorkoutDay(planWeeks, s.week, s.dayIndex)) {
         completedSet.add(s.week + ':' + s.dayIndex);
       }
     }
     return completedSet;
+  }
+
+  /**
+   * Dual-write completion keys to saved-<id> and/or gen-<ts> stores.
+   * Prefer writing both when both identities are known so a later API load
+   * without generatedAt still sees the saved key, and gen keys stay in sync.
+   */
+  function writeCompletedKeys(completedSet, opts, storage) {
+    const store = defaultStorage(storage);
+    if (!store || typeof store.setItem !== 'function') return;
+    const savedPlanId = opts && opts.savedPlanId;
+    const generatedAt = opts && opts.generatedAt;
+    const hasSaved = savedPlanId != null && savedPlanId !== '';
+    const hasGen = generatedAt != null && generatedAt !== '';
+    const payload = JSON.stringify([...(completedSet || [])]);
+    try {
+      if (hasSaved) {
+        store.setItem(completedStorageKey({ savedPlanId }), payload);
+      }
+      if (hasGen) {
+        store.setItem(completedStorageKey({ generatedAt }), payload);
+      }
+      if (!hasSaved && !hasGen) {
+        store.setItem(completedStorageKey({}), payload);
+      }
+    } catch { /* ignore */ }
   }
 
   function runnerSetupHref(opts) {
@@ -263,9 +353,12 @@
     findNextWorkoutDay,
     completedStorageKey,
     readCompletedKeys,
+    resolveGeneratedAt,
     migrateGenCompletionsToSaved,
     loadCompletedSetForPlan,
+    planHasWorkoutDay,
     addSessionCompletionKeys,
+    writeCompletedKeys,
     runnerSetupHref,
     runnerStartHrefForPlan,
     matchDaySelectOption,

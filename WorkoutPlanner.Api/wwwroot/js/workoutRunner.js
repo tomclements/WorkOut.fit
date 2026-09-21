@@ -576,15 +576,11 @@ async function loadPlan() {
   // Migrate gen→saved completions before daySelect default (same as app.js on save).
   // Prefer gen+saved union via loadCompletedSetForPlan inside defaultToNextWorkoutDay.
   if (currentSavedPlanId && typeof NextWorkout !== 'undefined' && NextWorkout.migrateGenCompletionsToSaved) {
-    const generatedAt = (currentPlan && currentPlan.generatedAt) || (() => {
-      try {
-        const raw = localStorage.getItem('workoutPlan');
-        return raw ? JSON.parse(raw).generatedAt : null;
-      } catch { return null; }
-    })();
+    const generatedAt = resolvePlanGeneratedAt();
     if (generatedAt && currentPlan && !currentPlan.generatedAt) {
       currentPlan.generatedAt = generatedAt;
     }
+    // Always migrate with real timestamp source (plan JSON and/or localStorage workoutPlan).
     NextWorkout.migrateGenCompletionsToSaved({ generatedAt, savedPlanId: currentSavedPlanId }, localStorage);
   }
   await defaultToNextWorkoutDay();
@@ -646,6 +642,9 @@ function completedDaysKey() {
 }
 
 function resolvePlanGeneratedAt() {
+  if (typeof NextWorkout !== 'undefined' && NextWorkout.resolveGeneratedAt) {
+    return NextWorkout.resolveGeneratedAt(currentPlan, localStorage);
+  }
   if (currentPlan?.generatedAt) return currentPlan.generatedAt;
   try {
     const raw = localStorage.getItem('workoutPlan');
@@ -694,9 +693,21 @@ function markDayCompleted() {
   const key = selectedWeek + ':' + selectedDayIndex;
   const set = getCompletedDayKeys();
   set.add(key);
-  try {
-    localStorage.setItem(completedDaysKey(), JSON.stringify([...set]));
-  } catch { /* ignore */ }
+  const generatedAt = resolvePlanGeneratedAt();
+  if (generatedAt && currentPlan && !currentPlan.generatedAt) {
+    try { currentPlan.generatedAt = generatedAt; } catch { /* ignore */ }
+  }
+  // Dual-write: saved-<id> when known, keep gen-<ts> in sync when timestamp known.
+  if (typeof NextWorkout !== 'undefined' && NextWorkout.writeCompletedKeys) {
+    NextWorkout.writeCompletedKeys(set, {
+      savedPlanId: currentSavedPlanId,
+      generatedAt
+    }, localStorage);
+  } else {
+    try {
+      localStorage.setItem(completedDaysKey(), JSON.stringify([...set]));
+    } catch { /* ignore */ }
+  }
 }
 
 async function defaultToNextWorkoutDay() {
@@ -709,7 +720,7 @@ async function defaultToNextWorkoutDay() {
       const res = await fetch('/api/runner/sessions', { credentials: 'include' });
       if (res.ok) {
         const sessions = await res.json();
-        if (NW) NW.addSessionCompletionKeys(completed, sessions, currentSavedPlanId);
+        if (NW) NW.addSessionCompletionKeys(completed, sessions, currentSavedPlanId, currentPlan && currentPlan.plan);
         else {
           sessions.forEach(s => {
             if (s.savedPlanId == currentSavedPlanId && s.week != null && s.dayIndex != null) {

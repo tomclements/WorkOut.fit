@@ -1113,12 +1113,17 @@ function renderDashboard(data) {
 function migrateCompletionsOnSave(savedPlanId, plan) {
   const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
   if (!NW || savedPlanId == null || savedPlanId === '') return;
-  const generatedAt = (plan && plan.generatedAt) || (() => {
-    try {
-      const raw = localStorage.getItem('workoutPlan');
-      return raw ? JSON.parse(raw).generatedAt : null;
-    } catch { return null; }
-  })();
+  const generatedAt = NW.resolveGeneratedAt
+    ? NW.resolveGeneratedAt(plan, localStorage)
+    : ((plan && plan.generatedAt) || (() => {
+        try {
+          const raw = localStorage.getItem('workoutPlan');
+          return raw ? JSON.parse(raw).generatedAt : null;
+        } catch { return null; }
+      })());
+  if (generatedAt && plan && !plan.generatedAt) {
+    try { plan.generatedAt = generatedAt; } catch { /* ignore */ }
+  }
   NW.migrateGenCompletionsToSaved({ generatedAt, savedPlanId }, localStorage);
 }
 
@@ -1165,7 +1170,7 @@ async function updateNextWorkoutCard() {
         const res = await fetch('/api/runner/sessions', { credentials: 'include' });
         if (res.ok) {
           const sessions = await res.json();
-          if (NW) NW.addSessionCompletionKeys(completed, sessions, planId);
+          if (NW) NW.addSessionCompletionKeys(completed, sessions, planId, plan && plan.plan);
           else {
             sessions.forEach(s => {
               if (s.savedPlanId == planId && s.week != null && s.dayIndex != null) {
@@ -1546,6 +1551,17 @@ async function generate(options = {}) {
     }
     currentPlan = result;
     currentPlanId = null;
+    // Drop prior plan completion stores so daySelect does not inherit stale days.
+    try {
+      const prevSaved = localStorage.getItem('workoutPlanSavedId');
+      if (prevSaved) localStorage.removeItem('runnerCompleted_saved-' + prevSaved);
+    } catch { /* ignore */ }
+    try {
+      const prevRaw = localStorage.getItem('workoutPlan');
+      const prevGen = prevRaw ? JSON.parse(prevRaw).generatedAt : null;
+      if (prevGen) localStorage.removeItem('runnerCompleted_gen-' + prevGen);
+      localStorage.removeItem('runnerCompleted_gen-unknown');
+    } catch { /* ignore */ }
     try { localStorage.removeItem('workoutPlanSavedId'); } catch { /* ignore */ }
     localStorage.setItem('workoutPlan', JSON.stringify(result));
     updateNextWorkoutCard();

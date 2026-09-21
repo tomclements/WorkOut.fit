@@ -296,3 +296,106 @@ test('stripWeekDayIndexFromSearch keeps planId, drops week/dayIndex', () => {
   const afterSelect = nw.stripWeekDayIndexFromSearch('?planId=9&week=1&dayIndex=0');
   assert.equal(afterSelect, 'planId=9');
 });
+
+
+test('API plan lacks generatedAt but gen keys + savedPlanId → completed non-empty', () => {
+  // Reproduces live bug: plan from /api/plans/:id has no generatedAt, while
+  // completions still live under runnerCompleted_gen-<ts> from local generate.
+  const plan = {
+    // intentionally no generatedAt on API object
+    plan: [monWedFriWeek(1)]
+  };
+  const store = {
+    data: {
+      workoutPlanSavedId: '9',
+      workoutPlan: JSON.stringify({ generatedAt: 'ts1', plan: [monWedFriWeek(1)] }),
+      'runnerCompleted_gen-ts1': JSON.stringify(['1:0'])
+      // no runnerCompleted_saved-9 yet
+    },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); },
+    removeItem(k) { delete this.data[k]; }
+  };
+  const completed = nw.loadCompletedSetForPlan(plan, store);
+  assert.ok(completed.has('1:0'), 'must read gen keys via localStorage workoutPlan.generatedAt');
+  assert.equal(plan.generatedAt, 'ts1', 'should carry generatedAt onto plan');
+  nw.migrateGenCompletionsToSaved({ savedPlanId: 9 }, store); // opts omit generatedAt — resolve from storage
+  const saved = JSON.parse(store.getItem('runnerCompleted_saved-9'));
+  assert.ok(saved.includes('1:0'));
+  const next = nw.findNextWorkoutDay(plan.plan, nw.loadCompletedSetForPlan(plan, store));
+  assert.equal(next.dayIndex, 2);
+  assert.equal(next.day.day, 'Wednesday');
+});
+
+test('writeCompletedKeys dual-writes saved + gen; finish then reload defaults next day', () => {
+  const plan = {
+    generatedAt: 'ts1',
+    plan: [monWedFriWeek(1)]
+  };
+  const store = {
+    data: {
+      workoutPlanSavedId: '9',
+      workoutPlan: JSON.stringify(plan)
+    },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); },
+    removeItem(k) { delete this.data[k]; }
+  };
+  // Simulate finish Week1 Monday
+  const set = nw.loadCompletedSetForPlan(plan, store);
+  set.add('1:0');
+  nw.writeCompletedKeys(set, { savedPlanId: 9, generatedAt: 'ts1' }, store);
+  assert.deepEqual(JSON.parse(store.getItem('runnerCompleted_saved-9')), ['1:0']);
+  assert.deepEqual(JSON.parse(store.getItem('runnerCompleted_gen-ts1')), ['1:0']);
+
+  // Reload with API plan lacking generatedAt (bare /workout.html → saved id path)
+  const apiPlan = { plan: [monWedFriWeek(1)] }; // no generatedAt
+  store.data.workoutPlan = JSON.stringify({ generatedAt: 'ts1', plan: [monWedFriWeek(1)] });
+  const reloaded = nw.loadCompletedSetForPlan(apiPlan, store);
+  assert.ok(reloaded.has('1:0'));
+  const next = nw.findNextWorkoutDay(apiPlan.plan, reloaded);
+  assert.equal(next.dayIndex, 2);
+  assert.notEqual(next.dayIndex, 0);
+  const href = nw.runnerStartHrefForPlan(apiPlan, 9, store);
+  assert.ok(href.includes('dayIndex=2'));
+  assert.ok(!href.includes('dayIndex=0'));
+});
+
+test('null savedPlanId sessions ignored without planWeeks; credited when local empty + day on plan', () => {
+  const set = new Set();
+  // Documented gap: null savedPlanId with no planWeeks stays ignored
+  nw.addSessionCompletionKeys(set, [
+    { savedPlanId: null, week: 1, dayIndex: 0 },
+    { savedPlanId: 9, week: 1, dayIndex: 2 }
+  ], '9');
+  assert.ok(!set.has('1:0'), 'null savedPlanId ignored without planWeeks');
+  assert.ok(set.has('1:2'));
+
+  // When local empty and planWeeks provided, credit null-savedPlanId days on plan
+  const sparse = new Set();
+  nw.addSessionCompletionKeys(sparse, [
+    { savedPlanId: null, week: 1, dayIndex: 0 },
+    { savedPlanId: null, week: 9, dayIndex: 0 } // not on plan
+  ], '9', [monWedFriWeek(1)]);
+  assert.ok(sparse.has('1:0'), 'null savedPlanId credited when day exists on current plan');
+  assert.ok(!sparse.has('9:0'), 'off-plan null session not credited');
+
+  // When local already has completions, do not absorb null-savedPlanId (avoid cross-plan pollution)
+  const rich = new Set(['1:2']);
+  nw.addSessionCompletionKeys(rich, [
+    { savedPlanId: null, week: 1, dayIndex: 0 }
+  ], '9', [monWedFriWeek(1)]);
+  assert.ok(!rich.has('1:0'), 'null savedPlanId not absorbed when local not sparse');
+});
+
+test('resolveGeneratedAt prefers plan then localStorage workoutPlan', () => {
+  const store = {
+    data: { workoutPlan: JSON.stringify({ generatedAt: 'from-local' }) },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  assert.equal(nw.resolveGeneratedAt({ generatedAt: 'from-plan' }, store), 'from-plan');
+  assert.equal(nw.resolveGeneratedAt({}, store), 'from-local');
+  assert.equal(nw.resolveGeneratedAt(null, store), 'from-local');
+  assert.equal(nw.resolveGeneratedAt({}, { getItem() { return null; } }), null);
+});
