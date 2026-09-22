@@ -30,6 +30,7 @@ let Engine = window.RunnerEngine || null;
 let OverflowSettings = window.OverflowSettings || null;
 let StartWeightGate = window.StartWeightGate || null;
 let StayAwake = window.StayAwake || null;
+let AudioCoexistence = window.AudioCoexistence || null;
 let previewCache = null;      // cached exercise catalog (id -> exercise) for previews/analyze
 let previewCachePromise = null;
 let lastLoads = null;         // { exerciseId: kg } from most recent session
@@ -55,6 +56,8 @@ const musicStyleActive = document.getElementById('musicStyleActive');
 const musicStyleHint = document.getElementById('musicStyleHint');
 const deviceMusicHint = document.getElementById('deviceMusicHint');
 const deviceMusicHintActive = document.getElementById('deviceMusicHintActive');
+const deviceVoiceHint = document.getElementById('deviceVoiceHint');
+const deviceVoiceHintActive = document.getElementById('deviceVoiceHintActive');
 const nowPlayingEl = document.getElementById('nowPlaying');
 
 const exerciseNameEl = document.getElementById('exerciseName');
@@ -447,10 +450,17 @@ async function loadUserPreferences() {
     if (!Number.isFinite(volume)) volume = 35;
 
     setMusicStyleUI(style);
+    lastAppliedMusicStyle = style || 'off';
     document.getElementById('volumeSlider').value = volume;
     document.getElementById('volumeValue').textContent = volume + '%';
     musicEngine.setBaseVolume(volume / 100);
     musicEngine.setStyle(style);
+    if (style === 'device') {
+      const Coexist = getAudioCoexistence();
+      if (Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
+        Coexist.probeAndApplyAudioSession('ambient');
+      }
+    }
   } catch {
     // ignore
   }
@@ -463,9 +473,11 @@ function setMusicStyleUI(style) {
   if (musicToggle) musicToggle.checked = s !== 'off' && s !== 'device';
   if (deviceMusicHint) deviceMusicHint.classList.toggle('hidden', s !== 'device');
   if (deviceMusicHintActive) deviceMusicHintActive.classList.toggle('hidden', s !== 'device');
+  if (deviceVoiceHint) deviceVoiceHint.classList.toggle('hidden', s !== 'device');
+  if (deviceVoiceHintActive) deviceVoiceHintActive.classList.toggle('hidden', s !== 'device');
   if (musicStyleHint) {
     musicStyleHint.textContent = s === 'device'
-      ? 'Use your own app for music — we only play beeps.'
+      ? 'Beeps may briefly interrupt/duck Spotify; voice more likely to pause — leave Voice off for best coexistence.'
       : s === 'off'
         ? 'Music off. You can turn a style on during the session.'
         : 'Built-in playlist will start when you begin the workout.';
@@ -473,8 +485,10 @@ function setMusicStyleUI(style) {
 }
 
 function onMusicStyleChange() {
+  const prev = lastAppliedMusicStyle;
   const style = musicStyleSelect?.value || 'off';
   setMusicStyleUI(style);
+  applyMusicStyleCoexistence(prev, style);
   const Overflow = OverflowSettings || window.OverflowSettings;
   if (Overflow) {
     Overflow.persistMusicStyle(style, localStorage, (s) => {
@@ -487,8 +501,10 @@ function onMusicStyleChange() {
 }
 
 function onMusicStyleActiveChange() {
+  const prev = lastAppliedMusicStyle;
   const style = musicStyleActive?.value || 'off';
   setMusicStyleUI(style);
+  applyMusicStyleCoexistence(prev, style);
   const Overflow = OverflowSettings || window.OverflowSettings;
   const applyStyle = (s) => {
     if (musicEngine) {
@@ -515,6 +531,58 @@ function currentMusicStyle() {
 function shouldAutoStartMusic() {
   const s = currentMusicStyle();
   return s !== 'off' && s !== 'device';
+}
+
+/** Last style applied via UI/change handlers (for device transition detection). */
+let lastAppliedMusicStyle = 'off';
+
+function getAudioCoexistence() {
+  return AudioCoexistence || window.AudioCoexistence || null;
+}
+
+function shouldArmSilentKeepAlive() {
+  const Coexist = getAudioCoexistence();
+  if (!Coexist || typeof Coexist.shouldUseSilentKeepAlive !== 'function') return true;
+  return Coexist.shouldUseSilentKeepAlive({
+    musicStyle: currentMusicStyle(),
+    tonesEnabled: tonesEnabled()
+  });
+}
+
+function preferVoiceOffForDevice() {
+  const Overflow = OverflowSettings || window.OverflowSettings;
+  const pair = { setup: voiceCuesToggle, overflow: voiceCuesToggleActive };
+  if (Overflow && typeof Overflow.persistVoiceCues === 'function') {
+    Overflow.persistVoiceCues(false, localStorage, pair, stopSpeech);
+  } else {
+    try { localStorage.setItem('runnerVoiceCues', '0'); } catch { /* ignore */ }
+    if (voiceCuesToggle) voiceCuesToggle.checked = false;
+    if (voiceCuesToggleActive) voiceCuesToggleActive.checked = false;
+    stopSpeech();
+  }
+  syncCueToggles();
+}
+
+/**
+ * On enter device: prefer ambient audioSession, turn voice off once, stop silent osc
+ * when tones are on. Leaving device does not force voice back on.
+ */
+function applyMusicStyleCoexistence(prevStyle, nextStyle) {
+  const Coexist = getAudioCoexistence();
+  const prev = prevStyle || 'off';
+  const next = nextStyle || 'off';
+  lastAppliedMusicStyle = next;
+  if (next === 'device') {
+    if (Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
+      Coexist.probeAndApplyAudioSession('ambient');
+    }
+    if (Coexist && typeof Coexist.shouldPreferVoiceOffOnDeviceTransition === 'function'
+        ? Coexist.shouldPreferVoiceOffOnDeviceTransition(prev, next)
+        : (next === 'device' && prev !== 'device')) {
+      preferVoiceOffForDevice();
+    }
+    if (tonesEnabled()) stopSilentAudioKeepAlive();
+  }
 }
 
 async function loadPlan() {
@@ -1484,6 +1552,7 @@ async function resumeSession() {
       if (musicStyleSelect) musicStyleSelect.value = raw.musicStyle;
       if (musicStyleActive) musicStyleActive.value = raw.musicStyle;
       setMusicStyleUI(raw.musicStyle);
+      lastAppliedMusicStyle = raw.musicStyle || 'off';
       musicEngine.setStyle(raw.musicStyle);
     }
     if (raw.musicWasPlaying && shouldAutoStartMusic()) {
@@ -1752,6 +1821,10 @@ async function startWorkout() {
 
   // Unlock audio / speech on the Start user gesture so rest 3-2-1 beeps can fire on iOS
   try {
+    const Coexist = getAudioCoexistence();
+    if (currentMusicStyle() === 'device' && Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
+      Coexist.probeAndApplyAudioSession('ambient');
+    }
     const ctx = await ensureAudioRunning();
     if (ctx) {
       await ctx.resume();
@@ -1760,7 +1833,10 @@ async function startWorkout() {
       src.buffer = buf;
       src.connect(ctx.destination);
       src.start(0);
-      startSilentAudioKeepAlive(ctx);
+      // Gate silent keep-alive: device+tones skips it to reduce Spotify interruptions.
+      // Residual: without it, beeps may fail after long screen-off until a gesture resumes ctx.
+      if (shouldArmSilentKeepAlive()) startSilentAudioKeepAlive(ctx);
+      else stopSilentAudioKeepAlive();
     }
   } catch { /* ignore */ }
   if (window.speechSynthesis) window.speechSynthesis.getVoices();
@@ -2905,6 +2981,7 @@ function initTonesToggle() {
       if (Overflow) Overflow.persistTones(tonesToggle.checked, localStorage, pair());
       else localStorage.setItem('runnerTones', tonesToggle.checked ? '1' : '0');
       syncCueToggles();
+      if (currentMusicStyle() === 'device' && tonesToggle.checked) stopSilentAudioKeepAlive();
     });
   }
   // Active session toggle (overflow modal)
@@ -2914,6 +2991,7 @@ function initTonesToggle() {
       if (Overflow) Overflow.persistTones(tonesToggleActive.checked, localStorage, pair());
       else localStorage.setItem('runnerTones', tonesToggleActive.checked ? '1' : '0');
       syncCueToggles();
+      if (currentMusicStyle() === 'device' && tonesToggleActive.checked) stopSilentAudioKeepAlive();
     };
     tonesToggleActive.addEventListener('change', persistTonesActive);
     tonesToggleActive.addEventListener('input', persistTonesActive);
@@ -2985,6 +3063,11 @@ function speakCue(text) {
   try {
     if (!voiceCuesEnabled() || !text) return;
     if (!window.speechSynthesis) return;
+    const Coexist = getAudioCoexistence();
+    // Brief speech in device mode may use transient; never transient-solo/playback.
+    if (currentMusicStyle() === 'device' && Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
+      Coexist.probeAndApplyAudioSession('transient');
+    }
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(String(text));
     u.rate = 1.08;
@@ -2993,6 +3076,13 @@ function speakCue(text) {
     const voices = window.speechSynthesis.getVoices() || [];
     const en = voices.find(v => /^en(-|_)/i.test(v.lang)) || voices.find(v => /en/i.test(v.lang));
     if (en) u.voice = en;
+    const restoreAmbient = () => {
+      if (currentMusicStyle() === 'device' && Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
+        Coexist.probeAndApplyAudioSession('ambient');
+      }
+    };
+    u.onend = restoreAmbient;
+    u.onerror = restoreAmbient;
     window.speechSynthesis.speak(u);
   } catch {
     // ignore speech errors
@@ -3045,6 +3135,8 @@ function getAudioContext() {
 
 let silentKeepAliveNode = null;
 function startSilentAudioKeepAlive(ctx) {
+  // Policy gate: device + tones must not hold a long-lived destination graph (Spotify).
+  if (!shouldArmSilentKeepAlive()) return;
   if (!ctx || silentKeepAliveNode || ctx.state !== 'running') return;
   try {
     const osc = ctx.createOscillator();
@@ -3058,13 +3150,25 @@ function startSilentAudioKeepAlive(ctx) {
   } catch { /* ignore */ }
 }
 
+/** Stop and disconnect the silent oscillator; clears keep-alive node ref. */
+function stopSilentAudioKeepAlive() {
+  try {
+    if (silentKeepAliveNode) {
+      try { silentKeepAliveNode.stop(); } catch { /* ignore */ }
+      try { silentKeepAliveNode.disconnect(); } catch { /* ignore */ }
+    }
+  } catch { /* ignore */ }
+  silentKeepAliveNode = null;
+}
+
 async function ensureAudioRunning() {
   const ctx = getAudioContext();
   if (!ctx) return null;
   if (ctx.state !== 'running') {
     try { await ctx.resume(); } catch { /* ignore */ }
   }
-  if (ctx.state === 'running') startSilentAudioKeepAlive(ctx);
+  // Do not re-arm silent keep-alive in device+tones (Spotify coexistence).
+  if (ctx.state === 'running' && shouldArmSilentKeepAlive()) startSilentAudioKeepAlive(ctx);
   return ctx;
 }
 
@@ -3101,10 +3205,13 @@ function startAudioKeepAlive() {
 function stopAudioKeepAlive() {
   clearInterval(audioKeepAliveInterval);
   audioKeepAliveInterval = null;
+  stopSilentAudioKeepAlive();
 }
 
 async function beep(frequency = 880, duration = 0.15, volume = 0.7) {
   try {
+    // Resume briefly if suspended. ensureAudioRunning gates silent keep-alive for device+tones
+    // (accepted residual: after long screen-off without silent osc, beep may no-op until gesture).
     const ctx = await ensureAudioRunning();
     if (!ctx || ctx.state !== 'running') return;
     const osc = ctx.createOscillator();
