@@ -29,12 +29,10 @@
    "name": "Ab Wheel Rollout",
    "kind": "exercise",
    "file": "ab-wheel-rollout.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 94.0,
+   "frames": 33,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "advanced-kettlebell-windmill",
@@ -342,24 +340,20 @@
    "name": "Barbell Back Squat",
    "kind": "exercise",
    "file": "barbell-back-squat.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 89.1,
+   "frames": 29,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "barbell-bench-press",
    "name": "Barbell Bench Press",
    "kind": "exercise",
    "file": "barbell-bench-press.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 56.3,
+   "frames": 27,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "barbell-bench-press-medium-grip",
@@ -534,12 +528,10 @@
    "name": "Barbell Row",
    "kind": "exercise",
    "file": "barbell-row.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 66.8,
+   "frames": 29,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "barbell-seated-calf-raise",
@@ -1003,12 +995,10 @@
    "name": "Burpees",
    "kind": "exercise",
    "file": "burpees.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 40.4,
+   "frames": 18,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "butt-lift-bridge",
@@ -2134,12 +2124,10 @@
    "name": "Dumbbell Bent-Over Row",
    "kind": "exercise",
    "file": "db-bent-over-row.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 62.6,
+   "frames": 27,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "dumbbell-bicep-curl",
@@ -2158,12 +2146,10 @@
    "name": "Dumbbell Chest Fly",
    "kind": "exercise",
    "file": "db-chest-fly.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 88.2,
+   "frames": 31,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "dumbbell-clean",
@@ -2182,12 +2168,10 @@
    "name": "Dumbbell Curl",
    "kind": "exercise",
    "file": "db-curl.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 62.6,
+   "frames": 29,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "dumbbell-floor-press",
@@ -2242,12 +2226,10 @@
    "name": "Dumbbell Lunge",
    "kind": "exercise",
    "file": "db-lunge.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 105.2,
+   "frames": 29,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "dumbbell-lunges",
@@ -2350,12 +2332,10 @@
    "name": "Dumbbell Overhead Press",
    "kind": "exercise",
    "file": "db-overhead-press.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 71.1,
+   "frames": 31,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "dumbbell-prone-incline-curl",
@@ -2398,7 +2378,7 @@
    "name": "Dumbbell Romanian Deadlift",
    "kind": "exercise",
    "file": "db-romanian-deadlift.webp",
-   "kb": 130.9,
+   "kb": 122.6,
    "frames": 37,
    "flags": [],
    "status": "pass"
@@ -2516,12 +2496,10 @@
    "name": "Dumbbell Step-Up",
    "kind": "exercise",
    "file": "db-step-up.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 74.2,
+   "frames": 24,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "dumbbell-tricep-extension-pronated-grip",
@@ -2540,12 +2518,10 @@
    "name": "Dumbbell Triceps Extension",
    "kind": "exercise",
    "file": "db-triceps-extension.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 58.2,
+   "frames": 29,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "ez-bar-curl",
@@ -2696,12 +2672,10 @@
    "name": "Farmer's Carry",
    "kind": "exercise",
    "file": "farmers-carry.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 81.1,
+   "frames": 24,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "fast-skipping",
@@ -3056,12 +3030,10 @@
    "name": "Hammer Curl",
    "kind": "exercise",
    "file": "hammer-curl.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 64.6,
+   "frames": 31,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "hammer-curls",
@@ -3164,12 +3136,10 @@
    "name": "Hanging Knee Raise",
    "kind": "exercise",
    "file": "hanging-knee-raise.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 53.5,
+   "frames": 29,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "hanging-leg-raise",
@@ -3646,12 +3616,10 @@
    "name": "Kettlebell Goblet Squat",
    "kind": "exercise",
    "file": "kettlebell-goblet-squat.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 92.5,
+   "frames": 33,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "kettlebell-hang-clean",
@@ -3754,12 +3722,10 @@
    "name": "Kettlebell Swing",
    "kind": "exercise",
    "file": "kettlebell-swing.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 81.3,
+   "frames": 24,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "kettlebell-thruster",
@@ -3935,12 +3901,10 @@
    "name": "Lateral Raise",
    "kind": "exercise",
    "file": "lateral-raise.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 68.5,
+   "frames": 31,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "lateral-raise-with-bands",
@@ -5256,12 +5220,10 @@
    "name": "Pull-Up",
    "kind": "exercise",
    "file": "pull-up.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 68.4,
+   "frames": 29,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "pullups",
@@ -5316,12 +5278,10 @@
    "name": "Push-Up",
    "kind": "exercise",
    "file": "push-up.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 57.2,
+   "frames": 29,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "push-up-wide",
@@ -5436,24 +5396,20 @@
    "name": "Renegade Row",
    "kind": "exercise",
    "file": "renegade-row.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 44.7,
+   "frames": 22,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "band-row",
    "name": "Resistance Band Row",
    "kind": "exercise",
    "file": "band-row.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 87.5,
+   "frames": 31,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "return-push-from-stance",
@@ -6159,12 +6115,10 @@
    "name": "Side Plank",
    "kind": "exercise",
    "file": "side-plank.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 57.7,
+   "frames": 24,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "single-dumbbell-raise",
@@ -7291,12 +7245,10 @@
    "name": "Suitcase Carry",
    "kind": "exercise",
    "file": "suitcase-carry.webp",
-   "kb": null,
-   "frames": null,
-   "flags": [
-    "missing"
-   ],
-   "status": "fail"
+   "kb": 77.0,
+   "frames": 24,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "sumo-deadlift",
@@ -7947,12 +7899,10 @@
    "name": "Standing hamstring hinge",
    "kind": "mobility",
    "file": "cd-ham-hinge.webp",
-   "kb": 33.6,
-   "frames": 2,
-   "flags": [
-    "snap"
-   ],
-   "status": "warn"
+   "kb": 59.4,
+   "frames": 25,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "cd-hip-flexor",
@@ -8029,12 +7979,10 @@
    "name": "Open-chest arm swings",
    "kind": "mobility",
    "file": "wu-band-disloc.webp",
-   "kb": 30.7,
-   "frames": 2,
-   "flags": [
-    "snap"
-   ],
-   "status": "warn"
+   "kb": 47.6,
+   "frames": 23,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "wu-bird-dog",
@@ -8051,25 +7999,20 @@
    "name": "Bodyweight squat (easy)",
    "kind": "mobility",
    "file": "wu-bw-squat.webp",
-   "kb": 14.9,
-   "frames": 2,
-   "flags": [
-    "tiny",
-    "snap"
-   ],
-   "status": "warn"
+   "kb": 54.9,
+   "frames": 21,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "wu-calf-raise",
    "name": "Calf raises",
    "kind": "mobility",
    "file": "wu-calf-raise.webp",
-   "kb": 24.9,
-   "frames": 2,
-   "flags": [
-    "snap"
-   ],
-   "status": "warn"
+   "kb": 69.2,
+   "frames": 25,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "wu-cat-cow",
@@ -8096,12 +8039,10 @@
    "name": "Glute bridge",
    "kind": "mobility",
    "file": "wu-glute-bridge.webp",
-   "kb": 22.8,
-   "frames": 2,
-   "flags": [
-    "snap"
-   ],
-   "status": "warn"
+   "kb": 33.0,
+   "frames": 19,
+   "flags": [],
+   "status": "pass"
   },
   {
    "id": "wu-high-knees",
@@ -8196,28 +8137,8 @@
  ],
  "aliases": [
   [
-   "band-pull-apart",
-   "wu-band-disloc"
-  ],
-  [
-   "bodyweight-squat",
-   "wu-bw-squat"
-  ],
-  [
-   "butt-lift-bridge",
-   "wu-glute-bridge"
-  ],
-  [
    "db-bench-press",
    "dumbbell-bench-press"
-  ],
-  [
-   "standing-calf-raises",
-   "wu-calf-raise"
-  ],
-  [
-   "stiff-leg-barbell-good-morning",
-   "cd-ham-hinge"
   ]
  ]
 }

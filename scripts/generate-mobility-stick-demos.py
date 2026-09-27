@@ -23,6 +23,13 @@ MUTED = (148, 163, 184)
 FLOOR_C = (203, 213, 225)
 MS = 70
 
+# Body proportions shared by warm-up / cool-down stick figures
+HEAD = 36.0
+NECK = HEAD * 0.25
+TORSO = HEAD * 2.55
+THIGH = HEAD * 2.1
+SHIN = HEAD * 2.05
+
 
 def lerp(a, b, t):
     return a + (b - a) * t
@@ -52,10 +59,12 @@ def floor(d, y=None):
     return y
 
 
-def label(d, title, subtitle=""):
+def label(d, title, subtitle="", phase=""):
     d.text((14, 12), title, fill=(71, 85, 105))
     if subtitle:
         d.text((14, 32), subtitle, fill=MUTED)
+    if phase:
+        d.text((14, 52), phase, fill=ACCENT)
     d.text((14, H - 32), "Stick demo — mobility", fill=MUTED)
 
 
@@ -851,6 +860,155 @@ def dead_bug_stick(t: float) -> Image.Image:
     return im
 
 
+def bw_squat_stick(t: float) -> Image.Image:
+    """Bodyweight squat — no load, squat down and up."""
+    im = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(im)
+    fy = floor(d)
+    e = ease(t)
+    ankle_r = (W * 0.52, fy - 4)
+    ankle_l = (ankle_r[0] + 26, fy - 4)
+    hip_drop = HEAD * 1.9 * e
+    hip = (ankle_r[0] + 10 + 12 * e, ankle_r[1] - SHIN - THIGH + 14 + hip_drop)
+    knee_r = (ankle_r[0] - 18 * e, ankle_r[1] - SHIN + 18 * e)
+    knee_l = (ankle_l[0] - 18 * e, ankle_l[1] - SHIN + 18 * e)
+    shoulder = (hip[0] - 6, hip[1] - TORSO)
+    head_c = (shoulder[0] - 6, shoulder[1] - NECK - HEAD * 0.5)
+    hand_l = (shoulder[0] - 24, hip[1] + 10)
+    hand_r = (shoulder[0] + 24, hip[1] + 10)
+
+    seg(d, hip, knee_r, 10)
+    seg(d, knee_r, ankle_r, 10)
+    seg(d, hip, knee_l, 10)
+    seg(d, knee_l, ankle_l, 10)
+    seg(d, hip, shoulder, 12)
+    seg(d, shoulder, hand_l, 7)
+    seg(d, shoulder, hand_r, 7)
+    head(d, head_c, 16)
+    label(d, "Bodyweight squat (easy)", "Shallow to full · no load", "Squat" if e > 0.5 else "Stand")
+    return im
+
+
+def glute_bridge_stick(t: float) -> Image.Image:
+    """Glute bridge — lying on back, hips lift and lower."""
+    im = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(im)
+    fy = floor(d)
+    e = ease(t)
+    shoulder = (W * 0.36, fy - 36)
+    hip = (W * 0.58, lerp(fy - 30, fy - 110, e))
+    knee = (hip[0] + 26, lerp(fy - 35, fy - 95, e))
+    ankle = (knee[0] + 30, fy - 8)
+    head_c = (shoulder[0] - 24, shoulder[1] - 12)
+    hand = (shoulder[0] - 10, shoulder[1] + 25)
+
+    seg(d, shoulder, hip, 12)
+    seg(d, hip, knee, 10)
+    seg(d, knee, ankle, 9)
+    seg(d, shoulder, hand, 7)
+    head(d, head_c, 15)
+    label(d, "Glute bridge", "Squeeze glutes at top · no lower-back arch", "Lift" if e > 0.5 else "Lower")
+    return im
+
+
+def calf_raise_stick(t: float) -> Image.Image:
+    """Calf raises — standing, heels lift and lower."""
+    im = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(im)
+    fy = floor(d)
+    e = ease(t)
+    heel_lift = HEAD * 0.9 * math.sin(e * math.pi)
+    ankle_r = (W * 0.5, fy - 4 - heel_lift)
+    ankle_l = (ankle_r[0] + 24, fy - 4 - heel_lift)
+    toe_r = (ankle_r[0] + 24, fy - 4)
+    toe_l = (ankle_l[0] + 24, fy - 4)
+    knee_r = (ankle_r[0] - 4, ankle_r[1] - SHIN + 6)
+    knee_l = (ankle_l[0] - 4, ankle_l[1] - SHIN + 6)
+    hip = (ankle_r[0] + 8, knee_r[1] - THIGH + 8)
+    shoulder = (hip[0] - 4, hip[1] - TORSO)
+    head_c = (shoulder[0] - 4, shoulder[1] - NECK - HEAD * 0.5)
+    hand_l = (shoulder[0] - 22, hip[1] + 10)
+    hand_r = (shoulder[0] + 22, hip[1] + 10)
+
+    # feet (toes on floor, heels lifted)
+    seg(d, ankle_r, toe_r, 8)
+    seg(d, ankle_l, toe_l, 8)
+    seg(d, hip, knee_r, 10)
+    seg(d, knee_r, ankle_r, 10)
+    seg(d, hip, knee_l, 10)
+    seg(d, knee_l, ankle_l, 10)
+    seg(d, hip, shoulder, 12)
+    seg(d, shoulder, hand_l, 7)
+    seg(d, shoulder, hand_r, 7)
+    head(d, head_c, 16)
+    label(d, "Calf raises", "Full ankle range · both feet", "Rise" if e > 0.5 else "Lower")
+    return im
+
+
+def band_disloc_stick(t: float) -> Image.Image:
+    """Band dislocate — arms move from front to overhead/back with band."""
+    im = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(im)
+    fy = floor(d)
+    e = ease(t)
+    hip = (W * 0.5, fy - 175)
+    shoulder = (hip[0] - 4, fy - 300)
+    head_c = (shoulder[0], shoulder[1] - 40)
+    knee = (hip[0], fy - 90)
+    ankle = (knee[0], fy - 4)
+    # hands arc from front low to overhead to back
+    ang = lerp(math.radians(70), math.radians(-110), e)
+    r = 100
+    hand_l = (shoulder[0] - math.sin(ang) * r, shoulder[1] + math.cos(ang) * r)
+    hand_r = (shoulder[0] + math.sin(ang) * r, shoulder[1] + math.cos(ang) * r)
+    elbow_l = (shoulder[0] - math.sin(ang) * 55, shoulder[1] + math.cos(ang) * 55)
+    elbow_r = (shoulder[0] + math.sin(ang) * 55, shoulder[1] + math.cos(ang) * 55)
+    # band between hands
+    d.line([hand_l, hand_r], fill=ACCENT, width=6)
+
+    seg(d, hip, knee, 10)
+    seg(d, knee, ankle, 10)
+    seg(d, hip, shoulder, 12)
+    seg(d, shoulder, elbow_l, 8)
+    seg(d, elbow_l, hand_l, 7)
+    seg(d, shoulder, elbow_r, 8)
+    seg(d, elbow_r, hand_r, 7)
+    head(d, head_c, 16)
+    label(d, "Open-chest arm swings", "Cross-body then open wide · easy range", "Open" if e > 0.5 else "Close")
+    return im
+
+
+def ham_hinge_stick(t: float) -> Image.Image:
+    """Standing hamstring hinge — soft knees, hinge at hips."""
+    im = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(im)
+    fy = floor(d)
+    e = ease(t)
+    ankle_r = (W * 0.52, fy - 4)
+    ankle_l = (ankle_r[0] + 26, fy - 4)
+    knee_r = (ankle_r[0] - 6, ankle_r[1] - SHIN + 8)
+    knee_l = (ankle_l[0] - 6, ankle_l[1] - SHIN + 8)
+    hip0 = (ankle_r[0] + 6, knee_r[1] - THIGH + 8)
+    hip_back = HEAD * 2.0 * e
+    hip_drop = HEAD * 0.45 * e
+    hip = (hip0[0] + hip_back, hip0[1] + hip_drop)
+    lean = math.radians(lerp(5, 75, e))
+    shoulder = (hip[0] - math.sin(lean) * TORSO, hip[1] - math.cos(lean) * TORSO)
+    head_c = (shoulder[0] - math.sin(lean) * (NECK + HEAD * 0.5),
+              shoulder[1] - math.cos(lean) * (NECK + HEAD * 0.5))
+    hand = (hip[0] - 20, hip[1] + 18)
+
+    seg(d, hip, knee_r, 10)
+    seg(d, knee_r, ankle_r, 10)
+    seg(d, hip, knee_l, 10)
+    seg(d, knee_l, ankle_l, 10)
+    seg(d, hip, shoulder, 12)
+    seg(d, shoulder, hand, 7)
+    head(d, head_c, 16)
+    label(d, "Standing hamstring hinge", "Soft knees · hinge at hips · long spine", "Hinge" if e > 0.5 else "Stand")
+    return im
+
+
 def refresh_index():
     import json
 
@@ -875,6 +1033,11 @@ DEMOS = [
     ("wu-jacks", lambda: [jumping_jacks(i / 20) for i in range(21)]),
     ("wu-high-knees", lambda: [high_knees(i / 16) for i in range(17)]),
     ("wu-dead-bug", lambda: bounce_frames(dead_bug_stick, 12, 3)),
+    ("wu-bw-squat", lambda: bounce_frames(bw_squat_stick, 12, 3)),
+    ("wu-glute-bridge", lambda: bounce_frames(glute_bridge_stick, 12, 3)),
+    ("wu-calf-raise", lambda: bounce_frames(calf_raise_stick, 12, 3)),
+    ("wu-band-disloc", lambda: bounce_frames(band_disloc_stick, 12, 3)),
+    ("cd-ham-hinge", lambda: bounce_frames(ham_hinge_stick, 12, 3)),
     ("wu-cat-cow", lambda: bounce_frames(cat_cow, 12, 2)),
     ("cd-cobra", lambda: bounce_frames(cobra, 12, 3)),
     ("wu-bird-dog", lambda: bounce_frames(bird_dog, 12, 3)),
