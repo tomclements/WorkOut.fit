@@ -100,10 +100,10 @@
         set.add(k);
       }
     }
-    if (!hasSaved && !hasGen) {
-      for (const k of parseCompletedList(store.getItem(completedStorageKey({})))) {
-        set.add(k);
-      }
+    // Always union gen-unknown so orphans (writes with missing generatedAt) are not lost
+    // when a real generatedAt or savedPlanId is known later.
+    for (const k of parseCompletedList(store.getItem(completedStorageKey({})))) {
+      set.add(k);
     }
     return set;
   }
@@ -121,9 +121,12 @@
     const generatedAt = (opts && opts.generatedAt) || resolveGeneratedAt(null, store);
     const genKey = completedStorageKey({ generatedAt });
     const savedKey = completedStorageKey({ savedPlanId });
+    const unknownKey = completedStorageKey({}); // runnerCompleted_gen-unknown
     const union = new Set([
       ...parseCompletedList(store.getItem(genKey)),
-      ...parseCompletedList(store.getItem(savedKey))
+      ...parseCompletedList(store.getItem(savedKey)),
+      // Orphan keys written under gen-unknown when generatedAt was missing at finish time
+      ...parseCompletedList(store.getItem(unknownKey))
     ]);
     try {
       store.setItem(savedKey, JSON.stringify([...union]));
@@ -232,7 +235,14 @@
   function writeCompletedKeys(completedSet, opts, storage) {
     const store = defaultStorage(storage);
     if (!store || typeof store.setItem !== 'function') return;
-    const savedPlanId = opts && opts.savedPlanId;
+    let savedPlanId = opts && opts.savedPlanId;
+    // Fallback: bare Run may have null currentSavedPlanId but store still has workoutPlanSavedId
+    if ((savedPlanId == null || savedPlanId === '') && typeof store.getItem === 'function') {
+      try {
+        const fromStore = store.getItem('workoutPlanSavedId');
+        if (fromStore != null && fromStore !== '') savedPlanId = fromStore;
+      } catch { /* ignore */ }
+    }
     const generatedAt = opts && opts.generatedAt;
     const hasSaved = savedPlanId != null && savedPlanId !== '';
     const hasGen = generatedAt != null && generatedAt !== '';

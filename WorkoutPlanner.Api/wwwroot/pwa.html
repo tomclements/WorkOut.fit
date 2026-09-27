@@ -6,6 +6,7 @@
   <title>Plan4Strength</title>
 </head>
 <body>
+  <script src="/js/nextWorkout.js"></script>
   <script>
     var go = '/';
     try {
@@ -13,10 +14,18 @@
       if (saved) {
         var plan = JSON.parse(saved);
         if (plan && Array.isArray(plan.plan)) {
-          go = '/workout.html';
+          var planId = null;
+          try { planId = localStorage.getItem('workoutPlanSavedId'); } catch (e2) { /* ignore */ }
+          if (typeof NextWorkout !== 'undefined' && NextWorkout.runnerStartHrefForPlan) {
+            go = NextWorkout.runnerStartHrefForPlan(plan, planId, localStorage);
+          } else if (planId) {
+            go = '/workout.html?setup=1&planId=' + encodeURIComponent(planId);
+          } else {
+            go = '/workout.html';
+          }
         }
       }
-    } catch (e) { /* JSON parse failure → stay on / */ }
+    } catch (e) { /* JSON parse failure -> stay on / */ }
     location.replace(go);
   </script>
 </body>

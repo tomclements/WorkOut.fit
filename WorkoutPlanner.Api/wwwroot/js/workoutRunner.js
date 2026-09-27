@@ -629,6 +629,12 @@ async function loadPlan() {
         return;
       }
     }
+    // Bare URL / API fail: still bind saved plan id from store so migrate, dual-write,
+    // and History session merge work (home card already uses workoutPlanSavedId).
+    if (currentSavedPlanId == null) {
+      const fromStore = resolveSavedPlanId();
+      if (fromStore != null) currentSavedPlanId = fromStore;
+    }
   }
 
   // Inject warm-up / cool-down if this plan was saved without them
@@ -697,6 +703,22 @@ function populateDaySelect() {
   }
 }
 
+
+/** Prefer in-memory currentSavedPlanId; else localStorage.workoutPlanSavedId (bare PWA Run). */
+function resolveSavedPlanId() {
+  if (currentSavedPlanId != null && currentSavedPlanId !== '') {
+    const n = Number(currentSavedPlanId);
+    if (Number.isFinite(n)) return n;
+  }
+  try {
+    const raw = localStorage.getItem('workoutPlanSavedId');
+    if (raw == null || raw === '') return null;
+    const n = parseInt(raw, 10);
+    return Number.isFinite(n) ? n : null;
+  } catch {
+    return null;
+  }
+}
 
 function completedDaysKey() {
   if (typeof NextWorkout !== 'undefined') {
@@ -768,7 +790,7 @@ function markDayCompleted() {
   // Dual-write: saved-<id> when known, keep gen-<ts> in sync when timestamp known.
   if (typeof NextWorkout !== 'undefined' && NextWorkout.writeCompletedKeys) {
     NextWorkout.writeCompletedKeys(set, {
-      savedPlanId: currentSavedPlanId,
+      savedPlanId: resolveSavedPlanId(),
       generatedAt
     }, localStorage);
   } else {
@@ -782,16 +804,19 @@ async function defaultToNextWorkoutDay() {
   const completed = getCompletedDayKeys();
   const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
 
-  // Merge server history for saved plans (cross-device)
-  if (currentUser && currentSavedPlanId) {
+  // Merge server history for saved plans (cross-device).
+  // Bare PWA Run may leave currentSavedPlanId null until loadPlan binds store id —
+  // still merge using resolveSavedPlanId() so History is applied.
+  const planIdForSessions = resolveSavedPlanId();
+  if (currentUser && planIdForSessions != null) {
     try {
       const res = await fetch('/api/runner/sessions', { credentials: 'include' });
       if (res.ok) {
         const sessions = await res.json();
-        if (NW) NW.addSessionCompletionKeys(completed, sessions, currentSavedPlanId, currentPlan && currentPlan.plan);
+        if (NW) NW.addSessionCompletionKeys(completed, sessions, planIdForSessions, currentPlan && currentPlan.plan);
         else {
           sessions.forEach(s => {
-            if (s.savedPlanId == currentSavedPlanId && s.week != null && s.dayIndex != null) {
+            if (s.savedPlanId == planIdForSessions && s.week != null && s.dayIndex != null) {
               completed.add(s.week + ':' + s.dayIndex);
             }
           });
@@ -2729,7 +2754,7 @@ async function saveSession(options = {}) {
   const totalSeconds = Math.floor((Date.now() - startTime) / 1000);
   const payload = {
     planName: sessionPlanName,
-    savedPlanId: currentSavedPlanId,
+    savedPlanId: resolveSavedPlanId(),
     week: selectedWeek || 1,
     dayIndex: selectedDayIndex || 0,
     startedAt: new Date(startTime).toISOString(),

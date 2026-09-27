@@ -399,3 +399,52 @@ test('resolveGeneratedAt prefers plan then localStorage workoutPlan', () => {
   assert.equal(nw.resolveGeneratedAt(null, store), 'from-local');
   assert.equal(nw.resolveGeneratedAt({}, { getItem() { return null; } }), null);
 });
+
+test('gen-unknown orphan: read/migrate unions runnerCompleted_gen-unknown with real ts + saved', () => {
+  const store = {
+    data: {
+      'runnerCompleted_gen-unknown': JSON.stringify(['1:0']),
+      workoutPlan: JSON.stringify({ generatedAt: 'ts-real' })
+    },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  // Real generatedAt + savedPlanId must still see gen-unknown orphans
+  const set = nw.readCompletedKeys({ savedPlanId: 9, generatedAt: 'ts-real' }, store);
+  assert.ok(set.has('1:0'), 'readCompletedKeys unions gen-unknown orphan');
+
+  const union = nw.migrateGenCompletionsToSaved({ generatedAt: 'ts-real', savedPlanId: 9 }, store);
+  assert.ok(union.has('1:0'), 'migrate unions gen-unknown into saved');
+  assert.deepEqual(JSON.parse(store.getItem('runnerCompleted_saved-9')), ['1:0']);
+  assert.deepEqual(JSON.parse(store.getItem('runnerCompleted_gen-ts-real')), ['1:0']);
+});
+
+test('writeCompletedKeys falls back to workoutPlanSavedId when savedPlanId arg null', () => {
+  const store = {
+    data: { workoutPlanSavedId: '42' },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  nw.writeCompletedKeys(new Set(['1:0', '1:2']), { savedPlanId: null, generatedAt: 'ts1' }, store);
+  assert.deepEqual(JSON.parse(store.getItem('runnerCompleted_saved-42')), ['1:0', '1:2']);
+  assert.deepEqual(JSON.parse(store.getItem('runnerCompleted_gen-ts1')), ['1:0', '1:2']);
+});
+
+test('bare load: null currentSavedPlanId + store saved id + sessions merge via store id', () => {
+  // Simulates runner resolveSavedPlanId() fallback: currentSavedPlanId null, store has id
+  const storeId = 9;
+  const completed = nw.readCompletedKeys({ savedPlanId: null, generatedAt: 'ts1' }, {
+    data: { 'runnerCompleted_gen-ts1': JSON.stringify([]) },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem() {}
+  });
+  // Session merge as defaultToNextWorkoutDay does with planId = store id
+  nw.addSessionCompletionKeys(completed, [
+    { savedPlanId: 9, week: 1, dayIndex: 0 },
+    { savedPlanId: '9', week: 1, dayIndex: 2 }
+  ], storeId, [monWedFriWeek(1)]);
+  assert.ok(completed.has('1:0'));
+  assert.ok(completed.has('1:2'));
+  const next = nw.findNextWorkoutDay([monWedFriWeek(1)], completed);
+  assert.equal(next.dayIndex, 4, 'after Mon+Wed sessions, next is Fri');
+});
