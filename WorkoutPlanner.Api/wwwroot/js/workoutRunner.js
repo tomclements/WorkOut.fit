@@ -2116,13 +2116,81 @@ function demoImageUrls(ex) {
   return urls;
 }
 
-/** Prebuilt animated WebP (FEDB stills, mobility copies, or stick demos). */
+/** Keep in sync with EXPECTED_IDS in scripts/install-grok-demos.py. */
+const GROK_DEMO_IDS = new Set([
+  "ab-wheel-rollout",
+  "band-row",
+  "barbell-back-squat",
+  "barbell-bench-press",
+  "barbell-row",
+  "burpees",
+  "db-bent-over-row",
+  "db-chest-fly",
+  "db-curl",
+  "db-lunge",
+  "db-overhead-press",
+  "db-step-up",
+  "db-triceps-extension",
+  "farmers-carry",
+  "hammer-curl",
+  "hanging-knee-raise",
+  "kettlebell-goblet-squat",
+  "kettlebell-swing",
+  "lateral-raise",
+  "pull-up",
+  "push-up",
+  "renegade-row",
+  "side-plank",
+  "suitcase-carry",
+  "wu-bw-squat",
+  "wu-glute-bridge",
+  "wu-calf-raise",
+  "wu-band-disloc",
+  "cd-ham-hinge",
+  "wu-march",
+  "wu-jacks",
+  "wu-high-knees",
+  "wu-dead-bug",
+  "wu-arm-circles",
+  "wu-scap-pushup",
+  "wu-cat-cow",
+  "wu-bird-dog",
+  "wu-hip-circles",
+  "wu-leg-swings",
+  "wu-wrist-circles",
+  "wu-shoulder-rolls",
+  "wu-torso-twist",
+  "cd-chest-door",
+  "cd-tricep-oh",
+  "cd-cross-body",
+  "cd-child-pose",
+  "cd-thread-needle",
+  "cd-quad-stand",
+  "cd-fig4",
+  "cd-calf-wall",
+  "cd-hip-flexor",
+  "cd-cobra",
+  "cd-knees-chest",
+  "cd-forearm-stretch",
+  "cd-neck-side",
+  "cd-breathe",
+  "db-romanian-deadlift",
+  "dumbbell-romanian-deadlift"
+]);
+
+/** Bump with sw.js CACHE_NAME plan4strength-vN. */
+const DEMO_WEBP_V = "9";
+
+/** Prebuilt animated WebP under /demos (Grok batch + any other demos). */
 function demoWebpUrl(ex) {
   if (!ex) return null;
-  if (ex.demoAnimUrl) return ex.demoAnimUrl;
+  if (ex.demoAnimUrl) {
+    const u = ex.demoAnimUrl;
+    return u.includes("?") ? u : `${u}?v=${DEMO_WEBP_V}`;
+  }
   if (!ex.id) return null;
   // Always try /demos/{id}.webp — onerror falls back to still flip / placeholder
-  return `/demos/${encodeURIComponent(ex.id)}.webp`;
+  return `/demos/${encodeURIComponent(ex.id)}.webp?v=${DEMO_WEBP_V}`;
 }
 
 function exerciseMediaHtml(ex, options = {}) {
@@ -2171,7 +2239,7 @@ function exerciseMediaHtml(ex, options = {}) {
     }
   }
 
-  const attribution = webp
+  const attribution = webp && ex.id && GROK_DEMO_IDS.has(ex.id)
     ? `<div class="demo-attribution">Demo art: Grok</div>`
     : '';
 

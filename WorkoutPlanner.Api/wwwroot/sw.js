@@ -1,4 +1,4 @@
-const CACHE_NAME = 'plan4strength-v8';
+const CACHE_NAME = 'plan4strength-v9';
 const PRECACHE = [
   '/manifest.json',
   '/icon.svg',
@@ -35,10 +35,11 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Network-first for JS/CSS so deploys show up without hard-cache battles
+  // Network-first for JS/CSS/demos so deploys show up without hard-cache battles
   const isAsset = /\.(js|css)(\?|$)/i.test(url.pathname)
     || url.pathname.endsWith('.html')
-    || url.pathname === '/';
+    || url.pathname === '/'
+    || url.pathname.startsWith('/demos/');
 
   if (isAsset) {
     event.respondWith(
