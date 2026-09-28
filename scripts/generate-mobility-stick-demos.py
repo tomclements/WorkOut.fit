@@ -4,6 +4,8 @@
 These replace wrong free-exercise-db copies (e.g. cat-cow was hyperextension).
 Public-domain stick art — not photos of other exercises.
 """
+# DEAD — superseded by Grok WebP demos (batch 2026-09-27). Do not run; do not delete until Tom OK.
+
 
 from __future__ import annotations
 

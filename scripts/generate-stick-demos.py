@@ -4,6 +4,8 @@
 Side-view figure with human proportions:
   head, torso, upper arm + forearm + hand, thigh + shin + foot.
 """
+# DEAD — superseded by Grok WebP demos (batch 2026-09-27). Do not run; do not delete until Tom OK.
+
 
 from __future__ import annotations
 

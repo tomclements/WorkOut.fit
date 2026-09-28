@@ -220,6 +220,7 @@ body.tv-mode #restProgressBar {
   display: none !important;
 }
 body.tv-mode .demo-caption,
+body.tv-mode .demo-attribution,
 body.tv-mode .demo-actions {
   display: none !important;
 }
@@ -479,6 +480,14 @@ body.rest-phase .overflow-btn {
   color: #4b5563;
   line-height: 1.35;
 }
+
+.demo-attribution {
+  margin-top: 0.25rem;
+  text-align: center;
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
 
 .demo-actions {
   display: flex;

@@ -2171,10 +2171,15 @@ function exerciseMediaHtml(ex, options = {}) {
     }
   }
 
+  const attribution = webp
+    ? `<div class="demo-attribution">Demo art: Grok</div>`
+    : '';
+
   return `
     <div class="demo-panel${compact ? ' demo-panel--rest' : ''}">
       ${frame}
       ${cue}
+      ${attribution}
       ${actions.length ? `<div class="demo-actions">${actions.join('')}</div>` : ''}
     </div>`;
 }
