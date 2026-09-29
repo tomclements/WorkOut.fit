@@ -196,7 +196,7 @@ body.tv-mode #exerciseName {
   font-size: clamp(1.75rem, 5vw, 2.75rem);
 }
 body.tv-mode .demo-panel--rest {
-  max-height: 28vh;
+  max-height: 35vh;
 }
 body.tv-mode .bottom-nav,
 body.tv-mode #backToPlanner {
@@ -230,7 +230,7 @@ body.rest-phase.tv-mode #restTimer {
   font-size: clamp(7rem, 20vw, 14rem) !important;
 }
 body.tv-mode.rest-phase #restScreen .demo-frame {
-  max-height: 28vh;
+  max-height: 35vh;
   height: auto;
 }
 
@@ -506,7 +506,7 @@ body.rest-phase .overflow-btn {
 }
 
 .demo-panel--rest .demo-frame {
-  max-width: 14rem;
+  max-width: 17.5rem;
   aspect-ratio: 1 / 1;
 }
 
@@ -846,7 +846,7 @@ body.rest-phase #restScreen .demo-panel--rest {
   margin-top: 0.35rem !important;
 }
 body.rest-phase #restScreen .demo-panel--rest .demo-frame {
-  max-height: 16vh;
+  max-height: 20vh;
 }
 body.rest-phase #restScreen .runner-session-timer--rest {
   margin: 0.2rem 0 0.4rem;
@@ -988,7 +988,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 
   body.rest-phase #nextDemo img,
   body.rest-phase #nextDemo video {
-    max-height: 26vh !important;
+    max-height: 32.5vh !important;
   }
 
   body.rest-phase #restControls {
@@ -1016,7 +1016,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
     /* keep name visible in landscape */
   }
   body.rest-phase #restScreen .demo-panel--rest {
-    max-height: 22vh;
+    max-height: 27.5vh;
   }
 
   .bottom-nav {
@@ -1327,7 +1327,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
   body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
     aspect-ratio: 1 / 1;
-    max-height: 12vh;
+    max-height: 15vh;
   }
   body.rest-phase:not(.tv-mode) #skipRestBtn,
   body.rest-phase:not(.tv-mode) #startNextBtn {
@@ -1366,7 +1366,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
   body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
     aspect-ratio: 1 / 1;
-    max-height: 10vh;
+    max-height: 12.5vh;
   }
   body.work-phase:not(.tv-mode) #activeScreen #workCue {
     display: none !important;
