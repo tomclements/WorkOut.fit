@@ -441,7 +441,7 @@ body.rest-phase .overflow-btn {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   opacity: 0;
   transition: opacity 0.35s ease;
 }
@@ -462,7 +462,7 @@ body.rest-phase .overflow-btn {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .demo-frame--placeholder {
@@ -1326,9 +1326,8 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   }
   body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
   body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
-    max-height: 9vh;
-    height: 9vh;
-    aspect-ratio: auto;
+    aspect-ratio: 1 / 1;
+    max-height: 12vh;
   }
   body.rest-phase:not(.tv-mode) #skipRestBtn,
   body.rest-phase:not(.tv-mode) #startNextBtn {
@@ -1366,8 +1365,8 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   }
   body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
   body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
-    height: 8vh;
-    max-height: 8vh;
+    aspect-ratio: 1 / 1;
+    max-height: 10vh;
   }
   body.work-phase:not(.tv-mode) #activeScreen #workCue {
     display: none !important;
