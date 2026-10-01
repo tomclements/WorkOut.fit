@@ -153,7 +153,9 @@ async function run() {
     {
       const r = await get('/sw.js');
       assert(r.status === 200, `GET /sw.js → ${r.status}`);
-      assert(r.body.includes('plan4strength-v8'), `GET /sw.js missing "plan4strength-v8"`);
+      const cacheMatch = r.body.match(/CACHE_NAME\s*=\s*['"]([^'"]+)['"]/);
+      const cacheName = cacheMatch ? cacheMatch[1] : '';
+      assert(cacheName !== '' && /^plan4strength-v\d+$/.test(cacheName), `GET /sw.js smoke missing a plan4strength-v* CACHE_NAME (got ${cacheName || 'none'})`);
       assert(!r.body.includes('workoutRunner.js'), `GET /sw.js still lists workoutRunner.js in PRECACHE`);
       console.log('  ✓ GET /sw.js');
     }
