@@ -30,3 +30,4 @@ jobs:
 
       - name: HTTP smoke
         run: node scripts/smoke-http.mjs
+        timeout-minutes: 20

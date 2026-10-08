@@ -16,7 +16,9 @@ function killApi() {
     if (process.platform === 'win32') {
       spawn('taskkill', ['/pid', String(apiProc.pid), '/T', '/F'], { stdio: 'ignore' });
     } else {
-      apiProc.kill('SIGKILL');
+      // Kill the whole process group: dotnet run's grandchild inherits the pipes,
+      // so a plain SIGKILL on the parent leaves orphaned writers that keep Node alive.
+      process.kill(-apiProc.pid, 'SIGKILL');
     }
   } catch { /* already dead */ }
   apiProc = null;
@@ -89,6 +91,8 @@ async function run() {
     'run', '--project', 'WorkoutPlanner.Api', '--launch-profile', 'http', '--urls', BASE,
   ], {
     stdio: ['ignore', 'pipe', 'pipe'],
+    // Give the API its own process group so the kill takes the whole tree.
+    detached: true,
     env: { ...process.env, ASPNETCORE_ENVIRONMENT: 'Development' },
   });
 
