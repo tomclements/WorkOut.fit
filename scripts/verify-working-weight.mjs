@@ -5,7 +5,7 @@ export default async function run(page, ui) {
     throw new Error(`GET /privacy failed: ${privacy && privacy.status()}`);
   }
   const privacyText = await page.locator('body').innerText();
-  for (const needle of ['Privacy policy', 'WorkOut.fit', 'Plan4Strength', 'Strava', 'Render', 'Feedback']) {
+  for (const needle of ['Privacy policy', 'Plan4Strength', 'Strava', 'Render', 'Feedback']) {
     if (!privacyText.includes(needle)) {
       throw new Error(`Privacy page missing "${needle}"`);
     }

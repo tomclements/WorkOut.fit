@@ -44,6 +44,29 @@
     <section id="dashboardSection" class="hidden mb-8">
       <h2 class="text-xl font-semibold mb-4">Your dashboard</h2>
 
+      <!-- Next workout suggestion -->
+      <div id="nextWorkoutCard" class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-5 mb-6 hidden">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <h3 class="text-lg font-semibold text-purple-900">Ready for your next workout?</h3>
+            <p id="nextWorkoutInfo" class="text-sm text-gray-700 mt-1"></p>
+          </div>
+          <a id="nextWorkoutBtn" href="/workout.html" class="shrink-0 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-5 rounded-lg transition touch-manipulation">
+            Start now
+          </a>
+        </div>
+      </div>
+
+      <div id="homeToday" class="bg-white rounded-xl shadow p-5 mb-6 hidden">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span id="homeStreakBadge" class="streak-badge hidden">🔥 <span id="homeStreakCount">0</span>-day streak</span>
+          <p id="homeStreakHint" class="text-sm text-gray-500 hidden">Complete a workout today to start a streak.</p>
+        </div>
+        <div id="homeLastWorkout">
+          <p class="text-sm text-gray-500">No workouts yet.</p>
+        </div>
+      </div>
+
       <div id="dashboardEmptyState" class="empty-state mb-6 hidden">
         <h3>Welcome — let's get your first win</h3>
         <p>
@@ -60,110 +83,48 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white rounded-xl shadow p-4 text-center">
-          <div id="statPlans" class="text-3xl font-bold text-blue-700">0</div>
-          <div class="text-sm text-gray-600">Saved plans</div>
-        </div>
-        <div class="bg-white rounded-xl shadow p-4 text-center">
-          <div id="statWorkouts" class="text-3xl font-bold text-blue-700">0</div>
-          <div class="text-sm text-gray-600">Workouts done</div>
-        </div>
-        <div class="bg-white rounded-xl shadow p-4 text-center">
-          <div id="statMinutes" class="text-3xl font-bold text-blue-700">0</div>
-          <div class="text-sm text-gray-600">Minutes trained</div>
-        </div>
-        <div class="bg-white rounded-xl shadow p-4 text-center">
-          <div id="statSets" class="text-3xl font-bold text-blue-700">0</div>
-          <div class="text-sm text-gray-600">Sets completed</div>
-        </div>
-      </div>
-
-      <!-- Next workout suggestion -->
-      <div id="nextWorkoutCard" class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-5 mb-6 hidden">
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <h3 class="text-lg font-semibold text-purple-900">Ready for your next workout?</h3>
-            <p id="nextWorkoutInfo" class="text-sm text-gray-700 mt-1"></p>
+      <div id="vanityStats" class="hidden">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="bg-white rounded-xl shadow p-4 text-center">
+            <div id="statPlans" class="text-3xl font-bold text-blue-700">0</div>
+            <div class="text-sm text-gray-600">Saved plans</div>
           </div>
-          <a id="nextWorkoutBtn" href="/workout.html" class="shrink-0 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-5 rounded-lg transition touch-manipulation">
-            Start now
-          </a>
-        </div>
-      </div>
-
-      <!-- Body weight tracking -->
-      <div id="bodyWeightCard" class="bg-white rounded-xl shadow p-5 mb-6 hidden">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold">Body weight</h3>
-          <div class="flex items-center rounded-md border border-gray-300 overflow-hidden text-sm">
-            <button type="button" id="weightUnitKg" class="px-3 py-1.5 font-semibold">kg</button>
-            <button type="button" id="weightUnitLb" class="px-3 py-1.5 font-semibold">lb</button>
+          <div class="bg-white rounded-xl shadow p-4 text-center">
+            <div id="statWorkouts" class="text-3xl font-bold text-blue-700">0</div>
+            <div class="text-sm text-gray-600">Workouts done</div>
           </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="flex flex-col justify-center">
-            <div id="weightCurrent" class="text-3xl font-bold text-blue-700">—</div>
-            <div id="weightChange30" class="text-sm text-gray-500 mt-1"></div>
-            <p class="text-xs text-gray-400 mt-2">Weigh yourself at the same time each day for a useful trend.</p>
+          <div class="bg-white rounded-xl shadow p-4 text-center">
+            <div id="statMinutes" class="text-3xl font-bold text-blue-700">0</div>
+            <div class="text-sm text-gray-600">Minutes trained</div>
           </div>
-          <div class="md:col-span-2">
-            <form id="weightForm" class="flex flex-wrap items-end gap-2">
-              <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1" for="weightDate">Date</label>
-                <input type="date" id="weightDate" class="border border-gray-300 rounded-md p-2 text-sm" />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1" for="weightValue">Weight</label>
-                <input type="number" id="weightValue" step="0.1" min="20" max="500" inputmode="decimal"
-                  placeholder="82.5" class="border border-gray-300 rounded-md p-2 text-sm w-28" />
-              </div>
-              <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-md transition">Log weight</button>
-            </form>
-          </div>
-        </div>
-
-        <div id="weightChart" class="mt-5 hidden"></div>
-
-        <div id="weightEntries" class="mt-4 text-sm">
-          <p class="text-gray-400">No weight entries yet — log your first one above.</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
-        <div>
-          <h3 class="text-lg font-semibold mb-3">Your plans</h3>
-          <div id="savedPlansTable" class="bg-white rounded-xl shadow overflow-hidden">
-            <p class="p-4 text-sm text-gray-500">Loading your plans...</p>
-          </div>
-        </div>
-
-        <div>
-          <h3 class="text-lg font-semibold mb-3">Recent activity</h3>
-          <div id="recentActivity" class="bg-white rounded-xl shadow p-4">
-            <p class="text-sm text-gray-500">No workouts yet.</p>
+          <div class="bg-white rounded-xl shadow p-4 text-center">
+            <div id="statSets" class="text-3xl font-bold text-blue-700">0</div>
+            <div class="text-sm text-gray-600">Sets completed</div>
           </div>
         </div>
       </div>
     </section>
 
-    <button id="togglePlannerBtn" class="mb-6 hidden bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-semibold py-2 px-6 rounded-md transition">
-      + Create a new plan
+    <button id="togglePlannerBtn" class="hidden bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-semibold py-2 px-6 rounded-md transition">
+      Custom plan
     </button>
 
     <!-- Named programs: preset calendars on top of the generator -->
     <section id="programsSection" class="mb-8">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-1 sm:gap-2">
-        <h2 class="text-lg font-semibold">Start a program</h2>
-        <span class="text-xs text-gray-500">Tap a program to generate. Edit first if you want to change settings.</span>
+        <h2 class="text-lg font-semibold">Templates</h2>
+        <span class="text-xs text-gray-500">Tap a template to generate a plan. Edit first if you want to change settings.</span>
       </div>
       <div id="programsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
     </section>
 
     <!-- Plan builder -->
-    <section id="plannerSection" class="hidden bg-white rounded-xl shadow p-6 mb-8">
+    <details id="customPlanDetails" class="mb-8">
+      <summary class="inline-flex items-center justify-between w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-semibold py-2 px-6 rounded-md transition cursor-pointer select-none">
+        <span>Custom plan</span>
+        <span class="text-gray-400" aria-hidden="true">▼</span>
+      </summary>
+      <section id="plannerSection" class="bg-white rounded-xl shadow p-6 mt-4">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold">Create a plan</h2>
         <button id="closePlannerBtn" class="hidden text-sm text-gray-500 hover:text-gray-700">Close</button>
@@ -367,10 +328,69 @@
 
       <div id="status" class="mt-4 text-sm text-red-600 hidden"></div>
     </section>
+    </details>
 
     <section id="results" class="hidden">
       <div id="planOutput"></div>
     </section>
+
+    <div id="dashboardExtras" class="hidden">
+      <!-- Body weight tracking -->
+      <div id="bodyWeightCard" class="bg-white rounded-xl shadow p-5 mb-6 hidden">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold">Body weight</h3>
+          <div class="flex items-center rounded-md border border-gray-300 overflow-hidden text-sm">
+            <button type="button" id="weightUnitKg" class="px-3 py-1.5 font-semibold">kg</button>
+            <button type="button" id="weightUnitLb" class="px-3 py-1.5 font-semibold">lb</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="flex flex-col justify-center">
+            <div id="weightCurrent" class="text-3xl font-bold text-blue-700">—</div>
+            <div id="weightChange30" class="text-sm text-gray-500 mt-1"></div>
+            <p class="text-xs text-gray-400 mt-2">Weigh yourself at the same time each day for a useful trend.</p>
+          </div>
+          <div class="md:col-span-2">
+            <form id="weightForm" class="flex flex-wrap items-end gap-2">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1" for="weightDate">Date</label>
+                <input type="date" id="weightDate" class="border border-gray-300 rounded-md p-2 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1" for="weightValue">Weight</label>
+                <input type="number" id="weightValue" step="0.1" min="20" max="500" inputmode="decimal"
+                  placeholder="82.5" class="border border-gray-300 rounded-md p-2 text-sm w-28" />
+              </div>
+              <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-md transition">Log weight</button>
+            </form>
+          </div>
+        </div>
+
+        <div id="weightChart" class="mt-5 hidden"></div>
+
+        <div id="weightEntries" class="mt-4 text-sm">
+          <p class="text-gray-400">No weight entries yet — log your first one above.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
+        <div>
+          <h3 class="text-lg font-semibold mb-3">Your plans</h3>
+          <div id="savedPlansTable" class="bg-white rounded-xl shadow overflow-hidden">
+            <p class="p-4 text-sm text-gray-500">Loading your plans...</p>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold mb-3">Recent activity</h3>
+          <div id="recentActivity" class="bg-white rounded-xl shadow p-4">
+            <p class="text-sm text-gray-500">No workouts yet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <section id="preferencesModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
@@ -434,26 +454,26 @@
   </section>
 
   <nav id="bottomNav" class="bottom-nav no-print" aria-label="Main">
-    <a href="/" class="bottom-nav__item" data-nav="planner">
-      <span class="bottom-nav__icon" aria-hidden="true">📋</span>
-      <span>Planner</span>
+    <div class="bottom-nav__side">
+      <a href="/" class="bottom-nav__item" data-nav="planner">
+        <span class="bottom-nav__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="4" rx="1"/><path d="M7 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="M8 12h8M8 16h5"/></svg></span>
+        <span>Planner</span>
+      </a>
+      <a href="/history.html" class="bottom-nav__item" data-nav="history">
+        <span class="bottom-nav__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span>
+        <span>History</span>
+      </a>
+    </div>
+    <a href="/workout.html" class="bottom-nav__item bottom-nav__item--primary" data-nav="workout">
+      <span class="bottom-nav__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14l11-7-11-7z"/></svg></span>
+      <span>Workout</span>
     </a>
-    <a href="/history.html" class="bottom-nav__item" data-nav="history">
-      <span class="bottom-nav__icon" aria-hidden="true">📈</span>
-      <span>History</span>
-    </a>
-    <a href="/workout.html" class="bottom-nav__item" data-nav="run">
-      <span class="bottom-nav__icon" aria-hidden="true">▶</span>
-      <span>Run</span>
-    </a>
-    <a href="/help.html" class="bottom-nav__item" data-nav="help">
-      <span class="bottom-nav__icon" aria-hidden="true">❓</span>
-      <span>Help</span>
-    </a>
-    <a href="/account.html" id="bottomNavAccount" class="bottom-nav__item" data-nav="account">
-      <span class="bottom-nav__icon" aria-hidden="true">👤</span>
-      <span>Account</span>
-    </a>
+    <div class="bottom-nav__side">
+      <a href="/account.html" id="bottomNavAccount" class="bottom-nav__item" data-nav="account">
+        <span class="bottom-nav__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 19c1.2-3 3.4-4.5 7-4.5S17.8 16 19 19"/></svg></span>
+        <span>Account</span>
+      </a>
+    </div>
   </nav>
 
   <script src="js/site.js"></script>

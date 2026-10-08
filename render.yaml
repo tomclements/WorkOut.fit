@@ -30,7 +30,7 @@ services:
       - key: Smtp__FromEmail
         sync: false
       - key: Smtp__FromName
-        value: WorkOut
+        value: Plan4Strength
       - key: Authentication__Google__ClientId
         sync: false
       - key: Authentication__Google__ClientSecret
