@@ -174,7 +174,8 @@
             <div id="exerciseMeta" class="runner-phase-context min-w-0" aria-live="polite"></div>
             <div class="flex items-center gap-2 shrink-0">
               <div id="setBadge" class="runner-set-badge text-sm font-semibold px-3 py-2 rounded-full" aria-live="polite"></div>
-              <button id="workOverflowBtn" type="button" class="overflow-btn" title="Music, skip, view all moves" aria-label="More options">&#8943;</button>
+              <button id="workQuitBtn" type="button" class="text-xs sm:text-sm text-gray-500 hover:text-red-600 font-semibold px-2 py-1 rounded touch-manipulation min-h-[2.75rem]" aria-label="Quit workout">Quit</button>
+              <button id="workOverflowBtn" type="button" class="overflow-btn" title="Music, skip, quit, view all moves" aria-label="More options">&#8943;</button>
             </div>
           </div>
           <div id="exerciseName" class="runner-exercise-name text-2xl sm:text-3xl font-bold text-blue-900 leading-tight text-center">Exercise</div>
@@ -228,6 +229,7 @@
       <div class="runner-rest-layout">
         <div class="text-center runner-rest-timer-block">
           <div class="runner-rest-heading-row flex items-center justify-center gap-2 mb-1">
+            <button id="restQuitBtn" type="button" class="text-xs sm:text-sm text-gray-500 hover:text-red-600 font-semibold px-2 py-1 rounded touch-manipulation min-h-[2.75rem]" aria-label="Quit workout">Quit</button>
             <div id="restHeading" class="runner-rest-heading text-base sm:text-lg font-semibold text-blue-800 uppercase tracking-wider">Rest</div>
             <div id="restSetBadge" class="runner-set-badge runner-set-badge--rest text-sm font-semibold px-3 py-1.5 rounded-full" aria-live="polite"></div>
           </div>
@@ -256,7 +258,7 @@
         </div>
 
         <div id="restControls" class="grid gap-3 runner-rest-controls" style="grid-template-columns: auto 1fr 1fr;">
-          <button id="restOverflowBtn" type="button" class="overflow-btn overflow-btn--lg" title="Music, skip, view all moves" aria-label="More options">&#8943;</button>
+          <button id="restOverflowBtn" type="button" class="overflow-btn overflow-btn--lg" title="Music, skip, quit, view all moves" aria-label="More options">&#8943;</button>
           <button id="skipRestBtn" type="button" class="runner-btn runner-btn--secondary w-full bg-slate-700 active:bg-slate-600 text-white font-bold py-4 px-4 rounded-xl transition touch-manipulation min-h-[3.5rem]">
             SKIP REST
           </button>
@@ -337,6 +339,9 @@
               Skip exercise
             </button>
           </div>
+          <button id="overflowQuitBtn" type="button" class="w-full bg-red-50 active:bg-red-100 text-red-600 font-semibold py-3 px-4 rounded-lg transition touch-manipulation min-h-[3rem]">
+            Quit workout
+          </button>
           <button hidden id="musicBtn" type="button" class="hidden">Music</button>
           <a id="overflowFeedbackLink" href="/feedback.html?returnUrl=/workout.html" class="inline-block w-full mt-1 text-sm text-gray-500 hover:text-blue-700 py-2 text-center">
             Send feedback
@@ -345,6 +350,31 @@
       </div>
     </div>
 
+
+    <!-- Quit workout confirm sheet -->
+    <div id="quitWorkoutModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="quitWorkoutTitle" aria-describedby="quitWorkoutDesc">
+      <div id="quitWorkoutPanel" class="bg-white rounded-t-2xl sm:rounded-xl shadow-lg p-5 w-full sm:max-w-md max-h-[85vh] overflow-y-auto">
+        <div class="flex justify-between items-center gap-3 mb-4">
+          <h2 id="quitWorkoutTitle" class="text-lg font-bold text-blue-900">Quit this workout?</h2>
+          <button id="closeQuitWorkout" type="button" class="text-gray-500 hover:text-gray-800 text-2xl leading-none px-1" aria-label="Close">&times;</button>
+        </div>
+        <p id="quitWorkoutDesc" class="text-sm text-gray-600 mb-4"></p>
+        <div class="space-y-3">
+          <button id="quitSaveBtn" type="button" class="w-full bg-green-100 active:bg-green-200 text-green-800 font-semibold py-3 px-4 rounded-lg touch-manipulation min-h-[3rem] text-left">
+            <span class="block">Save what I did</span>
+            <span id="quitSaveSub" class="block text-xs font-normal text-green-700 mt-0.5"></span>
+          </button>
+          <button id="quitDiscardBtn" type="button" class="w-full bg-red-50 active:bg-red-100 text-red-600 font-semibold py-3 px-4 rounded-lg touch-manipulation min-h-[3rem] text-left">
+            <span class="block">Discard workout</span>
+            <span class="block text-xs font-normal text-red-500 mt-0.5">Nothing is saved; this day stays on your list.</span>
+          </button>
+          <button id="quitKeepGoingBtn" type="button" class="w-full bg-blue-600 active:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg touch-manipulation min-h-[3rem]">
+            Keep going
+          </button>
+        </div>
+        <p id="quitWorkoutStatus" class="hidden text-sm text-red-600 mt-3" aria-live="polite"></p>
+      </div>
+    </div>
 
     <!-- Working-weight sheet on Start (missing loaded kg) -->
     <div id="weightSheetModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="weightSheetTitle">
@@ -449,6 +479,7 @@
   <script src="js/startWeightGate.js"></script>
   <script src="js/nextWorkout.js"></script>
   <script src="js/stayAwake.js"></script>
+  <script src="js/quitWorkout.js"></script>
   <script src="js/workoutRunner.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
