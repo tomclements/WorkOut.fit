@@ -53,26 +53,26 @@
   </div>
 
   <nav id="bottomNav" class="bottom-nav no-print" aria-label="Main">
-    <a href="/" class="bottom-nav__item" data-nav="planner">
-      <span class="bottom-nav__icon" aria-hidden="true">📋</span>
-      <span>Planner</span>
+    <div class="bottom-nav__side">
+      <a href="/" class="bottom-nav__item" data-nav="planner">
+        <span class="bottom-nav__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="4" rx="1"/><path d="M7 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="M8 12h8M8 16h5"/></svg></span>
+        <span>Planner</span>
+      </a>
+      <a href="/history.html" class="bottom-nav__item" data-nav="history">
+        <span class="bottom-nav__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span>
+        <span>History</span>
+      </a>
+    </div>
+    <a href="/workout.html" class="bottom-nav__item bottom-nav__item--primary" data-nav="workout">
+      <span class="bottom-nav__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14l11-7-11-7z"/></svg></span>
+      <span>Workout</span>
     </a>
-    <a href="/history.html" class="bottom-nav__item" data-nav="history">
-      <span class="bottom-nav__icon" aria-hidden="true">📈</span>
-      <span>History</span>
-    </a>
-    <a href="/workout.html" class="bottom-nav__item" data-nav="run">
-      <span class="bottom-nav__icon" aria-hidden="true">▶</span>
-      <span>Run</span>
-    </a>
-    <a href="/help.html" class="bottom-nav__item" data-nav="help">
-      <span class="bottom-nav__icon" aria-hidden="true">❓</span>
-      <span>Help</span>
-    </a>
-    <a href="/account.html" id="bottomNavAccount" class="bottom-nav__item bottom-nav__item--active" data-nav="account" aria-current="page">
-      <span class="bottom-nav__icon" aria-hidden="true">👤</span>
-      <span>Account</span>
-    </a>
+    <div class="bottom-nav__side">
+      <a href="/account.html" id="bottomNavAccount" class="bottom-nav__item" data-nav="account">
+        <span class="bottom-nav__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 19c1.2-3 3.4-4.5 7-4.5S17.8 16 19 19"/></svg></span>
+        <span>Account</span>
+      </a>
+    </div>
   </nav>
 
   <script src="js/site.js"></script>

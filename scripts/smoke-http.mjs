@@ -125,7 +125,7 @@ async function run() {
     {
       const r = await get('/');
       assert(r.status === 200, `GET / → ${r.status}`);
-      assert(r.body.includes('Start a program'), `GET / missing "Start a program"`);
+      assert(r.body.includes('Templates'), `GET / missing "Templates"`);
       console.log('  ✓ GET /');
     }
 

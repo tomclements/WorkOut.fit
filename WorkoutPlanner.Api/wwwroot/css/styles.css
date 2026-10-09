@@ -202,6 +202,67 @@ body.workout-active {
   padding-bottom: 0;
 }
 
+/* Redesigned bottom nav: raised primary action, 3-column layout */
+.bottom-nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+}
+
+.bottom-nav__side {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.bottom-nav__item--primary {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: 4rem;
+  height: 4rem;
+  margin-top: -1.25rem;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-decoration: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav__item--primary.bottom-nav__item--active {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 0 0 3px #1e3a8a;
+}
+
+.bottom-nav__item--primary:active {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.bottom-nav__item:focus-visible,
+.bottom-nav__item--primary:focus-visible {
+  outline: 3px solid #1e3a8a;
+  outline-offset: 3px;
+}
+
+.bottom-nav__icon svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+body.has-bottom-nav {
+  padding-bottom: 7.5rem;
+}
+
 /* ---------- Toasts ---------- */
 .site-toast {
   position: fixed;
@@ -412,6 +473,17 @@ body.reduced-motion .site-spinner::before {
 
   .site-toast {
     bottom: 6.5rem;
+  }
+}
+
+/* Desktop: extra clearance for raised primary nav button */
+@media (min-width: 768px) {
+  body.has-bottom-nav {
+    padding-bottom: 8rem;
+  }
+
+  .site-toast {
+    bottom: 8rem;
   }
 }
 
@@ -730,6 +802,25 @@ body.high-contrast .bottom-nav__item--active {
   background: var(--dm-info-bg) !important;
 }
 
+body.high-contrast .bottom-nav__item--primary,
+body.high-contrast .bottom-nav__item--primary.bottom-nav__item--active {
+  background: var(--dm-accent) !important;
+  color: var(--dm-accent-text) !important;
+}
+
+body.high-contrast .bottom-nav__item--primary:active {
+  background: #2563eb !important;
+  color: var(--dm-accent-text) !important;
+}
+
+body.high-contrast .bottom-nav__item--primary.bottom-nav__item--active {
+  box-shadow: 0 0 0 3px var(--dm-link);
+}
+
+body.high-contrast .bottom-nav__item:focus-visible {
+  outline-color: var(--dm-link);
+}
+
 /* ---- Rating / misc components ---- */
 body.high-contrast .rate-btn {
   background: var(--dm-surface-2) !important;
@@ -812,6 +903,56 @@ body.high-contrast .shadow-lg {
 }
 
 /* Fixed: muted links that are only text-sm without color utility still inherit light text */
+
+/* ---------- Home today / streak / last workout ---------- */
+#homeToday {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #fff;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+#homeToday.hidden,
+#homeToday .streak-badge.hidden {
+  display: none;
+}
+
+/* ---------- Custom plan disclosure ---------- */
+details#customPlanDetails {
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+}
+
+details#customPlanDetails > summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+}
+
+details#customPlanDetails > summary::-webkit-details-marker {
+  display: none;
+}
+
+details#customPlanDetails > summary:focus-visible {
+  outline: 3px solid #1e3a8a;
+  outline-offset: 2px;
+}
+
+body.high-contrast details#customPlanDetails > summary {
+  color: var(--dm-text);
+}
+
+body.high-contrast details#customPlanDetails {
+  border-color: var(--dm-border);
+}
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {

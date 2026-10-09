@@ -82,12 +82,11 @@
       openParam === 'account' || openParam === 'preferences' ? 'account'
         : path.endsWith('account.html') ? 'account'
           : path.endsWith('history.html') ? 'history'
-            : path.endsWith('workout.html') ? 'run'
-              : path.endsWith('help.html') ? 'help'
-                : path.endsWith('admin.html') ? 'admin'
-                  : (path.endsWith('about.html') || path.endsWith('feedback.html') || path === '/privacy' || path.endsWith('privacy.html'))
-                    ? null
-                    : 'planner';
+            : path.endsWith('workout.html') ? 'workout'
+              : path.endsWith('admin.html') ? 'admin'
+                : (path.endsWith('help.html') || path.endsWith('about.html') || path.endsWith('feedback.html') || path === '/privacy' || path.endsWith('privacy.html'))
+                  ? null
+                  : 'planner';
 
     document.querySelectorAll('[data-nav]').forEach(function (el) {
       var isActive = page != null && el.getAttribute('data-nav') === page;

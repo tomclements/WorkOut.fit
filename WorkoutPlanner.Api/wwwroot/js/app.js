@@ -31,6 +31,9 @@ let dislikedExerciseIds = [];
 const welcomeSection = document.getElementById('welcomeSection');
 const dashboardSection = document.getElementById('dashboardSection');
 const plannerSection = document.getElementById('plannerSection');
+const customPlanDetails = document.getElementById('customPlanDetails');
+const homeToday = document.getElementById('homeToday');
+const dashboardExtras = document.getElementById('dashboardExtras');
 const togglePlannerBtn = document.getElementById('togglePlannerBtn');
 const closePlannerBtn = document.getElementById('closePlannerBtn');
 const savedPlansTable = document.getElementById('savedPlansTable');
@@ -45,6 +48,15 @@ function formatDate(dateString) {
 function formatDuration(seconds) {
   const m = Math.floor(seconds / 60);
   return `${m} min`;
+}
+
+function openCustomPlan() {
+  if (customPlanDetails) customPlanDetails.open = true;
+  if (plannerSection) plannerSection.classList.remove('hidden');
+}
+
+function closeCustomPlan() {
+  if (customPlanDetails) customPlanDetails.open = false;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -148,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (togglePlannerBtn && plannerSection && closePlannerBtn) {
     togglePlannerBtn.addEventListener('click', () => {
-      plannerSection.classList.remove('hidden');
+      openCustomPlan();
       closePlannerBtn.classList.remove('hidden');
       togglePlannerBtn.classList.add('hidden');
       plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -162,16 +174,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     closePlannerBtn.addEventListener('click', () => {
-      plannerSection.classList.add('hidden');
+      closeCustomPlan();
       closePlannerBtn.classList.add('hidden');
-      togglePlannerBtn.classList.remove('hidden');
+      togglePlannerBtn.classList.add('hidden');
     });
   }
 
   const emptyStateCreateBtn = document.getElementById('emptyStateCreateBtn');
   if (emptyStateCreateBtn) {
     emptyStateCreateBtn.addEventListener('click', () => {
-      plannerSection.classList.remove('hidden');
+      openCustomPlan();
       closePlannerBtn.classList.remove('hidden');
       togglePlannerBtn.classList.add('hidden');
       plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -675,11 +687,11 @@ function applyProgram(p, opts) {
   const progHint = document.getElementById('progressionHint');
   if (progHint) progHint.textContent = PROGRESSION_HINTS[progEl?.value] || PROGRESSION_HINTS.linear;
 
-  if (plannerSection && togglePlannerBtn && closePlannerBtn) {
-    plannerSection.classList.remove('hidden');
-    closePlannerBtn.classList.remove('hidden');
-    togglePlannerBtn.classList.add('hidden');
-    if (!opts.silent) plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (!opts.silent) {
+    openCustomPlan();
+    if (closePlannerBtn) closePlannerBtn.classList.remove('hidden');
+    if (togglePlannerBtn) togglePlannerBtn.classList.add('hidden');
+    if (plannerSection) plannerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   if (typeof showToast === 'function' && !opts.silent) {
     showToast(`${p.name} loaded — tweak anything, then Create my plan.`, 'info');
@@ -988,12 +1000,13 @@ function showLoggedIn(email, roles) {
 
   welcomeSection.classList.add('hidden');
   dashboardSection.classList.remove('hidden');
+  if (dashboardExtras) dashboardExtras.classList.remove('hidden');
 
   if (currentPlan) {
     // Guest generated a plan, then signed in — keep the plan visible
-    plannerSection.classList.remove('hidden');
-    togglePlannerBtn.classList.add('hidden');
-    closePlannerBtn.classList.remove('hidden');
+    openCustomPlan();
+    if (togglePlannerBtn) togglePlannerBtn.classList.add('hidden');
+    if (closePlannerBtn) closePlannerBtn.classList.remove('hidden');
     const resultsEl = document.getElementById('results');
     if (resultsEl) {
       resultsEl.classList.remove('hidden');
@@ -1002,9 +1015,9 @@ function showLoggedIn(email, roles) {
     const saveBtn = document.getElementById('savePlanBtn');
     if (saveBtn) saveBtn.classList.remove('hidden');
   } else {
-    plannerSection.classList.add('hidden');
-    togglePlannerBtn.classList.remove('hidden');
-    closePlannerBtn.classList.add('hidden');
+    closeCustomPlan();
+    if (togglePlannerBtn) togglePlannerBtn.classList.add('hidden');
+    if (closePlannerBtn) closePlannerBtn.classList.add('hidden');
   }
 
   loadDashboard();
@@ -1020,9 +1033,11 @@ function showLoggedOut() {
 
   welcomeSection.classList.remove('hidden');
   dashboardSection.classList.add('hidden');
-  plannerSection.classList.add('hidden');
-  togglePlannerBtn.classList.remove('hidden');
-  closePlannerBtn.classList.add('hidden');
+  if (dashboardExtras) dashboardExtras.classList.add('hidden');
+  closeCustomPlan();
+  if (plannerSection) plannerSection.classList.remove('hidden');
+  if (togglePlannerBtn) togglePlannerBtn.classList.add('hidden');
+  if (closePlannerBtn) closePlannerBtn.classList.add('hidden');
   document.getElementById('savePlanBtn').classList.add('hidden');
 }
 
@@ -1039,15 +1054,31 @@ async function loadDashboard() {
   } catch (err) {
     if (typeof showToast === 'function') showToast(`Dashboard load failed: ${err.message}`, 'error');
   }
+
+  try {
+    const sessionsResponse = await fetch('/api/runner/sessions', { credentials: 'include' });
+    if (sessionsResponse.ok) {
+      const sessions = await sessionsResponse.json();
+      renderHomeToday(sessions);
+    } else {
+      renderHomeToday([]);
+    }
+  } catch {
+    renderHomeToday([]);
+  }
 }
 
 function renderDashboard(data) {
   const totalPlans = data.totalPlans || 0;
   const totalSessions = data.totalSessions || 0;
-  document.getElementById('statPlans').textContent = totalPlans;
-  document.getElementById('statWorkouts').textContent = totalSessions;
-  document.getElementById('statMinutes').textContent = Math.floor((data.totalDurationSeconds || 0) / 60);
-  document.getElementById('statSets').textContent = data.totalSets || 0;
+  const statPlansEl = document.getElementById('statPlans');
+  const statWorkoutsEl = document.getElementById('statWorkouts');
+  const statMinutesEl = document.getElementById('statMinutes');
+  const statSetsEl = document.getElementById('statSets');
+  if (statPlansEl) statPlansEl.textContent = totalPlans;
+  if (statWorkoutsEl) statWorkoutsEl.textContent = totalSessions;
+  if (statMinutesEl) statMinutesEl.textContent = Math.floor((data.totalDurationSeconds || 0) / 60);
+  if (statSetsEl) statSetsEl.textContent = data.totalSets || 0;
 
   const emptyState = document.getElementById('dashboardEmptyState');
   if (emptyState) {
@@ -1109,6 +1140,112 @@ function renderDashboard(data) {
   }
 }
 
+function homeDateKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function computeHomeStreak(sessionList) {
+  if (!sessionList.length) return 0;
+
+  const days = new Set(
+    sessionList.map(s => {
+      const d = new Date(s.startedAt || s.completedAt);
+      return homeDateKey(d);
+    })
+  );
+
+  let workoutDaySet = null;
+  try {
+    const planData = JSON.parse(localStorage.getItem('workoutPlan'));
+    if (planData && planData.criteria && planData.criteria.workoutDays && planData.criteria.workoutDays.length) {
+      workoutDaySet = new Set(planData.criteria.workoutDays);
+    }
+  } catch { /* ignore */ }
+
+  function isWorkoutDay(date) {
+    if (!workoutDaySet) return true;
+    const jsDay = date.getDay();
+    const planDay = (jsDay + 6) % 7;
+    return workoutDaySet.has(planDay);
+  }
+
+  const today = new Date();
+  let cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  if (workoutDaySet) {
+    let probe = new Date(cursor);
+    let probeSafety = 14;
+    while (!isWorkoutDay(probe) && probeSafety-- > 0) {
+      probe.setDate(probe.getDate() - 1);
+    }
+    if (!days.has(homeDateKey(probe))) return 0;
+  } else {
+    const yPrev = new Date(cursor);
+    yPrev.setDate(yPrev.getDate() - 1);
+    if (!days.has(homeDateKey(cursor)) && !days.has(homeDateKey(yPrev))) return 0;
+    if (!days.has(homeDateKey(cursor))) {
+      cursor = yPrev;
+    }
+  }
+
+  let streak = 0;
+  let loopSafety = 90;
+  while (loopSafety-- > 0) {
+    const key = homeDateKey(cursor);
+    if (days.has(key)) {
+      streak++;
+      cursor.setDate(cursor.getDate() - 1);
+    } else if (!isWorkoutDay(cursor)) {
+      cursor.setDate(cursor.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function renderHomeToday(sessions) {
+  if (!homeToday) return;
+  const badge = document.getElementById('homeStreakBadge');
+  const hint = document.getElementById('homeStreakHint');
+  const count = document.getElementById('homeStreakCount');
+  const last = document.getElementById('homeLastWorkout');
+
+  const streak = computeHomeStreak(sessions || []);
+  if (streak > 0) {
+    if (count) count.textContent = String(streak);
+    if (badge) badge.classList.remove('hidden');
+    if (hint) hint.classList.add('hidden');
+  } else {
+    if (badge) badge.classList.add('hidden');
+    if (hint) hint.classList.remove('hidden');
+  }
+
+  if (last) {
+    if (!sessions || !sessions.length) {
+      last.innerHTML = '<p class="text-sm text-gray-500">No workouts yet.</p>';
+    } else {
+      const sorted = [...sessions].sort((a, b) => {
+        const ta = new Date(a.startedAt || a.completedAt || 0).getTime();
+        const tb = new Date(b.startedAt || b.completedAt || 0).getTime();
+        return tb - ta;
+      });
+      const s = sorted[0];
+      const name = escapeHtml(s.planName || 'Workout');
+      const date = formatDate(s.startedAt || s.completedAt);
+      const minutes = formatDuration(s.durationSeconds || 0);
+      const sets = s.totalSets || 0;
+      last.innerHTML = `
+        <div class="text-sm text-gray-700">
+          <div class="font-medium">${name}</div>
+          <div class="text-gray-500">${date} · ${minutes} · ${sets} set${sets === 1 ? '' : 's'}</div>
+        </div>`;
+    }
+  }
+
+  homeToday.classList.remove('hidden');
+}
+
 // --- Next workout suggestion ---
 function migrateCompletionsOnSave(savedPlanId, plan) {
   const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
@@ -1135,11 +1272,11 @@ function buildStartWorkoutHref(plan, planId) {
   return planId ? `/workout.html?planId=${planId}&setup=1` : '/workout.html?setup=1';
 }
 
-/** Belt-and-suspenders: soft entries (bottom-nav Run, Open runner) deep-link next day. */
+/** Belt-and-suspenders: soft entries (bottom-nav Workout, Open runner) deep-link next day. */
 function rewriteSoftRunnerHrefs(plan, planId, href) {
   const target = href || (plan ? buildStartWorkoutHref(plan, planId) : null);
   if (!target) return;
-  document.querySelectorAll('a[data-nav="run"]').forEach(a => { a.href = target; });
+  document.querySelectorAll('a[data-nav="workout"]').forEach(a => { a.href = target; });
   document.querySelectorAll('a[data-soft-runner="1"]').forEach(a => { a.href = target; });
 }
 
@@ -1411,7 +1548,9 @@ async function loadSavedPlan(id) {
     migrateCompletionsOnSave(id, currentPlan);
     try { localStorage.setItem('workoutPlanSavedId', String(id)); } catch { /* ignore */ }
     renderPlan(currentPlan);
-    plannerSection.classList.remove('hidden');
+    openCustomPlan();
+    if (closePlannerBtn) closePlannerBtn.classList.remove('hidden');
+    if (togglePlannerBtn) togglePlannerBtn.classList.add('hidden');
     document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
   } catch (err) {
     setStatus(`Could not load plan: ${err.message}`);

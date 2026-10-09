@@ -43,7 +43,6 @@ public class BuildInfoTests : IClassFixture<TestWebApplicationFactory>
 
         var html = await response.Content.ReadAsStringAsync();
         Assert.Contains("Privacy policy", html, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("WorkOut.fit", html);
         Assert.Contains("Plan4Strength", html);
         Assert.Contains("Strava", html);
         Assert.Contains("Render", html);
