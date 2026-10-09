@@ -20,6 +20,11 @@ let wakeLock = null;
 let sessionPlanName = 'Plan4Strength';
 let currentSavedPlanId = null;
 let currentSavedPlanName = null;
+let userPickedDay = false;
+let capturedUrlWeek = null;
+let capturedUrlDayIndex = null;
+let capturedUrlReady = false;
+let daySelectMatchWarned = false;
 let isPaused = false;
 let autoPaused = false;
 let pauseStartTime = 0;
@@ -336,7 +341,10 @@ document.addEventListener('DOMContentLoaded', () => {
   wire(byId('analyzeModal'), 'click', (e) => {
     if (e.target === byId('analyzeModal')) closeAnalyzeModal();
   });
-  wire(daySelect, 'change', renderDayPreview);
+  wire(daySelect, 'change', (e) => {
+    userPickedDay = true;
+    renderDayPreview(e);
+  });
 
   // Space / Enter: skip work/rest
   wire(document, 'keydown', (e) => {
@@ -801,6 +809,18 @@ function markDayCompleted() {
 }
 
 async function defaultToNextWorkoutDay() {
+  // Never override a real user choice in #daySelect.
+  if (userPickedDay) return;
+
+  // Capture URL deep-link once before anything strips it, then reuse on the
+  // post-auth second run so both calls resolve the same target.
+  if (!capturedUrlReady) {
+    const params = new URLSearchParams(window.location.search);
+    capturedUrlWeek = params.get('week');
+    capturedUrlDayIndex = params.get('dayIndex');
+    capturedUrlReady = true;
+  }
+
   const completed = getCompletedDayKeys();
   const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
 
@@ -827,19 +847,16 @@ async function defaultToNextWorkoutDay() {
 
   // Honor deep-link week/dayIndex only if that day is still an incomplete workout.
   // Stale overnight/PWA URLs (finished day still in query) must fall through to findNext.
-  const params = new URLSearchParams(window.location.search);
-  const urlWeek = params.get('week');
-  const urlDayIndex = params.get('dayIndex');
   let found = null;
-  if (urlWeek != null && urlDayIndex != null) {
+  if (capturedUrlWeek != null && capturedUrlDayIndex != null) {
     if (NW && NW.resolveDeepLinkDay) {
-      const deep = NW.resolveDeepLinkDay(currentPlan.plan, completed, urlWeek, urlDayIndex);
+      const deep = NW.resolveDeepLinkDay(currentPlan.plan, completed, capturedUrlWeek, capturedUrlDayIndex);
       if (deep) {
         found = { week: deep.week, dayIndex: deep.dayIndex, arrayIndex: deep.arrayIndex };
       }
     } else {
-      const weekNum = parseInt(urlWeek, 10);
-      const dayIndex = parseInt(urlDayIndex, 10);
+      const weekNum = parseInt(capturedUrlWeek, 10);
+      const dayIndex = parseInt(capturedUrlDayIndex, 10);
       if (Number.isFinite(weekNum) && Number.isFinite(dayIndex)) {
         const weekObj = (currentPlan.plan || []).find(w => Number(w.week) === weekNum);
         if (weekObj) {
@@ -862,7 +879,7 @@ async function defaultToNextWorkoutDay() {
     if (NW) {
       const next = NW.findNextWorkoutDay(currentPlan.plan, completed);
       if (next) {
-        found = { week: next.week, dayIndex: next.dayIndex, arrayIndex: next.arrayIndex };
+        found = { week: next.week, dayIndex: next.dayIndex, arrayIndex: next.arrayIndex, planComplete: next.planComplete };
       }
     } else {
       for (const week of currentPlan.plan) {
@@ -913,7 +930,12 @@ async function defaultToNextWorkoutDay() {
         matched = fuzzy ? fuzzy.value : null;
       }
     }
-    if (matched) daySelect.value = matched;
+    if (matched) {
+      daySelect.value = matched;
+    } else if (!daySelectMatchWarned) {
+      console.warn('defaultToNextWorkoutDay: could not match daySelect option for', found, 'optionCount=', daySelect.options.length);
+      daySelectMatchWarned = true;
+    }
     stripWeekDayIndexFromLocation();
     return;
   }

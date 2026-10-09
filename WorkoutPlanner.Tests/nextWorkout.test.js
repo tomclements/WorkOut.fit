@@ -18,6 +18,26 @@ function monWedFriWeek(weekNum) {
   };
 }
 
+/** Mon–Fri as workout; Sat/Sun rest. dayIndex 0..4 for workouts, 5/6 for rest. */
+function monFriPlan(numWeeks) {
+  const weeks = [];
+  for (let w = 1; w <= numWeeks; w++) {
+    weeks.push({
+      week: w,
+      days: [
+        { day: 'Monday', type: 'workout', dayIndex: 0 },
+        { day: 'Tuesday', type: 'workout', dayIndex: 1 },
+        { day: 'Wednesday', type: 'workout', dayIndex: 2 },
+        { day: 'Thursday', type: 'workout', dayIndex: 3 },
+        { day: 'Friday', type: 'workout', dayIndex: 4 },
+        { day: 'Saturday', type: 'rest', dayIndex: 5 },
+        { day: 'Sunday', type: 'rest', dayIndex: 6 }
+      ]
+    });
+  }
+  return weeks;
+}
+
 test('Mon/Wed/Fri: completed 1:0 -> next Wed (dayIndex 2)', () => {
   const plan = [monWedFriWeek(1)];
   const next = nw.findNextWorkoutDay(plan, new Set(['1:0']));
@@ -39,13 +59,15 @@ test('Mon/Wed/Fri: after Wed -> Fri; after Fri week1 -> week2 first', () => {
   assert.equal(week2.day.day, 'Monday');
 });
 
-test('all done -> wrap to first workout (not null)', () => {
+test('all done -> final workout with planComplete true (not null)', () => {
   const plan = [monWedFriWeek(1)];
   const next = nw.findNextWorkoutDay(plan, new Set(['1:0', '1:2', '1:4']));
   assert.ok(next);
   assert.equal(next.week, 1);
-  assert.equal(next.dayIndex, 0);
-  assert.equal(next.day.day, 'Monday');
+  assert.equal(next.dayIndex, 4);
+  assert.equal(next.day.day, 'Friday');
+  assert.equal(next.planComplete, true);
+  assert.equal(next.lastCompleted.dayIndex, 4);
 });
 
 test('rest skipped; mobility with type workout still counts', () => {
@@ -173,7 +195,7 @@ test('loadCompletedSetForPlan + runnerStartHrefForPlan deep-link next day', () =
   assert.ok(!href.includes('dayIndex=0'));
 });
 
-test('runnerStartHrefForPlan all-done wraps to first day', () => {
+test('runnerStartHrefForPlan all-done returns final day (no wrap)', () => {
   const plan = {
     generatedAt: 'ts1',
     plan: [monWedFriWeek(1)]
@@ -187,7 +209,8 @@ test('runnerStartHrefForPlan all-done wraps to first day', () => {
   };
   const href = nw.runnerStartHrefForPlan(plan, null, store);
   assert.ok(href.includes('week=1'));
-  assert.ok(href.includes('dayIndex=0'));
+  assert.ok(href.includes('dayIndex=4'));
+  assert.ok(!href.includes('dayIndex=0'));
 });
 
 test('after migrate, Start href still advances from gen completions', () => {
@@ -447,4 +470,175 @@ test('bare load: null currentSavedPlanId + store saved id + sessions merge via s
   assert.ok(completed.has('1:2'));
   const next = nw.findNextWorkoutDay([monWedFriWeek(1)], completed);
   assert.equal(next.dayIndex, 4, 'after Mon+Wed sessions, next is Fri');
+});
+
+// New plan-order next-workout tests
+
+test('Week 6 Wednesday -> Week 6 Thursday', () => {
+  const plan = monFriPlan(8);
+  const completed = new Set(['6:2', '1:0', '3:1']);
+  const next = nw.findNextWorkoutDay(plan, completed);
+  assert.equal(next.week, 6);
+  assert.equal(next.dayIndex, 3);
+  assert.equal(next.day.day, 'Thursday');
+  assert.equal(next.planComplete, false);
+  assert.ok(next.lastCompleted);
+  assert.equal(next.lastCompleted.week, 6);
+  assert.equal(next.lastCompleted.dayIndex, 2);
+});
+
+test('skipped earlier day does not pull default back', () => {
+  const plan = monFriPlan(8);
+  const completed = new Set();
+  // Everything through Week 6 Wednesday, except the skipped days 1:0 and 3:4
+  for (let w = 1; w <= 6; w++) {
+    for (let d = 0; d <= (w === 6 ? 2 : 4); d++) {
+      if ((w === 1 && d === 0) || (w === 3 && d === 4)) continue;
+      completed.add(`${w}:${d}`);
+    }
+  }
+  const next = nw.findNextWorkoutDay(plan, completed);
+  assert.equal(next.week, 6);
+  assert.equal(next.dayIndex, 3);
+  assert.equal(next.day.day, 'Thursday');
+});
+
+test('week rollover: after last day of a week -> first workout day of next week', () => {
+  const plan = monFriPlan(8);
+  const next = nw.findNextWorkoutDay(plan, new Set(['6:4']));
+  assert.equal(next.week, 7);
+  assert.equal(next.dayIndex, 0);
+  assert.equal(next.day.day, 'Monday');
+
+  const mwf = [monWedFriWeek(1), monWedFriWeek(2), monWedFriWeek(3)];
+  const mwfNext = nw.findNextWorkoutDay(mwf, new Set(['2:4']));
+  assert.equal(mwfNext.week, 3);
+  assert.equal(mwfNext.dayIndex, 0);
+  assert.equal(mwfNext.day.day, 'Monday');
+});
+
+test('nothing completed -> first workout day', () => {
+  const plan = monFriPlan(4);
+  const next = nw.findNextWorkoutDay(plan, new Set());
+  assert.equal(next.week, 1);
+  assert.equal(next.dayIndex, 0);
+  assert.equal(next.day.day, 'Monday');
+  assert.equal(next.planComplete, false);
+  assert.equal(next.lastCompleted, null);
+
+  const restStartPlan = [{
+    week: 1,
+    days: [
+      { day: 'Saturday', type: 'rest', dayIndex: 5 },
+      { day: 'Sunday', type: 'rest', dayIndex: 6 },
+      { day: 'Monday', type: 'workout', dayIndex: 0 }
+    ]
+  }];
+  const first = nw.findNextWorkoutDay(restStartPlan, new Set());
+  assert.equal(first.dayIndex, 0);
+  assert.equal(first.arrayIndex, 2);
+  assert.equal(first.day.day, 'Monday');
+});
+
+test('final day complete -> returns final day with planComplete true', () => {
+  const plan = monFriPlan(8);
+  const next = nw.findNextWorkoutDay(plan, new Set(['8:4']));
+  assert.equal(next.week, 8);
+  assert.equal(next.dayIndex, 4);
+  assert.equal(next.day.day, 'Friday');
+  assert.equal(next.planComplete, true);
+  assert.equal(next.lastCompleted.dayIndex, 4);
+
+  // Only the final day completed
+  const allButLast = new Set();
+  for (let w = 1; w <= 8; w++) {
+    for (let d = 0; d <= 4; d++) {
+      if (w === 8 && d === 4) continue;
+      allButLast.add(`${w}:${d}`);
+    }
+  }
+  const lastOnlyPlus = nw.findNextWorkoutDay(plan, allButLast);
+  assert.equal(lastOnlyPlus.week, 8);
+  assert.equal(lastOnlyPlus.dayIndex, 4);
+  assert.equal(lastOnlyPlus.planComplete, false);
+
+  const onlyLast = nw.findNextWorkoutDay(plan, new Set(['8:4']));
+  assert.equal(onlyLast.planComplete, true);
+});
+
+test('insertion order of completed set does not matter', () => {
+  const plan = monFriPlan(8);
+  const a = nw.findNextWorkoutDay(plan, new Set(['6:2', '2:1']));
+  const b = nw.findNextWorkoutDay(plan, new Set(['2:1', '6:2']));
+  assert.equal(a.week, b.week);
+  assert.equal(a.dayIndex, b.dayIndex);
+  assert.equal(a.day.day, 'Thursday');
+  assert.equal(a.lastCompleted.dayIndex, 2);
+});
+
+test('keys not on the plan are ignored', () => {
+  const plan = monFriPlan(8);
+  const offWeek = nw.findNextWorkoutDay(plan, new Set(['9:0']));
+  assert.equal(offWeek.week, 1);
+  assert.equal(offWeek.dayIndex, 0);
+  assert.equal(offWeek.lastCompleted, null);
+
+  const restKey = nw.findNextWorkoutDay(plan, new Set(['1:5']));
+  assert.equal(restKey.week, 1);
+  assert.equal(restKey.dayIndex, 0);
+});
+
+test('sessions merge drives the plan-order rule', () => {
+  const plan = monFriPlan(8);
+  const completed = new Set();
+  nw.addSessionCompletionKeys(completed, [
+    { savedPlanId: 10, week: 6, dayIndex: 2 },
+    { savedPlanId: 10, week: 2, dayIndex: 0 }
+  ], '10', plan);
+  const next = nw.findNextWorkoutDay(plan, completed);
+  assert.equal(next.week, 6);
+  assert.equal(next.dayIndex, 3);
+  assert.equal(next.day.day, 'Thursday');
+});
+
+test('runnerStartHrefForPlan links to next day with saved plan id', () => {
+  const plan = { generatedAt: 'ts1', plan: monFriPlan(8) };
+  const store = {
+    data: {
+      workoutPlanSavedId: '10',
+      'runnerCompleted_saved-10': JSON.stringify(['6:2'])
+    },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  const href = nw.runnerStartHrefForPlan(plan, 10, store);
+  assert.ok(href.includes('planId=10'));
+  assert.ok(href.includes('week=6'));
+  assert.ok(href.includes('dayIndex=3'));
+});
+
+test('deep link honoured when day not completed, ignored when completed', () => {
+  const plan = monFriPlan(8);
+  const completed = new Set(['6:2']);
+  const deep = nw.resolveDeepLinkDay(plan, completed, '7', '1');
+  assert.ok(deep);
+  assert.equal(deep.week, 7);
+  assert.equal(deep.dayIndex, 1);
+
+  const completedUrlDay = nw.resolveDeepLinkDay(plan, completed, '6', '2');
+  assert.equal(completedUrlDay, null);
+});
+
+test('session savedPlanId string/number and canonical week/dayIndex merge correctly', () => {
+  const plan = monFriPlan(4);
+  const completed = new Set();
+  nw.addSessionCompletionKeys(completed, [
+    { savedPlanId: '10', week: 2, dayIndex: 3 },
+    { savedPlanId: 10, week: 2, dayIndex: 0 }
+  ], 10, plan);
+  assert.ok(completed.has('2:3'));
+  assert.ok(completed.has('2:0'));
+  const next = nw.findNextWorkoutDay(plan, completed);
+  assert.equal(next.week, 2);
+  assert.equal(next.dayIndex, 4);
 });

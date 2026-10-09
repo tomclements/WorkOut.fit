@@ -1001,6 +1001,7 @@ function showLoggedIn(email, roles) {
   welcomeSection.classList.add('hidden');
   dashboardSection.classList.remove('hidden');
   if (dashboardExtras) dashboardExtras.classList.remove('hidden');
+  updateNextWorkoutCard();
 
   if (currentPlan) {
     // Guest generated a plan, then signed in — keep the plan visible
@@ -1034,6 +1035,8 @@ function showLoggedOut() {
   welcomeSection.classList.remove('hidden');
   dashboardSection.classList.add('hidden');
   if (dashboardExtras) dashboardExtras.classList.add('hidden');
+  const nextWorkoutCard = document.getElementById('nextWorkoutCard');
+  if (nextWorkoutCard) nextWorkoutCard.classList.add('hidden');
   closeCustomPlan();
   if (plannerSection) plannerSection.classList.remove('hidden');
   if (togglePlannerBtn) togglePlannerBtn.classList.add('hidden');
@@ -1247,6 +1250,33 @@ function renderHomeToday(sessions) {
 }
 
 // --- Next workout suggestion ---
+
+async function fetchSavedPlan(id) {
+  try {
+    const res = await fetch(`/api/plans/${id}`, { credentials: 'include' });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch { return null; }
+}
+
+async function fetchRunnerSessions() {
+  try {
+    const res = await fetch('/api/runner/sessions', { credentials: 'include' });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
+}
+
+function mostRecentSessionWithPlanId(sessions) {
+  if (!Array.isArray(sessions) || !sessions.length) return null;
+  const sorted = sessions.slice().sort((a, b) => {
+    const ta = new Date(a.completedAt || a.startedAt || 0).getTime();
+    const tb = new Date(b.completedAt || b.startedAt || 0).getTime();
+    return tb - ta;
+  });
+  return sorted.find(s => s && s.savedPlanId != null) || null;
+}
+
 function migrateCompletionsOnSave(savedPlanId, plan) {
   const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
   if (!NW || savedPlanId == null || savedPlanId === '') return;
@@ -1283,15 +1313,42 @@ function rewriteSoftRunnerHrefs(plan, planId, href) {
 async function updateNextWorkoutCard() {
   const card = document.getElementById('nextWorkoutCard');
   if (!card) return;
-  const saved = localStorage.getItem('workoutPlan');
-  if (!saved) { card.classList.add('hidden'); return; }
+  const seq = (updateNextWorkoutCard._seq || 0) + 1;
+  updateNextWorkoutCard._seq = seq;
+
+  const isSignedIn = !!currentUser;
+  let plan = null;
+  let planId = null;
+  let sessions = null;
+
   try {
-    const plan = JSON.parse(saved);
-    if (!plan || !plan.plan || !plan.criteria) { card.classList.add('hidden'); return; }
+    if (isSignedIn) {
+      planId = localStorage.getItem('workoutPlanSavedId');
+      if (planId) {
+        plan = await fetchSavedPlan(planId);
+      }
+      if (!plan) {
+        const localRaw = localStorage.getItem('workoutPlan');
+        if (localRaw) plan = JSON.parse(localRaw);
+      }
+      if (!plan && !planId) {
+        sessions = await fetchRunnerSessions();
+        const recent = mostRecentSessionWithPlanId(sessions);
+        if (recent && recent.savedPlanId != null) {
+          planId = String(recent.savedPlanId);
+          plan = await fetchSavedPlan(planId);
+        }
+      }
+    } else {
+      const localRaw = localStorage.getItem('workoutPlan');
+      if (localRaw) plan = JSON.parse(localRaw);
+      planId = localStorage.getItem('workoutPlanSavedId');
+    }
+
+    if (seq !== updateNextWorkoutCard._seq) return;
+    if (!plan || !plan.plan) { card.classList.add('hidden'); return; }
 
     const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
-    let planId = null;
-    try { planId = localStorage.getItem('workoutPlanSavedId'); } catch { /* ignore */ }
     let completed = NW
       ? NW.loadCompletedSetForPlan(plan, localStorage)
       : (() => {
@@ -1302,43 +1359,46 @@ async function updateNextWorkoutCard() {
           catch { return new Set(); }
         })();
 
-    if (currentUser && planId) {
-      try {
-        const res = await fetch('/api/runner/sessions', { credentials: 'include' });
-        if (res.ok) {
-          const sessions = await res.json();
-          if (NW) NW.addSessionCompletionKeys(completed, sessions, planId, plan && plan.plan);
-          else {
-            sessions.forEach(s => {
-              if (s.savedPlanId == planId && s.week != null && s.dayIndex != null) {
-                completed.add(s.week + ':' + s.dayIndex);
-              }
-            });
-          }
-        }
-      } catch { /* ignore */ }
+    if (isSignedIn && planId) {
+      if (!sessions) sessions = await fetchRunnerSessions();
+      if (sessions && NW) NW.addSessionCompletionKeys(completed, sessions, planId, plan.plan);
     }
 
     const found = NW
       ? NW.findNextWorkoutDay(plan.plan, completed)
       : null;
+    if (seq !== updateNextWorkoutCard._seq) return;
     if (!found) { card.classList.add('hidden'); return; }
 
     const nextDay = found.day;
-    const nextWeekNum = found.week;
-    const goal = capitalize(plan.criteria.goal || 'training');
-    const split = capitalize(plan.criteria.split || 'full-body');
+    const goal = capitalize((plan.criteria && plan.criteria.goal) || 'training');
+    const split = capitalize((plan.criteria && plan.criteria.split) || 'full-body');
     const focus = nextDay.focus || nextDay.sessionStyle || 'Strength';
-    document.getElementById('nextWorkoutInfo').textContent =
-      `Week ${nextWeekNum} — ${nextDay.day} · ${focus} · ${split} · ${goal}`;
     const startHref = NW
       ? NW.runnerSetupHref({ planId, week: found.week, dayIndex: found.dayIndex })
       : '/workout.html?setup=1';
-    document.getElementById('nextWorkoutBtn').href = startHref;
+
+    const heading = document.getElementById('nextWorkoutHeading');
+    const info = document.getElementById('nextWorkoutInfo');
+    const btn = document.getElementById('nextWorkoutBtn');
+    const newPlanBtn = document.getElementById('nextWorkoutNewPlanBtn');
+
+    if (found.planComplete) {
+      if (heading) heading.textContent = 'Plan complete 🎉';
+      if (info) info.textContent = `You finished Week ${found.week} ${nextDay.day}.`;
+      if (btn) btn.textContent = `Repeat last workout: Week ${found.week} ${nextDay.day}`;
+      if (newPlanBtn) newPlanBtn.classList.remove('hidden');
+    } else {
+      if (heading) heading.textContent = 'Ready for your next workout?';
+      if (info) info.textContent = `Week ${found.week} — ${nextDay.day} · ${focus} · ${split} · ${goal}`;
+      if (btn) btn.textContent = `Start next workout: Week ${found.week} ${nextDay.day}`;
+      if (newPlanBtn) newPlanBtn.classList.add('hidden');
+    }
+    if (btn) btn.href = startHref;
     rewriteSoftRunnerHrefs(plan, planId, startHref);
     card.classList.remove('hidden');
   } catch {
-    card.classList.add('hidden');
+    if (seq === updateNextWorkoutCard._seq) card.classList.add('hidden');
   }
 }
 
