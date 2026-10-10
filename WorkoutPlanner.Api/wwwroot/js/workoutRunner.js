@@ -20,6 +20,11 @@ let wakeLock = null;
 let sessionPlanName = 'Plan4Strength';
 let currentSavedPlanId = null;
 let currentSavedPlanName = null;
+let userPickedDay = false;
+let capturedUrlWeek = null;
+let capturedUrlDayIndex = null;
+let capturedUrlReady = false;
+let daySelectMatchWarned = false;
 let isPaused = false;
 let autoPaused = false;
 let pauseStartTime = 0;
@@ -31,6 +36,81 @@ let OverflowSettings = window.OverflowSettings || null;
 let StartWeightGate = window.StartWeightGate || null;
 let StayAwake = window.StayAwake || null;
 let AudioCoexistence = window.AudioCoexistence || null;
+let QuitWorkout = window.QuitWorkout || null;
+if (!QuitWorkout) {
+  // Minimal inline fallback in case the helper script fails to load.
+  QuitWorkout = {
+    isDoneSet: (s) => !!s && Number(s.durationSeconds) > 0,
+    countDoneSets: (exs) => {
+      let done = 0, total = 0;
+      (exs || []).forEach(ex => {
+        const sets = Math.max(1, ex && ex.sets ? Number(ex.sets) : 1);
+        total += sets;
+        (ex.completedSets || []).forEach(s => { if (Number(s.durationSeconds) > 0) done++; });
+      });
+      return { done, total };
+    },
+    quitOptions: (exs) => {
+      const { done, total } = QuitWorkout.countDoneSets(exs);
+      return { canSave: done > 0, done, total };
+    },
+    activeDurationSeconds: ({ startTime, now, isPaused, pauseStartTime }) => {
+      const start = startTime == null ? NaN : Number(startTime);
+      const end = now == null ? NaN : Number(now);
+      if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) return 0;
+      let ms = end - start;
+      if (isPaused) {
+        const pausedAt = pauseStartTime == null ? NaN : Number(pauseStartTime);
+        if (Number.isFinite(pausedAt)) ms = Math.max(0, pausedAt - start);
+      }
+      return Math.max(0, Math.floor(ms / 1000));
+    },
+    buildPartialSessionPayload: ({ sessionExercises, planName, savedPlanId, week, dayIndex, startTime, now, isPaused, pauseStartTime }) => {
+      const opts = QuitWorkout.quitOptions(sessionExercises);
+      if (opts.done <= 0) return null;
+      const exercises = (sessionExercises || []).map(ex => {
+        const done = (ex.completedSets || []).filter(s => Number(s.durationSeconds) > 0);
+        if (!done.length) return null;
+        return {
+          exerciseId: String(ex.id || ''),
+          exerciseName: String(ex.name || ''),
+          targetSets: Math.max(1, ex.sets || 1),
+          weightKg: ex.workingWeightKg == null ? null : ex.workingWeightKg,
+          sets: done.map(s => ({ reps: s.reps == null ? 0 : Number(s.reps), durationSeconds: Number(s.durationSeconds) }))
+        };
+      }).filter(Boolean);
+      if (!exercises.length) return null;
+      let name = String(planName || '').trim();
+      if (!name) name = 'Plan4Strength';
+      if (name.length > 200) name = name.slice(0, 200);
+      return {
+        planName: name,
+        savedPlanId: savedPlanId == null ? null : savedPlanId,
+        week: Number(week) || 1,
+        dayIndex: dayIndex == null ? 0 : Number(dayIndex),
+        startedAt: new Date(startTime).toISOString(),
+        completedAt: new Date(now).toISOString(),
+        durationSeconds: QuitWorkout.activeDurationSeconds({ startTime, now, isPaused, pauseStartTime }),
+        exercises
+      };
+    },
+    quitDecision: (choice, exs) => {
+      const { done } = QuitWorkout.countDoneSets(exs);
+      if (choice === 'keep') return { post: false, markComplete: false, teardown: false };
+      if (choice === 'discard') return { post: false, markComplete: false, teardown: true };
+      if (choice === 'save') return done > 0
+        ? { post: true, markComplete: true, teardown: true }
+        : { post: false, markComplete: false, teardown: true };
+      return { post: false, markComplete: false, teardown: false };
+    }
+  };
+}
+
+// Quit-workout sheet state
+let quitSheetOpen = false;
+let quitAutoPaused = false;
+let quitInitModalCleanup = null;
+let quitOpener = null;
 let previewCache = null;      // cached exercise catalog (id -> exercise) for previews/analyze
 let previewCachePromise = null;
 let lastLoads = null;         // { exerciseId: kg } from most recent session
@@ -327,6 +407,196 @@ document.addEventListener('DOMContentLoaded', () => {
   wire(byId('overflowSkipBtn'), 'click', () => { closeOverflow(); skipCurrentExercise(); });
   wire(byId('overflowPrevBtn'), 'click', () => { closeOverflow(); goBackExercise(); });
 
+  // Quit workout sheet
+  const quitWorkoutModal = byId('quitWorkoutModal');
+  const quitWorkoutPanel = byId('quitWorkoutPanel');
+  const quitWorkoutDesc = byId('quitWorkoutDesc');
+  const quitSaveBtn = byId('quitSaveBtn');
+  const quitSaveSub = byId('quitSaveSub');
+  const quitDiscardBtn = byId('quitDiscardBtn');
+  const quitKeepGoingBtn = byId('quitKeepGoingBtn');
+  const quitWorkoutStatus = byId('quitWorkoutStatus');
+  const closeQuitWorkout = byId('closeQuitWorkout');
+
+  function setQuitButtonsDisabled(disabled) {
+    if (quitSaveBtn) {
+      quitSaveBtn.disabled = disabled || !QuitWorkout.quitOptions(sessionExercises).canSave;
+      quitSaveBtn.setAttribute('aria-disabled', String(quitSaveBtn.disabled));
+    }
+    if (quitDiscardBtn) quitDiscardBtn.disabled = disabled;
+    if (quitKeepGoingBtn) quitKeepGoingBtn.disabled = disabled;
+  }
+
+  function syncQuitSheet() {
+    if (!quitWorkoutDesc) return;
+    const { done, total } = QuitWorkout.quitOptions(sessionExercises);
+    if (done === 0) {
+      quitWorkoutDesc.textContent = "You haven't finished any sets yet.";
+    } else {
+      quitWorkoutDesc.textContent = `You've finished ${done} of ${total} sets.`;
+    }
+    const canSave = done > 0;
+    if (quitSaveSub) {
+      if (canSave) {
+        quitSaveSub.textContent = currentUser
+          ? `Saves ${done} set${done === 1 ? '' : 's'} to History and marks this day done.`
+          : 'Marks this day done on this device. Sign in to save to History.';
+      } else {
+        quitSaveSub.textContent = 'No sets finished yet';
+      }
+    }
+    if (quitSaveBtn) {
+      quitSaveBtn.disabled = !canSave;
+      quitSaveBtn.setAttribute('aria-disabled', String(!canSave));
+    }
+    if (quitWorkoutStatus) quitWorkoutStatus.classList.add('hidden');
+  }
+
+  function openQuitSheet(fromOverflow) {
+    if (!quitWorkoutModal) return;
+    if (phase !== 'work' && phase !== 'rest') return;
+
+    stopSpeech();
+
+    // Track whether we auto-pause; carry over overflow's auto-pause state.
+    quitAutoPaused = false;
+    if (!isPaused && (phase === 'work' || phase === 'rest')) {
+      quitAutoPaused = true;
+      pauseWorkout(true);
+    }
+    if (fromOverflow && autoPaused && overflowWasPaused === false) {
+      // overflow already auto-paused for us; keep going should resume.
+      quitAutoPaused = true;
+    }
+
+    quitSheetOpen = true;
+    quitOpener = document.activeElement;
+    syncQuitSheet();
+    quitWorkoutModal.classList.remove('hidden');
+
+    if (typeof initModal === 'function') {
+      if (quitInitModalCleanup) { try { quitInitModalCleanup(); } catch { /* ignore */ } }
+      quitWorkoutModal._onClose = keepGoing;
+      quitInitModalCleanup = initModal(quitWorkoutModal);
+    }
+    if (quitKeepGoingBtn) {
+      try { quitKeepGoingBtn.focus(); } catch { /* ignore */ }
+    }
+  }
+
+  function closeQuitSheet() {
+    quitSheetOpen = false;
+    if (quitWorkoutModal) quitWorkoutModal.classList.add('hidden');
+    if (typeof quitInitModalCleanup === 'function') {
+      try { quitInitModalCleanup(); } catch { /* ignore */ }
+      quitInitModalCleanup = null;
+    }
+    const opener = quitOpener;
+    quitOpener = null;
+    return opener;
+  }
+
+  function keepGoing() {
+    const opener = closeQuitSheet();
+    if (quitAutoPaused) {
+      resumeWorkout();
+    }
+    if (opener && typeof opener.focus === 'function') {
+      try { opener.focus(); } catch { /* ignore */ }
+    }
+  }
+
+  async function onQuitSave() {
+    const opts = QuitWorkout.quitOptions(sessionExercises);
+    if (!opts.canSave) return;
+    const decision = QuitWorkout.quitDecision('save', sessionExercises);
+    if (!decision.post && !decision.markComplete) {
+      // 0-done treated as discard
+      onQuitDiscard();
+      return;
+    }
+
+    let savedToServer = false;
+    if (decision.post && currentUser) {
+      setQuitButtonsDisabled(true);
+      if (quitWorkoutStatus) {
+        quitWorkoutStatus.textContent = 'Saving…';
+        quitWorkoutStatus.className = 'text-sm text-gray-600 mt-3';
+        quitWorkoutStatus.classList.remove('hidden');
+      }
+      const payload = QuitWorkout.buildPartialSessionPayload({
+        sessionExercises,
+        planName: sessionPlanName,
+        savedPlanId: resolveSavedPlanId(),
+        week: selectedWeek,
+        dayIndex: selectedDayIndex,
+        startTime,
+        now: Date.now(),
+        isPaused,
+        pauseStartTime
+      });
+      if (!payload) {
+        setQuitButtonsDisabled(false);
+        if (quitWorkoutStatus) {
+          quitWorkoutStatus.textContent = "Couldn't save — no finished sets.";
+          quitWorkoutStatus.className = 'text-sm text-red-600 mt-3';
+          quitWorkoutStatus.classList.remove('hidden');
+        }
+        return;
+      }
+      try {
+        await postSessionPayload(payload);
+        sessionSaved = true;
+        savedToServer = true;
+      } catch (err) {
+        setQuitButtonsDisabled(false);
+        if (quitWorkoutStatus) {
+          quitWorkoutStatus.textContent = `Couldn't save to History (${err.message}). Try again, discard, or keep going.`;
+          quitWorkoutStatus.className = 'text-sm text-red-600 mt-3';
+          quitWorkoutStatus.classList.remove('hidden');
+        }
+        return;
+      }
+    }
+
+    if (decision.markComplete) {
+      markDayCompleted();
+    }
+    await teardownSession();
+    const msg = savedToServer
+      ? `Workout saved: ${opts.done} set${opts.done === 1 ? '' : 's'}.`
+      : 'Marked done on this device. Sign in to keep History.';
+    if (typeof showToast === 'function') showToast(msg, savedToServer ? 'success' : 'info');
+  }
+
+  async function onQuitDiscard() {
+    await teardownSession();
+    if (typeof showToast === 'function') showToast('Workout discarded.', 'info');
+  }
+
+  wire(byId('workQuitBtn'), 'click', () => openQuitSheet(false));
+  wire(byId('restQuitBtn'), 'click', () => openQuitSheet(false));
+  wire(byId('overflowQuitBtn'), 'click', () => {
+    if (overflowModal) overflowModal.classList.add('hidden');
+    openQuitSheet(true);
+  });
+  wire(closeQuitWorkout, 'click', keepGoing);
+  wire(quitKeepGoingBtn, 'click', keepGoing);
+  wire(quitSaveBtn, 'click', onQuitSave);
+  wire(quitDiscardBtn, 'click', onQuitDiscard);
+  if (quitWorkoutModal) {
+    wire(quitWorkoutModal, 'click', (e) => {
+      if (e.target === quitWorkoutModal) keepGoing();
+    });
+  }
+  if (quitWorkoutPanel) {
+    wire(quitWorkoutPanel, 'click', (e) => {
+      const Overflow = OverflowSettings || window.OverflowSettings;
+      const policy = Overflow && Overflow.overflowEventPolicy('panel', 'click');
+      if (!policy || policy.stopPropagation) e.stopPropagation();
+    });
+  }
+
   wire(closeMovesListBtn, 'click', closeMovesList);
   wire(movesListModal, 'click', (e) => {
     if (e.target === movesListModal) closeMovesList();
@@ -336,7 +606,10 @@ document.addEventListener('DOMContentLoaded', () => {
   wire(byId('analyzeModal'), 'click', (e) => {
     if (e.target === byId('analyzeModal')) closeAnalyzeModal();
   });
-  wire(daySelect, 'change', renderDayPreview);
+  wire(daySelect, 'change', (e) => {
+    userPickedDay = true;
+    renderDayPreview(e);
+  });
 
   // Space / Enter: skip work/rest
   wire(document, 'keydown', (e) => {
@@ -345,6 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
     if (overflowModal && !overflowModal.classList.contains('hidden')) return;
     if (byId('weightSheetModal') && !byId('weightSheetModal').classList.contains('hidden')) return;
+    if (quitWorkoutModal && !quitWorkoutModal.classList.contains('hidden')) return;
     if (phase === 'work') {
       e.preventDefault();
       completeSet(true);
@@ -354,9 +628,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Escape closes the overflow modal
+  // Escape closes the overflow modal or quit sheet
   wire(document, 'keydown', (e) => {
-    if (e.key === 'Escape' && overflowModal && !overflowModal.classList.contains('hidden')) closeOverflow();
+    if (e.key !== 'Escape') return;
+    if (overflowModal && !overflowModal.classList.contains('hidden')) closeOverflow();
+    if (quitWorkoutModal && !quitWorkoutModal.classList.contains('hidden')) keepGoing();
   });
 
   // Working-weight sheet on Start
@@ -423,8 +699,9 @@ async function initAsyncSetup() {
     window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
   }
 
-  // Initialize focus traps on runner modals
+  // Initialize focus traps on runner modals (quit sheet manages its own trap on open)
   document.querySelectorAll('[role="dialog"][aria-modal="true"]').forEach(modal => {
+    if (modal.id === 'quitWorkoutModal') return;
     modal._onClose = function() { modal.classList.add('hidden'); };
     if (typeof initModal === 'function') initModal(modal);
   });
@@ -801,6 +1078,18 @@ function markDayCompleted() {
 }
 
 async function defaultToNextWorkoutDay() {
+  // Never override a real user choice in #daySelect.
+  if (userPickedDay) return;
+
+  // Capture URL deep-link once before anything strips it, then reuse on the
+  // post-auth second run so both calls resolve the same target.
+  if (!capturedUrlReady) {
+    const params = new URLSearchParams(window.location.search);
+    capturedUrlWeek = params.get('week');
+    capturedUrlDayIndex = params.get('dayIndex');
+    capturedUrlReady = true;
+  }
+
   const completed = getCompletedDayKeys();
   const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
 
@@ -827,19 +1116,16 @@ async function defaultToNextWorkoutDay() {
 
   // Honor deep-link week/dayIndex only if that day is still an incomplete workout.
   // Stale overnight/PWA URLs (finished day still in query) must fall through to findNext.
-  const params = new URLSearchParams(window.location.search);
-  const urlWeek = params.get('week');
-  const urlDayIndex = params.get('dayIndex');
   let found = null;
-  if (urlWeek != null && urlDayIndex != null) {
+  if (capturedUrlWeek != null && capturedUrlDayIndex != null) {
     if (NW && NW.resolveDeepLinkDay) {
-      const deep = NW.resolveDeepLinkDay(currentPlan.plan, completed, urlWeek, urlDayIndex);
+      const deep = NW.resolveDeepLinkDay(currentPlan.plan, completed, capturedUrlWeek, capturedUrlDayIndex);
       if (deep) {
         found = { week: deep.week, dayIndex: deep.dayIndex, arrayIndex: deep.arrayIndex };
       }
     } else {
-      const weekNum = parseInt(urlWeek, 10);
-      const dayIndex = parseInt(urlDayIndex, 10);
+      const weekNum = parseInt(capturedUrlWeek, 10);
+      const dayIndex = parseInt(capturedUrlDayIndex, 10);
       if (Number.isFinite(weekNum) && Number.isFinite(dayIndex)) {
         const weekObj = (currentPlan.plan || []).find(w => Number(w.week) === weekNum);
         if (weekObj) {
@@ -862,7 +1148,7 @@ async function defaultToNextWorkoutDay() {
     if (NW) {
       const next = NW.findNextWorkoutDay(currentPlan.plan, completed);
       if (next) {
-        found = { week: next.week, dayIndex: next.dayIndex, arrayIndex: next.arrayIndex };
+        found = { week: next.week, dayIndex: next.dayIndex, arrayIndex: next.arrayIndex, planComplete: next.planComplete };
       }
     } else {
       for (const week of currentPlan.plan) {
@@ -913,7 +1199,12 @@ async function defaultToNextWorkoutDay() {
         matched = fuzzy ? fuzzy.value : null;
       }
     }
-    if (matched) daySelect.value = matched;
+    if (matched) {
+      daySelect.value = matched;
+    } else if (!daySelectMatchWarned) {
+      console.warn('defaultToNextWorkoutDay: could not match daySelect option for', found, 'optionCount=', daySelect.options.length);
+      daySelectMatchWarned = true;
+    }
     stripWeekDayIndexFromLocation();
     return;
   }
@@ -2071,7 +2362,7 @@ async function handleVisibilityChange() {
     if (phase !== 'setup' && phase !== 'finish') {
       await requestWakeLock();
     }
-    if (autoPaused) {
+    if (autoPaused && !quitSheetOpen) {
       resumeWorkout();
     }
     const audioCtx = sharedAudioCtx;
@@ -2734,6 +3025,88 @@ function goBackExercise() {
   enterWork();
 }
 
+function stopSessionMedia() {
+  try { clearInterval(timerInterval); } catch { /* ignore */ }
+  timerInterval = null;
+  try { stopDemoFlip(); } catch { /* ignore */ }
+  try { stopSpeech(); } catch { /* ignore */ }
+  try { if (musicEngine) { musicEngine.stop(); updateMusicButton(); } } catch { /* ignore */ }
+  try { stopAudioKeepAlive(); } catch { /* ignore */ }
+  try { releaseWakeLock(); } catch { /* ignore */ }
+}
+
+async function teardownSession() {
+  stopSessionMedia();
+  phaseBusy = false;
+  quitSheetOpen = false;
+  quitAutoPaused = false;
+  quitOpener = null;
+
+  try { document.removeEventListener('visibilitychange', handleVisibilityChange); } catch { /* ignore */ }
+
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => {});
+    }
+  } catch { /* ignore */ }
+
+  try { setTvMode(false); } catch { /* ignore */ }
+  try { closeCastModal(); } catch { /* ignore */ }
+  try { closeMovesList(); } catch { /* ignore */ }
+  try {
+    const overflowModal = document.getElementById('overflowModal');
+    if (overflowModal) overflowModal.classList.add('hidden');
+  } catch { /* ignore */ }
+  try {
+    const quitModal = document.getElementById('quitWorkoutModal');
+    if (quitModal) quitModal.classList.add('hidden');
+  } catch { /* ignore */ }
+  try {
+    const weightModal = document.getElementById('weightSheetModal');
+    if (weightModal) weightModal.classList.add('hidden');
+  } catch { /* ignore */ }
+  if (typeof quitInitModalCleanup === 'function') {
+    try { quitInitModalCleanup(); } catch { /* ignore */ }
+    quitInitModalCleanup = null;
+  }
+
+  phase = 'setup';
+
+  try { clearSessionState(); } catch { /* ignore */ }
+  try { if (resumeBanner) resumeBanner.classList.add('hidden'); } catch { /* ignore */ }
+
+  isPaused = false;
+  autoPaused = false;
+  pauseStartTime = 0;
+  pauseAccumulatedMs = 0;
+  sessionExercises = [];
+  currentExerciseIndex = 0;
+  currentSetIndex = 0;
+  startTime = null;
+  phaseStartTime = null;
+  elapsedPhaseSeconds = 0;
+  lastSpokenSecondKey = '';
+  updatePauseUI();
+  updateProgress();
+
+  document.body.classList.remove('work-phase');
+  document.body.classList.remove('rest-phase');
+  showScreen(setupScreen);
+
+  if (document.body.classList.contains('workout-active')) {
+    document.body.classList.remove('workout-active');
+  }
+
+  try {
+    if (currentPlan) {
+      await defaultToNextWorkoutDay();
+      await renderDayPreview();
+    }
+  } catch { /* ignore */ }
+
+  try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch { /* ignore */ }
+}
+
 function finishWorkout() {
   markDayCompleted();
   document.body.classList.remove('work-phase');
@@ -2804,6 +3177,17 @@ function finishWorkout() {
   showScreen(finishScreen);
 }
 
+async function postSessionPayload(payload) {
+  const res = await fetch('/api/runner/sessions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error(`Server error ${res.status}`);
+  return res;
+}
+
 async function saveSession(options = {}) {
   if (sessionSaved) return;
   if (!currentUser) {
@@ -2846,14 +3230,7 @@ async function saveSession(options = {}) {
   };
 
   try {
-    const res = await fetch('/api/runner/sessions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) throw new Error('Server error');
+    await postSessionPayload(payload);
     sessionSaved = true;
     if (saveSessionBtn) {
       saveSessionBtn.classList.add('hidden');

@@ -48,12 +48,17 @@
       <div id="nextWorkoutCard" class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-5 mb-6 hidden">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <h3 class="text-lg font-semibold text-purple-900">Ready for your next workout?</h3>
+            <h3 id="nextWorkoutHeading" class="text-lg font-semibold text-purple-900">Ready for your next workout?</h3>
             <p id="nextWorkoutInfo" class="text-sm text-gray-700 mt-1"></p>
           </div>
-          <a id="nextWorkoutBtn" href="/workout.html" class="shrink-0 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-5 rounded-lg transition touch-manipulation">
-            Start now
-          </a>
+          <div class="shrink-0 flex flex-col gap-2">
+            <a id="nextWorkoutBtn" href="/workout.html" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-5 rounded-lg transition touch-manipulation text-center">
+              Start now
+            </a>
+            <button id="nextWorkoutNewPlanBtn" type="button" data-action="open-planner" class="hidden text-sm bg-white border border-purple-200 text-purple-700 hover:bg-purple-50 font-semibold py-2 px-4 rounded-lg transition touch-manipulation">
+              Build a new plan
+            </button>
+          </div>
         </div>
       </div>
 

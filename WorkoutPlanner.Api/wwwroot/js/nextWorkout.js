@@ -26,30 +26,75 @@
   }
 
   /**
-   * First workout day whose completion key is not in completedSet.
-   * If all workout days are done, wraps to the first workout (never null
-   * when the plan has at least one workout day).
+   * All workout days in plan order with their canonical completion keys.
    */
-  function findNextWorkoutDay(planWeeks, completedSet) {
-    const weeks = planWeeks || [];
-    const done = completedSet || new Set();
-    let first = null;
-
-    for (const weekObj of weeks) {
+  function planWorkoutSequence(planWeeks) {
+    const seq = [];
+    for (const weekObj of planWeeks || []) {
       const weekNum = weekObj.week;
       const days = weekObj.days || [];
       for (let idx = 0; idx < days.length; idx++) {
         const day = days[idx];
         if (!isWorkoutDay(day)) continue;
         const dayIndex = canonicalDayIndex(day, idx);
-        const result = { week: weekNum, dayIndex: dayIndex, day: day, arrayIndex: idx };
-        if (!first) first = result;
-        const key = dayCompletionKey(weekNum, day, idx);
-        if (!done.has(key)) return result;
+        seq.push({
+          week: weekNum,
+          dayIndex: dayIndex,
+          arrayIndex: idx,
+          day: day,
+          key: dayCompletionKey(weekNum, day, idx)
+        });
       }
     }
+    return seq;
+  }
 
-    return first;
+  function parseCompletionKey(key) {
+    if (typeof key !== 'string') return null;
+    const parts = key.split(':');
+    if (parts.length !== 2) return null;
+    const week = Number(parts[0]);
+    const dayIndex = Number(parts[1]);
+    if (!Number.isFinite(week) || !Number.isFinite(dayIndex)) return null;
+    return { week, dayIndex };
+  }
+
+  /**
+   * Next workout day = the day after the last completed workout day in PLAN ORDER.
+   * Skipped or unlogged earlier days never pull the default backwards. Repeating
+   * or making up an earlier day does not reset the anchor. When the final workout
+   * day is complete, the final day is returned with planComplete: true (no wrap).
+   */
+  function findNextWorkoutDay(planWeeks, completedSet) {
+    const seq = planWorkoutSequence(planWeeks);
+    if (seq.length === 0) return null;
+
+    const done = completedSet || new Set();
+    let anchorIndex = -1;
+    for (const key of done) {
+      const parsed = parseCompletionKey(key);
+      if (!parsed) continue;
+      const idx = seq.findIndex(s =>
+        Number(s.week) === parsed.week && Number(s.dayIndex) === parsed.dayIndex
+      );
+      if (idx > anchorIndex) anchorIndex = idx;
+    }
+
+    if (anchorIndex === -1) {
+      return { ...seq[0], planComplete: false, lastCompleted: null };
+    }
+
+    const lastIndex = seq.length - 1;
+    if (anchorIndex === lastIndex) {
+      const last = seq[lastIndex];
+      return { ...last, planComplete: true, lastCompleted: last };
+    }
+
+    return {
+      ...seq[anchorIndex + 1],
+      planComplete: false,
+      lastCompleted: seq[anchorIndex]
+    };
   }
 
   function completedStorageKey(opts) {
@@ -360,6 +405,7 @@
   return {
     canonicalDayIndex,
     dayCompletionKey,
+    planWorkoutSequence,
     findNextWorkoutDay,
     completedStorageKey,
     readCompletedKeys,
