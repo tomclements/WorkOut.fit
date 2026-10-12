@@ -1196,6 +1196,16 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 #overflowModal #musicStyleActive {
   font-size: 0.95rem;
 }
+
+/* Prevent iOS Safari focus auto-zoom: text-entry controls must be >= 16px. */
+#setupScreen select,
+#setupScreen input,
+#overflowModal #musicStyleActive,
+#overflowModal input[type="number"],
+#weightSheetModal input[type="number"] {
+  font-size: 1rem;
+}
+
 #overflowModal #nowPlaying {
   font-size: 0.8rem;
 }

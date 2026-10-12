@@ -46,16 +46,16 @@
 
       <!-- Next workout suggestion -->
       <div id="nextWorkoutCard" class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-5 mb-6 hidden">
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
+        <div class="flex flex-col sm:flex-row items-start justify-between gap-3">
+          <div class="flex-1 min-w-0">
             <h3 id="nextWorkoutHeading" class="text-lg font-semibold text-purple-900">Ready for your next workout?</h3>
             <p id="nextWorkoutInfo" class="text-sm text-gray-700 mt-1"></p>
           </div>
-          <div class="shrink-0 flex flex-col gap-2">
-            <a id="nextWorkoutBtn" href="/workout.html" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-5 rounded-lg transition touch-manipulation text-center">
+          <div class="shrink-0 flex flex-col gap-2 w-full sm:w-auto">
+            <a id="nextWorkoutBtn" href="/workout.html" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-5 rounded-lg transition touch-manipulation text-center w-full sm:w-auto">
               Start now
             </a>
-            <button id="nextWorkoutNewPlanBtn" type="button" data-action="open-planner" class="hidden text-sm bg-white border border-purple-200 text-purple-700 hover:bg-purple-50 font-semibold py-2 px-4 rounded-lg transition touch-manipulation">
+            <button id="nextWorkoutNewPlanBtn" type="button" data-action="open-planner" class="hidden text-sm bg-white border border-purple-200 text-purple-700 hover:bg-purple-50 font-semibold py-2 px-4 rounded-lg transition touch-manipulation w-full sm:w-auto">
               Build a new plan
             </button>
           </div>
@@ -64,7 +64,7 @@
 
       <div id="homeToday" class="bg-white rounded-xl shadow p-5 mb-6 hidden">
         <div class="flex flex-wrap items-center gap-3 mb-3">
-          <span id="homeStreakBadge" class="streak-badge hidden">🔥 <span id="homeStreakCount">0</span>-day streak</span>
+          <span id="homeStreakBadge" class="streak-badge hidden">🔥 <span><span id="homeStreakCount">0</span>-day streak</span></span>
           <p id="homeStreakHint" class="text-sm text-gray-500 hidden">Complete a workout today to start a streak.</p>
         </div>
         <div id="homeLastWorkout">
