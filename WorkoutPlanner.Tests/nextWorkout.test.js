@@ -642,3 +642,110 @@ test('session savedPlanId string/number and canonical week/dayIndex merge correc
   assert.equal(next.week, 2);
   assert.equal(next.dayIndex, 4);
 });
+
+// Regression tests for fix/start-next-workout: dashboard and runner must share
+// one source of truth for which day is selected.
+
+test('resolveNextWorkoutDay: dashboard selection equals runner selection', () => {
+  const plan = {
+    generatedAt: 'ts1',
+    plan: [monWedFriWeek(1)]
+  };
+  const store = {
+    data: {
+      workoutPlanSavedId: '42',
+      'runnerCompleted_saved-42': JSON.stringify(['1:0'])
+    },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  const sessions = [{ savedPlanId: 42, week: 1, dayIndex: 2 }];
+
+  // Dashboard path
+  const dashboardFound = nw.resolveNextWorkoutDay({ plan, planId: 42, sessions, storage: store });
+  assert.equal(dashboardFound.week, 1);
+  assert.equal(dashboardFound.dayIndex, 4);
+  assert.equal(dashboardFound.day.day, 'Friday');
+
+  const startHref = nw.runnerSetupHref({ planId: 42, week: dashboardFound.week, dayIndex: dashboardFound.dayIndex });
+  const params = new URLSearchParams(startHref.split('?')[1]);
+
+  // Runner path (deep-link from the dashboard href)
+  const runnerFound = nw.resolveNextWorkoutDay({
+    plan,
+    planId: 42,
+    sessions,
+    urlWeek: params.get('week'),
+    urlDayIndex: params.get('dayIndex'),
+    storage: store
+  });
+  assert.equal(runnerFound.week, dashboardFound.week);
+  assert.equal(runnerFound.dayIndex, dashboardFound.dayIndex);
+  assert.equal(runnerFound.day.day, dashboardFound.day.day);
+});
+
+test('resolveNextWorkoutDay: string vs number week/dayIndex and session ids', () => {
+  const plan = { plan: [monWedFriWeek(1)] };
+  const store = { getItem() { return null; }, setItem() {} };
+  const sessions = [{ savedPlanId: '42', week: '1', dayIndex: '2' }];
+  const found = nw.resolveNextWorkoutDay({
+    plan,
+    planId: 42,
+    sessions,
+    urlWeek: '1',
+    urlDayIndex: '4',
+    storage: store
+  });
+  assert.equal(found.week, 1);
+  assert.equal(found.dayIndex, 4);
+  assert.equal(found.day.day, 'Friday');
+});
+
+test('resolveNextWorkoutDay: local selection refined by server sessions (post-auth rerun)', () => {
+  const plan = {
+    generatedAt: 'ts1',
+    plan: [monWedFriWeek(1)]
+  };
+  const store = {
+    data: { 'runnerCompleted_gen-ts1': JSON.stringify(['1:0']) },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+
+  // Pre-auth / synchronous local default: Monday done -> next is Wednesday
+  const localOnly = nw.resolveNextWorkoutDay({ plan, planId: 42, storage: store });
+  assert.equal(localOnly.week, 1);
+  assert.equal(localOnly.dayIndex, 2);
+  assert.equal(localOnly.day.day, 'Wednesday');
+
+  // Post-auth server merge: Wednesday also done -> next is Friday
+  const withSessions = nw.resolveNextWorkoutDay({
+    plan,
+    planId: 42,
+    sessions: [{ savedPlanId: 42, week: 1, dayIndex: 2 }],
+    storage: store
+  });
+  assert.equal(withSessions.week, 1);
+  assert.equal(withSessions.dayIndex, 4);
+  assert.equal(withSessions.day.day, 'Friday');
+});
+
+test('resolveNextWorkoutDay: deep link to a completed day is ignored', () => {
+  const plan = { plan: [monWedFriWeek(1)] };
+  const store = {
+    data: { 'runnerCompleted_saved-42': JSON.stringify(['1:0', '1:2']) },
+    getItem(k) { return this.data[k] ?? null; },
+    setItem(k, v) { this.data[k] = String(v); }
+  };
+  const found = nw.resolveNextWorkoutDay({
+    plan,
+    planId: 42,
+    urlWeek: 1,
+    urlDayIndex: 0,
+    storage: store
+  });
+  // Monday is completed; URL must be ignored and the next workout is Friday
+  assert.equal(found.week, 1);
+  assert.equal(found.dayIndex, 4);
+  assert.equal(found.day.day, 'Friday');
+});

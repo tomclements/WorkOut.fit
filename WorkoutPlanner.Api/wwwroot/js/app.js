@@ -1349,23 +1349,15 @@ async function updateNextWorkoutCard() {
     if (!plan || !plan.plan) { card.classList.add('hidden'); return; }
 
     const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
-    let completed = NW
-      ? NW.loadCompletedSetForPlan(plan, localStorage)
-      : (() => {
-          const completedKey = planId
-            ? 'runnerCompleted_saved-' + planId
-            : 'runnerCompleted_gen-' + (plan.generatedAt || 'unknown');
-          try { return new Set(JSON.parse(localStorage.getItem(completedKey) || '[]')); }
-          catch { return new Set(); }
-        })();
-
     if (isSignedIn && planId) {
-      if (!sessions) sessions = await fetchRunnerSessions();
-      if (sessions && NW) NW.addSessionCompletionKeys(completed, sessions, planId, plan.plan);
+      if (!sessions) {
+        try { sessions = await fetchRunnerSessions(); } catch { sessions = null; }
+      }
     }
+    if (seq !== updateNextWorkoutCard._seq) return;
 
     const found = NW
-      ? NW.findNextWorkoutDay(plan.plan, completed)
+      ? NW.resolveNextWorkoutDay({ plan, planId, sessions, storage: localStorage })
       : null;
     if (seq !== updateNextWorkoutCard._seq) return;
     if (!found) { card.classList.add('hidden'); return; }

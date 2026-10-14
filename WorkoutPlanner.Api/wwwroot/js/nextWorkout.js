@@ -319,11 +319,54 @@
   }
 
   /**
+   * One source of truth for "which day should the runner start on".
+   * Mirrors app.js updateNextWorkoutCard: load local completions, merge server
+   * sessions when provided, honour an incomplete deep-link day, otherwise fall
+   * back to findNextWorkoutDay. Returns the same shape as findNextWorkoutDay
+   * (plus arrayIndex/day from resolveDeepLinkDay when used).
+   */
+  function resolveNextWorkoutDay(opts) {
+    opts = opts || {};
+    const plan = opts.plan;
+    const planWeeks = plan && plan.plan;
+    if (!planWeeks || !planWeeks.length) return null;
+
+    const storage = defaultStorage(opts.storage);
+    const generatedAt = (opts.generatedAt != null && opts.generatedAt !== '')
+      ? opts.generatedAt
+      : resolveGeneratedAt(plan, storage);
+    if (generatedAt && plan && !plan.generatedAt) {
+      try { plan.generatedAt = generatedAt; } catch { /* ignore */ }
+    }
+
+    let savedPlanId = opts.planId != null && opts.planId !== '' ? opts.planId : null;
+    if (savedPlanId == null && storage && typeof storage.getItem === 'function') {
+      try {
+        const fromStore = storage.getItem('workoutPlanSavedId');
+        if (fromStore != null && fromStore !== '') savedPlanId = fromStore;
+      } catch { /* ignore */ }
+    }
+
+    const completed = readCompletedKeys({ savedPlanId, generatedAt }, storage);
+    if (opts.sessions && opts.sessions.length && savedPlanId != null) {
+      addSessionCompletionKeys(completed, opts.sessions, savedPlanId, planWeeks);
+    }
+
+    if (opts.urlWeek != null && opts.urlDayIndex != null) {
+      const deep = resolveDeepLinkDay(planWeeks, completed, opts.urlWeek, opts.urlDayIndex);
+      if (deep) {
+        return { ...deep, planComplete: false, lastCompleted: null };
+      }
+    }
+
+    return findNextWorkoutDay(planWeeks, completed);
+  }
+
+  /**
    * Build Start/Run href with next incomplete day deep-linked.
    */
   function runnerStartHrefForPlan(plan, planId, storage) {
-    const completed = loadCompletedSetForPlan(plan, storage);
-    const found = findNextWorkoutDay(plan && plan.plan, completed);
+    const found = resolveNextWorkoutDay({ plan, planId, storage });
     if (!found) {
       return runnerSetupHref({ planId });
     }
@@ -417,6 +460,7 @@
     writeCompletedKeys,
     runnerSetupHref,
     runnerStartHrefForPlan,
+    resolveNextWorkoutDay,
     matchDaySelectOption,
     resolveDeepLinkDay,
     stripWeekDayIndexFromSearch
