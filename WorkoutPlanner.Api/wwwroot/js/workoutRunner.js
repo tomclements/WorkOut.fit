@@ -21,6 +21,8 @@ let sessionPlanName = 'Plan4Strength';
 let currentSavedPlanId = null;
 let currentSavedPlanName = null;
 let userPickedDay = false;
+// Last /api/runner/sessions payload, so a rerun's synchronous pick never downgrades a server-refined day.
+let cachedRunnerSessions = null;
 let capturedUrlWeek = null;
 let capturedUrlDayIndex = null;
 let capturedUrlReady = false;
@@ -1080,6 +1082,9 @@ function markDayCompleted() {
 async function defaultToNextWorkoutDay() {
   // Never override a real user choice in #daySelect.
   if (userPickedDay) return;
+  if (!currentPlan || !currentPlan.plan) return;
+
+  const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
 
   // Capture URL deep-link once before anything strips it, then reuse on the
   // post-auth second run so both calls resolve the same target.
@@ -1090,96 +1095,22 @@ async function defaultToNextWorkoutDay() {
     capturedUrlReady = true;
   }
 
-  const completed = getCompletedDayKeys();
-  const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
-
-  // Merge server history for saved plans (cross-device).
-  // Bare PWA Run may leave currentSavedPlanId null until loadPlan binds store id —
-  // still merge using resolveSavedPlanId() so History is applied.
   const planIdForSessions = resolveSavedPlanId();
-  if (currentUser && planIdForSessions != null) {
-    try {
-      const res = await fetch('/api/runner/sessions', { credentials: 'include' });
-      if (res.ok) {
-        const sessions = await res.json();
-        if (NW) NW.addSessionCompletionKeys(completed, sessions, planIdForSessions, currentPlan && currentPlan.plan);
-        else {
-          sessions.forEach(s => {
-            if (s.savedPlanId == planIdForSessions && s.week != null && s.dayIndex != null) {
-              completed.add(s.week + ':' + s.dayIndex);
-            }
-          });
-        }
-      }
-    } catch { /* ignore */ }
+
+  function pick(sessions) {
+    if (!NW || !NW.resolveNextWorkoutDay) return null;
+    return NW.resolveNextWorkoutDay({
+      plan: currentPlan,
+      planId: planIdForSessions,
+      sessions,
+      urlWeek: capturedUrlWeek,
+      urlDayIndex: capturedUrlDayIndex,
+      storage: localStorage
+    });
   }
 
-  // Honor deep-link week/dayIndex only if that day is still an incomplete workout.
-  // Stale overnight/PWA URLs (finished day still in query) must fall through to findNext.
-  let found = null;
-  if (capturedUrlWeek != null && capturedUrlDayIndex != null) {
-    if (NW && NW.resolveDeepLinkDay) {
-      const deep = NW.resolveDeepLinkDay(currentPlan.plan, completed, capturedUrlWeek, capturedUrlDayIndex);
-      if (deep) {
-        found = { week: deep.week, dayIndex: deep.dayIndex, arrayIndex: deep.arrayIndex };
-      }
-    } else {
-      const weekNum = parseInt(capturedUrlWeek, 10);
-      const dayIndex = parseInt(capturedUrlDayIndex, 10);
-      if (Number.isFinite(weekNum) && Number.isFinite(dayIndex)) {
-        const weekObj = (currentPlan.plan || []).find(w => Number(w.week) === weekNum);
-        if (weekObj) {
-          const days = weekObj.days || [];
-          for (let idx = 0; idx < days.length; idx++) {
-            const day = days[idx];
-            if (!day || day.type !== 'workout') continue;
-            const cidx = day.dayIndex ?? day.DayIndex ?? idx;
-            if (Number(cidx) !== dayIndex) continue;
-            if (completed.has(weekNum + ':' + cidx)) break; // ignore completed URL day
-            found = { week: weekNum, dayIndex: cidx, arrayIndex: idx };
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  if (!found) {
-    if (NW) {
-      const next = NW.findNextWorkoutDay(currentPlan.plan, completed);
-      if (next) {
-        found = { week: next.week, dayIndex: next.dayIndex, arrayIndex: next.arrayIndex, planComplete: next.planComplete };
-      }
-    } else {
-      for (const week of currentPlan.plan) {
-        for (let idx = 0; idx < week.days.length; idx++) {
-          const day = week.days[idx];
-          if (day.type !== 'workout') continue;
-          const cidx = day.dayIndex ?? day.DayIndex ?? idx;
-          if (!completed.has(week.week + ':' + cidx)) {
-            found = { week: week.week, dayIndex: cidx, arrayIndex: idx };
-            break;
-          }
-        }
-        if (found) break;
-      }
-      if (!found) {
-        outer: for (const week of currentPlan.plan) {
-          for (let idx = 0; idx < week.days.length; idx++) {
-            const day = week.days[idx];
-            if (day.type === 'workout') {
-              found = { week: week.week, dayIndex: day.dayIndex ?? day.DayIndex ?? idx, arrayIndex: idx };
-              break outer;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // Apply found to #daySelect with Number coercion. If found is resolved, never
-  // silently reset to options[0] when exact/fuzzy match fails.
-  if (found) {
+  function apply(found) {
+    if (!found) return false;
     const optionValues = [...daySelect.options].map(o => o.value);
     let matched = null;
     if (NW && NW.matchDaySelectOption) {
@@ -1187,31 +1118,47 @@ async function defaultToNextWorkoutDay() {
     } else {
       const encoded = JSON.stringify(found);
       if (optionValues.includes(encoded)) matched = encoded;
-      else {
-        const fuzzy = [...daySelect.options].find(o => {
-          try {
-            const v = JSON.parse(o.value);
-            return Number(v.week) === Number(found.week)
-              && (Number(v.arrayIndex) === Number(found.arrayIndex)
-                || Number(v.dayIndex) === Number(found.dayIndex));
-          } catch { return false; }
-        });
-        matched = fuzzy ? fuzzy.value : null;
-      }
     }
     if (matched) {
       daySelect.value = matched;
-    } else if (!daySelectMatchWarned) {
+      return true;
+    }
+    if (!daySelectMatchWarned) {
       console.warn('defaultToNextWorkoutDay: could not match daySelect option for', found, 'optionCount=', daySelect.options.length);
       daySelectMatchWarned = true;
     }
-    stripWeekDayIndexFromLocation();
-    return;
+    return false;
   }
-  if (!daySelect.value && daySelect.options.length) {
+
+  // Synchronous local selection BEFORE any await so Start never reads options[0]
+  // while a network fetch is in flight.
+  const localFound = pick(cachedRunnerSessions);
+  if (localFound) {
+    apply(localFound);
+    stripWeekDayIndexFromLocation();
+  } else if (!daySelect.value && daySelect.options.length) {
     daySelect.value = daySelect.options[0].value;
   }
-  stripWeekDayIndexFromLocation();
+
+  // Merge server history for saved plans (cross-device) and refine the default
+  // if it changed. The synchronous selection above is already correct for local
+  // data, so the UI is never left on Monday while this fetch runs.
+  if (currentUser && planIdForSessions != null) {
+    try {
+      const res = await fetch('/api/runner/sessions', { credentials: 'include' });
+      if (res.ok) {
+        const sessions = await res.json();
+        cachedRunnerSessions = sessions;
+        if (!userPickedDay) {
+          const refined = pick(sessions);
+          if (refined && (!localFound || refined.week !== localFound.week || refined.dayIndex !== localFound.dayIndex)) {
+            apply(refined);
+            stripWeekDayIndexFromLocation();
+          }
+        }
+      }
+    } catch { /* ignore */ }
+  }
 }
 
 /** After daySelect default applied once, drop week/dayIndex so reopen does not stick. Keep planId. */
