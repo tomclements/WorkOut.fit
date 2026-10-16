@@ -1411,3 +1411,14 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
     padding-right: 0.4rem !important;
   }
 }
+
+/* ---------- Runner quit buttons: minimum 44x44 tap target ---------- */
+#workQuitBtn,
+#restQuitBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  margin-block: -10px;
+}
