@@ -384,6 +384,17 @@
       document.body.classList.remove('high-contrast');
       localStorage.removeItem('highContrast');
     }
+    window.syncContrastLabel();
+  };
+
+  /**
+   * Sync #contrastBtn text to the action it will perform.
+   * 'Light' when currently in dark/high-contrast mode, otherwise 'Dark'.
+   */
+  window.syncContrastLabel = function syncContrastLabel() {
+    var btn = document.getElementById('contrastBtn');
+    if (!btn) return;
+    btn.textContent = document.body.classList.contains('high-contrast') ? 'Light' : 'Dark';
   };
 
   // ── Global auth ──────────────────────────────────────────────────
@@ -669,6 +680,7 @@
     } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       document.body.classList.add('high-contrast');
     }
+    window.syncContrastLabel();
 
     // Global auth check
     initGlobalAuth();

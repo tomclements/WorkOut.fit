@@ -664,6 +664,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (themeMeta) themeMeta.setAttribute('content', '#0b0f14');
     } catch (e) { /* ignore */ }
   }
+  if (typeof window.syncContrastLabel === 'function') window.syncContrastLabel();
 
   // Tone / voice cue toggles — no async dependency, init synchronously
   try { initTonesToggle(); } catch (e) { /* ignore */ }
@@ -3249,6 +3250,7 @@ function toggleHighContrast() {
   if (typeof showToast === 'function') {
     showToast(on ? 'Dark mode on' : 'Dark mode off', 'info', 1600);
   }
+  if (typeof window.syncContrastLabel === 'function') window.syncContrastLabel();
 }
 
 function updateProgress() {

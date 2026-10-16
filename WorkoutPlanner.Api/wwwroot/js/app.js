@@ -139,8 +139,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         try { localStorage.setItem('highContrast', on ? '1' : ''); } catch { /* ignore */ }
       }
       contrastBtn.setAttribute('aria-pressed', String(on));
+      if (typeof window.syncContrastLabel === 'function') window.syncContrastLabel();
     });
     if (document.body.classList.contains('high-contrast')) contrastBtn.setAttribute('aria-pressed', 'true');
+    if (typeof window.syncContrastLabel === 'function') window.syncContrastLabel();
   }
   // Next workout suggestion card
   updateNextWorkoutCard();
@@ -1044,6 +1046,18 @@ function showLoggedOut() {
   document.getElementById('savePlanBtn').classList.add('hidden');
 }
 
+let lastDashboardTotals = null;
+
+function syncDashboardEmptyState(totalPlans, totalSessions) {
+  if (arguments.length) lastDashboardTotals = { plans: totalPlans || 0, sessions: totalSessions || 0 };
+  const emptyState = document.getElementById('dashboardEmptyState');
+  if (!emptyState) return;
+  const card = document.getElementById('nextWorkoutCard');
+  const t = lastDashboardTotals;
+  const hasContent = !t || t.plans > 0 || t.sessions > 0 || (card && !card.classList.contains('hidden'));
+  emptyState.classList.toggle('hidden', hasContent);
+}
+
 async function loadDashboard() {
   if (!currentUser) return;
   try {
@@ -1083,11 +1097,7 @@ function renderDashboard(data) {
   if (statMinutesEl) statMinutesEl.textContent = Math.floor((data.totalDurationSeconds || 0) / 60);
   if (statSetsEl) statSetsEl.textContent = data.totalSets || 0;
 
-  const emptyState = document.getElementById('dashboardEmptyState');
-  if (emptyState) {
-    const isNewUser = totalPlans === 0 && totalSessions === 0;
-    emptyState.classList.toggle('hidden', !isNewUser);
-  }
+  syncDashboardEmptyState(totalPlans, totalSessions);
 
   if (data.plans && data.plans.length) {
     const rows = data.plans.map(p => `
@@ -1346,7 +1356,7 @@ async function updateNextWorkoutCard() {
     }
 
     if (seq !== updateNextWorkoutCard._seq) return;
-    if (!plan || !plan.plan) { card.classList.add('hidden'); return; }
+    if (!plan || !plan.plan) { card.classList.add('hidden'); syncDashboardEmptyState(); return; }
 
     const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
     if (isSignedIn && planId) {
@@ -1360,7 +1370,7 @@ async function updateNextWorkoutCard() {
       ? NW.resolveNextWorkoutDay({ plan, planId, sessions, storage: localStorage })
       : null;
     if (seq !== updateNextWorkoutCard._seq) return;
-    if (!found) { card.classList.add('hidden'); return; }
+    if (!found) { card.classList.add('hidden'); syncDashboardEmptyState(); return; }
 
     const nextDay = found.day;
     const goal = capitalize((plan.criteria && plan.criteria.goal) || 'training');
@@ -1389,8 +1399,9 @@ async function updateNextWorkoutCard() {
     if (btn) btn.href = startHref;
     rewriteSoftRunnerHrefs(plan, planId, startHref);
     card.classList.remove('hidden');
+    syncDashboardEmptyState();
   } catch {
-    if (seq === updateNextWorkoutCard._seq) card.classList.add('hidden');
+    if (seq === updateNextWorkoutCard._seq) { card.classList.add('hidden'); syncDashboardEmptyState(); }
   }
 }
 
