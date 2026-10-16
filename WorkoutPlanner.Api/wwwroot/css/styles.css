@@ -45,9 +45,13 @@ html {
   border: 1px solid #d1d5db;
   border-radius: 0.375rem;
   padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
+  font-size: 1rem;
   margin-bottom: 1rem;
   color: #111827;
+}
+
+#gAuthForm input {
+  font-size: 1rem;
 }
 
 .modal-actions {
