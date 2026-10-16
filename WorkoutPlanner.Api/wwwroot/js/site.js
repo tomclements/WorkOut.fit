@@ -394,7 +394,11 @@
   window.syncContrastLabel = function syncContrastLabel() {
     var btn = document.getElementById('contrastBtn');
     if (!btn) return;
-    btn.textContent = document.body.classList.contains('high-contrast') ? 'Light' : 'Dark';
+    var isDark = document.body.classList.contains('high-contrast');
+    btn.textContent = isDark ? 'Light' : 'Dark';
+    var label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+    btn.title = label;
+    btn.setAttribute('aria-label', label);
   };
 
   // ── Global auth ──────────────────────────────────────────────────
