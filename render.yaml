@@ -2,10 +2,16 @@ services:
   - type: web
     name: workout
     runtime: docker
-    plan: free
+    plan: starter
     region: oregon
     branch: main
     healthCheckPath: /health
+    buildFilter:
+      ignoredPaths:
+        - scripts/**
+        - tools/**
+        - WorkoutPlanner.Tests/**
+        - "*.md"
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
@@ -42,5 +48,5 @@ services:
 
 databases:
   - name: workout-db
-    plan: free
+    plan: basic-256mb
     region: oregon
