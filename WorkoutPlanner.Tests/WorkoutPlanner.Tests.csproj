@@ -26,4 +26,8 @@
     <ProjectReference Include="..\WorkoutPlanner.Api\WorkoutPlanner.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Golden\**\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

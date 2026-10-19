@@ -1,0 +1,2596 @@
+{
+  "criteria": {
+    "weeks": 4,
+    "daysPerWeek": 4,
+    "workoutDays": [
+      0,
+      1,
+      3,
+      4
+    ],
+    "sessionMinutes": 45,
+    "equipment": [
+      "barbell",
+      "machines"
+    ],
+    "split": "upper-lower",
+    "goal": "hypertrophy",
+    "level": "intermediate",
+    "includeWarmup": true,
+    "includeCooldown": true,
+    "restrictions": [
+      "rotator-cuff"
+    ],
+    "rehab": [],
+    "favoriteExerciseIds": [],
+    "dislikedExerciseIds": [],
+    "progression": "linear",
+    "mixMode": "strength",
+    "seed": 2002,
+    "avoidExerciseIds": []
+  },
+  "plan": [
+    {
+      "week": 1,
+      "phase": "base",
+      "phaseLabel": "Foundation week",
+      "focusNote": "Establish baseline weights you can control. Leave 2\u20133 reps in reserve.",
+      "days": [
+        {
+          "type": "workout",
+          "dayIndex": 0,
+          "day": "Monday",
+          "focus": "Upper body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 19,
+          "exercises": [
+            {
+              "id": "wu-high-knees",
+              "name": "High knees (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Low intensity \u2014 just get blood moving",
+              "demoUrl": "https://www.youtube.com/results?search_query=High%20knees%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-high-knees.webp"
+            },
+            {
+              "id": "standing-palms-up-barbell-behind-the-back-wrist-curl",
+              "name": "Standing Palms-Up Barbell Behind The Back Wrist Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "forearms"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Palms-Up%20Barbell%20Behind%20The%20Back%20Wrist%20Curl%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Palms-Up_Barbell_Behind_The_Back_Wrist_Curl/0.jpg",
+              "demoAnimUrl": "/demos/standing-palms-up-barbell-behind-the-back-wrist-curl.webp"
+            },
+            {
+              "id": "ab-crunch-machine",
+              "name": "Ab Crunch Machine",
+              "slot": "core",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abdominals"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Ab%20Crunch%20Machine%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/0.jpg",
+              "demoAnimUrl": "/demos/ab-crunch-machine.webp"
+            },
+            {
+              "id": "butterfly",
+              "name": "Butterfly",
+              "slot": "push",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "chest"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Butterfly%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butterfly/0.jpg",
+              "demoAnimUrl": "/demos/butterfly.webp"
+            },
+            {
+              "id": "standing-front-barbell-raise-over-head",
+              "name": "Standing Front Barbell Raise Over Head",
+              "slot": "push",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Front%20Barbell%20Raise%20Over%20Head%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Front_Barbell_Raise_Over_Head/0.jpg",
+              "demoAnimUrl": "/demos/standing-front-barbell-raise-over-head.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "workout",
+          "dayIndex": 1,
+          "day": "Tuesday",
+          "focus": "Lower body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 17,
+          "exercises": [
+            {
+              "id": "wu-high-knees",
+              "name": "High knees (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Low intensity \u2014 just get blood moving",
+              "demoUrl": "https://www.youtube.com/results?search_query=High%20knees%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-high-knees.webp"
+            },
+            {
+              "id": "wu-glute-bridge",
+              "name": "Glute bridge",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "glutes",
+                "hamstrings",
+                "core"
+              ],
+              "progression": "Squeeze glutes at top, no lower-back arch",
+              "demoUrl": "https://www.youtube.com/results?search_query=Glute%20bridge%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-glute-bridge.webp"
+            },
+            {
+              "id": "wu-hip-circles",
+              "name": "Standing hip circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hips",
+                "glutes",
+                "quads",
+                "hamstrings"
+              ],
+              "progression": "Hands on hips, slow circles each way",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hip%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-hip-circles.webp"
+            },
+            {
+              "id": "wu-leg-swings",
+              "name": "Leg swings",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "hips",
+                "quads",
+                "glutes"
+              ],
+              "progression": "Front-to-back then side-to-side, controlled",
+              "demoUrl": "https://www.youtube.com/results?search_query=Leg%20swings%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-leg-swings.webp"
+            },
+            {
+              "id": "lying-leg-curls",
+              "name": "Lying Leg Curls",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "hamstrings"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://exrx.net/WeightExercises/Hamstrings/LVLyingLegCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/0.jpg",
+              "demoAnimUrl": "/demos/lying-leg-curls.webp"
+            },
+            {
+              "id": "thigh-abductor",
+              "name": "Thigh Abductor",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abductors"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Thigh%20Abductor%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Abductor/0.jpg",
+              "demoAnimUrl": "/demos/thigh-abductor.webp"
+            },
+            {
+              "id": "landmine-180-s",
+              "name": "Landmine 180\u0027s",
+              "slot": "core",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abdominals"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Landmine%20180%27s%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Landmine_180s/0.jpg",
+              "demoAnimUrl": "/demos/landmine-180-s.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            },
+            {
+              "id": "cd-ham-hinge",
+              "name": "Standing hamstring hinge",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "back"
+              ],
+              "progression": "Soft knees, hinge at hips, long spine",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hamstring%20hinge%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-ham-hinge.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 2,
+          "day": "Wednesday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 3,
+          "day": "Thursday",
+          "focus": "Upper body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 18,
+          "exercises": [
+            {
+              "id": "wu-high-knees",
+              "name": "High knees (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Low intensity \u2014 just get blood moving",
+              "demoUrl": "https://www.youtube.com/results?search_query=High%20knees%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-high-knees.webp"
+            },
+            {
+              "id": "machine-triceps-extension",
+              "name": "Machine Triceps Extension",
+              "slot": "push",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "triceps"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Machine%20Triceps%20Extension%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Triceps_Extension/0.jpg",
+              "demoAnimUrl": "/demos/machine-triceps-extension.webp"
+            },
+            {
+              "id": "drag-curl",
+              "name": "Drag Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Drag%20Curl%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Drag_Curl/0.jpg",
+              "demoAnimUrl": "/demos/drag-curl.webp"
+            },
+            {
+              "id": "stiff-leg-barbell-good-morning",
+              "name": "Stiff Leg Barbell Good Morning",
+              "slot": "core",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "lower back"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Stiff%20Leg%20Barbell%20Good%20Morning%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Stiff_Leg_Barbell_Good_Morning/0.jpg",
+              "demoAnimUrl": "/demos/stiff-leg-barbell-good-morning.webp"
+            },
+            {
+              "id": "car-drivers",
+              "name": "Car Drivers",
+              "slot": "push",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Car%20Drivers%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Car_Drivers/0.jpg",
+              "demoAnimUrl": "/demos/car-drivers.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "workout",
+          "dayIndex": 4,
+          "day": "Friday",
+          "focus": "Lower body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 18,
+          "exercises": [
+            {
+              "id": "wu-jacks",
+              "name": "Jumping jacks",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Soft landings; skip or step-jacks if joints prefer",
+              "demoUrl": "https://www.youtube.com/results?search_query=Jumping%20jacks%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-jacks.webp"
+            },
+            {
+              "id": "wu-glute-bridge",
+              "name": "Glute bridge",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "glutes",
+                "hamstrings",
+                "core"
+              ],
+              "progression": "Squeeze glutes at top, no lower-back arch",
+              "demoUrl": "https://www.youtube.com/results?search_query=Glute%20bridge%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-glute-bridge.webp"
+            },
+            {
+              "id": "wu-leg-swings",
+              "name": "Leg swings",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "hips",
+                "quads",
+                "glutes"
+              ],
+              "progression": "Front-to-back then side-to-side, controlled",
+              "demoUrl": "https://www.youtube.com/results?search_query=Leg%20swings%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-leg-swings.webp"
+            },
+            {
+              "id": "wu-hip-circles",
+              "name": "Standing hip circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hips",
+                "glutes",
+                "quads",
+                "hamstrings"
+              ],
+              "progression": "Hands on hips, slow circles each way",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hip%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-hip-circles.webp"
+            },
+            {
+              "id": "smith-machine-hip-raise",
+              "name": "Smith Machine Hip Raise",
+              "slot": "core",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abdominals"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Smith%20Machine%20Hip%20Raise%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Hip_Raise/0.jpg",
+              "demoAnimUrl": "/demos/smith-machine-hip-raise.webp"
+            },
+            {
+              "id": "chair-squat",
+              "name": "Chair Squat",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "quadriceps"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Chair%20Squat%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chair_Squat/0.jpg",
+              "demoAnimUrl": "/demos/chair-squat.webp"
+            },
+            {
+              "id": "romanian-deadlift",
+              "name": "Romanian Deadlift",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "hamstrings"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://exrx.net/WeightExercises/Hamstrings/BBRomanianDeadlift",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg",
+              "demoAnimUrl": "/demos/romanian-deadlift.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            },
+            {
+              "id": "cd-ham-hinge",
+              "name": "Standing hamstring hinge",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "back"
+              ],
+              "progression": "Soft knees, hinge at hips, long spine",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hamstring%20hinge%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-ham-hinge.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 5,
+          "day": "Saturday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "rest",
+          "dayIndex": 6,
+          "day": "Sunday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "phase": "build",
+      "phaseLabel": "Build week",
+      "focusNote": "Nudge difficulty: add a little weight, an extra rep, or keep the same load feeling smoother.",
+      "days": [
+        {
+          "type": "workout",
+          "dayIndex": 0,
+          "day": "Monday",
+          "focus": "Upper body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 23,
+          "exercises": [
+            {
+              "id": "wu-jacks",
+              "name": "Jumping jacks",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Soft landings; skip or step-jacks if joints prefer",
+              "demoUrl": "https://www.youtube.com/results?search_query=Jumping%20jacks%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-jacks.webp"
+            },
+            {
+              "id": "barbell-shrug-behind-the-back",
+              "name": "Barbell Shrug Behind The Back",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "traps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Shrug%20Behind%20The%20Back%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shrug_Behind_The_Back/0.jpg",
+              "demoAnimUrl": "/demos/barbell-shrug-behind-the-back.webp"
+            },
+            {
+              "id": "landmine-linear-jammer",
+              "name": "Landmine Linear Jammer",
+              "slot": "push",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Landmine%20Linear%20Jammer%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Landmine_Linear_Jammer/0.jpg",
+              "demoAnimUrl": "/demos/landmine-linear-jammer.webp"
+            },
+            {
+              "id": "butterfly",
+              "name": "Butterfly",
+              "slot": "push",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "chest"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Butterfly%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butterfly/0.jpg",
+              "demoAnimUrl": "/demos/butterfly.webp"
+            },
+            {
+              "id": "deficit-deadlift",
+              "name": "Deficit Deadlift",
+              "slot": "core",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "lower back"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Deficit%20Deadlift%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Deficit_Deadlift/0.jpg",
+              "demoAnimUrl": "/demos/deficit-deadlift.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "workout",
+          "dayIndex": 1,
+          "day": "Tuesday",
+          "focus": "Lower body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 21,
+          "exercises": [
+            {
+              "id": "wu-high-knees",
+              "name": "High knees (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Low intensity \u2014 just get blood moving",
+              "demoUrl": "https://www.youtube.com/results?search_query=High%20knees%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-high-knees.webp"
+            },
+            {
+              "id": "wu-glute-bridge",
+              "name": "Glute bridge",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "glutes",
+                "hamstrings",
+                "core"
+              ],
+              "progression": "Squeeze glutes at top, no lower-back arch",
+              "demoUrl": "https://www.youtube.com/results?search_query=Glute%20bridge%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-glute-bridge.webp"
+            },
+            {
+              "id": "wu-bw-squat",
+              "name": "Bodyweight squat (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "quads",
+                "glutes",
+                "hamstrings"
+              ],
+              "progression": "Shallow to full as you warm; no load",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bodyweight%20squat%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bw-squat.webp"
+            },
+            {
+              "id": "wu-hip-circles",
+              "name": "Standing hip circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hips",
+                "glutes",
+                "quads",
+                "hamstrings"
+              ],
+              "progression": "Hands on hips, slow circles each way",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hip%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-hip-circles.webp"
+            },
+            {
+              "id": "smith-machine-pistol-squat",
+              "name": "Smith Machine Pistol Squat",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "quadriceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Smith%20Machine%20Pistol%20Squat%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Pistol_Squat/0.jpg",
+              "demoAnimUrl": "/demos/smith-machine-pistol-squat.webp"
+            },
+            {
+              "id": "barbell-ab-rollout",
+              "name": "Barbell Ab Rollout",
+              "slot": "core",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abdominals"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Ab%20Rollout%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Ab_Rollout/0.jpg",
+              "demoAnimUrl": "/demos/barbell-ab-rollout.webp"
+            },
+            {
+              "id": "glute-ham-raise",
+              "name": "Glute Ham Raise",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "hamstrings"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Glute%20Ham%20Raise%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Glute_Ham_Raise/0.jpg",
+              "demoAnimUrl": "/demos/glute-ham-raise.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            },
+            {
+              "id": "cd-ham-hinge",
+              "name": "Standing hamstring hinge",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "back"
+              ],
+              "progression": "Soft knees, hinge at hips, long spine",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hamstring%20hinge%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-ham-hinge.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 2,
+          "day": "Wednesday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 3,
+          "day": "Thursday",
+          "focus": "Upper body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 23,
+          "exercises": [
+            {
+              "id": "wu-march",
+              "name": "March in place",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Light pace, swing arms, raise heart rate gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=March%20in%20place%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-march.webp"
+            },
+            {
+              "id": "rack-pulls",
+              "name": "Rack Pulls",
+              "slot": "core",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "lower back"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Rack%20Pulls%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rack_Pulls/0.jpg",
+              "demoAnimUrl": "/demos/rack-pulls.webp"
+            },
+            {
+              "id": "single-arm-linear-jammer",
+              "name": "Single-Arm Linear Jammer",
+              "slot": "push",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Single-Arm%20Linear%20Jammer%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Arm_Linear_Jammer/0.jpg",
+              "demoAnimUrl": "/demos/single-arm-linear-jammer.webp"
+            },
+            {
+              "id": "close-grip-ez-bar-curl",
+              "name": "Close-Grip EZ Bar Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCloseGripCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_EZ_Bar_Curl/0.jpg",
+              "demoAnimUrl": "/demos/close-grip-ez-bar-curl.webp"
+            },
+            {
+              "id": "car-drivers",
+              "name": "Car Drivers",
+              "slot": "push",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Car%20Drivers%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Car_Drivers/0.jpg",
+              "demoAnimUrl": "/demos/car-drivers.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "workout",
+          "dayIndex": 4,
+          "day": "Friday",
+          "focus": "Lower body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 21,
+          "exercises": [
+            {
+              "id": "wu-jacks",
+              "name": "Jumping jacks",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Soft landings; skip or step-jacks if joints prefer",
+              "demoUrl": "https://www.youtube.com/results?search_query=Jumping%20jacks%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-jacks.webp"
+            },
+            {
+              "id": "wu-hip-circles",
+              "name": "Standing hip circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hips",
+                "glutes",
+                "quads",
+                "hamstrings"
+              ],
+              "progression": "Hands on hips, slow circles each way",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hip%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-hip-circles.webp"
+            },
+            {
+              "id": "wu-leg-swings",
+              "name": "Leg swings",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "hips",
+                "quads",
+                "glutes"
+              ],
+              "progression": "Front-to-back then side-to-side, controlled",
+              "demoUrl": "https://www.youtube.com/results?search_query=Leg%20swings%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-leg-swings.webp"
+            },
+            {
+              "id": "wu-bw-squat",
+              "name": "Bodyweight squat (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "quads",
+                "glutes",
+                "hamstrings"
+              ],
+              "progression": "Shallow to full as you warm; no load",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bodyweight%20squat%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bw-squat.webp"
+            },
+            {
+              "id": "lying-machine-squat",
+              "name": "Lying Machine Squat",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "quadriceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Lying%20Machine%20Squat%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Machine_Squat/0.jpg",
+              "demoAnimUrl": "/demos/lying-machine-squat.webp"
+            },
+            {
+              "id": "hack-squat",
+              "name": "Hack Squat",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "quadriceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Hack%20Squat%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hack_Squat/0.jpg",
+              "demoAnimUrl": "/demos/hack-squat.webp"
+            },
+            {
+              "id": "smith-machine-hip-raise",
+              "name": "Smith Machine Hip Raise",
+              "slot": "core",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abdominals"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Smith%20Machine%20Hip%20Raise%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Hip_Raise/0.jpg",
+              "demoAnimUrl": "/demos/smith-machine-hip-raise.webp"
+            },
+            {
+              "id": "cd-hip-flexor",
+              "name": "Half-kneeling hip flexor stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "hips",
+                "quads"
+              ],
+              "progression": "Tuck pelvis, gentle forward shift",
+              "demoUrl": "https://www.youtube.com/results?search_query=Half-kneeling%20hip%20flexor%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-hip-flexor.webp"
+            },
+            {
+              "id": "cd-quad-stand",
+              "name": "Standing quad stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "quads",
+                "hips"
+              ],
+              "progression": "Hold ankle, knees together, tall posture",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20quad%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-quad-stand.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 5,
+          "day": "Saturday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "rest",
+          "dayIndex": 6,
+          "day": "Sunday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "phase": "build",
+      "phaseLabel": "Build week",
+      "focusNote": "Nudge difficulty: add a little weight, an extra rep, or keep the same load feeling smoother.",
+      "days": [
+        {
+          "type": "workout",
+          "dayIndex": 0,
+          "day": "Monday",
+          "focus": "Upper body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 30,
+          "exercises": [
+            {
+              "id": "wu-high-knees",
+              "name": "High knees (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Low intensity \u2014 just get blood moving",
+              "demoUrl": "https://www.youtube.com/results?search_query=High%20knees%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-high-knees.webp"
+            },
+            {
+              "id": "wu-bird-dog",
+              "name": "Bird dog",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "core",
+                "glutes"
+              ],
+              "progression": "Opposite arm/leg, hold 2s, brace midsection",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bird%20dog%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bird-dog.webp"
+            },
+            {
+              "id": "wu-torso-twist",
+              "name": "Standing torso twists",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back"
+              ],
+              "progression": "Feet planted, gentle rotation",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20torso%20twists%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-torso-twist.webp"
+            },
+            {
+              "id": "calf-machine-shoulder-shrug",
+              "name": "Calf-Machine Shoulder Shrug",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "traps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Calf-Machine%20Shoulder%20Shrug%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf-Machine_Shoulder_Shrug/0.jpg",
+              "demoAnimUrl": "/demos/calf-machine-shoulder-shrug.webp"
+            },
+            {
+              "id": "landmine-linear-jammer",
+              "name": "Landmine Linear Jammer",
+              "slot": "push",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Landmine%20Linear%20Jammer%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Landmine_Linear_Jammer/0.jpg",
+              "demoAnimUrl": "/demos/landmine-linear-jammer.webp"
+            },
+            {
+              "id": "ab-crunch-machine",
+              "name": "Ab Crunch Machine",
+              "slot": "core",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abdominals"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Ab%20Crunch%20Machine%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/0.jpg",
+              "demoAnimUrl": "/demos/ab-crunch-machine.webp"
+            },
+            {
+              "id": "butterfly",
+              "name": "Butterfly",
+              "slot": "push",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "chest"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Butterfly%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butterfly/0.jpg",
+              "demoAnimUrl": "/demos/butterfly.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "workout",
+          "dayIndex": 1,
+          "day": "Tuesday",
+          "focus": "Lower body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 24,
+          "exercises": [
+            {
+              "id": "wu-jacks",
+              "name": "Jumping jacks",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Soft landings; skip or step-jacks if joints prefer",
+              "demoUrl": "https://www.youtube.com/results?search_query=Jumping%20jacks%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-jacks.webp"
+            },
+            {
+              "id": "wu-hip-circles",
+              "name": "Standing hip circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hips",
+                "glutes",
+                "quads",
+                "hamstrings"
+              ],
+              "progression": "Hands on hips, slow circles each way",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hip%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-hip-circles.webp"
+            },
+            {
+              "id": "wu-leg-swings",
+              "name": "Leg swings",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "hips",
+                "quads",
+                "glutes"
+              ],
+              "progression": "Front-to-back then side-to-side, controlled",
+              "demoUrl": "https://www.youtube.com/results?search_query=Leg%20swings%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-leg-swings.webp"
+            },
+            {
+              "id": "wu-bw-squat",
+              "name": "Bodyweight squat (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "quads",
+                "glutes",
+                "hamstrings"
+              ],
+              "progression": "Shallow to full as you warm; no load",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bodyweight%20squat%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bw-squat.webp"
+            },
+            {
+              "id": "deficit-deadlift",
+              "name": "Deficit Deadlift",
+              "slot": "core",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "lower back"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Deficit%20Deadlift%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Deficit_Deadlift/0.jpg",
+              "demoAnimUrl": "/demos/deficit-deadlift.webp"
+            },
+            {
+              "id": "olympic-squat",
+              "name": "Olympic Squat",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "quadriceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Olympic%20Squat%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Olympic_Squat/0.jpg",
+              "demoAnimUrl": "/demos/olympic-squat.webp"
+            },
+            {
+              "id": "romanian-deadlift-from-deficit",
+              "name": "Romanian Deadlift from Deficit",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "hamstrings"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Romanian%20Deadlift%20from%20Deficit%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift_from_Deficit/0.jpg",
+              "demoAnimUrl": "/demos/romanian-deadlift-from-deficit.webp"
+            },
+            {
+              "id": "cd-ham-hinge",
+              "name": "Standing hamstring hinge",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "back"
+              ],
+              "progression": "Soft knees, hinge at hips, long spine",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hamstring%20hinge%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-ham-hinge.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 2,
+          "day": "Wednesday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 3,
+          "day": "Thursday",
+          "focus": "Upper body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 36,
+          "exercises": [
+            {
+              "id": "wu-jacks",
+              "name": "Jumping jacks",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Soft landings; skip or step-jacks if joints prefer",
+              "demoUrl": "https://www.youtube.com/results?search_query=Jumping%20jacks%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-jacks.webp"
+            },
+            {
+              "id": "wu-bird-dog",
+              "name": "Bird dog",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "core",
+                "glutes"
+              ],
+              "progression": "Opposite arm/leg, hold 2s, brace midsection",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bird%20dog%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bird-dog.webp"
+            },
+            {
+              "id": "wu-glute-bridge",
+              "name": "Glute bridge",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "glutes",
+                "hamstrings",
+                "core"
+              ],
+              "progression": "Squeeze glutes at top, no lower-back arch",
+              "demoUrl": "https://www.youtube.com/results?search_query=Glute%20bridge%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-glute-bridge.webp"
+            },
+            {
+              "id": "car-drivers",
+              "name": "Car Drivers",
+              "slot": "push",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Car%20Drivers%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Car_Drivers/0.jpg",
+              "demoAnimUrl": "/demos/car-drivers.webp"
+            },
+            {
+              "id": "single-arm-linear-jammer",
+              "name": "Single-Arm Linear Jammer",
+              "slot": "push",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Single-Arm%20Linear%20Jammer%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Arm_Linear_Jammer/0.jpg",
+              "demoAnimUrl": "/demos/single-arm-linear-jammer.webp"
+            },
+            {
+              "id": "barbell-deadlift",
+              "name": "Barbell Deadlift",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "8-10",
+              "rest": 135,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "back",
+                "glutes",
+                "hamstrings"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/ErectorSpinae/BBDeadlift",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg",
+              "demoAnimUrl": "/demos/barbell-deadlift.webp"
+            },
+            {
+              "id": "barbell-ab-rollout",
+              "name": "Barbell Ab Rollout",
+              "slot": "core",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abdominals"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Ab%20Rollout%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Ab_Rollout/0.jpg",
+              "demoAnimUrl": "/demos/barbell-ab-rollout.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "workout",
+          "dayIndex": 4,
+          "day": "Friday",
+          "focus": "Lower body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 25,
+          "exercises": [
+            {
+              "id": "wu-jacks",
+              "name": "Jumping jacks",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Soft landings; skip or step-jacks if joints prefer",
+              "demoUrl": "https://www.youtube.com/results?search_query=Jumping%20jacks%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-jacks.webp"
+            },
+            {
+              "id": "wu-leg-swings",
+              "name": "Leg swings",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "hips",
+                "quads",
+                "glutes"
+              ],
+              "progression": "Front-to-back then side-to-side, controlled",
+              "demoUrl": "https://www.youtube.com/results?search_query=Leg%20swings%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-leg-swings.webp"
+            },
+            {
+              "id": "wu-hip-circles",
+              "name": "Standing hip circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hips",
+                "glutes",
+                "quads",
+                "hamstrings"
+              ],
+              "progression": "Hands on hips, slow circles each way",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hip%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-hip-circles.webp"
+            },
+            {
+              "id": "wu-bw-squat",
+              "name": "Bodyweight squat (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "quads",
+                "glutes",
+                "hamstrings"
+              ],
+              "progression": "Shallow to full as you warm; no load",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bodyweight%20squat%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bw-squat.webp"
+            },
+            {
+              "id": "frankenstein-squat",
+              "name": "Frankenstein Squat",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "quadriceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Frankenstein%20Squat%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Frankenstein_Squat/0.jpg",
+              "demoAnimUrl": "/demos/frankenstein-squat.webp"
+            },
+            {
+              "id": "weighted-jump-squat",
+              "name": "Weighted Jump Squat",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "quadriceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Weighted%20Jump%20Squat%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Weighted_Jump_Squat/0.jpg",
+              "demoAnimUrl": "/demos/weighted-jump-squat.webp"
+            },
+            {
+              "id": "barbell-ab-rollout",
+              "name": "Barbell Ab Rollout",
+              "slot": "core",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abdominals"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Ab%20Rollout%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Ab_Rollout/0.jpg",
+              "demoAnimUrl": "/demos/barbell-ab-rollout.webp"
+            },
+            {
+              "id": "cd-quad-stand",
+              "name": "Standing quad stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "quads",
+                "hips"
+              ],
+              "progression": "Hold ankle, knees together, tall posture",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20quad%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-quad-stand.webp"
+            },
+            {
+              "id": "cd-hip-flexor",
+              "name": "Half-kneeling hip flexor stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "hips",
+                "quads"
+              ],
+              "progression": "Tuck pelvis, gentle forward shift",
+              "demoUrl": "https://www.youtube.com/results?search_query=Half-kneeling%20hip%20flexor%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-hip-flexor.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 5,
+          "day": "Saturday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "rest",
+          "dayIndex": 6,
+          "day": "Sunday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "phase": "deload",
+      "phaseLabel": "Recovery (deload)",
+      "focusNote": "Reduce volume and effort (~60% of a hard week). Sleep, mobility, and easy movement count. Come back fresh next week.",
+      "days": [
+        {
+          "type": "workout",
+          "dayIndex": 0,
+          "day": "Monday",
+          "focus": "Upper body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 14,
+          "exercises": [
+            {
+              "id": "wu-march",
+              "name": "March in place",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Light pace, swing arms, raise heart rate gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=March%20in%20place%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-march.webp"
+            },
+            {
+              "id": "smith-machine-hip-raise",
+              "name": "Smith Machine Hip Raise",
+              "slot": "core",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abdominals"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Smith%20Machine%20Hip%20Raise%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Hip_Raise/0.jpg",
+              "demoAnimUrl": "/demos/smith-machine-hip-raise.webp"
+            },
+            {
+              "id": "machine-bicep-curl",
+              "name": "Machine Bicep Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Machine%20Bicep%20Curl%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Bicep_Curl/0.jpg",
+              "demoAnimUrl": "/demos/machine-bicep-curl.webp"
+            },
+            {
+              "id": "standing-front-barbell-raise-over-head",
+              "name": "Standing Front Barbell Raise Over Head",
+              "slot": "push",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Front%20Barbell%20Raise%20Over%20Head%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Front_Barbell_Raise_Over_Head/0.jpg",
+              "demoAnimUrl": "/demos/standing-front-barbell-raise-over-head.webp"
+            },
+            {
+              "id": "butterfly",
+              "name": "Butterfly",
+              "slot": "push",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "chest"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Butterfly%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butterfly/0.jpg",
+              "demoAnimUrl": "/demos/butterfly.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "workout",
+          "dayIndex": 1,
+          "day": "Tuesday",
+          "focus": "Lower body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 15,
+          "exercises": [
+            {
+              "id": "wu-march",
+              "name": "March in place",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Light pace, swing arms, raise heart rate gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=March%20in%20place%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-march.webp"
+            },
+            {
+              "id": "wu-calf-raise",
+              "name": "Calf raises",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "calves"
+              ],
+              "progression": "Full ankle range, both feet",
+              "demoUrl": "https://www.youtube.com/results?search_query=Calf%20raises%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-calf-raise.webp"
+            },
+            {
+              "id": "wu-glute-bridge",
+              "name": "Glute bridge",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "glutes",
+                "hamstrings",
+                "core"
+              ],
+              "progression": "Squeeze glutes at top, no lower-back arch",
+              "demoUrl": "https://www.youtube.com/results?search_query=Glute%20bridge%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-glute-bridge.webp"
+            },
+            {
+              "id": "wu-bird-dog",
+              "name": "Bird dog",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "core",
+                "glutes"
+              ],
+              "progression": "Opposite arm/leg, hold 2s, brace midsection",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bird%20dog%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bird-dog.webp"
+            },
+            {
+              "id": "standing-barbell-calf-raise",
+              "name": "Standing Barbell Calf Raise",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "calves"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Barbell%20Calf%20Raise%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Barbell_Calf_Raise/0.jpg",
+              "demoAnimUrl": "/demos/standing-barbell-calf-raise.webp"
+            },
+            {
+              "id": "barbell-side-bend",
+              "name": "Barbell Side Bend",
+              "slot": "core",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abdominals"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Barbell%20Side%20Bend%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Bend/0.jpg",
+              "demoAnimUrl": "/demos/barbell-side-bend.webp"
+            },
+            {
+              "id": "smith-machine-squat",
+              "name": "Smith Machine Squat",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "quadriceps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Smith%20Machine%20Squat%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Squat/0.jpg",
+              "demoAnimUrl": "/demos/smith-machine-squat.webp"
+            },
+            {
+              "id": "cd-calf-wall",
+              "name": "Calf wall stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "calves"
+              ],
+              "progression": "Back heel down, both straight and bent knee",
+              "demoUrl": "https://www.youtube.com/results?search_query=Calf%20wall%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-calf-wall.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 2,
+          "day": "Wednesday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / light mobility \u2014 recovery week"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 3,
+          "day": "Thursday",
+          "focus": "Upper body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 18,
+          "exercises": [
+            {
+              "id": "wu-march",
+              "name": "March in place",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Light pace, swing arms, raise heart rate gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=March%20in%20place%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-march.webp"
+            },
+            {
+              "id": "wu-bird-dog",
+              "name": "Bird dog",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "core",
+                "glutes"
+              ],
+              "progression": "Opposite arm/leg, hold 2s, brace midsection",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bird%20dog%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bird-dog.webp"
+            },
+            {
+              "id": "barbell-deadlift",
+              "name": "Barbell Deadlift",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "5-7",
+              "rest": 145,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "back",
+                "glutes",
+                "hamstrings"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://exrx.net/WeightExercises/ErectorSpinae/BBDeadlift",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg",
+              "demoAnimUrl": "/demos/barbell-deadlift.webp"
+            },
+            {
+              "id": "single-arm-linear-jammer",
+              "name": "Single-Arm Linear Jammer",
+              "slot": "push",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Single-Arm%20Linear%20Jammer%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Arm_Linear_Jammer/0.jpg",
+              "demoAnimUrl": "/demos/single-arm-linear-jammer.webp"
+            },
+            {
+              "id": "deficit-deadlift",
+              "name": "Deficit Deadlift",
+              "slot": "core",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "lower back"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Deficit%20Deadlift%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Deficit_Deadlift/0.jpg",
+              "demoAnimUrl": "/demos/deficit-deadlift.webp"
+            },
+            {
+              "id": "car-drivers",
+              "name": "Car Drivers",
+              "slot": "push",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Car%20Drivers%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Car_Drivers/0.jpg",
+              "demoAnimUrl": "/demos/car-drivers.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "workout",
+          "dayIndex": 4,
+          "day": "Friday",
+          "focus": "Lower body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 15,
+          "exercises": [
+            {
+              "id": "wu-high-knees",
+              "name": "High knees (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Low intensity \u2014 just get blood moving",
+              "demoUrl": "https://www.youtube.com/results?search_query=High%20knees%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-high-knees.webp"
+            },
+            {
+              "id": "wu-calf-raise",
+              "name": "Calf raises",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "calves"
+              ],
+              "progression": "Full ankle range, both feet",
+              "demoUrl": "https://www.youtube.com/results?search_query=Calf%20raises%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-calf-raise.webp"
+            },
+            {
+              "id": "wu-dead-bug",
+              "name": "Dead bug",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core"
+              ],
+              "progression": "Low back pressed to floor; slow opposite limbs",
+              "demoUrl": "https://www.youtube.com/results?search_query=Dead%20bug%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-dead-bug.webp"
+            },
+            {
+              "id": "wu-cat-cow",
+              "name": "Cat\u2013cow",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "core"
+              ],
+              "progression": "On all fours, slow spinal flexion/extension",
+              "demoUrl": "https://www.youtube.com/results?search_query=Cat%E2%80%93cow%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-cat-cow.webp"
+            },
+            {
+              "id": "standing-calf-raises",
+              "name": "Standing Calf Raises",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "calves"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://exrx.net/WeightExercises/Gastrocnemius/BBStandingCalfRaise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/0.jpg",
+              "demoAnimUrl": "/demos/standing-calf-raises.webp"
+            },
+            {
+              "id": "landmine-180-s",
+              "name": "Landmine 180\u0027s",
+              "slot": "core",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "abdominals"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Landmine%20180%27s%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Landmine_180s/0.jpg",
+              "demoAnimUrl": "/demos/landmine-180-s.webp"
+            },
+            {
+              "id": "narrow-stance-leg-press",
+              "name": "Narrow Stance Leg Press",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "quadriceps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Narrow%20Stance%20Leg%20Press%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Narrow_Stance_Leg_Press/0.jpg",
+              "demoAnimUrl": "/demos/narrow-stance-leg-press.webp"
+            },
+            {
+              "id": "cd-calf-wall",
+              "name": "Calf wall stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "calves"
+              ],
+              "progression": "Back heel down, both straight and bent knee",
+              "demoUrl": "https://www.youtube.com/results?search_query=Calf%20wall%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-calf-wall.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 5,
+          "day": "Saturday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / light mobility \u2014 recovery week"
+        },
+        {
+          "type": "rest",
+          "dayIndex": 6,
+          "day": "Sunday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / light mobility \u2014 recovery week"
+        }
+      ]
+    }
+  ],
+  "generatedAt": "1970-01-01T00:00:00.0000000Z",
+  "progressionSummary": "Linear progression for 4 weeks: gradually harder training for building muscle, with planned recovery (deload) weeks so you don\u2019t burn out.",
+  "rehabProgressions": []
+}

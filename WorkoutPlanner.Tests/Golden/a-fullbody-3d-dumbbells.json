@@ -1,0 +1,2840 @@
+{
+  "criteria": {
+    "weeks": 4,
+    "daysPerWeek": 3,
+    "workoutDays": [
+      0,
+      2,
+      4
+    ],
+    "sessionMinutes": 45,
+    "equipment": [
+      "dumbbells"
+    ],
+    "split": "full-body",
+    "goal": "hypertrophy",
+    "level": "beginner",
+    "includeWarmup": true,
+    "includeCooldown": true,
+    "restrictions": [],
+    "rehab": [],
+    "favoriteExerciseIds": [],
+    "dislikedExerciseIds": [],
+    "progression": "linear",
+    "mixMode": "strength",
+    "seed": 1001,
+    "avoidExerciseIds": []
+  },
+  "plan": [
+    {
+      "week": 1,
+      "phase": "base",
+      "phaseLabel": "Foundation week",
+      "focusNote": "Establish baseline weights you can control. Leave 2\u20133 reps in reserve.",
+      "days": [
+        {
+          "type": "workout",
+          "dayIndex": 0,
+          "day": "Monday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 21,
+          "exercises": [
+            {
+              "id": "wu-jacks",
+              "name": "Jumping jacks",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Soft landings; skip or step-jacks if joints prefer",
+              "demoUrl": "https://www.youtube.com/results?search_query=Jumping%20jacks%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-jacks.webp"
+            },
+            {
+              "id": "wu-wrist-circles",
+              "name": "Wrist circles \u0026 open/close",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "forearms",
+                "biceps",
+                "triceps"
+              ],
+              "progression": "Prep elbows/wrists before curling or pressing",
+              "demoUrl": "https://www.youtube.com/results?search_query=Wrist%20circles%20%26%20open%2Fclose%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-wrist-circles.webp"
+            },
+            {
+              "id": "wu-torso-twist",
+              "name": "Standing torso twists",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back"
+              ],
+              "progression": "Feet planted, gentle rotation",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20torso%20twists%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-torso-twist.webp"
+            },
+            {
+              "id": "wu-bird-dog",
+              "name": "Bird dog",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "core",
+                "glutes"
+              ],
+              "progression": "Opposite arm/leg, hold 2s, brace midsection",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bird%20dog%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bird-dog.webp"
+            },
+            {
+              "id": "db-triceps-extension",
+              "name": "Dumbbell Triceps Extension",
+              "slot": "push",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "12-15",
+              "rest": 30,
+              "workDuration": 35,
+              "isTimeBased": false,
+              "primary": [
+                "triceps"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Triceps%20Extension",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/db-triceps-extension.webp"
+            },
+            {
+              "id": "db-curl",
+              "name": "Dumbbell Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "12-15",
+              "rest": 30,
+              "workDuration": 35,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBCurl",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/db-curl.webp"
+            },
+            {
+              "id": "dumbbell-shrug",
+              "name": "Dumbbell Shrug",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "traps"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://exrx.net/WeightExercises/TrapeziusUpper/DBShrug",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/0.jpg",
+              "demoAnimUrl": "/demos/dumbbell-shrug.webp"
+            },
+            {
+              "id": "farmers-carry",
+              "name": "Farmer\u0027s Carry",
+              "slot": "carry",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "30-45 sec",
+              "rest": 30,
+              "workDuration": 45,
+              "isTimeBased": true,
+              "primary": [
+                "grip",
+                "core",
+                "traps"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Farmer%27s%20Carry",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/farmers-carry.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            },
+            {
+              "id": "cd-cobra",
+              "name": "Prone press-up / cobra",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back"
+              ],
+              "progression": "Gentle extension, hips stay down",
+              "demoUrl": "https://www.youtube.com/results?search_query=Prone%20press-up%20%2F%20cobra%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-cobra.webp"
+            },
+            {
+              "id": "cd-forearm-stretch",
+              "name": "Forearm flexor/extensor stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "forearms",
+                "biceps"
+              ],
+              "progression": "Arm straight, gentle palm up then palm down",
+              "demoUrl": "https://www.youtube.com/results?search_query=Forearm%20flexor%2Fextensor%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-forearm-stretch.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 1,
+          "day": "Tuesday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 2,
+          "day": "Wednesday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 21,
+          "exercises": [
+            {
+              "id": "wu-high-knees",
+              "name": "High knees (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Low intensity \u2014 just get blood moving",
+              "demoUrl": "https://www.youtube.com/results?search_query=High%20knees%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-high-knees.webp"
+            },
+            {
+              "id": "wu-wrist-circles",
+              "name": "Wrist circles \u0026 open/close",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "forearms",
+                "biceps",
+                "triceps"
+              ],
+              "progression": "Prep elbows/wrists before curling or pressing",
+              "demoUrl": "https://www.youtube.com/results?search_query=Wrist%20circles%20%26%20open%2Fclose%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-wrist-circles.webp"
+            },
+            {
+              "id": "wu-scap-pushup",
+              "name": "Scapular push-ups",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "chest",
+                "shoulders",
+                "triceps"
+              ],
+              "progression": "Plank or knees: spread then squeeze shoulder blades",
+              "demoUrl": "https://www.youtube.com/results?search_query=Scapular%20push-ups%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-scap-pushup.webp"
+            },
+            {
+              "id": "tricep-dumbbell-kickback",
+              "name": "Tricep Dumbbell Kickback",
+              "slot": "push",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "triceps"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBKickback",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Tricep_Dumbbell_Kickback/0.jpg",
+              "demoAnimUrl": "/demos/tricep-dumbbell-kickback.webp"
+            },
+            {
+              "id": "standing-bent-over-two-arm-dumbbell-triceps-extension",
+              "name": "Standing Bent-Over Two-Arm Dumbbell Triceps Extension",
+              "slot": "push",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "triceps"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBBentOverTricepsExtension",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Bent-Over_Two-Arm_Dumbbell_Triceps_Extension/0.jpg",
+              "demoAnimUrl": "/demos/standing-bent-over-two-arm-dumbbell-triceps-extension.webp"
+            },
+            {
+              "id": "standing-concentration-curl",
+              "name": "Standing Concentration Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://exrx.net/WeightExercises/Brachialis/DBConcentrationCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Concentration_Curl/0.jpg",
+              "demoAnimUrl": "/demos/standing-concentration-curl.webp"
+            },
+            {
+              "id": "hammer-curls",
+              "name": "Hammer Curls",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBInclineHammerCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hammer_Curls/0.jpg",
+              "demoAnimUrl": "/demos/hammer-curls.webp"
+            },
+            {
+              "id": "cd-forearm-stretch",
+              "name": "Forearm flexor/extensor stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "forearms",
+                "biceps"
+              ],
+              "progression": "Arm straight, gentle palm up then palm down",
+              "demoUrl": "https://www.youtube.com/results?search_query=Forearm%20flexor%2Fextensor%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-forearm-stretch.webp"
+            },
+            {
+              "id": "cd-tricep-oh",
+              "name": "Overhead triceps stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "triceps",
+                "shoulders"
+              ],
+              "progression": "Elbow to ceiling, light pressure on elbow",
+              "demoUrl": "https://www.youtube.com/results?search_query=Overhead%20triceps%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-tricep-oh.webp"
+            },
+            {
+              "id": "cd-breathe",
+              "name": "Box breathing (easy)",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "In 4 \u00B7 hold 4 \u00B7 out 4 \u00B7 hold 4 \u2014 downshift nervous system",
+              "demoUrl": "https://www.youtube.com/results?search_query=Box%20breathing%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-breathe.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 3,
+          "day": "Thursday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 4,
+          "day": "Friday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 24,
+          "exercises": [
+            {
+              "id": "wu-jacks",
+              "name": "Jumping jacks",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Soft landings; skip or step-jacks if joints prefer",
+              "demoUrl": "https://www.youtube.com/results?search_query=Jumping%20jacks%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-jacks.webp"
+            },
+            {
+              "id": "wu-shoulder-rolls",
+              "name": "Shoulder rolls",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "back",
+                "neck"
+              ],
+              "progression": "Slow forward and back, relax neck",
+              "demoUrl": "https://www.youtube.com/results?search_query=Shoulder%20rolls%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-shoulder-rolls.webp"
+            },
+            {
+              "id": "wu-arm-circles",
+              "name": "Arm circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "chest",
+                "back"
+              ],
+              "progression": "Small to large circles, both directions",
+              "demoUrl": "https://www.youtube.com/results?search_query=Arm%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-arm-circles.webp"
+            },
+            {
+              "id": "wu-scap-pushup",
+              "name": "Scapular push-ups",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "chest",
+                "shoulders",
+                "triceps"
+              ],
+              "progression": "Plank or knees: spread then squeeze shoulder blades",
+              "demoUrl": "https://www.youtube.com/results?search_query=Scapular%20push-ups%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-scap-pushup.webp"
+            },
+            {
+              "id": "one-arm-side-laterals",
+              "name": "One-Arm Side Laterals",
+              "slot": "push",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=One-Arm%20Side%20Laterals%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Side_Laterals/0.jpg",
+              "demoAnimUrl": "/demos/one-arm-side-laterals.webp"
+            },
+            {
+              "id": "bent-over-two-dumbbell-row",
+              "name": "Bent Over Two-Dumbbell Row",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "middle back"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/DBBentOverRow",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Two-Dumbbell_Row/0.jpg",
+              "demoAnimUrl": "/demos/bent-over-two-dumbbell-row.webp"
+            },
+            {
+              "id": "front-dumbbell-raise",
+              "name": "Front Dumbbell Raise",
+              "slot": "push",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/DBFrontRaise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Dumbbell_Raise/0.jpg",
+              "demoAnimUrl": "/demos/front-dumbbell-raise.webp"
+            },
+            {
+              "id": "external-rotation",
+              "name": "External Rotation",
+              "slot": "push",
+              "phase": "work",
+              "sets": 3,
+              "repsDisplay": "8-12",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Learn the movement; use a weight you can control with good form.",
+              "demoUrl": "https://www.youtube.com/results?search_query=External%20Rotation%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/External_Rotation/0.jpg",
+              "demoAnimUrl": "/demos/external-rotation.webp"
+            },
+            {
+              "id": "cd-child-pose",
+              "name": "Child\u2019s pose",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "45s",
+              "rest": 10,
+              "workDuration": 45,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "shoulders",
+                "hips"
+              ],
+              "progression": "Hips to heels, arms reach forward, relax",
+              "demoUrl": "https://www.youtube.com/results?search_query=Child%E2%80%99s%20pose%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-child-pose.webp"
+            },
+            {
+              "id": "cd-thread-needle",
+              "name": "Thread the needle",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "shoulders"
+              ],
+              "progression": "On all fours, thread arm under; both sides",
+              "demoUrl": "https://www.youtube.com/results?search_query=Thread%20the%20needle%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-thread-needle.webp"
+            },
+            {
+              "id": "cd-cross-body",
+              "name": "Cross-body shoulder stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "back"
+              ],
+              "progression": "Arm across chest, soft shoulders",
+              "demoUrl": "https://www.youtube.com/results?search_query=Cross-body%20shoulder%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-cross-body.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 5,
+          "day": "Saturday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "rest",
+          "dayIndex": 6,
+          "day": "Sunday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "phase": "build",
+      "phaseLabel": "Build week",
+      "focusNote": "Nudge difficulty: add a little weight, an extra rep, or keep the same load feeling smoother.",
+      "days": [
+        {
+          "type": "workout",
+          "dayIndex": 0,
+          "day": "Monday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 28,
+          "exercises": [
+            {
+              "id": "wu-march",
+              "name": "March in place",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Light pace, swing arms, raise heart rate gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=March%20in%20place%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-march.webp"
+            },
+            {
+              "id": "wu-shoulder-rolls",
+              "name": "Shoulder rolls",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "back",
+                "neck"
+              ],
+              "progression": "Slow forward and back, relax neck",
+              "demoUrl": "https://www.youtube.com/results?search_query=Shoulder%20rolls%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-shoulder-rolls.webp"
+            },
+            {
+              "id": "wu-arm-circles",
+              "name": "Arm circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "chest",
+                "back"
+              ],
+              "progression": "Small to large circles, both directions",
+              "demoUrl": "https://www.youtube.com/results?search_query=Arm%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-arm-circles.webp"
+            },
+            {
+              "id": "wu-scap-pushup",
+              "name": "Scapular push-ups",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "chest",
+                "shoulders",
+                "triceps"
+              ],
+              "progression": "Plank or knees: spread then squeeze shoulder blades",
+              "demoUrl": "https://www.youtube.com/results?search_query=Scapular%20push-ups%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-scap-pushup.webp"
+            },
+            {
+              "id": "dumbbell-scaption",
+              "name": "Dumbbell Scaption",
+              "slot": "push",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Dumbbell%20Scaption%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Scaption/0.jpg",
+              "demoAnimUrl": "/demos/dumbbell-scaption.webp"
+            },
+            {
+              "id": "dumbbell-shrug",
+              "name": "Dumbbell Shrug",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "traps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/TrapeziusUpper/DBShrug",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/0.jpg",
+              "demoAnimUrl": "/demos/dumbbell-shrug.webp"
+            },
+            {
+              "id": "one-arm-dumbbell-row",
+              "name": "One-Arm Dumbbell Row",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "middle back"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/DBBentOverRow",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Dumbbell_Row/0.jpg",
+              "demoAnimUrl": "/demos/one-arm-dumbbell-row.webp"
+            },
+            {
+              "id": "close-grip-dumbbell-press",
+              "name": "Close-Grip Dumbbell Press",
+              "slot": "push",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "triceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Close-Grip%20Dumbbell%20Press%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Dumbbell_Press/0.jpg",
+              "demoAnimUrl": "/demos/close-grip-dumbbell-press.webp"
+            },
+            {
+              "id": "cd-cross-body",
+              "name": "Cross-body shoulder stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "back"
+              ],
+              "progression": "Arm across chest, soft shoulders",
+              "demoUrl": "https://www.youtube.com/results?search_query=Cross-body%20shoulder%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-cross-body.webp"
+            },
+            {
+              "id": "cd-child-pose",
+              "name": "Child\u2019s pose",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "45s",
+              "rest": 10,
+              "workDuration": 45,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "shoulders",
+                "hips"
+              ],
+              "progression": "Hips to heels, arms reach forward, relax",
+              "demoUrl": "https://www.youtube.com/results?search_query=Child%E2%80%99s%20pose%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-child-pose.webp"
+            },
+            {
+              "id": "cd-thread-needle",
+              "name": "Thread the needle",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "shoulders"
+              ],
+              "progression": "On all fours, thread arm under; both sides",
+              "demoUrl": "https://www.youtube.com/results?search_query=Thread%20the%20needle%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-thread-needle.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 1,
+          "day": "Tuesday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 2,
+          "day": "Wednesday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 28,
+          "exercises": [
+            {
+              "id": "wu-jacks",
+              "name": "Jumping jacks",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Soft landings; skip or step-jacks if joints prefer",
+              "demoUrl": "https://www.youtube.com/results?search_query=Jumping%20jacks%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-jacks.webp"
+            },
+            {
+              "id": "wu-leg-swings",
+              "name": "Leg swings",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "hips",
+                "quads",
+                "glutes"
+              ],
+              "progression": "Front-to-back then side-to-side, controlled",
+              "demoUrl": "https://www.youtube.com/results?search_query=Leg%20swings%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-leg-swings.webp"
+            },
+            {
+              "id": "wu-hip-circles",
+              "name": "Standing hip circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hips",
+                "glutes",
+                "quads",
+                "hamstrings"
+              ],
+              "progression": "Hands on hips, slow circles each way",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hip%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-hip-circles.webp"
+            },
+            {
+              "id": "wu-bw-squat",
+              "name": "Bodyweight squat (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "quads",
+                "glutes",
+                "hamstrings"
+              ],
+              "progression": "Shallow to full as you warm; no load",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bodyweight%20squat%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bw-squat.webp"
+            },
+            {
+              "id": "db-lunge",
+              "name": "Dumbbell Lunge",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "11-13",
+              "rest": 45,
+              "workDuration": 40,
+              "isTimeBased": false,
+              "primary": [
+                "legs",
+                "glutes"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBLunge",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/db-lunge.webp"
+            },
+            {
+              "id": "dumbbell-bicep-curl",
+              "name": "Dumbbell Bicep Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bicep_Curl/0.jpg",
+              "demoAnimUrl": "/demos/dumbbell-bicep-curl.webp"
+            },
+            {
+              "id": "cross-body-hammer-curl",
+              "name": "Cross Body Hammer Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/Brachioradialis/DBCrossBodyHammerCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cross_Body_Hammer_Curl/0.jpg",
+              "demoAnimUrl": "/demos/cross-body-hammer-curl.webp"
+            },
+            {
+              "id": "front-dumbbell-raise",
+              "name": "Front Dumbbell Raise",
+              "slot": "push",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/DBFrontRaise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Dumbbell_Raise/0.jpg",
+              "demoAnimUrl": "/demos/front-dumbbell-raise.webp"
+            },
+            {
+              "id": "cd-forearm-stretch",
+              "name": "Forearm flexor/extensor stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "forearms",
+                "biceps"
+              ],
+              "progression": "Arm straight, gentle palm up then palm down",
+              "demoUrl": "https://www.youtube.com/results?search_query=Forearm%20flexor%2Fextensor%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-forearm-stretch.webp"
+            },
+            {
+              "id": "cd-fig4",
+              "name": "Figure-4 glute stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "glutes",
+                "hips"
+              ],
+              "progression": "Seated or lying; ankle on opposite knee",
+              "demoUrl": "https://www.youtube.com/results?search_query=Figure-4%20glute%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-fig4.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 3,
+          "day": "Thursday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 4,
+          "day": "Friday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 27,
+          "exercises": [
+            {
+              "id": "wu-high-knees",
+              "name": "High knees (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Low intensity \u2014 just get blood moving",
+              "demoUrl": "https://www.youtube.com/results?search_query=High%20knees%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-high-knees.webp"
+            },
+            {
+              "id": "wu-arm-circles",
+              "name": "Arm circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "chest",
+                "back"
+              ],
+              "progression": "Small to large circles, both directions",
+              "demoUrl": "https://www.youtube.com/results?search_query=Arm%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-arm-circles.webp"
+            },
+            {
+              "id": "wu-torso-twist",
+              "name": "Standing torso twists",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back"
+              ],
+              "progression": "Feet planted, gentle rotation",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20torso%20twists%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-torso-twist.webp"
+            },
+            {
+              "id": "wu-cat-cow",
+              "name": "Cat\u2013cow",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "core"
+              ],
+              "progression": "On all fours, slow spinal flexion/extension",
+              "demoUrl": "https://www.youtube.com/results?search_query=Cat%E2%80%93cow%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-cat-cow.webp"
+            },
+            {
+              "id": "plie-dumbbell-squat",
+              "name": "Plie Dumbbell Squat",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "quadriceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBSquat",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plie_Dumbbell_Squat/0.jpg",
+              "demoAnimUrl": "/demos/plie-dumbbell-squat.webp"
+            },
+            {
+              "id": "standing-dumbbell-upright-row",
+              "name": "Standing Dumbbell Upright Row",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "traps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Dumbbell%20Upright%20Row%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Dumbbell_Upright_Row/0.jpg",
+              "demoAnimUrl": "/demos/standing-dumbbell-upright-row.webp"
+            },
+            {
+              "id": "dumbbell-flyes",
+              "name": "Dumbbell Flyes",
+              "slot": "push",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "9-13",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "chest"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/DBFly",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Flyes/0.jpg",
+              "demoAnimUrl": "/demos/dumbbell-flyes.webp"
+            },
+            {
+              "id": "farmers-carry",
+              "name": "Farmer\u0027s Carry",
+              "slot": "carry",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "31-46 sec",
+              "rest": 30,
+              "workDuration": 45,
+              "isTimeBased": true,
+              "primary": [
+                "grip",
+                "core",
+                "traps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Farmer%27s%20Carry",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/farmers-carry.webp"
+            },
+            {
+              "id": "cd-cobra",
+              "name": "Prone press-up / cobra",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back"
+              ],
+              "progression": "Gentle extension, hips stay down",
+              "demoUrl": "https://www.youtube.com/results?search_query=Prone%20press-up%20%2F%20cobra%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-cobra.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            },
+            {
+              "id": "cd-ham-hinge",
+              "name": "Standing hamstring hinge",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "back"
+              ],
+              "progression": "Soft knees, hinge at hips, long spine",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hamstring%20hinge%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-ham-hinge.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 5,
+          "day": "Saturday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "rest",
+          "dayIndex": 6,
+          "day": "Sunday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "phase": "build",
+      "phaseLabel": "Build week",
+      "focusNote": "Nudge difficulty: add a little weight, an extra rep, or keep the same load feeling smoother.",
+      "days": [
+        {
+          "type": "workout",
+          "dayIndex": 0,
+          "day": "Monday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 29,
+          "exercises": [
+            {
+              "id": "wu-march",
+              "name": "March in place",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Light pace, swing arms, raise heart rate gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=March%20in%20place%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-march.webp"
+            },
+            {
+              "id": "wu-wrist-circles",
+              "name": "Wrist circles \u0026 open/close",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "forearms",
+                "biceps",
+                "triceps"
+              ],
+              "progression": "Prep elbows/wrists before curling or pressing",
+              "demoUrl": "https://www.youtube.com/results?search_query=Wrist%20circles%20%26%20open%2Fclose%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-wrist-circles.webp"
+            },
+            {
+              "id": "wu-scap-pushup",
+              "name": "Scapular push-ups",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "chest",
+                "shoulders",
+                "triceps"
+              ],
+              "progression": "Plank or knees: spread then squeeze shoulder blades",
+              "demoUrl": "https://www.youtube.com/results?search_query=Scapular%20push-ups%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-scap-pushup.webp"
+            },
+            {
+              "id": "wu-torso-twist",
+              "name": "Standing torso twists",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back"
+              ],
+              "progression": "Feet planted, gentle rotation",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20torso%20twists%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-torso-twist.webp"
+            },
+            {
+              "id": "one-arm-dumbbell-row",
+              "name": "One-Arm Dumbbell Row",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "middle back"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/DBBentOverRow",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Dumbbell_Row/0.jpg",
+              "demoAnimUrl": "/demos/one-arm-dumbbell-row.webp"
+            },
+            {
+              "id": "cross-body-hammer-curl",
+              "name": "Cross Body Hammer Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/Brachioradialis/DBCrossBodyHammerCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cross_Body_Hammer_Curl/0.jpg",
+              "demoAnimUrl": "/demos/cross-body-hammer-curl.webp"
+            },
+            {
+              "id": "db-triceps-extension",
+              "name": "Dumbbell Triceps Extension",
+              "slot": "push",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "14-17",
+              "rest": 30,
+              "workDuration": 35,
+              "isTimeBased": false,
+              "primary": [
+                "triceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Dumbbell%20Triceps%20Extension",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/db-triceps-extension.webp"
+            },
+            {
+              "id": "standing-one-arm-dumbbell-triceps-extension",
+              "name": "Standing One-Arm Dumbbell Triceps Extension",
+              "slot": "push",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "triceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/Triceps/DBOneArmBentOverTricepsExtension",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_One-Arm_Dumbbell_Triceps_Extension/0.jpg",
+              "demoAnimUrl": "/demos/standing-one-arm-dumbbell-triceps-extension.webp"
+            },
+            {
+              "id": "cd-tricep-oh",
+              "name": "Overhead triceps stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "triceps",
+                "shoulders"
+              ],
+              "progression": "Elbow to ceiling, light pressure on elbow",
+              "demoUrl": "https://www.youtube.com/results?search_query=Overhead%20triceps%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-tricep-oh.webp"
+            },
+            {
+              "id": "cd-cross-body",
+              "name": "Cross-body shoulder stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "back"
+              ],
+              "progression": "Arm across chest, soft shoulders",
+              "demoUrl": "https://www.youtube.com/results?search_query=Cross-body%20shoulder%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-cross-body.webp"
+            },
+            {
+              "id": "cd-thread-needle",
+              "name": "Thread the needle",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "shoulders"
+              ],
+              "progression": "On all fours, thread arm under; both sides",
+              "demoUrl": "https://www.youtube.com/results?search_query=Thread%20the%20needle%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-thread-needle.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 1,
+          "day": "Tuesday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 2,
+          "day": "Wednesday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 32,
+          "exercises": [
+            {
+              "id": "wu-march",
+              "name": "March in place",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Light pace, swing arms, raise heart rate gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=March%20in%20place%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-march.webp"
+            },
+            {
+              "id": "wu-bird-dog",
+              "name": "Bird dog",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "core",
+                "glutes"
+              ],
+              "progression": "Opposite arm/leg, hold 2s, brace midsection",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bird%20dog%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bird-dog.webp"
+            },
+            {
+              "id": "wu-arm-circles",
+              "name": "Arm circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "chest",
+                "back"
+              ],
+              "progression": "Small to large circles, both directions",
+              "demoUrl": "https://www.youtube.com/results?search_query=Arm%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-arm-circles.webp"
+            },
+            {
+              "id": "wu-shoulder-rolls",
+              "name": "Shoulder rolls",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "back",
+                "neck"
+              ],
+              "progression": "Slow forward and back, relax neck",
+              "demoUrl": "https://www.youtube.com/results?search_query=Shoulder%20rolls%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-shoulder-rolls.webp"
+            },
+            {
+              "id": "dumbbell-alternate-bicep-curl",
+              "name": "Dumbbell Alternate Bicep Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Bicep_Curl/0.jpg",
+              "demoAnimUrl": "/demos/dumbbell-alternate-bicep-curl.webp"
+            },
+            {
+              "id": "standing-dumbbell-upright-row",
+              "name": "Standing Dumbbell Upright Row",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "traps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Dumbbell%20Upright%20Row%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Dumbbell_Upright_Row/0.jpg",
+              "demoAnimUrl": "/demos/standing-dumbbell-upright-row.webp"
+            },
+            {
+              "id": "goblet-squat",
+              "name": "Goblet Squat",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "12-14",
+              "rest": 45,
+              "workDuration": 40,
+              "isTimeBased": false,
+              "primary": [
+                "legs",
+                "glutes"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBGobletSquat",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Goblet_Squat/0.jpg",
+              "demoAnimUrl": "/demos/goblet-squat.webp"
+            },
+            {
+              "id": "single-dumbbell-raise",
+              "name": "Single Dumbbell Raise",
+              "slot": "push",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Single%20Dumbbell%20Raise%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single_Dumbbell_Raise/0.jpg",
+              "demoAnimUrl": "/demos/single-dumbbell-raise.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            },
+            {
+              "id": "cd-thread-needle",
+              "name": "Thread the needle",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "shoulders"
+              ],
+              "progression": "On all fours, thread arm under; both sides",
+              "demoUrl": "https://www.youtube.com/results?search_query=Thread%20the%20needle%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-thread-needle.webp"
+            },
+            {
+              "id": "cd-child-pose",
+              "name": "Child\u2019s pose",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "45s",
+              "rest": 10,
+              "workDuration": 45,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "shoulders",
+                "hips"
+              ],
+              "progression": "Hips to heels, arms reach forward, relax",
+              "demoUrl": "https://www.youtube.com/results?search_query=Child%E2%80%99s%20pose%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-child-pose.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 3,
+          "day": "Thursday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 4,
+          "day": "Friday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 30,
+          "exercises": [
+            {
+              "id": "wu-jacks",
+              "name": "Jumping jacks",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Soft landings; skip or step-jacks if joints prefer",
+              "demoUrl": "https://www.youtube.com/results?search_query=Jumping%20jacks%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-jacks.webp"
+            },
+            {
+              "id": "wu-arm-circles",
+              "name": "Arm circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "chest",
+                "back"
+              ],
+              "progression": "Small to large circles, both directions",
+              "demoUrl": "https://www.youtube.com/results?search_query=Arm%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-arm-circles.webp"
+            },
+            {
+              "id": "wu-wrist-circles",
+              "name": "Wrist circles \u0026 open/close",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "forearms",
+                "biceps",
+                "triceps"
+              ],
+              "progression": "Prep elbows/wrists before curling or pressing",
+              "demoUrl": "https://www.youtube.com/results?search_query=Wrist%20circles%20%26%20open%2Fclose%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-wrist-circles.webp"
+            },
+            {
+              "id": "wu-bird-dog",
+              "name": "Bird dog",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "core",
+                "glutes"
+              ],
+              "progression": "Opposite arm/leg, hold 2s, brace midsection",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bird%20dog%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bird-dog.webp"
+            },
+            {
+              "id": "hammer-curl",
+              "name": "Hammer Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "14-17",
+              "rest": 30,
+              "workDuration": 35,
+              "isTimeBased": false,
+              "primary": [
+                "biceps",
+                "forearms"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/Brachioradialis/DBHammerCurl",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/hammer-curl.webp"
+            },
+            {
+              "id": "farmers-carry",
+              "name": "Farmer\u0027s Carry",
+              "slot": "carry",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "32-47 sec",
+              "rest": 30,
+              "workDuration": 45,
+              "isTimeBased": true,
+              "primary": [
+                "grip",
+                "core",
+                "traps"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Farmer%27s%20Carry",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/farmers-carry.webp"
+            },
+            {
+              "id": "dumbbell-flyes",
+              "name": "Dumbbell Flyes",
+              "slot": "push",
+              "phase": "work",
+              "sets": 5,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "chest"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/DBFly",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Flyes/0.jpg",
+              "demoAnimUrl": "/demos/dumbbell-flyes.webp"
+            },
+            {
+              "id": "one-arm-dumbbell-row",
+              "name": "One-Arm Dumbbell Row",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 4,
+              "repsDisplay": "10-14",
+              "rest": 45,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "middle back"
+              ],
+              "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
+              "demoUrl": "https://exrx.net/WeightExercises/BackGeneral/DBBentOverRow",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Dumbbell_Row/0.jpg",
+              "demoAnimUrl": "/demos/one-arm-dumbbell-row.webp"
+            },
+            {
+              "id": "cd-forearm-stretch",
+              "name": "Forearm flexor/extensor stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "forearms",
+                "biceps"
+              ],
+              "progression": "Arm straight, gentle palm up then palm down",
+              "demoUrl": "https://www.youtube.com/results?search_query=Forearm%20flexor%2Fextensor%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-forearm-stretch.webp"
+            },
+            {
+              "id": "cd-cobra",
+              "name": "Prone press-up / cobra",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back"
+              ],
+              "progression": "Gentle extension, hips stay down",
+              "demoUrl": "https://www.youtube.com/results?search_query=Prone%20press-up%20%2F%20cobra%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-cobra.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 5,
+          "day": "Saturday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        },
+        {
+          "type": "rest",
+          "dayIndex": 6,
+          "day": "Sunday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / mobility"
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "phase": "deload",
+      "phaseLabel": "Recovery (deload)",
+      "focusNote": "Reduce volume and effort (~60% of a hard week). Sleep, mobility, and easy movement count. Come back fresh next week.",
+      "days": [
+        {
+          "type": "workout",
+          "dayIndex": 0,
+          "day": "Monday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 19,
+          "exercises": [
+            {
+              "id": "wu-march",
+              "name": "March in place",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Light pace, swing arms, raise heart rate gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=March%20in%20place%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-march.webp"
+            },
+            {
+              "id": "wu-arm-circles",
+              "name": "Arm circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "chest",
+                "back"
+              ],
+              "progression": "Small to large circles, both directions",
+              "demoUrl": "https://www.youtube.com/results?search_query=Arm%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-arm-circles.webp"
+            },
+            {
+              "id": "wu-shoulder-rolls",
+              "name": "Shoulder rolls",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "back",
+                "neck"
+              ],
+              "progression": "Slow forward and back, relax neck",
+              "demoUrl": "https://www.youtube.com/results?search_query=Shoulder%20rolls%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-shoulder-rolls.webp"
+            },
+            {
+              "id": "wu-torso-twist",
+              "name": "Standing torso twists",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back"
+              ],
+              "progression": "Feet planted, gentle rotation",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20torso%20twists%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-torso-twist.webp"
+            },
+            {
+              "id": "split-squat-with-dumbbells",
+              "name": "Split Squat with Dumbbells",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "quadriceps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Split%20Squat%20with%20Dumbbells%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Split_Squat_with_Dumbbells/0.jpg",
+              "demoAnimUrl": "/demos/split-squat-with-dumbbells.webp"
+            },
+            {
+              "id": "cross-body-hammer-curl",
+              "name": "Cross Body Hammer Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://exrx.net/WeightExercises/Brachioradialis/DBCrossBodyHammerCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cross_Body_Hammer_Curl/0.jpg",
+              "demoAnimUrl": "/demos/cross-body-hammer-curl.webp"
+            },
+            {
+              "id": "dumbbell-shrug",
+              "name": "Dumbbell Shrug",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "traps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://exrx.net/WeightExercises/TrapeziusUpper/DBShrug",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/0.jpg",
+              "demoAnimUrl": "/demos/dumbbell-shrug.webp"
+            },
+            {
+              "id": "standing-palm-in-one-arm-dumbbell-press",
+              "name": "Standing Palm-In One-Arm Dumbbell Press",
+              "slot": "push",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Palm-In%20One-Arm%20Dumbbell%20Press%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Palm-In_One-Arm_Dumbbell_Press/0.jpg",
+              "demoAnimUrl": "/demos/standing-palm-in-one-arm-dumbbell-press.webp"
+            },
+            {
+              "id": "cd-child-pose",
+              "name": "Child\u2019s pose",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "45s",
+              "rest": 10,
+              "workDuration": 45,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "shoulders",
+                "hips"
+              ],
+              "progression": "Hips to heels, arms reach forward, relax",
+              "demoUrl": "https://www.youtube.com/results?search_query=Child%E2%80%99s%20pose%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-child-pose.webp"
+            },
+            {
+              "id": "cd-cross-body",
+              "name": "Cross-body shoulder stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "shoulders",
+                "back"
+              ],
+              "progression": "Arm across chest, soft shoulders",
+              "demoUrl": "https://www.youtube.com/results?search_query=Cross-body%20shoulder%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-cross-body.webp"
+            },
+            {
+              "id": "cd-thread-needle",
+              "name": "Thread the needle",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "shoulders"
+              ],
+              "progression": "On all fours, thread arm under; both sides",
+              "demoUrl": "https://www.youtube.com/results?search_query=Thread%20the%20needle%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-thread-needle.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 1,
+          "day": "Tuesday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / light mobility \u2014 recovery week"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 2,
+          "day": "Wednesday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 19,
+          "exercises": [
+            {
+              "id": "wu-march",
+              "name": "March in place",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Light pace, swing arms, raise heart rate gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=March%20in%20place%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-march.webp"
+            },
+            {
+              "id": "wu-hip-circles",
+              "name": "Standing hip circles",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hips",
+                "glutes",
+                "quads",
+                "hamstrings"
+              ],
+              "progression": "Hands on hips, slow circles each way",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hip%20circles%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-hip-circles.webp"
+            },
+            {
+              "id": "wu-bw-squat",
+              "name": "Bodyweight squat (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "quads",
+                "glutes",
+                "hamstrings"
+              ],
+              "progression": "Shallow to full as you warm; no load",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bodyweight%20squat%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bw-squat.webp"
+            },
+            {
+              "id": "wu-leg-swings",
+              "name": "Leg swings",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "hamstrings",
+                "hips",
+                "quads",
+                "glutes"
+              ],
+              "progression": "Front-to-back then side-to-side, controlled",
+              "demoUrl": "https://www.youtube.com/results?search_query=Leg%20swings%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-leg-swings.webp"
+            },
+            {
+              "id": "front-two-dumbbell-raise",
+              "name": "Front Two-Dumbbell Raise",
+              "slot": "push",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://exrx.net/WeightExercises/DeltoidAnterior/DBFrontRaise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Two-Dumbbell_Raise/0.jpg",
+              "demoAnimUrl": "/demos/front-two-dumbbell-raise.webp"
+            },
+            {
+              "id": "close-grip-dumbbell-press",
+              "name": "Close-Grip Dumbbell Press",
+              "slot": "push",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "triceps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Close-Grip%20Dumbbell%20Press%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Dumbbell_Press/0.jpg",
+              "demoAnimUrl": "/demos/close-grip-dumbbell-press.webp"
+            },
+            {
+              "id": "db-lunge",
+              "name": "Dumbbell Lunge",
+              "slot": "legs",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "9-11",
+              "rest": 55,
+              "workDuration": 40,
+              "isTimeBased": false,
+              "primary": [
+                "legs",
+                "glutes"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBLunge",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/db-lunge.webp"
+            },
+            {
+              "id": "db-curl",
+              "name": "Dumbbell Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "11-14",
+              "rest": 40,
+              "workDuration": 35,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBCurl",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/db-curl.webp"
+            },
+            {
+              "id": "cd-tricep-oh",
+              "name": "Overhead triceps stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "triceps",
+                "shoulders"
+              ],
+              "progression": "Elbow to ceiling, light pressure on elbow",
+              "demoUrl": "https://www.youtube.com/results?search_query=Overhead%20triceps%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-tricep-oh.webp"
+            },
+            {
+              "id": "cd-forearm-stretch",
+              "name": "Forearm flexor/extensor stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "forearms",
+                "biceps"
+              ],
+              "progression": "Arm straight, gentle palm up then palm down",
+              "demoUrl": "https://www.youtube.com/results?search_query=Forearm%20flexor%2Fextensor%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-forearm-stretch.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 3,
+          "day": "Thursday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / light mobility \u2014 recovery week"
+        },
+        {
+          "type": "workout",
+          "dayIndex": 4,
+          "day": "Friday",
+          "focus": "Full body",
+          "sessionStyle": "strength",
+          "estimatedMinutes": 19,
+          "exercises": [
+            {
+              "id": "wu-high-knees",
+              "name": "High knees (easy)",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "full body"
+              ],
+              "progression": "Low intensity \u2014 just get blood moving",
+              "demoUrl": "https://www.youtube.com/results?search_query=High%20knees%20%28easy%29%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-high-knees.webp"
+            },
+            {
+              "id": "wu-cat-cow",
+              "name": "Cat\u2013cow",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "core"
+              ],
+              "progression": "On all fours, slow spinal flexion/extension",
+              "demoUrl": "https://www.youtube.com/results?search_query=Cat%E2%80%93cow%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-cat-cow.webp"
+            },
+            {
+              "id": "wu-bird-dog",
+              "name": "Bird dog",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "core",
+                "glutes"
+              ],
+              "progression": "Opposite arm/leg, hold 2s, brace midsection",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bird%20dog%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-bird-dog.webp"
+            },
+            {
+              "id": "wu-torso-twist",
+              "name": "Standing torso twists",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back"
+              ],
+              "progression": "Feet planted, gentle rotation",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20torso%20twists%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-torso-twist.webp"
+            },
+            {
+              "id": "standing-alternating-dumbbell-press",
+              "name": "Standing Alternating Dumbbell Press",
+              "slot": "push",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "shoulders"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Alternating%20Dumbbell%20Press%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Alternating_Dumbbell_Press/0.jpg",
+              "demoAnimUrl": "/demos/standing-alternating-dumbbell-press.webp"
+            },
+            {
+              "id": "dumbbell-alternate-bicep-curl",
+              "name": "Dumbbell Alternate Bicep Curl",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Bicep_Curl/0.jpg",
+              "demoAnimUrl": "/demos/dumbbell-alternate-bicep-curl.webp"
+            },
+            {
+              "id": "farmers-carry",
+              "name": "Farmer\u0027s Carry",
+              "slot": "carry",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "29-44 sec",
+              "rest": 40,
+              "workDuration": 45,
+              "isTimeBased": true,
+              "primary": [
+                "grip",
+                "core",
+                "traps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Farmer%27s%20Carry",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/farmers-carry.webp"
+            },
+            {
+              "id": "hammer-curls",
+              "name": "Hammer Curls",
+              "slot": "pull",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "7-11",
+              "rest": 55,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "biceps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://exrx.net/WeightExercises/Biceps/DBInclineHammerCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hammer_Curls/0.jpg",
+              "demoAnimUrl": "/demos/hammer-curls.webp"
+            },
+            {
+              "id": "cd-cobra",
+              "name": "Prone press-up / cobra",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back"
+              ],
+              "progression": "Gentle extension, hips stay down",
+              "demoUrl": "https://www.youtube.com/results?search_query=Prone%20press-up%20%2F%20cobra%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-cobra.webp"
+            },
+            {
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            },
+            {
+              "id": "cd-forearm-stretch",
+              "name": "Forearm flexor/extensor stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "30s",
+              "rest": 10,
+              "workDuration": 30,
+              "isTimeBased": true,
+              "primary": [
+                "forearms",
+                "biceps"
+              ],
+              "progression": "Arm straight, gentle palm up then palm down",
+              "demoUrl": "https://www.youtube.com/results?search_query=Forearm%20flexor%2Fextensor%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-forearm-stretch.webp"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "type": "rest",
+          "dayIndex": 5,
+          "day": "Saturday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / light mobility \u2014 recovery week"
+        },
+        {
+          "type": "rest",
+          "dayIndex": 6,
+          "day": "Sunday",
+          "focus": "",
+          "sessionStyle": "",
+          "estimatedMinutes": 0,
+          "exercises": [],
+          "note": "Rest / light mobility \u2014 recovery week"
+        }
+      ]
+    }
+  ],
+  "generatedAt": "1970-01-01T00:00:00.0000000Z",
+  "progressionSummary": "Linear progression for 4 weeks: gradually harder training for building muscle, with planned recovery (deload) weeks so you don\u2019t burn out.",
+  "rehabProgressions": []
+}
