@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace WorkoutPlanner.Api.Models;
 
 public class PlanExercise
@@ -18,4 +20,10 @@ public class PlanExercise
     public string? ImageUrl { get; set; }
     /// <summary>In-app animated demo path, e.g. /demos/{id}.webp (from free-exercise-db stills).</summary>
     public string? DemoAnimUrl { get; set; }
+    /// <summary>Squat, hinge, calf, lunge, or step-up pattern when part of the longevity legs progression.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? LongevityPattern { get; set; }
+    /// <summary>Why a simpler regression was chosen for this pattern.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? RegressionNote { get; set; }
 }

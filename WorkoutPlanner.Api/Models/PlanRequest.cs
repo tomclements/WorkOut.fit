@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace WorkoutPlanner.Api.Models;
 
 public class PlanRequest
@@ -38,4 +40,10 @@ public class PlanRequest
     /// Soft-avoid these exercise IDs when regenerating (prefer alternatives).
     /// </summary>
     public List<string> AvoidExerciseIds { get; set; } = new();
+
+    /// <summary>
+    /// Include the longevity-focused lower-body progression (squat, hinge, calf, lunge, step-up patterns).
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public bool IncludeLongevityLegs { get; set; } = false;
 }
