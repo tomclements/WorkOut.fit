@@ -1464,8 +1464,8 @@
               "demoAnimUrl": "/demos/wu-bw-squat.webp"
             },
             {
-              "id": "flutter-kicks",
-              "name": "Flutter Kicks",
+              "id": "fast-skipping",
+              "name": "Fast Skipping",
               "slot": "legs",
               "phase": "work",
               "sets": 5,
@@ -1474,12 +1474,12 @@
               "workDuration": 30,
               "isTimeBased": false,
               "primary": [
-                "glutes"
+                "quadriceps"
               ],
               "progression": "Chase a strong pump with controlled form; add reps or a small load when the top of the range feels easy.",
-              "demoUrl": "https://www.youtube.com/results?search_query=Flutter%20Kicks%20exercise",
-              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Flutter_Kicks/0.jpg",
-              "demoAnimUrl": "/demos/flutter-kicks.webp"
+              "demoUrl": "https://www.youtube.com/results?search_query=Fast%20Skipping%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Fast_Skipping/0.jpg",
+              "demoAnimUrl": "/demos/fast-skipping.webp"
             },
             {
               "id": "single-leg-glute-bridge",
@@ -2305,7 +2305,7 @@
           "day": "Wednesday",
           "focus": "Legs",
           "sessionStyle": "strength",
-          "estimatedMinutes": 20,
+          "estimatedMinutes": 22,
           "exercises": [
             {
               "id": "wu-high-knees",
@@ -2406,28 +2406,26 @@
               "demoAnimUrl": "/demos/standing-long-jump.webp"
             },
             {
-              "id": "mountain-climbers",
-              "name": "Mountain Climbers",
-              "slot": "core",
+              "id": "leg-lift",
+              "name": "Leg Lift",
+              "slot": "legs",
               "phase": "work",
               "sets": 6,
-              "repsDisplay": "22-32",
-              "rest": 30,
+              "repsDisplay": "10-14",
+              "rest": 45,
               "workDuration": 30,
               "isTimeBased": false,
               "primary": [
-                "core",
-                "shoulders",
-                "legs"
+                "glutes"
               ],
               "progression": "Chase a strong pump with controlled form; add reps or a small load when the top of the range feels easy.",
-              "demoUrl": "https://exrx.net/WeightExercises/Plyometrics/BWMountainClimber",
-              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Mountain_Climbers/0.jpg",
-              "demoAnimUrl": "/demos/mountain-climbers.webp"
+              "demoUrl": "https://www.youtube.com/results?search_query=Leg%20Lift%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Lift/0.jpg",
+              "demoAnimUrl": "/demos/leg-lift.webp"
             },
             {
-              "id": "cd-knees-chest",
-              "name": "Knees to chest",
+              "id": "cd-fig4",
+              "name": "Figure-4 glute stretch",
               "slot": "cooldown",
               "phase": "cooldown",
               "sets": 1,
@@ -2436,14 +2434,13 @@
               "workDuration": 40,
               "isTimeBased": true,
               "primary": [
-                "core",
-                "back",
-                "glutes"
+                "glutes",
+                "hips"
               ],
-              "progression": "Supine hug knees, rock gently",
-              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "progression": "Seated or lying; ankle on opposite knee",
+              "demoUrl": "https://www.youtube.com/results?search_query=Figure-4%20glute%20stretch%20exercise%20mobility",
               "imageUrl": null,
-              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+              "demoAnimUrl": "/demos/cd-fig4.webp"
             },
             {
               "id": "cd-hip-flexor",
@@ -2513,26 +2510,6 @@
               "demoAnimUrl": "/demos/wu-march.webp"
             },
             {
-              "id": "wu-scap-pushup",
-              "name": "Scapular push-ups",
-              "slot": "warmup",
-              "phase": "warmup",
-              "sets": 1,
-              "repsDisplay": "35s",
-              "rest": 10,
-              "workDuration": 35,
-              "isTimeBased": true,
-              "primary": [
-                "chest",
-                "shoulders",
-                "triceps"
-              ],
-              "progression": "Plank or knees: spread then squeeze shoulder blades",
-              "demoUrl": "https://www.youtube.com/results?search_query=Scapular%20push-ups%20exercise%20mobility",
-              "imageUrl": null,
-              "demoAnimUrl": "/demos/wu-scap-pushup.webp"
-            },
-            {
               "id": "wu-arm-circles",
               "name": "Arm circles",
               "slot": "warmup",
@@ -2551,6 +2528,26 @@
               "demoUrl": "https://www.youtube.com/results?search_query=Arm%20circles%20exercise%20mobility",
               "imageUrl": null,
               "demoAnimUrl": "/demos/wu-arm-circles.webp"
+            },
+            {
+              "id": "wu-scap-pushup",
+              "name": "Scapular push-ups",
+              "slot": "warmup",
+              "phase": "warmup",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "chest",
+                "shoulders",
+                "triceps"
+              ],
+              "progression": "Plank or knees: spread then squeeze shoulder blades",
+              "demoUrl": "https://www.youtube.com/results?search_query=Scapular%20push-ups%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/wu-scap-pushup.webp"
             },
             {
               "id": "wu-band-disloc",
@@ -2572,24 +2569,24 @@
               "demoAnimUrl": "/demos/wu-band-disloc.webp"
             },
             {
-              "id": "push-up",
-              "name": "Push-Up",
-              "slot": "push",
+              "id": "mountain-climbers",
+              "name": "Mountain Climbers",
+              "slot": "core",
               "phase": "work",
               "sets": 6,
-              "repsDisplay": "12-17",
+              "repsDisplay": "22-32",
               "rest": 30,
               "workDuration": 30,
               "isTimeBased": false,
               "primary": [
-                "chest",
+                "core",
                 "shoulders",
-                "triceps"
+                "legs"
               ],
               "progression": "Chase a strong pump with controlled form; add reps or a small load when the top of the range feels easy.",
-              "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BWPushup",
-              "imageUrl": null,
-              "demoAnimUrl": "/demos/push-up.webp"
+              "demoUrl": "https://exrx.net/WeightExercises/Plyometrics/BWMountainClimber",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Mountain_Climbers/0.jpg",
+              "demoAnimUrl": "/demos/mountain-climbers.webp"
             },
             {
               "id": "pushups-close-and-wide-hand-positions",
@@ -2629,8 +2626,28 @@
               "demoAnimUrl": "/demos/cd-chest-door.webp"
             },
             {
-              "id": "cd-tricep-oh",
-              "name": "Overhead triceps stretch",
+              "id": "cd-knees-chest",
+              "name": "Knees to chest",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "core",
+                "back",
+                "glutes"
+              ],
+              "progression": "Supine hug knees, rock gently",
+              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-knees-chest.webp"
+            },
+            {
+              "id": "cd-cobra",
+              "name": "Prone press-up / cobra",
               "slot": "cooldown",
               "phase": "cooldown",
               "sets": 1,
@@ -2639,33 +2656,13 @@
               "workDuration": 35,
               "isTimeBased": true,
               "primary": [
-                "triceps",
-                "shoulders"
+                "core",
+                "back"
               ],
-              "progression": "Elbow to ceiling, light pressure on elbow",
-              "demoUrl": "https://www.youtube.com/results?search_query=Overhead%20triceps%20stretch%20exercise%20mobility",
+              "progression": "Gentle extension, hips stay down",
+              "demoUrl": "https://www.youtube.com/results?search_query=Prone%20press-up%20%2F%20cobra%20exercise%20mobility",
               "imageUrl": null,
-              "demoAnimUrl": "/demos/cd-tricep-oh.webp"
-            },
-            {
-              "id": "cd-child-pose",
-              "name": "Child\u2019s pose",
-              "slot": "cooldown",
-              "phase": "cooldown",
-              "sets": 1,
-              "repsDisplay": "45s",
-              "rest": 10,
-              "workDuration": 45,
-              "isTimeBased": true,
-              "primary": [
-                "back",
-                "shoulders",
-                "hips"
-              ],
-              "progression": "Hips to heels, arms reach forward, relax",
-              "demoUrl": "https://www.youtube.com/results?search_query=Child%E2%80%99s%20pose%20exercise%20mobility",
-              "imageUrl": null,
-              "demoAnimUrl": "/demos/cd-child-pose.webp"
+              "demoAnimUrl": "/demos/cd-cobra.webp"
             }
           ],
           "note": ""
@@ -2774,8 +2771,8 @@
               "demoAnimUrl": "/demos/standing-towel-triceps-extension.webp"
             },
             {
-              "id": "body-tricep-press",
-              "name": "Body Tricep Press",
+              "id": "dips-triceps-version",
+              "name": "Dips - Triceps Version",
               "slot": "push",
               "phase": "work",
               "sets": 6,
@@ -2787,9 +2784,9 @@
                 "triceps"
               ],
               "progression": "Chase a strong pump with controlled form; add reps or a small load when the top of the range feels easy.",
-              "demoUrl": "https://www.youtube.com/results?search_query=Body%20Tricep%20Press%20exercise",
-              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Body_Tricep_Press/0.jpg",
-              "demoAnimUrl": "/demos/body-tricep-press.webp"
+              "demoUrl": "https://exrx.net/WeightExercises/Triceps/BWTricepsDip",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips_-_Triceps_Version/0.jpg",
+              "demoAnimUrl": "/demos/dips-triceps-version.webp"
             },
             {
               "id": "cd-forearm-stretch",
@@ -2886,7 +2883,7 @@
           "day": "Monday",
           "focus": "Chest",
           "sessionStyle": "strength",
-          "estimatedMinutes": 19,
+          "estimatedMinutes": 22,
           "exercises": [
             {
               "id": "wu-jacks",
@@ -3020,8 +3017,8 @@
               "demoAnimUrl": "/demos/push-up-wide.webp"
             },
             {
-              "id": "isometric-wipers",
-              "name": "Isometric Wipers",
+              "id": "plyo-push-up",
+              "name": "Plyo Push-up",
               "slot": "push",
               "phase": "work",
               "sets": 2,
@@ -3033,9 +3030,29 @@
                 "chest"
               ],
               "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
-              "demoUrl": "https://www.youtube.com/results?search_query=Isometric%20Wipers%20exercise",
-              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Isometric_Wipers/0.jpg",
-              "demoAnimUrl": "/demos/isometric-wipers.webp"
+              "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BWPushup",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plyo_Push-up/0.jpg",
+              "demoAnimUrl": "/demos/plyo-push-up.webp"
+            },
+            {
+              "id": "push-up",
+              "name": "Push-Up",
+              "slot": "push",
+              "phase": "work",
+              "sets": 2,
+              "repsDisplay": "9-14",
+              "rest": 40,
+              "workDuration": 30,
+              "isTimeBased": false,
+              "primary": [
+                "chest",
+                "shoulders",
+                "triceps"
+              ],
+              "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
+              "demoUrl": "https://exrx.net/WeightExercises/PectoralSternal/BWPushup",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/push-up.webp"
             },
             {
               "id": "cd-chest-door",
@@ -3057,28 +3074,8 @@
               "demoAnimUrl": "/demos/cd-chest-door.webp"
             },
             {
-              "id": "cd-knees-chest",
-              "name": "Knees to chest",
-              "slot": "cooldown",
-              "phase": "cooldown",
-              "sets": 1,
-              "repsDisplay": "40s",
-              "rest": 10,
-              "workDuration": 40,
-              "isTimeBased": true,
-              "primary": [
-                "core",
-                "back",
-                "glutes"
-              ],
-              "progression": "Supine hug knees, rock gently",
-              "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
-              "imageUrl": null,
-              "demoAnimUrl": "/demos/cd-knees-chest.webp"
-            },
-            {
-              "id": "cd-cobra",
-              "name": "Prone press-up / cobra",
+              "id": "cd-tricep-oh",
+              "name": "Overhead triceps stretch",
               "slot": "cooldown",
               "phase": "cooldown",
               "sets": 1,
@@ -3087,13 +3084,32 @@
               "workDuration": 35,
               "isTimeBased": true,
               "primary": [
-                "core",
-                "back"
+                "triceps",
+                "shoulders"
               ],
-              "progression": "Gentle extension, hips stay down",
-              "demoUrl": "https://www.youtube.com/results?search_query=Prone%20press-up%20%2F%20cobra%20exercise%20mobility",
+              "progression": "Elbow to ceiling, light pressure on elbow",
+              "demoUrl": "https://www.youtube.com/results?search_query=Overhead%20triceps%20stretch%20exercise%20mobility",
               "imageUrl": null,
-              "demoAnimUrl": "/demos/cd-cobra.webp"
+              "demoAnimUrl": "/demos/cd-tricep-oh.webp"
+            },
+            {
+              "id": "cd-thread-needle",
+              "name": "Thread the needle",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "40s",
+              "rest": 10,
+              "workDuration": 40,
+              "isTimeBased": true,
+              "primary": [
+                "back",
+                "shoulders"
+              ],
+              "progression": "On all fours, thread arm under; both sides",
+              "demoUrl": "https://www.youtube.com/results?search_query=Thread%20the%20needle%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-thread-needle.webp"
             }
           ],
           "note": ""
@@ -3351,8 +3367,8 @@
               "demoAnimUrl": "/demos/wu-bw-squat.webp"
             },
             {
-              "id": "double-leg-butt-kick",
-              "name": "Double Leg Butt Kick",
+              "id": "chair-squat",
+              "name": "Chair Squat",
               "slot": "legs",
               "phase": "work",
               "sets": 2,
@@ -3364,9 +3380,9 @@
                 "quadriceps"
               ],
               "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
-              "demoUrl": "https://www.youtube.com/results?search_query=Double%20Leg%20Butt%20Kick%20exercise",
-              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Double_Leg_Butt_Kick/0.jpg",
-              "demoAnimUrl": "/demos/double-leg-butt-kick.webp"
+              "demoUrl": "https://www.youtube.com/results?search_query=Chair%20Squat%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chair_Squat/0.jpg",
+              "demoAnimUrl": "/demos/chair-squat.webp"
             },
             {
               "id": "leg-lift",
@@ -3387,8 +3403,8 @@
               "demoAnimUrl": "/demos/leg-lift.webp"
             },
             {
-              "id": "single-leg-butt-kick",
-              "name": "Single Leg Butt Kick",
+              "id": "scissors-jump",
+              "name": "Scissors Jump",
               "slot": "legs",
               "phase": "work",
               "sets": 2,
@@ -3400,9 +3416,9 @@
                 "quadriceps"
               ],
               "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
-              "demoUrl": "https://www.youtube.com/results?search_query=Single%20Leg%20Butt%20Kick%20exercise",
-              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single_Leg_Butt_Kick/0.jpg",
-              "demoAnimUrl": "/demos/single-leg-butt-kick.webp"
+              "demoUrl": "https://www.youtube.com/results?search_query=Scissors%20Jump%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Scissors_Jump/0.jpg",
+              "demoAnimUrl": "/demos/scissors-jump.webp"
             },
             {
               "id": "bodyweight-squat",

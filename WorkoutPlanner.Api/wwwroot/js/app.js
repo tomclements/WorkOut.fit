@@ -28,6 +28,22 @@ let equipmentList = [];
 let favoriteExerciseIds = [];
 let dislikedExerciseIds = [];
 
+// mirrors LongevityLegsCatalog.LongevityOnlyExerciseIds on the server; B6/B7 opt-in
+const LONGEVITY_ONLY_EXERCISE_IDS = new Set([
+  "bodyweight-box-squat",
+  "assisted-step-up",
+  "bodyweight-split-squat-supported",
+  "bodyweight-reverse-lunge",
+  "standing-calf-raise-bodyweight",
+  "seated-calf-raise-bodyweight",
+  "goblet-step-up",
+  "goblet-reverse-lunge",
+  "hip-hinge-dowel",
+  "single-leg-rdl-supported",
+  "banded-rdl",
+  "belt-squat"
+]);
+
 const welcomeSection = document.getElementById('welcomeSection');
 const dashboardSection = document.getElementById('dashboardSection');
 const plannerSection = document.getElementById('plannerSection');
@@ -2160,9 +2176,10 @@ function renderExerciseList() {
   const filter = document.getElementById('exerciseRatingFilter')?.value || 'all';
   const container = document.getElementById('exerciseList');
   let filtered = allExercises.filter(ex =>
-    ex.name.toLowerCase().includes(query) ||
+    !LONGEVITY_ONLY_EXERCISE_IDS.has(ex.id) &&
+    (ex.name.toLowerCase().includes(query) ||
     (ex.slot || '').toLowerCase().includes(query) ||
-    (ex.primary || []).some(p => p.toLowerCase().includes(query))
+    (ex.primary || []).some(p => p.toLowerCase().includes(query)))
   );
 
   if (filter === 'liked') {

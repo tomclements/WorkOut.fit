@@ -458,7 +458,7 @@
           "day": "Friday",
           "focus": "Lower body",
           "sessionStyle": "strength",
-          "estimatedMinutes": 18,
+          "estimatedMinutes": 17,
           "exercises": [
             {
               "id": "wu-jacks",
@@ -499,46 +499,42 @@
               "demoAnimUrl": "/demos/wu-glute-bridge.webp"
             },
             {
-              "id": "wu-leg-swings",
-              "name": "Leg swings",
+              "id": "wu-calf-raise",
+              "name": "Calf raises",
               "slot": "warmup",
               "phase": "warmup",
               "sets": 1,
-              "repsDisplay": "35s",
+              "repsDisplay": "30s",
               "rest": 10,
-              "workDuration": 35,
+              "workDuration": 30,
               "isTimeBased": true,
               "primary": [
-                "hamstrings",
-                "hips",
-                "quads",
-                "glutes"
+                "calves"
               ],
-              "progression": "Front-to-back then side-to-side, controlled",
-              "demoUrl": "https://www.youtube.com/results?search_query=Leg%20swings%20exercise%20mobility",
+              "progression": "Full ankle range, both feet",
+              "demoUrl": "https://www.youtube.com/results?search_query=Calf%20raises%20exercise%20mobility",
               "imageUrl": null,
-              "demoAnimUrl": "/demos/wu-leg-swings.webp"
+              "demoAnimUrl": "/demos/wu-calf-raise.webp"
             },
             {
-              "id": "wu-hip-circles",
-              "name": "Standing hip circles",
+              "id": "wu-bird-dog",
+              "name": "Bird dog",
               "slot": "warmup",
               "phase": "warmup",
               "sets": 1,
-              "repsDisplay": "35s",
+              "repsDisplay": "40s",
               "rest": 10,
-              "workDuration": 35,
+              "workDuration": 40,
               "isTimeBased": true,
               "primary": [
-                "hips",
-                "glutes",
-                "quads",
-                "hamstrings"
+                "back",
+                "core",
+                "glutes"
               ],
-              "progression": "Hands on hips, slow circles each way",
-              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hip%20circles%20exercise%20mobility",
+              "progression": "Opposite arm/leg, hold 2s, brace midsection",
+              "demoUrl": "https://www.youtube.com/results?search_query=Bird%20dog%20exercise%20mobility",
               "imageUrl": null,
-              "demoAnimUrl": "/demos/wu-hip-circles.webp"
+              "demoAnimUrl": "/demos/wu-bird-dog.webp"
             },
             {
               "id": "smith-machine-hip-raise",
@@ -559,8 +555,8 @@
               "demoAnimUrl": "/demos/smith-machine-hip-raise.webp"
             },
             {
-              "id": "chair-squat",
-              "name": "Chair Squat",
+              "id": "calf-press-on-the-leg-press-machine",
+              "name": "Calf Press On The Leg Press Machine",
               "slot": "legs",
               "phase": "work",
               "sets": 3,
@@ -569,12 +565,12 @@
               "workDuration": 30,
               "isTimeBased": false,
               "primary": [
-                "quadriceps"
+                "calves"
               ],
               "progression": "Learn the movement; use a weight you can control with good form.",
-              "demoUrl": "https://www.youtube.com/results?search_query=Chair%20Squat%20exercise",
-              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chair_Squat/0.jpg",
-              "demoAnimUrl": "/demos/chair-squat.webp"
+              "demoUrl": "https://www.youtube.com/results?search_query=Calf%20Press%20On%20The%20Leg%20Press%20Machine%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Press_On_The_Leg_Press_Machine/0.jpg",
+              "demoAnimUrl": "/demos/calf-press-on-the-leg-press-machine.webp"
             },
             {
               "id": "romanian-deadlift",
@@ -595,6 +591,24 @@
               "demoAnimUrl": "/demos/romanian-deadlift.webp"
             },
             {
+              "id": "cd-calf-wall",
+              "name": "Calf wall stretch",
+              "slot": "cooldown",
+              "phase": "cooldown",
+              "sets": 1,
+              "repsDisplay": "35s",
+              "rest": 10,
+              "workDuration": 35,
+              "isTimeBased": true,
+              "primary": [
+                "calves"
+              ],
+              "progression": "Back heel down, both straight and bent knee",
+              "demoUrl": "https://www.youtube.com/results?search_query=Calf%20wall%20stretch%20exercise%20mobility",
+              "imageUrl": null,
+              "demoAnimUrl": "/demos/cd-calf-wall.webp"
+            },
+            {
               "id": "cd-knees-chest",
               "name": "Knees to chest",
               "slot": "cooldown",
@@ -613,25 +627,6 @@
               "demoUrl": "https://www.youtube.com/results?search_query=Knees%20to%20chest%20exercise%20mobility",
               "imageUrl": null,
               "demoAnimUrl": "/demos/cd-knees-chest.webp"
-            },
-            {
-              "id": "cd-ham-hinge",
-              "name": "Standing hamstring hinge",
-              "slot": "cooldown",
-              "phase": "cooldown",
-              "sets": 1,
-              "repsDisplay": "40s",
-              "rest": 10,
-              "workDuration": 40,
-              "isTimeBased": true,
-              "primary": [
-                "hamstrings",
-                "back"
-              ],
-              "progression": "Soft knees, hinge at hips, long spine",
-              "demoUrl": "https://www.youtube.com/results?search_query=Standing%20hamstring%20hinge%20exercise%20mobility",
-              "imageUrl": null,
-              "demoAnimUrl": "/demos/cd-ham-hinge.webp"
             }
           ],
           "note": ""
