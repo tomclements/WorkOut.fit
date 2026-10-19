@@ -202,7 +202,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         List<string> restrictions, List<string>? rehab, WeekProgression mods, Random rng, HashSet<string> avoidIds)
     {
         var pool = allExercises
-            .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions, rehab))
+            .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions, rehab) && !LongevityLegsCatalog.IsLongevityOnly(e.Id))
             .ToList();
 
         bool isBro = split == "bro-split";
@@ -372,7 +372,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         List<string> restrictions, List<string>? rehab, WeekProgression mods, Random rng, HashSet<string> avoidIds)
     {
         var pool = allExercises
-            .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions, rehab))
+            .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions, rehab) && !LongevityLegsCatalog.IsLongevityOnly(e.Id))
             .ToList();
 
         // Prefer multi-joint / conditioning-friendly slots; fall back to full pool

@@ -63,5 +63,10 @@
     "id": "stability-ball",
     "name": "Stability ball",
     "category": "accessories"
+  },
+  {
+    "id": "hip-belt",
+    "name": "Hip belt",
+    "category": "accessories"
   }
 ]

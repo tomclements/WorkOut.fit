@@ -4701,16 +4701,14 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Press/0.jpg",
     "avoidFor": [
       "elbow",
-      "knee",
-      "rotator-cuff",
-      "shoulder"
+      "knee"
     ],
     "force": "push",
     "mechanic": "isolation",
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "horizontal",
+      "shoulder": "neutral",
       "elbow": "extension",
       "grip": "none",
       "gripLoad": false,
@@ -4965,7 +4963,7 @@
     "id": "chair-squat",
     "name": "Chair Squat",
     "equipment": [
-      "machines"
+      "bodyweight"
     ],
     "level": "beginner",
     "primary": [
@@ -27874,6 +27872,494 @@
       "spine": "neutral",
       "hip": "neutral",
       "knee": "none",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "bodyweight-box-squat",
+    "name": "Bodyweight Box Squat",
+    "equipment": [
+      "bodyweight"
+    ],
+    "level": "beginner",
+    "primary": [
+      "quadriceps",
+      "glutes"
+    ],
+    "secondary": [
+      "hamstrings"
+    ],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 8,
+    "repsMax": 15,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Bodyweight%20Box%20Squat%20exercise",
+    "avoidFor": [
+      "knee"
+    ],
+    "force": "push",
+    "mechanic": "compound",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "none",
+      "gripLoad": false,
+      "spine": "neutral",
+      "hip": "squat",
+      "knee": "moderate",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "assisted-step-up",
+    "name": "Assisted Step-Up",
+    "equipment": [
+      "bench",
+      "bodyweight"
+    ],
+    "level": "beginner",
+    "primary": [
+      "quadriceps",
+      "glutes"
+    ],
+    "secondary": [
+      "hamstrings"
+    ],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 8,
+    "repsMax": 12,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Assisted%20Step-Up%20exercise",
+    "avoidFor": [
+      "knee"
+    ],
+    "force": "push",
+    "mechanic": "compound",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "none",
+      "gripLoad": false,
+      "spine": "neutral",
+      "hip": "squat",
+      "knee": "moderate",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "bodyweight-split-squat-supported",
+    "name": "Supported Bodyweight Split Squat",
+    "equipment": [
+      "bodyweight"
+    ],
+    "level": "beginner",
+    "primary": [
+      "quadriceps",
+      "glutes"
+    ],
+    "secondary": [
+      "hamstrings"
+    ],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 8,
+    "repsMax": 12,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Supported%20Bodyweight%20Split%20Squat%20exercise",
+    "avoidFor": [
+      "knee",
+      "patellar"
+    ],
+    "force": "push",
+    "mechanic": "compound",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "none",
+      "gripLoad": false,
+      "spine": "neutral",
+      "hip": "squat",
+      "knee": "deep",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "bodyweight-reverse-lunge",
+    "name": "Bodyweight Reverse Lunge",
+    "equipment": [
+      "bodyweight"
+    ],
+    "level": "beginner",
+    "primary": [
+      "quadriceps",
+      "glutes"
+    ],
+    "secondary": [
+      "hamstrings"
+    ],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 8,
+    "repsMax": 12,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Bodyweight%20Reverse%20Lunge%20exercise",
+    "avoidFor": [
+      "knee",
+      "patellar"
+    ],
+    "force": "push",
+    "mechanic": "compound",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "none",
+      "gripLoad": false,
+      "spine": "neutral",
+      "hip": "squat",
+      "knee": "deep",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "standing-calf-raise-bodyweight",
+    "name": "Standing Bodyweight Calf Raise",
+    "equipment": [
+      "bodyweight"
+    ],
+    "level": "beginner",
+    "primary": [
+      "calves"
+    ],
+    "secondary": [],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 10,
+    "repsMax": 15,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Bodyweight%20Calf%20Raise%20exercise",
+    "avoidFor": [
+      "knee"
+    ],
+    "force": "push",
+    "mechanic": "isolation",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "none",
+      "gripLoad": false,
+      "spine": "neutral",
+      "hip": "neutral",
+      "knee": "none",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "seated-calf-raise-bodyweight",
+    "name": "Seated Bodyweight Calf Raise",
+    "equipment": [
+      "bodyweight"
+    ],
+    "level": "beginner",
+    "primary": [
+      "calves"
+    ],
+    "secondary": [],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 12,
+    "repsMax": 15,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Seated%20Bodyweight%20Calf%20Raise%20exercise",
+    "avoidFor": [
+      "knee"
+    ],
+    "force": "push",
+    "mechanic": "isolation",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "none",
+      "gripLoad": false,
+      "spine": "neutral",
+      "hip": "neutral",
+      "knee": "none",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "goblet-step-up",
+    "name": "Goblet Step-Up",
+    "equipment": [
+      "bench",
+      "dumbbells"
+    ],
+    "level": "beginner",
+    "primary": [
+      "quadriceps",
+      "glutes"
+    ],
+    "secondary": [
+      "hamstrings",
+      "core"
+    ],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 8,
+    "repsMax": 12,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Goblet%20Step-Up%20exercise",
+    "avoidFor": [
+      "knee",
+      "lower-back",
+      "patellar"
+    ],
+    "force": "push",
+    "mechanic": "compound",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "none",
+      "gripLoad": false,
+      "spine": "axial",
+      "hip": "squat",
+      "knee": "deep",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "goblet-reverse-lunge",
+    "name": "Goblet Reverse Lunge",
+    "equipment": [
+      "dumbbells"
+    ],
+    "level": "beginner",
+    "primary": [
+      "quadriceps",
+      "glutes"
+    ],
+    "secondary": [
+      "hamstrings",
+      "core"
+    ],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 8,
+    "repsMax": 12,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Goblet%20Reverse%20Lunge%20exercise",
+    "avoidFor": [
+      "knee",
+      "lower-back",
+      "patellar"
+    ],
+    "force": "push",
+    "mechanic": "compound",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "none",
+      "gripLoad": false,
+      "spine": "axial",
+      "hip": "squat",
+      "knee": "deep",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "hip-hinge-dowel",
+    "name": "Dowel Hip Hinge",
+    "equipment": [
+      "bodyweight"
+    ],
+    "level": "beginner",
+    "primary": [
+      "hamstrings",
+      "glutes"
+    ],
+    "secondary": [
+      "lower back"
+    ],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 10,
+    "repsMax": 15,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Dowel%20Hip%20Hinge%20exercise",
+    "avoidFor": [
+      "knee",
+      "lower-back"
+    ],
+    "force": "pull",
+    "mechanic": "compound",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "none",
+      "gripLoad": false,
+      "spine": "neutral",
+      "hip": "hinge",
+      "knee": "moderate",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "single-leg-rdl-supported",
+    "name": "Supported Single-Leg RDL",
+    "equipment": [
+      "bodyweight"
+    ],
+    "level": "beginner",
+    "primary": [
+      "hamstrings",
+      "glutes"
+    ],
+    "secondary": [
+      "lower back"
+    ],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 8,
+    "repsMax": 12,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Supported%20Single-Leg%20RDL%20exercise",
+    "avoidFor": [
+      "knee",
+      "lower-back"
+    ],
+    "force": "pull",
+    "mechanic": "compound",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "none",
+      "gripLoad": false,
+      "spine": "neutral",
+      "hip": "hinge",
+      "knee": "moderate",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "banded-rdl",
+    "name": "Banded Romanian Deadlift",
+    "equipment": [
+      "bands"
+    ],
+    "level": "beginner",
+    "primary": [
+      "hamstrings",
+      "glutes"
+    ],
+    "secondary": [
+      "lower back"
+    ],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 10,
+    "repsMax": 15,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Banded%20Romanian%20Deadlift%20exercise",
+    "avoidFor": [
+      "knee",
+      "lower-back"
+    ],
+    "force": "pull",
+    "mechanic": "compound",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "neutral",
+      "gripLoad": false,
+      "spine": "neutral",
+      "hip": "hinge",
+      "knee": "moderate",
+      "neckCompress": false
+    }
+  },
+  {
+    "id": "belt-squat",
+    "name": "Belt Squat",
+    "equipment": [
+      "hip-belt"
+    ],
+    "level": "beginner",
+    "primary": [
+      "quadriceps",
+      "glutes"
+    ],
+    "secondary": [
+      "hamstrings"
+    ],
+    "slot": "legs",
+    "baseSets": 3,
+    "repsMin": 8,
+    "repsMax": 15,
+    "isTimeBased": false,
+    "workDuration": 40,
+    "restSec": 60,
+    "demoUrl": "https://www.youtube.com/results?search_query=Belt%20Squat%20exercise",
+    "avoidFor": [
+      "knee",
+      "patellar"
+    ],
+    "force": "push",
+    "mechanic": "compound",
+    "mechanics": {
+      "handSupport": false,
+      "chain": "open",
+      "shoulder": "neutral",
+      "elbow": "none",
+      "grip": "none",
+      "gripLoad": false,
+      "spine": "neutral",
+      "hip": "squat",
+      "knee": "deep",
       "neckCompress": false
     }
   }

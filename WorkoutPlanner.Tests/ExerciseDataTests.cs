@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -219,6 +220,86 @@ public class ExerciseDataTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
+    public void LongevityLegs_NewExercises_Exist_WithMechanics()
+    {
+        var exercises = LoadExercises();
+        var ids = new[]
+        {
+            "bodyweight-box-squat",
+            "assisted-step-up",
+            "bodyweight-split-squat-supported",
+            "bodyweight-reverse-lunge",
+            "standing-calf-raise-bodyweight",
+            "seated-calf-raise-bodyweight",
+            "goblet-step-up",
+            "goblet-reverse-lunge",
+            "hip-hinge-dowel",
+            "single-leg-rdl-supported",
+            "banded-rdl",
+            "belt-squat"
+        };
+
+        foreach (var id in ids)
+        {
+            var matches = exercises.Where(e =>
+                string.Equals(e.Id, id, StringComparison.OrdinalIgnoreCase)).ToList();
+            Assert.Single(matches);
+            var ex = matches[0];
+            Assert.NotNull(ex.Mechanics);
+            Assert.Equal("legs", ex.Slot);
+            Assert.True(ex.RepsMin >= 8);
+            Assert.True(ex.RepsMax <= 15);
+            Assert.True(ex.RepsMin <= ex.RepsMax);
+
+            var expected = InjuryRules.ComputeAvoidance(ex);
+            Assert.True(
+                expected.OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
+                    .SequenceEqual(ex.AvoidFor.OrderBy(t => t, StringComparer.OrdinalIgnoreCase)),
+                $"{ex.Name}: mechanics-derived tags {string.Join(",", expected)} != stored {string.Join(",", ex.AvoidFor)}");
+        }
+    }
+
+    [Fact]
+    public void AllExercises_EquipmentIds_AreValid()
+    {
+        var baseDir = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "WorkoutPlanner.Api", "Data");
+        var equipment = JsonSerializer.Deserialize<List<EquipmentOption>>(
+            File.ReadAllText(Path.Combine(baseDir, "equipment.json")),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var validIds = equipment.Select(e => e.Id).ToHashSet();
+
+        var exercises = JsonSerializer.Deserialize<List<Exercise>>(
+            File.ReadAllText(Path.Combine(baseDir, "exercises.json")),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        Assert.All(exercises, ex =>
+        {
+            Assert.All(ex.Equipment, eq => Assert.Contains(eq, validIds));
+        });
+        Assert.Contains("hip-belt", validIds);
+        Assert.DoesNotContain("trap-bar", validIds);
+    }
+
+    [Fact]
+    public void ChairSquat_IsBodyweight()
+    {
+        var ex = FindExercise("Chair Squat");
+        Assert.Contains("bodyweight", ex.Equipment);
+        Assert.DoesNotContain("machines", ex.Equipment);
+    }
+
+    [Fact]
+    public void CalfPress_ShoulderNeutral_NoShoulderTags()
+    {
+        var ex = FindExercise("Calf Press");
+        Assert.NotNull(ex.Mechanics);
+        Assert.Equal("neutral", ex.Mechanics!.Shoulder);
+        var avoid = InjuryRules.ComputeAvoidance(ex);
+        Assert.DoesNotContain("shoulder", avoid);
+        Assert.DoesNotContain("rotator-cuff", avoid);
+    }
+
+    [Fact]
     public void AllEquipmentIds_AreKnown()
     {
         var baseDir = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "WorkoutPlanner.Api", "Data");
@@ -397,6 +478,47 @@ public class ExerciseDataTests : IClassFixture<TestWebApplicationFactory>
         var avoid = InjuryRules.ComputeAvoidance(rdl!);
         Assert.Contains("knee", avoid);
         Assert.DoesNotContain("patellar", avoid);
+    }
+
+    [Fact]
+    public void LongevityOnlyIds_MatchCatalogNewEntries()
+    {
+        var exercises = LoadExercises();
+        var ids = LongevityLegsCatalog.LongevityOnlyExerciseIds;
+
+        Assert.Equal(12, ids.Count);
+        Assert.All(ids, id =>
+        {
+            Assert.Contains(exercises, e =>
+                string.Equals(e.Id, id, StringComparison.OrdinalIgnoreCase));
+        });
+    }
+
+    [Fact]
+    public void LongevityOnlyIds_JsMirrorsMatchServer()
+    {
+        var serverIds = LongevityLegsCatalog.LongevityOnlyExerciseIds;
+        var baseDir = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "WorkoutPlanner.Api", "wwwroot", "js");
+
+        var runnerIds = ExtractLongevityOnlyIdsFromJs(Path.Combine(baseDir, "workoutRunner.js"));
+        var appIds = ExtractLongevityOnlyIdsFromJs(Path.Combine(baseDir, "app.js"));
+
+        Assert.Equal(serverIds.OrderBy(x => x, StringComparer.OrdinalIgnoreCase),
+            runnerIds.OrderBy(x => x, StringComparer.OrdinalIgnoreCase));
+        Assert.Equal(serverIds.OrderBy(x => x, StringComparer.OrdinalIgnoreCase),
+            appIds.OrderBy(x => x, StringComparer.OrdinalIgnoreCase));
+    }
+
+    private static HashSet<string> ExtractLongevityOnlyIdsFromJs(string path)
+    {
+        var content = File.ReadAllText(path);
+        var match = Regex.Match(content, @"LONGEVITY_ONLY_EXERCISE_IDS\s*=\s*new\s+Set\(\[\s*([\s\S]*?)\]\s*\)");
+        Assert.True(match.Success, $"Could not find LONGEVITY_ONLY_EXERCISE_IDS Set literal in {path}");
+        var ids = Regex.Matches(match.Groups[1].Value, @"""([^""]+)""")
+            .Select(m => m.Groups[1].Value)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        Assert.NotEmpty(ids);
+        return ids;
     }
 
     private static bool IsAllowlistedFor(string injuryArea, string exerciseId, List<string> rehab)

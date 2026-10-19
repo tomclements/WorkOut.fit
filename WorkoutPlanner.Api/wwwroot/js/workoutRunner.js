@@ -39,6 +39,23 @@ let StartWeightGate = window.StartWeightGate || null;
 let StayAwake = window.StayAwake || null;
 let AudioCoexistence = window.AudioCoexistence || null;
 let QuitWorkout = window.QuitWorkout || null;
+
+// mirrors LongevityLegsCatalog.LongevityOnlyExerciseIds on the server; B6/B7 opt-in
+const LONGEVITY_ONLY_EXERCISE_IDS = new Set([
+  "bodyweight-box-squat",
+  "assisted-step-up",
+  "bodyweight-split-squat-supported",
+  "bodyweight-reverse-lunge",
+  "standing-calf-raise-bodyweight",
+  "seated-calf-raise-bodyweight",
+  "goblet-step-up",
+  "goblet-reverse-lunge",
+  "hip-hinge-dowel",
+  "single-leg-rdl-supported",
+  "banded-rdl",
+  "belt-squat"
+]);
+
 if (!QuitWorkout) {
   // Minimal inline fallback in case the helper script fails to load.
   QuitWorkout = {
@@ -1624,6 +1641,7 @@ function swapAlternatives(ex) {
   }
   return Object.values(previewCache).filter(c => {
     if (c.id === ex.id || usedIds.has(c.id)) return false;
+    if (LONGEVITY_ONLY_EXERCISE_IDS.has(c.id)) return false;
     if (String(c.slot).toLowerCase() !== String(ex.slot).toLowerCase()) return false;
     if (levelNum < ({ beginner: 1, intermediate: 2, advanced: 3 }[c.level] || 1)) return false;
     // Must share at least one primary muscle
