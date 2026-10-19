@@ -208,7 +208,8 @@ public static class UserEndpoints
         DefaultWorkoutDays = pref.DefaultWorkoutDays?.Where(d => d is >= 0 and <= 6).Distinct().OrderBy(d => d).ToList()
             ?? new List<int> { 0, 1, 2, 3, 4 },
         DefaultIncludeWarmup = pref.DefaultIncludeWarmup,
-        DefaultIncludeCooldown = pref.DefaultIncludeCooldown
+        DefaultIncludeCooldown = pref.DefaultIncludeCooldown,
+        DefaultIncludeLongevityLegs = pref.DefaultIncludeLongevityLegs
     };
 
     private static void ApplyPreferenceDto(UserPreference pref, UserPreferenceDto dto)
@@ -238,6 +239,7 @@ public static class UserEndpoints
             pref.DefaultWorkoutDays = Enumerable.Range(0, pref.DefaultDaysPerWeek).ToList();
         pref.DefaultIncludeWarmup = dto.DefaultIncludeWarmup;
         pref.DefaultIncludeCooldown = dto.DefaultIncludeCooldown;
+        pref.DefaultIncludeLongevityLegs = dto.DefaultIncludeLongevityLegs;
     }
 
     private static string NormalizeMusicStyle(string? style, bool legacyMusicOn)

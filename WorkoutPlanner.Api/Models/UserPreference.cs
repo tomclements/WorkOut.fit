@@ -23,4 +23,6 @@ public class UserPreference
     public List<int> DefaultWorkoutDays { get; set; } = new() { 0, 1, 2, 3, 4 };
     public bool DefaultIncludeWarmup { get; set; } = true;
     public bool DefaultIncludeCooldown { get; set; } = true;
+    /// <summary>Default false; opt-in Longevity Legs module.</summary>
+    public bool DefaultIncludeLongevityLegs { get; set; }
 }
