@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace WorkoutPlanner.Api.Models;
 
 public class DayPlan
@@ -11,4 +13,7 @@ public class DayPlan
     public int EstimatedMinutes { get; set; }
     public List<PlanExercise> Exercises { get; set; } = new();
     public string Note { get; set; } = string.Empty;
+    /// <summary>Optional note for the longevity legs session focus.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? LongevityNote { get; set; }
 }
