@@ -20,4 +20,5 @@ public class UserPreferenceDto
     public List<int> DefaultWorkoutDays { get; set; } = new() { 0, 1, 2, 3, 4 };
     public bool DefaultIncludeWarmup { get; set; } = true;
     public bool DefaultIncludeCooldown { get; set; } = true;
+    public bool DefaultIncludeLongevityLegs { get; set; }
 }

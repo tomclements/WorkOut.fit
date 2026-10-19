@@ -595,6 +595,9 @@ namespace WorkoutPlanner.Api.Data.Migrations
                     b.Property<bool>("DefaultIncludeCooldown")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("DefaultIncludeLongevityLegs")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("DefaultIncludeWarmup")
                         .HasColumnType("boolean");
 
