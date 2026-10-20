@@ -4626,6 +4626,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Shrugs/0.jpg",
     "avoidFor": [
       "neck",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -4634,7 +4635,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "low",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "pronated",
       "gripLoad": true,
@@ -4860,6 +4861,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf-Machine_Shoulder_Shrug/0.jpg",
     "avoidFor": [
       "neck",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -4868,7 +4870,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "low",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "pronated",
       "gripLoad": true,
@@ -14553,6 +14555,7 @@
     "avoidFor": [
       "elbow",
       "neck",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -14561,7 +14564,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "low",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "pronated",
       "gripLoad": true,
@@ -22259,6 +22262,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Behind_the_Back_Shrug/0.jpg",
     "avoidFor": [
       "neck",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -22267,7 +22271,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "low",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "pronated",
       "gripLoad": true,
