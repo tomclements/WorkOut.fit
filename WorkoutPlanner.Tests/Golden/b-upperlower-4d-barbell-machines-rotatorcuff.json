@@ -416,8 +416,8 @@
               "demoAnimUrl": "/demos/machine-triceps-extension.webp"
             },
             {
-              "id": "leverage-shrug",
-              "name": "Leverage Shrug",
+              "id": "finger-curls",
+              "name": "Finger Curls",
               "slot": "pull",
               "phase": "work",
               "sets": 3,
@@ -426,12 +426,12 @@
               "workDuration": 30,
               "isTimeBased": false,
               "primary": [
-                "traps"
+                "forearms"
               ],
               "progression": "Learn the movement; use a weight you can control with good form.",
-              "demoUrl": "https://www.youtube.com/results?search_query=Leverage%20Shrug%20exercise",
-              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Shrug/0.jpg",
-              "demoAnimUrl": "/demos/leverage-shrug.webp"
+              "demoUrl": "https://www.youtube.com/results?search_query=Finger%20Curls%20exercise",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Finger_Curls/0.jpg",
+              "demoAnimUrl": "/demos/finger-curls.webp"
             },
             {
               "id": "stiff-leg-barbell-good-morning",
@@ -705,8 +705,8 @@
               "demoAnimUrl": "/demos/wu-jacks.webp"
             },
             {
-              "id": "close-grip-ez-bar-curl",
-              "name": "Close-Grip EZ Bar Curl",
+              "id": "close-grip-standing-barbell-curl",
+              "name": "Close-Grip Standing Barbell Curl",
               "slot": "pull",
               "phase": "work",
               "sets": 4,
@@ -718,9 +718,9 @@
                 "biceps"
               ],
               "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
-              "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCloseGripCurl",
-              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_EZ_Bar_Curl/0.jpg",
-              "demoAnimUrl": "/demos/close-grip-ez-bar-curl.webp"
+              "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Standing_Barbell_Curl/0.jpg",
+              "demoAnimUrl": "/demos/close-grip-standing-barbell-curl.webp"
             },
             {
               "id": "landmine-linear-jammer",
@@ -1594,26 +1594,6 @@
               "demoAnimUrl": "/demos/wu-jacks.webp"
             },
             {
-              "id": "wu-bird-dog",
-              "name": "Bird dog",
-              "slot": "warmup",
-              "phase": "warmup",
-              "sets": 1,
-              "repsDisplay": "40s",
-              "rest": 10,
-              "workDuration": 40,
-              "isTimeBased": true,
-              "primary": [
-                "back",
-                "core",
-                "glutes"
-              ],
-              "progression": "Opposite arm/leg, hold 2s, brace midsection",
-              "demoUrl": "https://www.youtube.com/results?search_query=Bird%20dog%20exercise%20mobility",
-              "imageUrl": null,
-              "demoAnimUrl": "/demos/wu-bird-dog.webp"
-            },
-            {
               "id": "car-drivers",
               "name": "Car Drivers",
               "slot": "push",
@@ -1650,8 +1630,8 @@
               "demoAnimUrl": "/demos/single-arm-linear-jammer.webp"
             },
             {
-              "id": "calf-machine-shoulder-shrug",
-              "name": "Calf-Machine Shoulder Shrug",
+              "id": "barbell-curl",
+              "name": "Barbell Curl",
               "slot": "pull",
               "phase": "work",
               "sets": 5,
@@ -1660,12 +1640,12 @@
               "workDuration": 30,
               "isTimeBased": false,
               "primary": [
-                "traps"
+                "biceps"
               ],
               "progression": "Add reps, a set, or a little weight when the top of the range feels easy.",
-              "demoUrl": "https://www.youtube.com/results?search_query=Calf-Machine%20Shoulder%20Shrug%20exercise",
-              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf-Machine_Shoulder_Shrug/0.jpg",
-              "demoAnimUrl": "/demos/calf-machine-shoulder-shrug.webp"
+              "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg",
+              "demoAnimUrl": "/demos/barbell-curl.webp"
             },
             {
               "id": "barbell-ab-rollout",
@@ -2219,7 +2199,7 @@
           "day": "Thursday",
           "focus": "Upper body",
           "sessionStyle": "strength",
-          "estimatedMinutes": 15,
+          "estimatedMinutes": 14,
           "exercises": [
             {
               "id": "wu-march",
@@ -2240,27 +2220,8 @@
               "demoAnimUrl": "/demos/wu-march.webp"
             },
             {
-              "id": "wu-cat-cow",
-              "name": "Cat\u2013cow",
-              "slot": "warmup",
-              "phase": "warmup",
-              "sets": 1,
-              "repsDisplay": "40s",
-              "rest": 10,
-              "workDuration": 40,
-              "isTimeBased": true,
-              "primary": [
-                "back",
-                "core"
-              ],
-              "progression": "On all fours, slow spinal flexion/extension",
-              "demoUrl": "https://www.youtube.com/results?search_query=Cat%E2%80%93cow%20exercise%20mobility",
-              "imageUrl": null,
-              "demoAnimUrl": "/demos/wu-cat-cow.webp"
-            },
-            {
-              "id": "calf-machine-shoulder-shrug",
-              "name": "Calf-Machine Shoulder Shrug",
+              "id": "barbell-curl",
+              "name": "Barbell Curl",
               "slot": "pull",
               "phase": "work",
               "sets": 2,
@@ -2269,12 +2230,12 @@
               "workDuration": 30,
               "isTimeBased": false,
               "primary": [
-                "traps"
+                "biceps"
               ],
               "progression": "Deload: use lighter loads (~60% effort). Stop well short of failure and prioritize recovery.",
-              "demoUrl": "https://www.youtube.com/results?search_query=Calf-Machine%20Shoulder%20Shrug%20exercise",
-              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf-Machine_Shoulder_Shrug/0.jpg",
-              "demoAnimUrl": "/demos/calf-machine-shoulder-shrug.webp"
+              "demoUrl": "https://exrx.net/WeightExercises/Biceps/BBCurl",
+              "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg",
+              "demoAnimUrl": "/demos/barbell-curl.webp"
             },
             {
               "id": "single-arm-linear-jammer",

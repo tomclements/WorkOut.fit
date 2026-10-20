@@ -34,7 +34,11 @@ public class RotatorCuffDependentLoadTests : IClassFixture<TestWebApplicationFac
         "stiff-legged-barbell-deadlift",
         "smith-machine-stiff-legged-deadlift",
         "standing-dumbbell-calf-raise",
-        "calf-raise-on-a-dumbbell"
+        "calf-raise-on-a-dumbbell",
+        "calf-machine-shoulder-shrug",
+        "leverage-shrug",
+        "cable-shrugs",
+        "smith-machine-behind-the-back-shrug"
     };
 
     public RotatorCuffDependentLoadTests(TestWebApplicationFactory factory)
