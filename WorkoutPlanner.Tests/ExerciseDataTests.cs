@@ -530,6 +530,81 @@ public class ExerciseDataTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
+    public void DependentLoad_Ids_TagRotatorCuff_ShoulderUnchanged()
+    {
+        var exercises = LoadExercises();
+        var ids = new[]
+        {
+            "db-lunge",
+            "dumbbell-lunges",
+            "dumbbell-rear-lunge",
+            "split-squat-with-dumbbells",
+            "db-step-up",
+            "dumbbell-step-ups",
+            "db-romanian-deadlift",
+            "stiff-legged-dumbbell-deadlift",
+            "romanian-deadlift",
+            "stiff-legged-barbell-deadlift",
+            "smith-machine-stiff-legged-deadlift",
+            "standing-dumbbell-calf-raise",
+            "calf-raise-on-a-dumbbell"
+        };
+
+        foreach (var id in ids)
+        {
+            var ex = exercises.FirstOrDefault(e =>
+                string.Equals(e.Id, id, StringComparison.OrdinalIgnoreCase));
+            Assert.NotNull(ex);
+            Assert.Equal("dependent", ex!.Mechanics?.Shoulder);
+
+            var avoid = InjuryRules.ComputeAvoidance(ex);
+            Assert.Contains("rotator-cuff", avoid);
+            Assert.DoesNotContain("shoulder", avoid);
+        }
+    }
+
+    [Fact]
+    public void AllExercises_StoredAvoidFor_MatchesComputeAvoidance()
+    {
+        var exercises = LoadExercises();
+        Assert.All(exercises, ex =>
+        {
+            var expected = InjuryRules.ComputeAvoidance(ex);
+            Assert.True(
+                expected.OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
+                    .SequenceEqual(ex.AvoidFor.OrderBy(t => t, StringComparer.OrdinalIgnoreCase)),
+                $"{ex.Name}: computed {string.Join(",", expected)} != stored {string.Join(",", ex.AvoidFor)}");
+        });
+    }
+
+    [Fact]
+    public void InjuryRules_Dependent_TagsOnlyRotatorCuff()
+    {
+        var neutral = new Exercise
+        {
+            Id = "test-neutral",
+            Name = "Test Neutral",
+            Mechanics = new ExerciseMechanics { Shoulder = "neutral" }
+        };
+        var dependent = new Exercise
+        {
+            Id = "test-dependent",
+            Name = "Test Dependent",
+            Mechanics = new ExerciseMechanics { Shoulder = "dependent" }
+        };
+
+        var neutralTags = InjuryRules.ComputeAvoidance(neutral);
+        var dependentTags = InjuryRules.ComputeAvoidance(dependent);
+
+        Assert.DoesNotContain("rotator-cuff", neutralTags);
+        Assert.Contains("rotator-cuff", dependentTags);
+
+        var diff = dependentTags.Except(neutralTags, StringComparer.OrdinalIgnoreCase).ToList();
+        Assert.Single(diff);
+        Assert.Equal("rotator-cuff", diff[0]);
+    }
+
+    [Fact]
     public async Task Seed_IsIdempotent_RunningTwiceDoesNotDuplicateExercisesOrEquipment()
     {
         using var scope = _factory.Services.CreateScope();
