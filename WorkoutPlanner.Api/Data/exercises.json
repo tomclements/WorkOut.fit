@@ -2010,6 +2010,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shrug/0.jpg",
     "avoidFor": [
       "neck",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -2018,7 +2019,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "low",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "pronated",
       "gripLoad": true,
@@ -2054,6 +2055,7 @@
     "avoidFor": [
       "elbow",
       "neck",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -2062,7 +2064,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "low",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "pronated",
       "gripLoad": true,
@@ -8725,6 +8727,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/0.jpg",
     "avoidFor": [
       "neck",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -8733,7 +8736,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "low",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "pronated",
       "gripLoad": true,
@@ -9540,6 +9543,7 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Farmer%27s%20Carry",
     "avoidFor": [
       "lower-back",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -9548,7 +9552,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "none",
       "gripLoad": true,
@@ -13835,6 +13839,7 @@
     "avoidFor": [
       "knee",
       "lower-back",
+      "rotator-cuff",
       "shoulder"
     ],
     "force": "pull",
@@ -13842,7 +13847,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "horizontal",
       "elbow": "none",
       "grip": "none",
       "gripLoad": false,
@@ -15702,6 +15707,7 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Middle_Back_Shrug/0.jpg",
     "avoidFor": [
       "neck",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "pull",
@@ -15709,7 +15715,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "low",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "pronated",
       "gripLoad": true,
@@ -19304,6 +19310,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -19314,10 +19321,10 @@
       "chain": "open",
       "shoulder": "neutral",
       "elbow": "none",
-      "grip": "none",
-      "gripLoad": false,
+      "grip": "pronated",
+      "gripLoad": true,
       "spine": "axial",
-      "hip": "neutral",
+      "hip": "hinge",
       "knee": "none",
       "neckCompress": false
     }
@@ -25867,6 +25874,7 @@
     "demoUrl": "https://www.youtube.com/results?search_query=how%20to%20do%20Suitcase%20Carry",
     "avoidFor": [
       "lower-back",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "unknown",
@@ -25874,7 +25882,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "none",
       "gripLoad": true,

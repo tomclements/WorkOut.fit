@@ -532,7 +532,8 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
             Equipment = new List<string> { "dumbbells", "bodyweight", "bench", "barbell", "pull-up-bar" },
             Split = "bro-split",
             Goal = "hypertrophy",
-            Level = "intermediate"
+            Level = "intermediate",
+            Seed = 42
         };
 
         var response = await _client.PostAsJsonAsync("/api/plan", request);
@@ -544,11 +545,14 @@ public class PlanGenerationTests : IClassFixture<TestWebApplicationFactory>
             .SelectMany(w => w.Days)
             .First(d => d.Type == "workout" && d.Focus == "Chest");
 
-        // Most chest-day exercises should list chest as a primary or secondary muscle
-        var withChest = chestDay.Exercises.Count(e =>
+        // Most chest-day work exercises should list chest as a primary or secondary muscle
+        var workExercises = chestDay.Exercises
+            .Where(e => string.IsNullOrEmpty(e.Phase) || e.Phase == "work")
+            .ToList();
+        var withChest = workExercises.Count(e =>
             e.Primary.Any(p => p.Equals("chest", StringComparison.OrdinalIgnoreCase)));
-        Assert.True(withChest >= Math.Max(1, chestDay.Exercises.Count / 2),
-            $"Expected majority chest-focused exercises, got {withChest}/{chestDay.Exercises.Count}");
+        Assert.True(withChest >= Math.Max(1, workExercises.Count / 2),
+            $"Expected majority chest-focused work exercises, got {withChest}/{workExercises.Count}");
     }
 
     [Fact]

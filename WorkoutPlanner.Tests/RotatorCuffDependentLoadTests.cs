@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using WorkoutPlanner.Api.Models;
+using WorkoutPlanner.Api.Services;
 
 namespace WorkoutPlanner.Tests;
 
@@ -13,6 +14,14 @@ public class RotatorCuffDependentLoadTests : IClassFixture<TestWebApplicationFac
 
     private static readonly HashSet<string> ForbiddenIds = new(StringComparer.OrdinalIgnoreCase)
     {
+        "barbell-shrug",
+        "barbell-shrug-behind-the-back",
+        "dumbbell-shrug",
+        "farmers-carry",
+        "landmine-180-s",
+        "middle-back-shrug",
+        "rack-pulls",
+        "suitcase-carry",
         "db-lunge",
         "dumbbell-lunges",
         "dumbbell-rear-lunge",
@@ -33,12 +42,48 @@ public class RotatorCuffDependentLoadTests : IClassFixture<TestWebApplicationFac
         _client = factory.CreateClient();
     }
 
+    [Fact]
+    public void DependentLoadExercises_HaveExpectedMechanicsAndRotatorCuffTag()
+    {
+        var expected = new Dictionary<string, (string? Shoulder, string? Hip, bool? GripLoad)>
+        {
+            ["barbell-shrug"] = ("dependent", null, null),
+            ["barbell-shrug-behind-the-back"] = ("dependent", null, null),
+            ["dumbbell-shrug"] = ("dependent", null, null),
+            ["farmers-carry"] = ("dependent", null, null),
+            ["middle-back-shrug"] = ("dependent", null, null),
+            ["suitcase-carry"] = ("dependent", null, null),
+            ["rack-pulls"] = (null, "hinge", true),
+            ["landmine-180-s"] = ("horizontal", null, null)
+        };
+
+        foreach (var id in expected.Keys)
+        {
+            var ex = Catalog.FirstOrDefault(e =>
+                string.Equals(e.Id, id, StringComparison.OrdinalIgnoreCase));
+            Assert.NotNull(ex);
+
+            var computed = InjuryRules.ComputeAvoidance(ex!);
+            Assert.Contains("rotator-cuff", computed);
+            Assert.Contains("rotator-cuff", ex.AvoidFor);
+
+            var (shoulder, hip, gripLoad) = expected[id];
+            if (shoulder is not null)
+                Assert.Equal(shoulder, ex.Mechanics?.Shoulder);
+            if (hip is not null)
+                Assert.Equal(hip, ex.Mechanics?.Hip);
+            if (gripLoad.HasValue)
+                Assert.Equal(gripLoad.Value, ex.Mechanics?.GripLoad);
+        }
+    }
+
     public static TheoryData<List<string>, string, int> RestrictionCases()
     {
         var data = new TheoryData<List<string>, string, int>();
         var equipmentSets = new List<List<string>>
         {
             new() { "dumbbells" },
+            new() { "barbell" },
             new() { "dumbbells", "bench" },
             new() { "barbell", "machines" },
             new() { "barbell", "dumbbells", "bench", "machines" }
