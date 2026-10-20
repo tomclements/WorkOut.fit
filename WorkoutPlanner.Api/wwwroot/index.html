@@ -251,9 +251,28 @@
         </div>
       </div>
 
-      <!-- 5. Session extras -->
+      <!-- 5. Longevity Legs -->
+      <div class="mb-6 pb-6 border-b border-gray-100">
+        <h3 class="text-sm font-bold text-blue-900 uppercase tracking-wide mb-3">5. Longevity Legs</h3>
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-3 flex-wrap">
+            <label class="inline-flex items-center" for="includeLongevityLegs">
+              <input id="includeLongevityLegs" type="checkbox" class="rounded text-blue-600" />
+              <span class="ml-2 text-sm text-gray-700">Include Longevity Legs focus</span>
+            </label>
+            <button id="longevityInfoToggle" type="button" aria-expanded="false" aria-controls="longevityInfoPanel" aria-label="About Longevity Legs" class="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 text-blue-700 text-lg">ⓘ</button>
+          </div>
+          <div id="longevityInfoPanel" class="hidden bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <p id="longevityInfoBlurb" class="text-base text-gray-800 mb-2">Longevity Legs. Strong legs help you get up, climb stairs, and keep walking well as you age. Research in older adults links stronger legs and a faster walking pace with better long-term health, and even modest strength gains seem to help. This focus adds squats, hip hinges, calf raises, lunges and step-ups 2-3 times a week, at 2-3 sets of 8-15 reps, stopping with about 2 reps in reserve. Cardio helps you keep strength; gradually adding load builds it.</p>
+            <p id="longevityInfoDisclaimer" class="text-base italic text-gray-600">General fitness guidance, not medical advice. Check with your clinician if you have an injury or health condition, and stop any exercise that causes pain.</p>
+          </div>
+          <p class="text-xs text-gray-500">Adds squat, hinge, calf, lunge and step-up work 2-3×/week; respects your injuries and equipment.</p>
+        </div>
+      </div>
+
+      <!-- 6. Session extras -->
       <div class="mb-2">
-        <h3 class="text-sm font-bold text-blue-900 uppercase tracking-wide mb-3">5. Session extras</h3>
+        <h3 class="text-sm font-bold text-blue-900 uppercase tracking-wide mb-3">6. Session extras</h3>
         <div class="flex flex-col sm:flex-row gap-4">
           <label class="inline-flex items-center">
             <input id="includeWarmup" type="checkbox" checked class="rounded text-blue-600" />
@@ -430,6 +449,12 @@
         </label>
         <input id="prefVolume" type="range" min="0" max="100" value="35" class="w-full" />
       </div>
+      <div class="mb-4">
+        <label class="inline-flex items-center" for="prefIncludeLongevityLegs">
+          <input id="prefIncludeLongevityLegs" type="checkbox" class="rounded text-blue-600" />
+          <span class="ml-2 text-sm text-gray-700">Include Longevity Legs focus by default</span>
+        </label>
+      </div>
       <div id="prefStatus" class="text-sm hidden"></div>
       <button id="savePreferencesBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">Save preferences</button>
     </div>
@@ -484,6 +509,7 @@
   <script src="js/site.js"></script>
   <script src="js/mobility.js"></script>
   <script src="js/nextWorkout.js"></script>
+  <script src="js/longevityLegs.js"></script>
   <script src="js/app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

@@ -112,10 +112,11 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             : null;
 
         var regressions = new List<(string Pattern, string Id, string Reason)>();
-        var uncovered = new List<string>();
+        var uncoveredByWeek = new List<List<string>>();
 
         for (int w = 1; w <= weeks; w++)
         {
+            var weekUncovered = new List<string>();
             var mods = GetWeekProgression(progression, w, weeks, goal);
             var workoutDays = new List<DayPlan>();
             int strengthOrdinal = 0;
@@ -164,7 +165,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                     session = BuildSession(dayIdx, w, strengthOrdinal, targetTime, selectedEquipment,
                         userLevelNum, goal, split, focusLabel, slotOrder, exercises, planWideRecent, favoriteIds, dislikedIds,
                         req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, req.Rehab, mods, rng, dynamicAvoid,
-                        dayLongevityPatterns, lrng, forceTwoSets, regressions, dayDeferred, uncovered);
+                        dayLongevityPatterns, lrng, forceTwoSets, regressions, dayDeferred, weekUncovered);
 
                     if (req.IncludeLongevityLegs && longevityTarget == 1 && dayLongevityPatterns != null)
                     {
@@ -187,7 +188,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                                     break;
                                 }
                             }
-                            if (!placed) uncovered.Add(pattern);
+                            if (!placed) weekUncovered.Add(pattern);
                         }
                     }
                 }
@@ -242,6 +243,8 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 FocusNote = mods.FocusNote,
                 Days = fullDays
             });
+
+            uncoveredByWeek.Add(weekUncovered);
         }
 
         req.Progression = progression;
@@ -267,12 +270,34 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                     d.SessionStyle == "strength" &&
                     d.Exercises.Any(e => e.Phase == "work" && e.LongevityPattern != null)))
                 .ToList();
-            var uncoveredPatterns = strengthDays == 0
-                ? LongevityLegsCatalog.Patterns.ToList()
-                : uncovered
-                    .Distinct()
-                    .OrderBy(p => LongevityLegsCatalog.Patterns.ToList().IndexOf(p))
+            List<List<string>> uncoveredPatternsByWeek;
+            List<string> uncoveredPatterns;
+            if (strengthDays == 0)
+            {
+                var allPatterns = LongevityLegsCatalog.Patterns.ToList();
+                uncoveredPatterns = allPatterns;
+                uncoveredPatternsByWeek = Enumerable.Range(0, weeks)
+                    .Select(_ => allPatterns.ToList())
                     .ToList();
+            }
+            else
+            {
+                // A pattern counts as uncovered for a week only if no session that week placed it.
+                uncoveredPatternsByWeek = uncoveredByWeek
+                    .Select((list, wi) => list
+                        .Where(p => !plan[wi].Days.Any(d => d.Exercises.Any(e =>
+                            string.Equals(e.LongevityPattern, p, StringComparison.OrdinalIgnoreCase))))
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .OrderBy(p => LongevityLegsCatalog.Patterns.ToList().IndexOf(p))
+                        .ToList())
+                    .ToList();
+                var patternOrder = LongevityLegsCatalog.Patterns.ToList();
+                uncoveredPatterns = patternOrder
+                    .Where(p => uncoveredPatternsByWeek.All(list =>
+                        list.Contains(p, StringComparer.OrdinalIgnoreCase)))
+                    .ToList();
+            }
+
             response.LongevityLegs = new LongevityLegsSummary
             {
                 Enabled = true,
@@ -288,6 +313,7 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                     })
                     .ToList(),
                 UncoveredPatterns = uncoveredPatterns,
+                UncoveredPatternsByWeek = uncoveredPatternsByWeek,
                 Blurb = LongevityLegsCatalog.Blurb,
                 Disclaimer = LongevityLegsCatalog.Disclaimer
             };

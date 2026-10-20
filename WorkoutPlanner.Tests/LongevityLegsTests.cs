@@ -707,6 +707,120 @@ public class LongevityLegsTests : IClassFixture<TestWebApplicationFactory>
         }
     }
 
+    [Fact]
+    public async Task On_Seed7_UncoveredPatternsByWeek_CountEqualsWeeks()
+    {
+        var request = new
+        {
+            seed = 7,
+            weeks = 4,
+            daysPerWeek = 5,
+            workoutDays = new[] { 0, 1, 2, 3, 4 },
+            sessionMinutes = 20,
+            equipment = new[] { "bodyweight", "dumbbells" },
+            restrictions = Array.Empty<string>(),
+            rehab = Array.Empty<string>(),
+            split = "full-body",
+            goal = "hypertrophy",
+            level = "beginner",
+            includeWarmup = true,
+            includeCooldown = true,
+            includeLongevityLegs = true,
+            progression = "linear",
+            mixMode = "strength"
+        };
+
+        var response = await _client.PostAsync("/api/plan", BuildJsonContent(request));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var json = JsonNode.Parse(await response.Content.ReadAsStringAsync())!;
+        var byWeek = json["longevityLegs"]!["uncoveredPatternsByWeek"]!.AsArray()
+            .Select(w => w!.AsArray().Select(x => x!.GetValue<string>()).ToList())
+            .ToList();
+        Assert.Equal(request.weeks, byWeek.Count);
+        AssertUncoveredSemantics(json, byWeek);
+
+        // Known seed-7 shape: week 3 places nothing; calf (W1/W4) and lunge are picked, so not plan-level.
+        Assert.Equal(new[] { 3, 3, 0, 3 }, json["longevityLegs"]!["coveredSessionsPerWeek"]!.AsArray().Select(x => x!.GetValue<int>()));
+        Assert.Equal(LongevityLegsCatalog.Patterns, byWeek[2]);
+        var planUncovered = json["longevityLegs"]!["uncoveredPatterns"]!.AsArray().Select(x => x!.GetValue<string>()).ToList();
+        Assert.Equal(new[] { "step-up" }, planUncovered);
+    }
+
+    private static void AssertUncoveredSemantics(JsonNode json, List<List<string>> byWeek)
+    {
+        var weeksArr = json["plan"]!.AsArray();
+        for (int w = 0; w < weeksArr.Count; w++)
+        {
+            var pickedThisWeek = weeksArr[w]!["days"]!.AsArray()
+                .SelectMany(d => d!["exercises"]!.AsArray())
+                .Select(e => e!["longevityPattern"]?.GetValue<string>())
+                .Where(p => p != null)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            foreach (var p in byWeek[w])
+                Assert.False(pickedThisWeek.Contains(p), $"week {w + 1} lists '{p}' as uncovered but places it");
+        }
+        var planUncovered = json["longevityLegs"]!["uncoveredPatterns"]!.AsArray().Select(x => x!.GetValue<string>()).ToList();
+        foreach (var p in LongevityLegsCatalog.Patterns)
+            Assert.Equal(byWeek.All(l => l.Contains(p, StringComparer.OrdinalIgnoreCase)), planUncovered.Contains(p));
+    }
+
+    [Theory]
+    [MemberData(nameof(NoDuplicatePatternCases))]
+    public async Task On_PlanLevelUncoveredPatterns_AreMissingFromEveryWeek(string split, int[] workoutDays, bool cuff, int seed)
+    {
+        var request = new
+        {
+            seed,
+            weeks = 4,
+            daysPerWeek = workoutDays.Length,
+            workoutDays = workoutDays.ToList(),
+            sessionMinutes = 45,
+            equipment = new[] { "dumbbells", "bench", "bodyweight" },
+            split,
+            goal = "hypertrophy",
+            level = "beginner",
+            includeWarmup = true,
+            includeCooldown = true,
+            restrictions = cuff ? new[] { "rotator-cuff" } : Array.Empty<string>(),
+            rehab = Array.Empty<string>(),
+            progression = "linear",
+            mixMode = "strength",
+            includeLongevityLegs = true
+        };
+
+        var response = await _client.PostAsync("/api/plan", BuildJsonContent(request));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var json = JsonNode.Parse(await response.Content.ReadAsStringAsync())!;
+        var planUncovered = json["longevityLegs"]!["uncoveredPatterns"]!.AsArray()
+            .Select(x => x!.GetValue<string>())
+            .ToList();
+        var byWeek = json["longevityLegs"]!["uncoveredPatternsByWeek"]!.AsArray()
+            .Select(w => w!.AsArray().Select(x => x!.GetValue<string>()).ToList())
+            .ToList();
+
+        var allPicks = GetLongevityPicks(json);
+        var patternsPickedAnywhere = allPicks
+            .Select(e => e!["longevityPattern"]!.GetValue<string>())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        AssertUncoveredSemantics(json, byWeek);
+
+        foreach (var pattern in planUncovered)
+        {
+            Assert.All(byWeek, weekList =>
+                Assert.Contains(pattern, weekList, StringComparer.OrdinalIgnoreCase));
+            Assert.DoesNotContain(pattern, patternsPickedAnywhere);
+        }
+
+        foreach (var pattern in patternsPickedAnywhere)
+        {
+            Assert.DoesNotContain(pattern, planUncovered, StringComparer.OrdinalIgnoreCase);
+        }
+    }
+
     public static TheoryData<string, int[], bool, int> NoDuplicatePatternCases()
     {
         var data = new TheoryData<string, int[], bool, int>();

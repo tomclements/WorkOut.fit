@@ -26,8 +26,10 @@ public class LongevityLegsSummary
     public List<int> CoveredSessionsPerWeek { get; set; } = new();
     /// <summary>Chosen regressions and the reason each was selected.</summary>
     public List<LongevityRegression> Regressions { get; set; } = new();
-    /// <summary>Patterns that could not be covered in the generated plan.</summary>
+    /// <summary>Patterns that could not be covered in the generated plan (missing from every week).</summary>
     public List<string> UncoveredPatterns { get; set; } = new();
+    /// <summary>Patterns that could not be covered in each week, in catalog order.</summary>
+    public List<List<string>> UncoveredPatternsByWeek { get; set; } = new();
     /// <summary>Human-readable summary of the longevity legs configuration.</summary>
     public string Blurb { get; set; } = string.Empty;
     /// <summary>Medical / safety disclaimer for the longevity legs content.</summary>

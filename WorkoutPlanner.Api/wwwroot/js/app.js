@@ -22,7 +22,8 @@ let currentPreferences = {
   defaultSessionMinutes: 20,
   defaultWorkoutDays: [0, 1, 2, 3, 4],
   defaultIncludeWarmup: true,
-  defaultIncludeCooldown: true
+  defaultIncludeCooldown: true,
+  defaultIncludeLongevityLegs: false
 };
 let equipmentList = [];
 let favoriteExerciseIds = [];
@@ -241,6 +242,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (hint) hint.textContent = MIX_MODE_HINTS[mixModeEl.value] || MIX_MODE_HINTS.strength;
     });
   }
+  const longevityInfoToggle = document.getElementById('longevityInfoToggle');
+  if (longevityInfoToggle) {
+    longevityInfoToggle.addEventListener('click', () => {
+      const panel = document.getElementById('longevityInfoPanel');
+      if (!panel) return;
+      const expanded = panel.classList.toggle('hidden');
+      longevityInfoToggle.setAttribute('aria-expanded', String(!expanded));
+    });
+  }
   const progressionEl = document.getElementById('progression');
   if (progressionEl) {
     progressionEl.addEventListener('change', () => {
@@ -398,8 +408,10 @@ function applyPlanDefaultsToForm(options = {}) {
 
   const warm = document.getElementById('includeWarmup');
   const cool = document.getElementById('includeCooldown');
+  const ll = document.getElementById('includeLongevityLegs');
   if (warm) warm.checked = p.defaultIncludeWarmup !== false;
   if (cool) cool.checked = p.defaultIncludeCooldown !== false;
+  if (ll) ll.checked = !!p.defaultIncludeLongevityLegs;
 
   onSplitChange({ skipBroNudge: true });
   const prog = document.getElementById('progression');
@@ -450,7 +462,8 @@ function mergePreferences(prefs) {
       ? prefs.defaultWorkoutDays
       : currentPreferences.defaultWorkoutDays,
     defaultIncludeWarmup: prefs.defaultIncludeWarmup ?? currentPreferences.defaultIncludeWarmup,
-    defaultIncludeCooldown: prefs.defaultIncludeCooldown ?? currentPreferences.defaultIncludeCooldown
+    defaultIncludeCooldown: prefs.defaultIncludeCooldown ?? currentPreferences.defaultIncludeCooldown,
+    defaultIncludeLongevityLegs: prefs.defaultIncludeLongevityLegs ?? currentPreferences.defaultIncludeLongevityLegs
   };
 }
 
@@ -467,6 +480,7 @@ async function savePlanFormDefaults(criteria) {
     defaultWorkoutDays: criteria.workoutDays || [],
     defaultIncludeWarmup: criteria.includeWarmup,
     defaultIncludeCooldown: criteria.includeCooldown,
+    defaultIncludeLongevityLegs: !!criteria.includeLongevityLegs,
     defaultEquipment: criteria.equipment || currentPreferences.defaultEquipment
   };
 
@@ -548,6 +562,7 @@ function getCriteria(options = {}) {
     level: document.getElementById('level').value || 'beginner',
     includeWarmup: document.getElementById('includeWarmup').checked,
     includeCooldown: document.getElementById('includeCooldown').checked,
+    includeLongevityLegs: document.getElementById('includeLongevityLegs').checked || undefined,
     favoriteExerciseIds: favoriteExerciseIds.slice(),
     dislikedExerciseIds: dislikedExerciseIds.slice(),
     progression: document.getElementById('progression')?.value || 'linear',
@@ -891,7 +906,8 @@ function mapPrefsFromApi(prefs) {
     defaultSessionMinutes: prefs.defaultSessionMinutes,
     defaultWorkoutDays: prefs.defaultWorkoutDays,
     defaultIncludeWarmup: prefs.defaultIncludeWarmup,
-    defaultIncludeCooldown: prefs.defaultIncludeCooldown
+    defaultIncludeCooldown: prefs.defaultIncludeCooldown,
+    defaultIncludeLongevityLegs: prefs.defaultIncludeLongevityLegs
   };
 }
 
@@ -915,6 +931,8 @@ function openPreferencesModal(e) {
   document.getElementById('prefMotion').checked = currentPreferences.defaultMotionSensor;
   document.getElementById('prefVolume').value = currentPreferences.defaultVolume;
   document.getElementById('prefVolumeValue').textContent = currentPreferences.defaultVolume + '%';
+  const prefLl = document.getElementById('prefIncludeLongevityLegs');
+  if (prefLl) prefLl.checked = !!currentPreferences.defaultIncludeLongevityLegs;
   document.getElementById('prefStatus').classList.add('hidden');
 
   document.getElementById('preferencesModal').classList.remove('hidden');
@@ -941,7 +959,8 @@ async function savePreferences() {
     defaultMusic: musicStyle !== 'off',
     defaultVoice: false,
     defaultMotionSensor: false,
-    defaultVolume: parseInt(document.getElementById('prefVolume').value, 10)
+    defaultVolume: parseInt(document.getElementById('prefVolume').value, 10),
+    defaultIncludeLongevityLegs: document.getElementById('prefIncludeLongevityLegs').checked
   };
 
   try {
@@ -965,6 +984,7 @@ async function savePreferences() {
         defaultWorkoutDays: dto.defaultWorkoutDays,
         defaultIncludeWarmup: dto.defaultIncludeWarmup,
         defaultIncludeCooldown: dto.defaultIncludeCooldown,
+        defaultIncludeLongevityLegs: dto.defaultIncludeLongevityLegs,
         defaultEquipment: dto.defaultEquipment
       }));
     } catch { /* ignore */ }
@@ -1858,6 +1878,15 @@ function renderPlan(result) {
 
   renderRehabProgressions(result, container);
 
+  const LL = typeof LongevityLegs !== 'undefined' ? LongevityLegs : null;
+  const llRestrictions = (result.criteria && result.criteria.restrictions) || [];
+  const longevitySummaryHtml = LL ? LL.summaryCardHtml(result.longevityLegs, llRestrictions) : '';
+  if (longevitySummaryHtml) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = longevitySummaryHtml;
+    if (tmp.firstElementChild) container.appendChild(tmp.firstElementChild);
+  }
+
   result.plan.forEach((week, weekIndex) => {
     const weekEl = document.createElement('section');
     weekEl.className = 'mb-8';
@@ -1915,7 +1944,7 @@ function renderPlan(result) {
             ${exerciseThumbHtml(ex.imageUrl, ex.name)}
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between gap-2">
-                <span class="font-medium flex flex-wrap items-center gap-1.5">${phaseBadge}${escapeHtml(ex.name)}</span>
+                <span class="font-medium flex flex-wrap items-center gap-1.5">${phaseBadge}${escapeHtml(ex.name)}${LL ? LL.badgeHtml(ex) : ''}</span>
                 <div class="flex items-center gap-2 shrink-0">
                   ${ex.demoUrl ? `<a href="${escapeHtml(ex.demoUrl)}" target="_blank" rel="noopener" class="text-xs text-blue-600 hover:underline whitespace-nowrap">${/exrx\.net/i.test(ex.demoUrl) ? 'ExRx' : 'Demo'}</a>` : ''}
                   ${(ex.demoAnimUrl || (ex.imageUrl && ex.id && !String(ex.id).startsWith('wu-') && !String(ex.id).startsWith('cd-')))
@@ -1926,7 +1955,7 @@ function renderPlan(result) {
               </div>
               <div>${setsLine}</div>
               <div data-last-load-for="${escapeHtml(ex.id)}" class="text-xs text-blue-600 mt-0.5 hidden"></div>
-              <div class="text-xs text-gray-500 mb-1.5">${escapeHtml((ex.primary || []).join(', '))}</div>
+              <div class="text-xs text-gray-500 mb-1.5">${escapeHtml((ex.primary || []).join(', '))}</div>${LL ? LL.regressionNoteHtml(ex, llRestrictions) : ''}
               ${cue}
               ${rating}
             </div>
@@ -1985,6 +2014,7 @@ function renderPlan(result) {
           </div>
           <div class="text-sm text-gray-600 mb-1">~${day.estimatedMinutes} min${mobilitySummary ? ` · ${escapeHtml(mobilitySummary)}` : ''}</div>
           ${day.note ? `<p class="text-xs text-gray-600 mb-2 italic">${escapeHtml(day.note)}</p>` : ''}
+          ${day.longevityNote ? `<p class="ll-day-note">${escapeHtml(day.longevityNote)}</p>` : ''}
           <ul class="text-sm">${listHtml}</ul>
           <div class="mt-3 flex flex-wrap gap-2">
             ${isMobilityDay ? '' : `<button type="button" data-action="add-ex" data-week="${weekIndex}" data-day="${dayIndex}" class="text-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-2 rounded">+ Add exercise</button>`}

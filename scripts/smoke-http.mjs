@@ -220,6 +220,36 @@ async function run() {
       console.log('  ✓ GET /api/equipment');
     }
 
+    // 13. POST /api/plan with Longevity Legs enabled
+    {
+      const r = await postJSON('/api/plan', {
+        seed: 7,
+        weeks: 1,
+        daysPerWeek: 2,
+        workoutDays: [0, 3],
+        sessionMinutes: 45,
+        equipment: ['bodyweight', 'bench'],
+        split: 'full-body',
+        goal: 'hypertrophy',
+        level: 'beginner',
+        includeWarmup: false,
+        includeCooldown: false,
+        restrictions: ['rotator-cuff'],
+        rehab: [],
+        progression: 'linear',
+        mixMode: 'strength',
+        includeLongevityLegs: true
+      });
+      assert(r.status === 200, `POST /api/plan (longevity) → ${r.status}`);
+      const j = JSON.parse(r.body);
+      assert(j.longevityLegs && j.longevityLegs.enabled === true, `longevityLegs.enabled is not true`);
+      const hasPattern = j.plan.some(w => (w.days || []).some(d => (d.exercises || []).some(ex => ex.longevityPattern)));
+      assert(hasPattern, `no exercise has longevityPattern`);
+      const hasDbPrefix = j.plan.some(w => (w.days || []).some(d => (d.exercises || []).some(ex => String(ex.id).startsWith('db-'))));
+      assert(!hasDbPrefix, `plan contains exercise id starting with db-`);
+      console.log('  ✓ POST /api/plan (longevity)');
+    }
+
     console.log('\nAll smoke tests passed.');
   } catch (err) {
     failures.push(err.message);
