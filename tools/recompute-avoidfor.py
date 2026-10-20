@@ -20,10 +20,16 @@ Rules of thumb per joint:
   patellar : deep knee mechanics, or rehab == patellar.
 
 Usage:
-  python tools/recompute-avoidfor.py --dry-run      # preview tag diffs
-  python tools/recompute-avoidfor.py --write        # persist mechanics + avoidFor
-  python tools/recompute-avoidfor.py --avoid-only   # recompute avoidFor only (no mechanics rewrite)
+  python tools/recompute-avoidfor.py --dry-run             # preview tag diffs
+  python tools/recompute-avoidfor.py --avoid-only --dry-run # preview avoidFor diffs only
   python tools/recompute-avoidfor.py --avoid-only --write  # persist avoidFor only
+  python tools/recompute-avoidfor.py --rederive-mechanics --write  # persist mechanics + avoidFor
+
+Plain `--write` is rejected unless `--avoid-only` or `--rederive-mechanics` is also
+supplied, because re-deriving mechanics from exercise names overwrites hand-set
+values (e.g. shoulder="dependent", gripLoad=true). Use `--avoid-only` to refresh
+avoidFor from the existing mechanics, or `--rederive-mechanics` when you intend to
+rebuild mechanics from names.
 """
 import json
 import re
@@ -318,7 +324,20 @@ def compute_avoidance(primary, m, secondary=None):
 
 def main():
     avoid_only = "--avoid-only" in sys.argv
-    dry = "--write" not in sys.argv
+    rederive = "--rederive-mechanics" in sys.argv
+    write = "--write" in sys.argv
+    dry = not write
+
+    if write and not avoid_only and not rederive:
+        print(
+            "error: plain --write is not allowed because it re-derives mechanics from names, "
+            "which overwrites hand-set values such as shoulder='dependent' or gripLoad=true.\n"
+            "Use --avoid-only --write to recompute avoidFor from existing mechanics, "
+            "or add --rederive-mechanics --write if you explicitly intend to rebuild mechanics.",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
     with open(SEED, encoding="utf-8") as f:
         data = json.load(f)
 
