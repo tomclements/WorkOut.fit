@@ -15,7 +15,8 @@ Rules of thumb per joint:
   lower-back : spinal flexion / axial compression / rotation / lateral buckling,
              or any hip-hinge pattern.
   neck     : cervical compression (shrugs, neck work, behind-the-neck).
-  rotator-cuff : overhead/elevated/horizontal mechanics, or rehab == rotator-cuff.
+  rotator-cuff : overhead/elevated/horizontal/dependent mechanics, loaded hip-hinge
+                 grip patterns, or rehab == rotator-cuff.
   patellar : deep knee mechanics, or rehab == patellar.
 
 Usage:
@@ -287,9 +288,12 @@ def compute_avoidance(primary, m, secondary=None):
     if m["neckCompress"]:
         avoid.add("neck")
 
-    # rotator-cuff: overhead/elevated/horizontal mechanics or rehab == rotator-cuff
+    # rotator-cuff: overhead/elevated/horizontal/dependent mechanics, loaded
+    # hip-hinge grip patterns, or rehab == rotator-cuff
     rehab = (m.get("rehab") or "").lower()
-    if pos in {"overhead", "elevated", "horizontal"} or rehab == "rotator-cuff":
+    if (pos in {"overhead", "elevated", "horizontal", "dependent"}
+            or (m["gripLoad"] and m["hip"] == "hinge")
+            or rehab == "rotator-cuff"):
         avoid.add("rotator-cuff")
 
     # patellar: deep knee mechanics or rehab == patellar

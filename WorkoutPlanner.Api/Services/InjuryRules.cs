@@ -168,6 +168,11 @@ public static class InjuryRules
         }
     }
 
+    /// <summary>
+    /// Adds <c>rotator-cuff</c> for overhead/elevated/horizontal or dependent shoulder
+    /// mechanics, for loaded hip-hinge patterns that grip the weight, or for exercises
+    /// whose <c>mechanics.rehab</c> value is <c>rotator-cuff</c>.
+    /// </summary>
     private static void RotatorCuff(HashSet<string> avoid, ExerciseMechanics? m,
         List<string> primary)
     {
@@ -180,8 +185,13 @@ public static class InjuryRules
             pos.Equals("horizontal", StringComparison.OrdinalIgnoreCase);
         var isRehabRotatorCuff =
             (m.Rehab ?? "").Equals("rotator-cuff", StringComparison.OrdinalIgnoreCase);
+        var isDependentLoad =
+            pos.Equals("dependent", StringComparison.OrdinalIgnoreCase);
+        var isGripLoadedHinge =
+            m.GripLoad &&
+            m.Hip.Equals("hinge", StringComparison.OrdinalIgnoreCase);
 
-        if (isOverheadStyle || isRehabRotatorCuff)
+        if (isOverheadStyle || isRehabRotatorCuff || isDependentLoad || isGripLoadedHinge)
         {
             avoid.Add("rotator-cuff");
         }

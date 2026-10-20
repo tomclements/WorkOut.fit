@@ -1403,6 +1403,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "pull",
@@ -3875,6 +3876,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "pull",
@@ -4778,14 +4780,15 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Calf%20Raise%20On%20A%20Dumbbell%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Raise_On_A_Dumbbell/0.jpg",
     "avoidFor": [
-      "knee"
+      "knee",
+      "rotator-cuff"
     ],
     "force": "push",
     "mechanic": "isolation",
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "none",
       "gripLoad": false,
@@ -6403,6 +6406,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -6452,6 +6456,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -6913,6 +6918,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -7970,14 +7976,15 @@
     "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBLunge",
     "avoidFor": [
       "knee",
-      "patellar"
+      "patellar",
+      "rotator-cuff"
     ],
     "force": "unknown",
     "mechanic": "unknown",
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "none",
       "gripLoad": false,
@@ -8013,14 +8020,15 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg",
     "avoidFor": [
       "knee",
-      "patellar"
+      "patellar",
+      "rotator-cuff"
     ],
     "force": "push",
     "mechanic": "compound",
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "none",
       "gripLoad": false,
@@ -8466,14 +8474,15 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Rear_Lunge/0.jpg",
     "avoidFor": [
       "knee",
-      "patellar"
+      "patellar",
+      "rotator-cuff"
     ],
     "force": "push",
     "mechanic": "compound",
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "none",
       "gripLoad": false,
@@ -8510,6 +8519,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "unknown",
@@ -8517,7 +8527,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "flexion",
       "grip": "pronated",
       "gripLoad": true,
@@ -8889,14 +8899,15 @@
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Step_Ups/0.jpg",
     "avoidFor": [
       "knee",
-      "patellar"
+      "patellar",
+      "rotator-cuff"
     ],
     "force": "push",
     "mechanic": "compound",
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "none",
       "gripLoad": false,
@@ -8931,14 +8942,15 @@
     "demoUrl": "https://exrx.net/WeightExercises/Quadriceps/DBStepUp",
     "avoidFor": [
       "knee",
-      "patellar"
+      "patellar",
+      "rotator-cuff"
     ],
     "force": "unknown",
     "mechanic": "unknown",
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "none",
       "gripLoad": false,
@@ -12996,6 +13008,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "pull",
@@ -14276,6 +14289,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "pull",
@@ -17385,6 +17399,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -19570,6 +19585,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "pull",
@@ -19668,6 +19684,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -20249,6 +20266,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "pull",
@@ -20256,7 +20274,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "flexion",
       "grip": "pronated",
       "gripLoad": true,
@@ -20295,6 +20313,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -22881,6 +22900,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "pull",
@@ -22888,7 +22908,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "flexion",
       "grip": "pronated",
       "gripLoad": true,
@@ -23769,14 +23789,15 @@
     "avoidFor": [
       "knee",
       "lower-back",
-      "patellar"
+      "patellar",
+      "rotator-cuff"
     ],
     "force": "push",
     "mechanic": "compound",
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "none",
       "gripLoad": false,
@@ -24527,14 +24548,15 @@
     "demoUrl": "https://www.youtube.com/results?search_query=Standing%20Dumbbell%20Calf%20Raise%20exercise",
     "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Dumbbell_Calf_Raise/0.jpg",
     "avoidFor": [
-      "knee"
+      "knee",
+      "rotator-cuff"
     ],
     "force": "push",
     "mechanic": "isolation",
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "none",
       "grip": "none",
       "gripLoad": false,
@@ -25592,6 +25614,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "pull",
@@ -25599,7 +25622,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "flexion",
       "grip": "pronated",
       "gripLoad": true,
@@ -25636,6 +25659,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "wrist"
     ],
     "force": "pull",
@@ -25643,7 +25667,7 @@
     "mechanics": {
       "handSupport": false,
       "chain": "open",
-      "shoulder": "neutral",
+      "shoulder": "dependent",
       "elbow": "flexion",
       "grip": "pronated",
       "gripLoad": true,
@@ -25892,6 +25916,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -25943,6 +25968,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
@@ -25994,6 +26020,7 @@
       "elbow",
       "knee",
       "lower-back",
+      "rotator-cuff",
       "shoulder",
       "wrist"
     ],
