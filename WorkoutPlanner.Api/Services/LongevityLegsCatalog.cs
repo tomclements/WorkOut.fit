@@ -260,7 +260,7 @@ public static class LongevityLegsCatalog
         };
     }
 
-    private static bool HasKneeOrPatellarRehab(IReadOnlyCollection<string>? rehab)
+    internal static bool HasKneeOrPatellarRehab(IReadOnlyCollection<string>? rehab)
         => rehab is not null && rehab.Any(IsKneeOrPatellarTag);
 
     private static bool IsKneeOrPatellarTag(string value)
