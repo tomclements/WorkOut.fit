@@ -102,11 +102,30 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         var hiitMask = AssignHiitMask(effectiveDays, hiitCount);
         int strengthDayCount = Math.Max(1, effectiveDays - hiitCount);
 
+        var strengthPositions = Enumerable.Range(0, workoutIndices.Length)
+            .Where(i => !(i < hiitMask.Length && hiitMask[i])).ToArray();
+        int strengthDays = strengthPositions.Length;
+        int longevityTarget = req.IncludeLongevityLegs ? Math.Clamp(strengthDays, 0, 3) : 0;
+        var lrng = req.IncludeLongevityLegs ? new Random(seed ^ 0x4C4C4547) : null;
+        var longevityAssignments = req.IncludeLongevityLegs && longevityTarget > 0
+            ? AssignLongevityDays(split, strengthDays, longevityTarget)
+            : null;
+
+        var regressions = new List<(string Pattern, string Id, string Reason)>();
+        var uncovered = new List<string>();
+
         for (int w = 1; w <= weeks; w++)
         {
             var mods = GetWeekProgression(progression, w, weeks, goal);
             var workoutDays = new List<DayPlan>();
             int strengthOrdinal = 0;
+            List<string>[]? effectivePatterns = null;
+            if (req.IncludeLongevityLegs && longevityAssignments != null)
+            {
+                effectivePatterns = longevityAssignments.PerOrdinal
+                    .Select(a => a.ToList()).ToArray();
+            }
+
             for (int i = 0; i < workoutIndices.Length; i++)
             {
                 int dayIdx = workoutIndices[i];
@@ -122,10 +141,55 @@ public class WorkoutPlannerService : IWorkoutPlannerService
                 {
                     var (focusLabel, slotOrder) = GetSessionTemplate(
                         split, dayIdx, strengthOrdinal, strengthDayCount, rng);
+                    List<string>? dayLongevityPatterns = null;
+                    bool forceTwoSets = false;
+                    var dayDeferred = new List<string>();
+                    if (req.IncludeLongevityLegs && effectivePatterns != null &&
+                        strengthOrdinal < effectivePatterns.Length)
+                    {
+                        dayLongevityPatterns = effectivePatterns[strengthOrdinal];
+                        if (longevityTarget == 1)
+                        {
+                            forceTwoSets = true;
+                        }
+                        else if (split == "bro-split" && longevityTarget == 2 &&
+                                 longevityAssignments!.ChosenOrdinals.Length >= 2 &&
+                                 strengthOrdinal == longevityAssignments.ChosenOrdinals[1])
+                        {
+                            forceTwoSets = true;
+                        }
+                    }
+                    int currentStrengthOrdinal = strengthOrdinal;
                     strengthOrdinal++;
                     session = BuildSession(dayIdx, w, strengthOrdinal, targetTime, selectedEquipment,
                         userLevelNum, goal, split, focusLabel, slotOrder, exercises, planWideRecent, favoriteIds, dislikedIds,
-                        req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, req.Rehab, mods, rng, dynamicAvoid);
+                        req.IncludeWarmup, req.IncludeCooldown, req.Restrictions, req.Rehab, mods, rng, dynamicAvoid,
+                        dayLongevityPatterns, lrng, forceTwoSets, regressions, dayDeferred, uncovered);
+
+                    if (req.IncludeLongevityLegs && longevityTarget == 1 && dayLongevityPatterns != null)
+                    {
+                        session.LongevityNote =
+                            "Longevity block: all five patterns at 2 sets. The guidance suggests 2-3 sessions a week. Add a second day or try the 10-minute bodyweight home routine on a rest day.";
+                    }
+
+                    if (req.IncludeLongevityLegs && effectivePatterns != null && dayDeferred.Count > 0)
+                    {
+                        foreach (var pattern in dayDeferred)
+                        {
+                            bool placed = false;
+                            for (int j = currentStrengthOrdinal + 1; j < strengthDays; j++)
+                            {
+                                if (effectivePatterns[j].Count > 0 &&
+                                    !effectivePatterns[j].Contains(pattern))
+                                {
+                                    effectivePatterns[j].Add(pattern);
+                                    placed = true;
+                                    break;
+                                }
+                            }
+                            if (!placed) uncovered.Add(pattern);
+                        }
+                    }
                 }
 
                 foreach (var id in session.Exercises.Select(e => e.Id))
@@ -185,7 +249,8 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         req.Goal = goal;
         req.MixMode = mixMode;
         req.Seed = seed;
-        return new PlanResponse
+
+        var response = new PlanResponse
         {
             Criteria = req,
             Plan = plan,
@@ -193,13 +258,52 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             ProgressionSummary = BuildProgressionSummary(progression, weeks, goal, mixMode, hiitCount, effectiveDays),
             RehabProgressions = RehabProgressionCatalog.GetFor(req.Rehab)
         };
+
+        if (req.IncludeLongevityLegs)
+        {
+            var coveredSessionsPerWeek = plan
+                .Select(week => week.Days.Count(d =>
+                    d.Type == "workout" &&
+                    d.SessionStyle == "strength" &&
+                    d.Exercises.Any(e => e.Phase == "work" && e.LongevityPattern != null)))
+                .ToList();
+            var uncoveredPatterns = strengthDays == 0
+                ? LongevityLegsCatalog.Patterns.ToList()
+                : uncovered
+                    .Distinct()
+                    .OrderBy(p => LongevityLegsCatalog.Patterns.ToList().IndexOf(p))
+                    .ToList();
+            response.LongevityLegs = new LongevityLegsSummary
+            {
+                Enabled = true,
+                TargetSessionsPerWeek = longevityTarget,
+                CoveredSessionsPerWeek = coveredSessionsPerWeek,
+                Regressions = regressions
+                    .DistinctBy(r => (r.Pattern, r.Id))
+                    .Select(r => new LongevityRegression
+                    {
+                        Pattern = r.Pattern,
+                        ChosenId = r.Id,
+                        Reason = r.Reason
+                    })
+                    .ToList(),
+                UncoveredPatterns = uncoveredPatterns,
+                Blurb = LongevityLegsCatalog.Blurb,
+                Disclaimer = LongevityLegsCatalog.Disclaimer
+            };
+        }
+
+        return response;
     }
 
     private DayPlan BuildSession(int dayIdx, int week, int dayNumber, int targetTime,
         List<string> equipment, int userLevelNum, string goal, string split, string focusLabel, List<string> slotOrder,
         List<Exercise> allExercises, List<string> planWideRecent, HashSet<string> favoriteIds, HashSet<string> dislikedIds,
         bool includeWarmup, bool includeCooldown,
-        List<string> restrictions, List<string>? rehab, WeekProgression mods, Random rng, HashSet<string> avoidIds)
+        List<string> restrictions, List<string>? rehab, WeekProgression mods, Random rng, HashSet<string> avoidIds,
+        List<string>? longevityPatterns = null, Random? lrng = null, bool forceTwoSets = false,
+        List<(string Pattern, string Id, string Reason)>? regressions = null,
+        List<string>? deferred = null, List<string>? uncovered = null)
     {
         var pool = allExercises
             .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment) && !IsRestricted(e, restrictions, rehab) && !LongevityLegsCatalog.IsLongevityOnly(e.Id))
@@ -221,6 +325,11 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         var usedToday = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         int timeUsed = 0;
         const int transition = 30;
+
+        // Bro split tolerates slightly fuller sessions (high per-muscle volume)
+        int softLimit = isBro ? targetTime + 90 : targetTime + 60;
+        int hardSkip = isBro ? targetTime + 150 : targetTime + 120;
+        int minExercises = isBro ? 4 : 3;
 
         foreach (var slot in slotOrder)
         {
@@ -261,11 +370,6 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             int rest = ComputeRest(ex, goal, mods);
             int exerciseDuration = sets * (ex.WorkDuration + rest) + transition;
 
-            // Bro split tolerates slightly fuller sessions (high per-muscle volume)
-            int softLimit = isBro ? targetTime + 90 : targetTime + 60;
-            int hardSkip = isBro ? targetTime + 150 : targetTime + 120;
-            int minExercises = isBro ? 4 : 3;
-
             if (timeUsed + exerciseDuration > softLimit)
             {
                 if (session.Exercises.Count >= minExercises) break;
@@ -294,6 +398,182 @@ public class WorkoutPlannerService : IWorkoutPlannerService
             });
             usedToday.Add(ex.Id);
             timeUsed += exerciseDuration;
+        }
+
+        if (longevityPatterns is { Count: > 0 })
+        {
+            var covered = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            // Merge: re-dose existing work picks that match a longevity equivalence group.
+            foreach (var pattern in longevityPatterns)
+            {
+                if (!LongevityLegsCatalog.EquivalenceGroups.TryGetValue(pattern, out var equivIds)) continue;
+                // Regression-list ids count too (e.g. butt-lift-bridge covers hinge), so no duplicate is added.
+                var coverIds = new HashSet<string>(equivIds, StringComparer.OrdinalIgnoreCase);
+                if (LongevityLegsCatalog.Regressions.TryGetValue(pattern, out var regLists))
+                    foreach (var list in regLists.Values) coverIds.UnionWith(list);
+                var pick = session.Exercises.FirstOrDefault(e =>
+                    e.Phase == "work" &&
+                    e.LongevityPattern == null &&
+                    coverIds.Contains(e.Id));
+                if (pick == null) continue;
+
+                var ex = allExercises.FirstOrDefault(x =>
+                    string.Equals(x.Id, pick.Id, StringComparison.OrdinalIgnoreCase));
+                if (ex == null) continue;
+
+                var (sets, reps, rest, progression) = ComputeLongevityDose(ex, mods, forceTwoSets);
+                int oldDur = pick.Sets * (pick.WorkDuration + pick.Rest) + transition;
+                int newDur = sets * (pick.WorkDuration + rest) + transition;
+                int durDiff = newDur - oldDur;
+
+                // Never let merge push the session beyond the hard skip; also avoid increasing
+                // time when the slot loop already exceeded the soft limit.
+                if (timeUsed + durDiff > hardSkip) continue;
+                if (timeUsed > softLimit && durDiff > 0) continue;
+
+                pick.Sets = sets;
+                pick.RepsDisplay = reps;
+                pick.Rest = rest;
+                pick.Progression = progression;
+                pick.LongevityPattern = pattern;
+
+                timeUsed += durDiff;
+                covered.Add(pattern);
+            }
+
+            // Fill: pick a specific exercise for each missing pattern.
+            foreach (var pattern in longevityPatterns)
+            {
+                if (covered.Contains(pattern)) continue;
+
+                var lpool = allExercises
+                    .Where(e => LevelToNum(e.Level) <= userLevelNum && HasEquipment(e, equipment))
+                    .Where(e => !IsRestricted(e, restrictions, rehab) ||
+                                (LongevityLegsCatalog.KneeSafeIds.Contains(e.Id) && LongevityLegsCatalog.HasKneeOrPatellarRehab(rehab)))
+                    .Where(e => !usedToday.Contains(e.Id))
+                    .ToList();
+
+                var resolved = LongevityLegsCatalog.Resolve(pattern, lpool, restrictions, rehab, lrng!, planWideRecent);
+                if (resolved.Exercise == null)
+                {
+                    uncovered?.Add(pattern);
+                    continue;
+                }
+
+                var ex = resolved.Exercise;
+                string? regressionReason = resolved.RegressionReason;
+                var dose = ComputeLongevityDose(ex, mods, forceTwoSets);
+                int sets = dose.Sets;
+                string reps = dose.Reps;
+                int rest = dose.RestSec;
+                string progression = dose.Progression;
+
+                bool placed = TryAppend(ex, sets, reps, rest, progression, pattern, regressionReason, ref timeUsed);
+                if (!placed)
+                    placed = TryReplace(ex, sets, reps, rest, progression, pattern, regressionReason, ref timeUsed);
+                if (!placed && sets > 2)
+                {
+                    placed = TryAppend(ex, 2, reps, rest, progression, pattern, regressionReason, ref timeUsed);
+                    if (!placed)
+                        placed = TryReplace(ex, 2, reps, rest, progression, pattern, regressionReason, ref timeUsed);
+                }
+                if (!placed)
+                    deferred?.Add(pattern);
+            }
+
+            bool TryAppend(Exercise ex, int sets, string reps, int rest, string progression,
+                string pattern, string? regressionReason, ref int timeUsed)
+            {
+                int dur = sets * (ex.WorkDuration + rest) + transition;
+                if (timeUsed + dur > softLimit || timeUsed + dur > hardSkip) return false;
+                AddLongevityPick(ex, sets, reps, rest, progression, pattern, regressionReason, ref timeUsed);
+                return true;
+            }
+
+            bool TryReplace(Exercise ex, int sets, string reps, int rest, string progression,
+                string pattern, string? regressionReason, ref int timeUsed)
+            {
+                int dur = sets * (ex.WorkDuration + rest) + transition;
+                int nonLongevityWorkCount = session.Exercises.Count(e =>
+                    e.Phase == "work" && e.LongevityPattern == null);
+                if (nonLongevityWorkCount < 3) return false;
+
+                PlanExercise? FindVictim()
+                {
+                    for (int idx = session.Exercises.Count - 1; idx >= 0; idx--)
+                    {
+                        var candidate = session.Exercises[idx];
+                        if (candidate.Phase != "work" || candidate.LongevityPattern != null) continue;
+                        var candidateEx = allExercises.FirstOrDefault(x =>
+                            string.Equals(x.Id, candidate.Id, StringComparison.OrdinalIgnoreCase));
+                        if (candidateEx == null) continue;
+                        if (rehab != null && rehab.Count > 0 && InjuryRules.MatchesRehab(candidateEx, rehab)) continue;
+                        if (candidate.Slot.Equals("legs", StringComparison.OrdinalIgnoreCase) ||
+                            candidate.Slot.Equals("core", StringComparison.OrdinalIgnoreCase) ||
+                            candidate.Slot.Equals("carry", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return candidate;
+                        }
+                    }
+                    for (int idx = session.Exercises.Count - 1; idx >= 0; idx--)
+                    {
+                        var candidate = session.Exercises[idx];
+                        if (candidate.Phase != "work" || candidate.LongevityPattern != null) continue;
+                        var candidateEx = allExercises.FirstOrDefault(x =>
+                            string.Equals(x.Id, candidate.Id, StringComparison.OrdinalIgnoreCase));
+                        if (candidateEx == null) continue;
+                        if (rehab != null && rehab.Count > 0 && InjuryRules.MatchesRehab(candidateEx, rehab)) continue;
+                        return candidate;
+                    }
+                    return null;
+                }
+
+                var victim = FindVictim();
+                if (victim == null) return false;
+
+                int victimDur = victim.Sets * (victim.WorkDuration + victim.Rest) + transition;
+                if (timeUsed - victimDur + dur > softLimit || timeUsed - victimDur + dur > hardSkip) return false;
+
+                session.Exercises.Remove(victim);
+                usedToday.Remove(victim.Id);
+                AddLongevityPick(ex, sets, reps, rest, progression, pattern, regressionReason, ref timeUsed);
+                timeUsed -= victimDur;
+                return true;
+            }
+
+            void AddLongevityPick(Exercise ex, int sets, string reps, int rest, string progression,
+                string pattern, string? regressionReason, ref int timeUsed)
+            {
+                int dur = sets * (ex.WorkDuration + rest) + transition;
+                session.Exercises.Add(new PlanExercise
+                {
+                    Id = ex.Id,
+                    Name = ex.Name,
+                    Slot = ex.Slot,
+                    Phase = "work",
+                    Sets = sets,
+                    RepsDisplay = reps,
+                    Rest = rest,
+                    WorkDuration = ex.WorkDuration,
+                    IsTimeBased = ex.IsTimeBased,
+                    Primary = ex.Primary,
+                    Progression = progression,
+                    DemoUrl = !string.IsNullOrWhiteSpace(ex.DemoUrl)
+                        ? ex.DemoUrl
+                        : ExRxCatalog.GetUrl(ex.Id, ex.Name),
+                    ImageUrl = ex.ImageUrl,
+                    DemoAnimUrl = $"/demos/{ex.Id}.webp",
+                    LongevityPattern = pattern,
+                    RegressionNote = regressionReason
+                });
+                usedToday.Add(ex.Id);
+                if (!string.IsNullOrEmpty(regressionReason))
+                {
+                    regressions?.Add((pattern, ex.Id, regressionReason));
+                }
+                timeUsed += dur;
+            }
         }
 
         // No main lifts → empty session (do not pad with mobility alone)
@@ -593,6 +873,95 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         }
 
         return mask;
+    }
+
+    private sealed record LongevityAssignments(List<string>[] PerOrdinal, int[] ChosenOrdinals);
+
+    /// <summary>
+    /// Assigns longevity leg patterns to strength day ordinals 0..strengthDays-1.
+    /// For full-body/upper-lower/ppl the chosen ordinals are sorted into calendar order;
+    /// for bro-split they stay in legs-first priority order.
+    /// </summary>
+    private static LongevityAssignments AssignLongevityDays(string split, int strengthDays, int targetSessions)
+    {
+        var assignments = Enumerable.Range(0, strengthDays)
+            .Select(_ => new List<string>()).ToArray();
+        if (targetSessions <= 0 || strengthDays <= 0)
+            return new LongevityAssignments(assignments, Array.Empty<int>());
+
+        int[] chosenOrdinals = split switch
+        {
+            "upper-lower" => Enumerable.Range(0, strengthDays)
+                .OrderByDescending(o => o % 2 == 1)
+                .ThenBy(o => o)
+                .Take(targetSessions)
+                .ToArray(),
+            "ppl" => Enumerable.Range(0, strengthDays)
+                .OrderByDescending(o => o % 3 == 2)
+                .ThenBy(o => o)
+                .Take(targetSessions)
+                .ToArray(),
+            "bro-split" => Enumerable.Range(0, strengthDays)
+                .OrderByDescending(o => CountBroLegsSlots(o, strengthDays))
+                .ThenBy(o => o)
+                .Take(targetSessions)
+                .ToArray(),
+            _ => SpreadOrdinals(strengthDays, targetSessions)
+        };
+
+        if (split != "bro-split")
+            chosenOrdinals = chosenOrdinals.OrderBy(o => o).ToArray();
+
+        var patternLists = GetLongevityPatternLists(split, targetSessions);
+        for (int i = 0; i < chosenOrdinals.Length; i++)
+        {
+            assignments[chosenOrdinals[i]] = patternLists[i].ToList();
+        }
+
+        return new LongevityAssignments(assignments, chosenOrdinals);
+    }
+
+    private static int[] SpreadOrdinals(int strengthDays, int targetSessions)
+    {
+        var set = new HashSet<int>();
+        for (int k = 0; k < targetSessions; k++)
+        {
+            int o = (int)Math.Round(k * strengthDays / (double)targetSessions);
+            set.Add(Math.Clamp(o, 0, strengthDays - 1));
+        }
+        return set.OrderBy(o => o).ToArray();
+    }
+
+    private static int CountBroLegsSlots(int ordinal, int strengthDays)
+    {
+        var (_, slotOrder) = GetBroSessionTemplate(ordinal, strengthDays);
+        return slotOrder.Count(s => s.Equals("legs", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static List<string>[] GetLongevityPatternLists(string split, int targetSessions)
+    {
+        var allFive = LongevityLegsCatalog.Patterns.ToList();
+        return targetSessions switch
+        {
+            1 => new[] { allFive.ToList() },
+            2 => split == "bro-split"
+                ? new[] { allFive.ToList(), new List<string> { "calf", "step-up", "squat", "hinge", "lunge" } }
+                : new[] { allFive.ToList(), allFive.ToList() },
+            3 => split == "bro-split"
+                ? new[]
+                {
+                    allFive.ToList(),
+                    new List<string> { "calf", "step-up" },
+                    new List<string> { "squat", "hinge", "lunge" }
+                }
+                : new[]
+                {
+                    new List<string> { "squat", "hinge", "calf" },
+                    new List<string> { "lunge", "step-up", "calf", "squat" },
+                    new List<string> { "hinge", "lunge", "step-up" }
+                },
+            _ => Enumerable.Range(0, targetSessions).Select(_ => new List<string>()).ToArray()
+        };
     }
 
     private static string NormalizeMixMode(string? mix) => mix?.ToLowerInvariant().Trim() switch
@@ -1019,6 +1388,27 @@ public class WorkoutPlannerService : IWorkoutPlannerService
         else if (goal == "hypertrophy") r = Math.Max(30, r - 15);
         r += mods.RestDelta;
         return Math.Clamp(r, 20, 300);
+    }
+
+    private static (int Sets, string Reps, int RestSec, string Progression) ComputeLongevityDose(
+        Exercise ex, WeekProgression mods, bool forceTwoSets)
+    {
+        int sets = forceTwoSets || mods.Phase == "deload"
+            ? 2
+            : mods.SetDelta > 0 ? 3 : 2;
+        sets = ApplyUnilateralEvenRounds(sets, 3, ex);
+
+        string reps = ex.IsTimeBased
+            ? ComputeReps(ex, "hypertrophy", mods)
+            : IsUnilateralExercise(ex) ? "8-12 per leg" : "8-15";
+
+        int rest = Math.Clamp(ex.RestSec, 60, 90);
+
+        string progression = mods.Phase == "deload"
+            ? "Deload: easy effort, stop with 3 or more reps left (RIR 3+)."
+            : "RIR 2: stop with about 2 good reps left. When you hit 15 reps on all sets, add a little load or a harder variation.";
+
+        return (sets, reps, rest, progression);
     }
 
     private static string ProgressionHint(string goal, int week, bool broSplit, WeekProgression mods)
