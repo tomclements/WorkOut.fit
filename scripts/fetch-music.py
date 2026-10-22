@@ -43,7 +43,7 @@ SOUNDHELIX = [
 
 def fetch(url: str) -> bytes:
     req = urllib.request.Request(url, headers=UA)
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    with urllib.request.urlopen(req, timeout=15) as resp:
         return resp.read()
 
 

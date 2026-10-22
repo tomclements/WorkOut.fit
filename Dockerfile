@@ -1,6 +1,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Render injects these during Docker builds when available
 ARG RENDER_GIT_COMMIT=unknown
 ARG RENDER_GIT_BRANCH=unknown
@@ -10,6 +14,7 @@ COPY WorkoutPlanner.Api/WorkoutPlanner.Api.csproj WorkoutPlanner.Api/
 RUN dotnet restore WorkoutPlanner.Api/WorkoutPlanner.Api.csproj
 
 COPY . .
+RUN timeout 300 python3 scripts/fetch-music.py || echo 'music fetch skipped'
 WORKDIR /src/WorkoutPlanner.Api
 RUN dotnet publish -c Release -o /app/publish
 
@@ -24,6 +29,7 @@ RUN mkdir -p /app/publish/wwwroot \
          > /app/publish/wwwroot/build-info.json \
     && test -f /app/publish/wwwroot/about.html \
     && test -f /app/publish/wwwroot/index.html \
+    && (ls -la /app/publish/wwwroot/music/ || true) \
     && ls -la /app/publish/wwwroot/
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime

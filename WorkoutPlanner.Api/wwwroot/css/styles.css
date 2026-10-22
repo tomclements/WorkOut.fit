@@ -155,6 +155,10 @@ body.has-bottom-nav {
   padding-bottom: 5.5rem;
 }
 
+html:has(body.has-bottom-nav) {
+  scroll-padding-bottom: 5rem;
+}
+
 /* ---------- Bottom navigation ---------- */
 .bottom-nav {
   position: fixed;
@@ -491,6 +495,10 @@ body.reduced-motion .site-spinner::before {
 @media (min-width: 768px) {
   body.has-bottom-nav {
     padding-bottom: 8rem;
+  }
+
+  html:has(body.has-bottom-nav) {
+    scroll-padding-bottom: 6rem;
   }
 
   .site-toast {
