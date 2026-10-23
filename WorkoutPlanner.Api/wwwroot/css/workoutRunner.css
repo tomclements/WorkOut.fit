@@ -637,6 +637,33 @@ body.work-phase #activeScreen #workCue {
   display: none !important;
 }
 
+/* Longevity Legs runner cue (Work screen only) */
+.ll-runner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.ll-runner-cue {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0;
+}
+
+body.work-phase #activeScreen .ll-runner-cue {
+  color: #94a3b8;
+}
+
+body.work-phase #activeScreen .ll-runner .ll-badge {
+  font-size: 0.8rem;
+  padding: 0.15rem 0.55rem;
+}
+
 body.work-phase #activeScreen #workStats .runner-session-clock,
 body.work-phase #activeScreen #workStatSession {
   font-size: clamp(3rem, 12vw, 4rem) !important; /* ~48–64px */

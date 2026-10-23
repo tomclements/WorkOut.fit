@@ -29,12 +29,23 @@
     return PATTERN_LABELS[p] || p || '';
   }
 
+  const KNOWN_PATTERNS = new Set(Object.keys(PATTERN_LABELS));
+
   function badgeHtml(ex) {
     if (!ex || !ex.longevityPattern) return '';
     const p = ex.longevityPattern;
     const label = patternLabel(p);
     if (!label) return '';
     return `<span class="ll-badge" data-longevity-pattern="${escapeHtml(p)}">Longevity · ${escapeHtml(label)}</span>`;
+  }
+
+  function runnerCueHtml(ex) {
+    if (!ex || !ex.longevityPattern) return '';
+    const p = ex.longevityPattern;
+    if (!KNOWN_PATTERNS.has(p)) return '';
+    const badge = badgeHtml(ex);
+    if (!badge) return '';
+    return `<div class="ll-runner">${badge}<p class="ll-runner-cue">RIR 2: stop with ~2 good reps left</p></div>`;
   }
 
   function injuryTagsForReason(reason) {
@@ -181,6 +192,7 @@
   return {
     patternLabel,
     badgeHtml,
+    runnerCueHtml,
     regressionNoteHtml,
     summaryCardHtml,
     coveredText,
