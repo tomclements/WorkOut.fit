@@ -25,6 +25,30 @@ test('badgeHtml returns markup for each pattern and empty for none', () => {
   assert.equal(ll.badgeHtml({ longevityPattern: '' }), '');
 });
 
+test('runnerCueHtml returns badge + exact cue for each known pattern', () => {
+  const expectedCue = 'RIR 2: stop with ~2 good reps left';
+  for (const p of ['squat', 'hinge', 'calf', 'lunge', 'step-up']) {
+    const html = ll.runnerCueHtml({ longevityPattern: p });
+    assert.ok(html.includes(`data-longevity-pattern="${p}"`), `${p}: badge pattern attribute`);
+    assert.ok(html.includes('ll-runner'), `${p}: runner container`);
+    assert.ok(html.includes('ll-runner-cue'), `${p}: cue paragraph`);
+    assert.ok(html.includes(expectedCue), `${p}: exact cue text`);
+  }
+});
+
+test('runnerCueHtml returns empty for non-longevity exercises and unknown patterns', () => {
+  assert.equal(ll.runnerCueHtml({}), '');
+  assert.equal(ll.runnerCueHtml(null), '');
+  assert.equal(ll.runnerCueHtml({ longevityPattern: null }), '');
+  assert.equal(ll.runnerCueHtml({ longevityPattern: 'bogus' }), '');
+});
+
+test('runnerCueHtml escapes a malicious pattern and never renders raw HTML', () => {
+  const html = ll.runnerCueHtml({ longevityPattern: '<img>' });
+  assert.ok(!html.includes('<img>'), 'raw img tag must not appear');
+  assert.ok(!html.includes('<img'), 'raw img open tag must not appear');
+});
+
 test('regressionNoteHtml escapes HTML in the note', () => {
   const html = ll.regressionNoteHtml({ regressionNote: '<script>alert("x")</script> shoulder' }, ['shoulder']);
   assert.ok(html.includes('&lt;script&gt;'));

@@ -160,6 +160,7 @@ const deviceVoiceHintActive = document.getElementById('deviceVoiceHintActive');
 const nowPlayingEl = document.getElementById('nowPlaying');
 
 const exerciseNameEl = document.getElementById('exerciseName');
+const longevityCueEl = document.getElementById('longevityCue');
 const exerciseMetaEl = document.getElementById('exerciseMeta');
 const setBadgeEl = document.getElementById('setBadge');
 const restSetBadgeEl = document.getElementById('restSetBadge');
@@ -2656,6 +2657,13 @@ function fillRoundBadges(ex) {
 function fillExerciseHeader(ex) {
   if (!ex) return;
   if (exerciseNameEl) exerciseNameEl.textContent = ex.name || 'Exercise';
+  const cueHtml = (window.LongevityLegs && typeof window.LongevityLegs.runnerCueHtml === 'function')
+    ? window.LongevityLegs.runnerCueHtml(ex)
+    : '';
+  if (longevityCueEl) {
+    longevityCueEl.innerHTML = cueHtml;
+    longevityCueEl.classList.toggle('hidden', !cueHtml);
+  }
   if (exerciseMetaEl) exerciseMetaEl.textContent = phaseContextLabel(ex);
   fillRoundBadges(ex);
   // Form / scale / coaching cues render on Rest only
