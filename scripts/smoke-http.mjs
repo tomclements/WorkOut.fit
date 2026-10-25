@@ -126,6 +126,10 @@ async function run() {
       const r = await get('/');
       assert(r.status === 200, `GET / → ${r.status}`);
       assert(r.body.includes('Templates'), `GET / missing "Templates"`);
+      assert(r.body.includes('<meta property="og:title" content="Plan4Strength"'), `GET / missing og:title`);
+      assert(r.body.includes('<meta property="og:image" content="https://plan4strength.com/icon-512.png"'), `GET / missing og:image absolute URL`);
+      assert(r.body.includes('<link rel="canonical" href="https://plan4strength.com/"'), `GET / missing canonical URL`);
+      assert(r.body.includes('<meta name="twitter:card" content="summary"'), `GET / twitter:card must be summary`);
       console.log('  ✓ GET /');
     }
 
@@ -161,10 +165,30 @@ async function run() {
       const cacheName = cacheMatch ? cacheMatch[1] : '';
       assert(cacheName !== '' && /^plan4strength-v\d+$/.test(cacheName), `GET /sw.js smoke missing a plan4strength-v* CACHE_NAME (got ${cacheName || 'none'})`);
       assert(!r.body.includes('workoutRunner.js'), `GET /sw.js still lists workoutRunner.js in PRECACHE`);
+      assert(r.body.includes("'/js/share.js'"), `GET /sw.js missing /js/share.js in PRECACHE`);
       console.log('  ✓ GET /sw.js');
     }
 
-    // 7. GET /manifest.json — 200, lists 192 PNG icon
+    // 7. GET /js/share.js — core share module is served
+    {
+      const r = await get('/js/share.js');
+      assert(r.status === 200, `GET /js/share.js → ${r.status}`);
+      assert(r.body.includes("SHARE_BASE_URL = 'https://plan4strength.com/'"), `GET /js/share.js missing SHARE_BASE_URL`);
+      assert(r.body.includes("'?ref=' + SHARE_REF"), `GET /js/share.js missing buildShareUrl pattern`);
+      console.log('  ✓ GET /js/share.js');
+    }
+
+    // 8. GET /help.html — includes share.js before site.js
+    {
+      const r = await get('/help.html');
+      assert(r.status === 200, `GET /help.html → ${r.status}`);
+      const shareIdx = r.body.indexOf('src="js/share.js"');
+      const siteIdx = r.body.indexOf('src="js/site.js"');
+      assert(shareIdx > -1 && siteIdx > -1 && shareIdx < siteIdx, `GET /help.html missing or out-of-order share.js`);
+      console.log('  ✓ GET /help.html');
+    }
+
+    // 9. GET /manifest.json — 200, lists 192 PNG icon
     {
       const r = await get('/manifest.json');
       assert(r.status === 200, `GET /manifest.json → ${r.status}`);
@@ -173,21 +197,21 @@ async function run() {
       console.log('  ✓ GET /manifest.json');
     }
 
-    // 8. GET /icon-192.png — 200 image/png
+    // 10. GET /icon-192.png — 200 image/png
     {
       const r = await get('/icon-192.png');
       assert(r.status === 200, `GET /icon-192.png → ${r.status}`);
       console.log('  ✓ GET /icon-192.png');
     }
 
-    // 9. GET /icon-512.png — 200 image/png
+    // 11. GET /icon-512.png — 200 image/png
     {
       const r = await get('/icon-512.png');
       assert(r.status === 200, `GET /icon-512.png → ${r.status}`);
       console.log('  ✓ GET /icon-512.png');
     }
 
-    // 10. GET /pwa.html — 200
+    // 12. GET /pwa.html — 200
     {
       const r = await get('/pwa.html');
       assert(r.status === 200, `GET /pwa.html → ${r.status}`);
@@ -195,7 +219,7 @@ async function run() {
       console.log('  ✓ GET /pwa.html');
     }
 
-    // 11. POST /api/plan
+    // 13. POST /api/plan
     {
       const r = await postJSON('/api/plan', {
         weeks: 1,
@@ -213,14 +237,14 @@ async function run() {
       console.log('  ✓ POST /api/plan');
     }
 
-    // 12. GET /api/equipment
+    // 14. GET /api/equipment
     {
       const r = await get('/api/equipment');
       assert(r.status === 200, `GET /api/equipment → ${r.status}`);
       console.log('  ✓ GET /api/equipment');
     }
 
-    // 13. POST /api/plan with Longevity Legs enabled
+    // 15. POST /api/plan with Longevity Legs enabled
     {
       const r = await postJSON('/api/plan', {
         seed: 7,
