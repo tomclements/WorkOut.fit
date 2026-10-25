@@ -1,9 +1,10 @@
-const CACHE_NAME = 'plan4strength-v9';
+const CACHE_NAME = 'plan4strength-v10';
 const PRECACHE = [
   '/manifest.json',
   '/icon.svg',
   '/icon-192.png',
-  '/icon-512.png'
+  '/icon-512.png',
+  '/js/share.js'
 ];
 
 self.addEventListener('install', event => {

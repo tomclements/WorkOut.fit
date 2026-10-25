@@ -117,6 +117,18 @@
       ' · ' +
       '<a href="/privacy" class="text-blue-700 font-semibold hover:underline">Privacy</a>';
 
+    if (window.P4SShare) {
+      footer.insertAdjacentHTML('beforeend',
+        ' · ' +
+        '<button type="button" id="shareInviteBtn" class="text-blue-700 font-semibold hover:underline" aria-label="Share Plan4Strength with a friend">Share</button>');
+      footer.addEventListener('click', function (e) {
+        var t = e.target;
+        if (t && t.closest && t.closest('#shareInviteBtn')) {
+          window.P4SShare.shareOrCopy({ nav: navigator, win: window, toast: window.showToast });
+        }
+      });
+    }
+
     var wrapper = document.querySelector('.max-w-2xl, .max-w-3xl, .max-w-4xl, .max-w-6xl');
     if (wrapper) {
       wrapper.appendChild(footer);
