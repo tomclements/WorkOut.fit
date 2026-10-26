@@ -490,6 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     quitSheetOpen = true;
+    document.body.classList.add('quit-sheet-open');
     quitOpener = document.activeElement;
     syncQuitSheet();
     quitWorkoutModal.classList.remove('hidden');
@@ -506,6 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeQuitSheet() {
     quitSheetOpen = false;
+    document.body.classList.remove('quit-sheet-open');
     if (quitWorkoutModal) quitWorkoutModal.classList.add('hidden');
     if (typeof quitInitModalCleanup === 'function') {
       try { quitInitModalCleanup(); } catch { /* ignore */ }
@@ -3013,6 +3015,7 @@ async function teardownSession() {
   stopSessionMedia();
   phaseBusy = false;
   quitSheetOpen = false;
+  document.body.classList.remove('quit-sheet-open');
   quitAutoPaused = false;
   quitOpener = null;
 

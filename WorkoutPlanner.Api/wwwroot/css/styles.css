@@ -474,6 +474,7 @@ body.reduced-motion .site-spinner::before {
   border-radius: 999px;
   border: 1px solid #fed7aa;
 }
+.streak-badge.hidden { display: none; }
 
 /* Desktop: bottom nav still useful but can sit more compact */
 @media (min-width: 768px) {
@@ -1265,4 +1266,13 @@ body.high-contrast #longevityInfoToggle:hover {
 
 body.high-contrast #shareInviteBtn:focus-visible {
   outline-color: var(--dm-link);
+}
+
+/* ---------- Account settings toggle row ---------- */
+.setting-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  cursor: pointer;
 }
