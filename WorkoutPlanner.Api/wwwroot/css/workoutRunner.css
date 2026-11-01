@@ -22,14 +22,14 @@ button, a {
 }
 
 .big-timer {
-  font-size: 4.5rem;
+  font-size: clamp(6rem, 28vw, 9rem);
   line-height: 1;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
 
-/* ---------- Floor-readable runner tokens ---------- */
+/* ---------- Floor-readable runner tokens (all text >= 18px) ---------- */
 :root {
   --runner-bg: #0B1220;
   --runner-mint: #3DDC97;
@@ -38,7 +38,7 @@ button, a {
 }
 
 .runner-phase-context {
-  font-size: 0.95rem;
+  font-size: 1.125rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -68,7 +68,7 @@ button, a {
 }
 
 .runner-session-label {
-  font-size: 0.75rem;
+  font-size: clamp(1.125rem, 4.5vw, 1.375rem);
   font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--runner-muted);
@@ -76,7 +76,7 @@ button, a {
 }
 
 .runner-session-clock {
-  font-size: clamp(2.5rem, 10vw, 3.75rem); /* ~40–60px */
+  font-size: clamp(4rem, 18vw, 6rem); /* ~64–96px */
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
@@ -86,15 +86,13 @@ button, a {
 }
 
 .runner-session-timer--rest {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0.6rem;
+  display: block;
+  text-align: center;
   margin: 0.4rem 0 0.75rem;
 }
 
 .runner-session-timer--rest .runner-session-clock {
-  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-size: clamp(4rem, 18vw, 6rem); /* match the work session clock */
 }
 
 .runner-up-next {
@@ -103,7 +101,7 @@ button, a {
 }
 
 .runner-up-next-label {
-  font-size: 0.75rem;
+  font-size: clamp(1.125rem, 4.5vw, 1.375rem);
   font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--runner-muted);
@@ -159,7 +157,7 @@ button, a {
 }
 
 .runner-set-badge {
-  font-size: clamp(1rem, 3.5vw, 1.25rem);
+  font-size: clamp(1.125rem, 4.5vw, 1.5rem);
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -542,7 +540,7 @@ body.work-phase #activeScreen .runner-progress-chrome {
 }
 body.work-phase #activeScreen .runner-progress-chrome .text-xs,
 body.work-phase #activeScreen .runner-progress-chrome .sm\:text-sm {
-  font-size: 0.75rem !important;
+  font-size: 1.125rem !important;
   color: #A7B4C8 !important;
 }
 
@@ -595,7 +593,7 @@ body.work-phase #activeScreen .runner-exercise-name {
 
 body.work-phase #activeScreen #exerciseMeta,
 body.work-phase #activeScreen .runner-phase-context {
-  font-size: 0.95rem !important;
+  font-size: 1.125rem !important;
   color: #A7B4C8 !important;
   text-align: left !important;
   margin-top: 0 !important;
@@ -605,7 +603,7 @@ body.work-phase #activeScreen #setBadge,
 body.work-phase #activeScreen .runner-set-badge {
   display: inline-flex !important;
   align-items: center;
-  font-size: clamp(1.05rem, 3.8vw, 1.35rem) !important;
+  font-size: clamp(1.125rem, 4.5vw, 1.5rem) !important;
   background: #1e293b !important;
   color: #a7f3d0 !important;
   border: 1px solid #064e3b !important;
@@ -619,7 +617,7 @@ body.work-phase #activeScreen .runner-move-timer {
   width: 100%;
 }
 body.work-phase #activeScreen #timerDisplay {
-  font-size: clamp(5.5rem, 20vw, 6rem) !important; /* ~88–96px */
+  font-size: clamp(6rem, 28vw, 9rem) !important; /* ~96–144px */
   line-height: 1 !important;
   text-align: center !important;
   color: #3DDC97 !important;
@@ -649,7 +647,7 @@ body.work-phase #activeScreen #workCue {
 }
 
 .ll-runner-cue {
-  font-size: 0.85rem;
+  font-size: 1.125rem;
   font-weight: 600;
   color: #64748b;
   margin: 0;
@@ -660,13 +658,13 @@ body.work-phase #activeScreen .ll-runner-cue {
 }
 
 body.work-phase #activeScreen .ll-runner .ll-badge {
-  font-size: 0.8rem;
+  font-size: 1.125rem;
   padding: 0.15rem 0.55rem;
 }
 
 body.work-phase #activeScreen #workStats .runner-session-clock,
 body.work-phase #activeScreen #workStatSession {
-  font-size: clamp(3rem, 12vw, 4rem) !important; /* ~48–64px */
+  font-size: clamp(4rem, 18vw, 6rem) !important; /* ~64–96px */
   color: #FFFFFF !important;
   font-weight: 800 !important;
   font-variant-numeric: tabular-nums !important;
@@ -812,12 +810,12 @@ body.rest-phase #restScreen #restSetBadge,
 body.rest-phase #restScreen .runner-set-badge--rest {
   display: inline-flex !important;
   align-items: center;
-  font-size: clamp(1.05rem, 3.8vw, 1.35rem) !important;
+  font-size: clamp(1.125rem, 4.5vw, 1.5rem) !important;
   padding: 0.4rem 0.7rem !important;
 }
 
 body.rest-phase #restTimer {
-  font-size: clamp(5.5rem, 20vw, 6rem) !important; /* ~88–96px */
+  font-size: clamp(6rem, 28vw, 9rem) !important; /* ~96–144px */
   line-height: 1 !important;
   color: #7DD3FC !important;
   margin-bottom: 0.3rem !important;
@@ -905,7 +903,7 @@ body.rest-phase #restControls {
 
 body.rest-phase #skipRestBtn,
 body.rest-phase #startNextBtn {
-  font-size: 1.15rem !important;
+  font-size: 1.125rem !important;
   min-height: 3.75rem !important; /* 60px */
   min-height: max(3.75rem, 56px) !important;
   font-weight: 800 !important;
@@ -979,7 +977,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   }
 
   body.work-phase #activeScreen #timerDisplay {
-    font-size: clamp(4.5rem, 20vw, 8.5rem) !important;
+    font-size: clamp(5rem, 20vw, 8.5rem) !important;
   }
 
   body.work-phase #activeScreen .grid-cols-2 {
@@ -993,7 +991,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 
   body.work-phase #activeScreen .grid-cols-2 button {
     min-height: 3.25rem !important;
-    font-size: 1.05rem !important;
+    font-size: 1.125rem !important;
     padding-left: 1.25rem !important;
     padding-right: 1.25rem !important;
   }
@@ -1010,12 +1008,12 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   }
 
   body.rest-phase #restTimer {
-    font-size: clamp(4.5rem, 18vw, 8rem) !important;
+    font-size: clamp(5rem, 18vw, 8rem) !important;
     margin-bottom: 0.25rem !important;
   }
 
   body.rest-phase #restScreen .text-center .uppercase {
-    font-size: 1.1rem !important;
+    font-size: 1.125rem !important;
   }
 
   body.rest-phase #nextDemo img,
@@ -1033,7 +1031,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   }
 
   body.rest-phase #skipRestBtn {
-    font-size: 1.1rem !important;
+    font-size: 1.125rem !important;
     min-height: 3.5rem !important;
     width: auto !important;
     padding: 0.5rem 2rem;
@@ -1221,7 +1219,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   font-size: 1.3rem;
 }
 #activeScreen .flex.justify-between.text-xs {
-  font-size: 1rem;
+  font-size: 1.125rem;
 }
 #overflowModal label,
 #overflowModal #volumeValue,
@@ -1251,7 +1249,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   font-size: 1.5rem;
 }
 #restScreen .bg-white > .text-sm {
-  font-size: 1.05rem;
+  font-size: 1.125rem;
 }
 #nextExerciseName {
   font-size: 2.25rem;
@@ -1313,11 +1311,11 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
     text-align: center !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #exerciseMeta {
-    font-size: 0.9rem !important;
+    font-size: 1.125rem !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #timerDisplay,
   body.work-phase:not(.tv-mode) .big-timer {
-    font-size: clamp(5.5rem, 18vw, 6rem) !important; /* ~88–96px */
+    font-size: clamp(6rem, 28vw, 9rem) !important; /* ~96–144px */
   }
   body.work-phase:not(.tv-mode) #activeScreen .runner-progress-chrome {
     display: block !important;
@@ -1327,17 +1325,17 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
     display: none !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #workStatSession {
-    font-size: clamp(2.75rem, 10vw, 3.5rem) !important;
+    font-size: clamp(4rem, 18vw, 6rem) !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #workNextName {
-    font-size: clamp(1.65rem, 6vw, 2rem) !important;
+    font-size: clamp(1.75rem, 7vw, 2.25rem) !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen .grid-cols-2 {
     bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)) !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen .grid-cols-2 button {
     min-height: 56px !important;
-    font-size: 1.1rem !important;
+    font-size: 1.125rem !important;
     padding-top: 0.55rem !important;
     padding-bottom: 0.55rem !important;
   }
@@ -1354,7 +1352,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   }
   body.rest-phase:not(.tv-mode) #restTimer,
   body.rest-phase:not(.tv-mode) .big-timer {
-    font-size: clamp(5.5rem, 18vw, 6rem) !important; /* ~88-96px */
+    font-size: clamp(6rem, 28vw, 9rem) !important; /* ~96-144px */
     margin-bottom: 0.15rem !important;
   }
   body.rest-phase:not(.tv-mode) #nextExerciseName {
@@ -1374,7 +1372,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   body.rest-phase:not(.tv-mode) #skipRestBtn,
   body.rest-phase:not(.tv-mode) #startNextBtn {
     min-height: 56px !important;
-    font-size: 1rem !important;
+    font-size: 1.125rem !important;
   }
   body.rest-phase:not(.tv-mode) #restOverflowBtn {
     width: 56px !important;
@@ -1393,13 +1391,13 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
     font-size: clamp(2rem, 6.5vw, 2.35rem) !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #exerciseMeta {
-    font-size: 0.85rem !important;
+    font-size: 1.125rem !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #timerDisplay {
-    font-size: clamp(4.75rem, 16vw, 6rem) !important;
+    font-size: clamp(5rem, 24vw, 7rem) !important;
   }
   body.rest-phase:not(.tv-mode) #restTimer {
-    font-size: clamp(3.75rem, 14vw, 5rem) !important;
+    font-size: clamp(5rem, 24vw, 7rem) !important;
   }
   body.rest-phase:not(.tv-mode) #restScreen {
     padding-top: calc(0.15rem + env(safe-area-inset-top, 0px)) !important;
@@ -1414,7 +1412,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
     display: none !important;
   }
   body.work-phase:not(.tv-mode) #activeScreen #workStatSession {
-    font-size: clamp(2.5rem, 9vw, 3rem) !important;
+    font-size: clamp(4rem, 18vw, 6rem) !important;
   }
   body.rest-phase:not(.tv-mode) #nextExerciseName {
     font-size: clamp(1.75rem, 5.5vw, 2.1rem) !important;
@@ -1438,7 +1436,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   }
   body.rest-phase #skipRestBtn,
   body.rest-phase #startNextBtn {
-    font-size: 0.95rem !important;
+    font-size: 1.125rem !important;
     padding-left: 0.4rem !important;
     padding-right: 0.4rem !important;
   }
@@ -1453,4 +1451,62 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   min-width: 44px;
   min-height: 44px;
   margin-block: -10px;
+}
+
+/* ---- Floor-readable minimums (overrides Tailwind / earlier rules) ---- */
+#workQuitBtn,
+#restQuitBtn {
+  font-size: 1.125rem !important;
+}
+
+#quitWorkoutModal .text-xs,
+#quitWorkoutModal .text-sm,
+#quitWorkoutModal button:not(#closeQuitWorkout),
+#quitWorkoutModal button span {
+  font-size: 1.125rem !important;
+}
+
+body.rest-phase #restScreen .demo-caption,
+body.rest-phase #restScreen .demo-attribution,
+body.rest-phase #restScreen .demo-actions a {
+  font-size: 1.125rem !important;
+}
+
+body.rest-phase #restScreen .ll-runner .ll-badge {
+  font-size: 1.125rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: #1e293b;
+  color: #a7f3d0;
+}
+
+body.rest-phase #restScreen #restLongevityCue .ll-runner {
+  margin-top: 0;
+  gap: 0.25rem;
+}
+
+body.rest-phase #restScreen #restLongevityCue .ll-runner-cue {
+  color: #cbd5e1;
+}
+
+/* Rest: keep content clear of the fixed Skip rest / Start next bar */
+body.rest-phase:not(.tv-mode) #restScreen {
+  padding-bottom: calc(6.75rem + env(safe-area-inset-bottom, 0px)) !important;
+  overflow-y: auto !important;
+}
+
+/* Phone heights: hide the Longevity cue and shrink the rest demo */
+@media (max-height: 860px) {
+  body.rest-phase:not(.tv-mode) #restScreen #restLongevityCue {
+    display: none !important;
+  }
+  body.rest-phase:not(.tv-mode) #restScreen .demo-panel--rest .demo-frame,
+  body.rest-phase:not(.tv-mode) #restScreen #nextDemo img {
+    max-height: 10vh !important;
+    object-fit: contain;
+  }
+  body.rest-phase:not(.tv-mode) #restScreen #nextDemo .demo-caption,
+  body.rest-phase:not(.tv-mode) #restScreen #nextDemo .demo-actions {
+    display: none !important;
+  }
 }
