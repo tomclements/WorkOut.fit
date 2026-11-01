@@ -243,6 +243,7 @@
 
         <div class="runner-rest-card bg-white rounded-lg p-4 mb-3">
           <div id="nextExerciseName" class="runner-rest-next-name text-2xl font-semibold text-gray-900 mb-2 text-center"></div>
+          <div id="restLongevityCue" class="hidden" aria-live="polite"></div>
           <!-- RestCoaching: tags + form cue (moved off Work) -->
           <div id="restCoaching" class="runner-rest-coaching">
             <div id="restCoachingTags" class="runner-rest-coaching-tags"></div>
@@ -251,6 +252,11 @@
           <!-- legacy meta node kept for JS; filled with coaching summary -->
           <div id="nextExerciseMeta" class="hidden" aria-hidden="true"></div>
           <div id="nextDemo" class="demo-panel demo-panel--rest mt-3"></div>
+        </div>
+
+        <div id="restNext" class="runner-up-next">
+          <div class="runner-up-next-label">UP NEXT</div>
+          <div id="restNextName" class="runner-up-next-name"></div>
         </div>
 
         <div id="restSessionClock" class="runner-session-timer runner-session-timer--rest">
