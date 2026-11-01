@@ -170,7 +170,6 @@ const workCueEl = document.getElementById('workCue');
 const workProgressBar = document.getElementById('workProgressBar');
 const workStatMoveEl = document.getElementById('workStatMove');
 const workStatSessionEl = document.getElementById('workStatSession');
-const workNextEl = document.getElementById('workNext');
 const completeSetBtn = document.getElementById('completeSetBtn');
 const musicBtn = document.getElementById('musicBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -182,6 +181,9 @@ const restTimerEl = document.getElementById('restTimer');
 const restProgressBar = document.getElementById('restProgressBar');
 const nextExerciseNameEl = document.getElementById('nextExerciseName');
 const nextExerciseMetaEl = document.getElementById('nextExerciseMeta');
+const restLongevityCueEl = document.getElementById('restLongevityCue');
+const restNextNameEl = document.getElementById('restNextName');
+const workNextNameEl = document.getElementById('workNextName');
 const nextDemoEl = document.getElementById('nextDemo');
 const skipRestBtn = document.getElementById('skipRestBtn');
 const movesListModal = document.getElementById('movesListModal');
@@ -1854,6 +1856,8 @@ async function resumeSession() {
       const nextEx = currentExercise();
       if (nextExerciseNameEl) nextExerciseNameEl.textContent = nextEx.name;
       fillRestCoaching(nextEx);
+      fillUpNext(restNextNameEl);
+      fillRestLongevityCue(nextEx);
       if (nextDemoEl) {
         nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
         startDemoFlip(nextDemoEl);
@@ -2886,6 +2890,8 @@ function enterRest() {
   if (nextExerciseNameEl) nextExerciseNameEl.textContent = nextEx.name;
   fillRestCoaching(nextEx);
   fillRoundBadges(nextEx);
+  fillUpNext(restNextNameEl);
+  fillRestLongevityCue(nextEx);
   if (nextDemoEl) {
     nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
     startDemoFlip(nextDemoEl);
@@ -3357,6 +3363,26 @@ function updateSessionClocks() {
   if (restStat) restStat.textContent = clock;
 }
 
+function fillUpNext(nameEl) {
+  if (!nameEl) return;
+  const nextIdx = currentExerciseIndex + 1;
+  if (nextIdx < sessionExercises.length) {
+    const next = sessionExercises[nextIdx];
+    nameEl.textContent = next ? (next.name || '') : '';
+  } else {
+    nameEl.textContent = 'Last move';
+  }
+}
+
+function fillRestLongevityCue(ex) {
+  if (!restLongevityCueEl) return;
+  const cueHtml = (window.LongevityLegs && typeof window.LongevityLegs.runnerCueHtml === 'function')
+    ? window.LongevityLegs.runnerCueHtml(ex)
+    : '';
+  restLongevityCueEl.innerHTML = cueHtml;
+  restLongevityCueEl.classList.toggle('hidden', !cueHtml);
+}
+
 function updateWorkStats() {
   const ex = currentExercise();
   if (!ex) return;
@@ -3369,16 +3395,7 @@ function updateWorkStats() {
     }
   }
   updateSessionClocks();
-  const nextNameEl = document.getElementById('workNextName');
-  const nextIdx = currentExerciseIndex + 1;
-  if (nextIdx < sessionExercises.length) {
-    const next = sessionExercises[nextIdx];
-    if (nextNameEl) nextNameEl.textContent = next.name || '';
-    else if (workNextEl) workNextEl.textContent = next.name || '';
-  } else {
-    if (nextNameEl) nextNameEl.textContent = 'Last move';
-    else if (workNextEl) workNextEl.textContent = 'Last move';
-  }
+  fillUpNext(workNextNameEl);
 }
 
 function noSetsCompletedYet() {
