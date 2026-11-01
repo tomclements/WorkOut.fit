@@ -3392,9 +3392,13 @@ function updateRestHeading() {
 }
 
 function syncOverflowControls() {
-  let style = null;
-  try { style = localStorage.getItem('runnerMusicStyle'); } catch { /* ignore */ }
-  if (!style) style = (musicStyleSelect && musicStyleSelect.value) || currentMusicStyle();
+  let stored = null;
+  try { stored = localStorage.getItem('runnerMusicStyle'); } catch { /* ignore */ }
+  const Overflow = OverflowSettings || window.OverflowSettings;
+  const applied = lastAppliedMusicStyle || currentMusicStyle();
+  const style = Overflow && typeof Overflow.resolveDisplayedMusicStyle === 'function'
+    ? Overflow.resolveDisplayedMusicStyle({ applied, stored })
+    : (applied || stored || 'off');
   if (musicStyleActive) musicStyleActive.value = style;
   if (musicStyleSelect && style) musicStyleSelect.value = style;
   syncCueToggles();

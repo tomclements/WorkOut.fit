@@ -95,3 +95,11 @@ test('panel may stop click but not pointerdown/touchstart/mousedown', () => {
   assert.equal(pointer.stopPropagation, false);
   assert.equal(pointer.preventDefault, false);
 });
+
+test('resolveDisplayedMusicStyle prefers applied over stored, falls back to off', () => {
+  assert.equal(overflow.resolveDisplayedMusicStyle({ applied: 'drive', stored: 'off' }), 'drive');
+  assert.equal(overflow.resolveDisplayedMusicStyle({ applied: '', stored: 'drive' }), 'drive');
+  assert.equal(overflow.resolveDisplayedMusicStyle({ applied: null, stored: 'ambient' }), 'ambient');
+  assert.equal(overflow.resolveDisplayedMusicStyle({ applied: undefined, stored: undefined }), 'off');
+  assert.equal(overflow.resolveDisplayedMusicStyle({}), 'off');
+});

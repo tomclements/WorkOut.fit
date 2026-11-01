@@ -419,6 +419,27 @@
   }
 
   /**
+   * Join non-empty label parts with ' · ', dropping exact repeats after
+   * normalizing (lowercase, collapse '-' and whitespace runs to one space, trim).
+   * First occurrence wins; order is preserved.
+   */
+  function joinDistinctLabels(parts) {
+    const seen = new Set();
+    const out = [];
+    for (const part of parts || []) {
+      if (part == null || String(part) === '') continue;
+      const normalized = String(part)
+        .toLowerCase()
+        .replace(/[-\s]+/g, ' ')
+        .trim();
+      if (!normalized || seen.has(normalized)) continue;
+      seen.add(normalized);
+      out.push(String(part));
+    }
+    return out.join(' · ');
+  }
+
+  /**
    * Match a daySelect option value to found { week, dayIndex, arrayIndex }.
    * Number()-coerces week/dayIndex/arrayIndex so string vs number still match.
    * Returns the matching option value string, or null. When found is set but
@@ -463,6 +484,7 @@
     resolveNextWorkoutDay,
     matchDaySelectOption,
     resolveDeepLinkDay,
-    stripWeekDayIndexFromSearch
+    stripWeekDayIndexFromSearch,
+    joinDistinctLabels
   };
 });

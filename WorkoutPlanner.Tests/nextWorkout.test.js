@@ -749,3 +749,12 @@ test('resolveNextWorkoutDay: deep link to a completed day is ignored', () => {
   assert.equal(found.dayIndex, 4);
   assert.equal(found.day.day, 'Friday');
 });
+
+test('joinDistinctLabels dedupes exact normalized repeats, keeps order, skips empty', () => {
+  assert.equal(nw.joinDistinctLabels(['Full body', 'Full Body', 'Strength']), 'Full body · Strength');
+  assert.equal(nw.joinDistinctLabels(['full-body', 'Full Body']), 'full-body');
+  assert.equal(nw.joinDistinctLabels(['Push', 'Pull', 'Legs']), 'Push · Pull · Legs');
+  assert.equal(nw.joinDistinctLabels(['Upper', '', null, 'Upper', 'Lower']), 'Upper · Lower');
+  assert.equal(nw.joinDistinctLabels([]), '');
+  assert.equal(nw.joinDistinctLabels(), '');
+});

@@ -54,6 +54,10 @@
     return s;
   }
 
+  function resolveDisplayedMusicStyle({ applied, stored }) {
+    return applied || stored || 'off';
+  }
+
   function persistMusicVolume(volume, storage) {
     const v = String(volume);
     try { storage.setItem('runnerMusicVolume', v); } catch (e) { /* ignore */ }
@@ -104,6 +108,7 @@
     persistTones,
     persistMusicStyle,
     persistMusicVolume,
+    resolveDisplayedMusicStyle,
     tonesEnabledFromStorage,
     voiceCuesEnabledFromStorage,
     shouldCloseOverflow,

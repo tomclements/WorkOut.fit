@@ -1428,7 +1428,11 @@ async function updateNextWorkoutCard() {
       if (newPlanBtn) newPlanBtn.classList.remove('hidden');
     } else {
       if (heading) heading.textContent = 'Ready for your next workout?';
-      if (info) info.textContent = `Week ${found.week} — ${nextDay.day} · ${focus} · ${split} · ${goal}`;
+      const labelParts = [focus, split, goal];
+      const label = NW && typeof NW.joinDistinctLabels === 'function'
+        ? NW.joinDistinctLabels(labelParts)
+        : labelParts.join(' · ');
+      if (info) info.textContent = `Week ${found.week} — ${nextDay.day} · ${label}`;
       if (btn) btn.textContent = `Start next workout: Week ${found.week} ${nextDay.day}`;
       if (newPlanBtn) newPlanBtn.classList.add('hidden');
     }
