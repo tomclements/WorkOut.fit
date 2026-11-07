@@ -929,6 +929,7 @@ body.high-contrast .shadow-lg {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  height: 10rem;
   background: #fff;
   border-radius: 0.75rem;
   padding: 1.25rem;
@@ -941,6 +942,43 @@ body.high-contrast .shadow-lg {
 }
 
 /* ---------- Next workout card ---------- */
+/* Stable card slots keep Templates in place while data loads. Long content
+   remains accessible by scrolling inside the card, including at text zoom. */
+#nextWorkoutCard {
+  height: 17rem;
+}
+#nextWorkoutCard,
+#homeToday {
+  overflow: auto;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 640px) {
+  #nextWorkoutCard { height: 10rem; }
+  #homeToday { height: 8rem; }
+}
+
+/* Reserve from first paint, even before app.js or a slow auth request resolves. */
+#dashboardSection[data-auth-state="pending"] {
+  display: block;
+}
+body:has(#dashboardSection[data-auth-state="pending"]) #welcomeSection {
+  display: none;
+}
+
+/* Zero-data onboarding replaces the fixed-height card slots so Templates don't shift. */
+#dashboardSection:has(#dashboardEmptyState:not(.hidden)) #nextWorkoutCard,
+#dashboardSection:has(#dashboardEmptyState:not(.hidden)) #homeToday {
+  display: none;
+}
+#dashboardSection:has(#dashboardEmptyState:not(.hidden)) #dashboardEmptyState {
+  min-height: 28.5rem;
+}
+@media (min-width: 640px) {
+  #dashboardSection:has(#dashboardEmptyState:not(.hidden)) #dashboardEmptyState {
+    min-height: 19.5rem;
+  }
+}
+
 /* sm:w-auto is not in tailwind-compiled.css; provide it for the card's button column */
 @media (min-width: 640px) {
   #nextWorkoutCard .sm\:w-auto {

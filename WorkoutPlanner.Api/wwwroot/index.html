@@ -34,9 +34,9 @@
           <h1 class="text-3xl font-extrabold tracking-tight text-blue-900">Plan4Strength</h1>
           <p class="text-gray-600 mt-1">Build and run workout plans that fit your schedule, goals, and equipment.</p>
         </div>
-        <div class="flex items-center gap-3 flex-wrap justify-end">
+        <div class="flex items-center gap-3 justify-end">
           <button id="contrastBtn" type="button" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1.5 px-3 rounded-md" title="Dark / high-contrast mode" aria-pressed="false">Dark</button>
-          <div id="authSection" class="flex items-center gap-3">
+          <div id="authSection" class="flex items-center gap-3 min-w-0">
             <button id="openAuthBtn" class="text-sm bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-semibold py-2 px-4 rounded-md transition">Sign in / Register</button>
           </div>
         </div>
@@ -56,34 +56,58 @@
     </section>
 
     <!-- Dashboard for logged-in users -->
-    <section id="dashboardSection" class="hidden mb-8">
+    <section id="dashboardSection" class="hidden mb-8" data-auth-state="pending">
       <h2 class="text-xl font-semibold mb-4">Your dashboard</h2>
 
       <!-- Next workout suggestion -->
-      <div id="nextWorkoutCard" class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-5 mb-6 hidden">
-        <div class="flex flex-col sm:flex-row items-start justify-between gap-3">
-          <div class="flex-1 min-w-0">
-            <h3 id="nextWorkoutHeading" class="text-lg font-semibold text-purple-900">Ready for your next workout?</h3>
-            <p id="nextWorkoutInfo" class="text-sm text-gray-700 mt-1"></p>
+      <div id="nextWorkoutCard" class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-5 mb-6" data-state="loading">
+        <div id="nextWorkoutSkeleton">
+          <div style="height:1.5rem;background:#e9d5ff;border-radius:0.25rem;width:75%;margin-bottom:0.5rem;"></div>
+          <div style="height:1rem;background:#e9d5ff;border-radius:0.25rem;width:50%;margin-bottom:1rem;"></div>
+          <div style="height:3rem;background:#e9d5ff;border-radius:0.25rem;width:100%;max-width:8rem;margin-top:0.5rem;"></div>
+        </div>
+        <div id="nextWorkoutContent" class="hidden">
+          <div id="nextWorkoutPopulated" class="flex flex-col sm:flex-row items-start justify-between gap-3">
+            <div class="flex-1 min-w-0">
+              <h3 id="nextWorkoutHeading" class="text-lg font-semibold text-purple-900">Ready for your next workout?</h3>
+              <p id="nextWorkoutInfo" class="text-sm text-gray-700 mt-1"></p>
+            </div>
+            <div class="shrink-0 flex flex-col gap-2 w-full sm:w-auto">
+              <a id="nextWorkoutBtn" href="/workout.html" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-5 rounded-lg transition touch-manipulation text-center w-full sm:w-auto">
+                Start now
+              </a>
+              <button id="nextWorkoutNewPlanBtn" type="button" data-action="open-planner" class="hidden text-sm bg-white border border-purple-200 text-purple-700 hover:bg-purple-50 font-semibold py-2 px-4 rounded-lg transition touch-manipulation w-full sm:w-auto">
+                Build a new plan
+              </button>
+            </div>
           </div>
-          <div class="shrink-0 flex flex-col gap-2 w-full sm:w-auto">
-            <a id="nextWorkoutBtn" href="/workout.html" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-5 rounded-lg transition touch-manipulation text-center w-full sm:w-auto">
-              Start now
-            </a>
-            <button id="nextWorkoutNewPlanBtn" type="button" data-action="open-planner" class="hidden text-sm bg-white border border-purple-200 text-purple-700 hover:bg-purple-50 font-semibold py-2 px-4 rounded-lg transition touch-manipulation w-full sm:w-auto">
+          <div id="nextWorkoutEmpty" class="hidden">
+            <h3 class="text-lg font-semibold text-purple-900">No upcoming workout</h3>
+            <p class="text-sm text-gray-700 mt-1">Create a plan to see what's next.</p>
+            <button type="button" data-action="open-planner" class="mt-3 text-sm bg-white border border-purple-200 text-purple-700 hover:bg-purple-50 font-semibold py-2 px-4 rounded-lg transition touch-manipulation">
               Build a new plan
             </button>
+          </div>
+          <div id="nextWorkoutError" class="hidden">
+            <h3 class="text-lg font-semibold text-purple-900">Couldn't load next workout</h3>
+            <p class="text-sm text-gray-700 mt-1">Try refreshing the page.</p>
           </div>
         </div>
       </div>
 
-      <div id="homeToday" class="bg-white rounded-xl shadow p-5 mb-6 hidden">
-        <div class="flex flex-wrap items-center gap-3 mb-3">
-          <span id="homeStreakBadge" class="streak-badge hidden">🔥 <span><span id="homeStreakCount">0</span>-day streak</span></span>
-          <p id="homeStreakHint" class="text-sm text-gray-500 hidden">Complete a workout today to start a streak.</p>
+      <div id="homeToday" class="bg-white rounded-xl shadow p-5 mb-6">
+        <div id="homeTodaySkeleton">
+          <div style="height:1rem;background:#e5e7eb;border-radius:0.25rem;width:33%;margin-bottom:0.5rem;"></div>
+          <div style="height:1rem;background:#e5e7eb;border-radius:0.25rem;width:66%;"></div>
         </div>
-        <div id="homeLastWorkout">
-          <p class="text-sm text-gray-500">No workouts yet.</p>
+        <div id="homeTodayContent" class="hidden">
+          <div class="flex flex-wrap items-center gap-3 mb-3">
+            <span id="homeStreakBadge" class="streak-badge hidden">🔥 <span><span id="homeStreakCount">0</span>-day streak</span></span>
+            <p id="homeStreakHint" class="text-sm text-gray-500 hidden">Complete a workout today to start a streak.</p>
+          </div>
+          <div id="homeLastWorkout">
+            <p class="text-sm text-gray-500">No workouts yet.</p>
+          </div>
         </div>
       </div>
 

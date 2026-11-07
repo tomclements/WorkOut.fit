@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user) showLoggedIn(user, roles || []);
     else showLoggedOut();
   });
-  await initGlobalAuth();
+  await resolveInitialAuth();
   // Re-apply after session in case server prefs arrived late for returning users
   applyPlanDefaultsToForm({ skipBroNudge: true });
   handleReturnUrl();
@@ -1023,6 +1023,12 @@ function handleReturnUrl() {
   }
 }
 
+async function resolveInitialAuth() {
+  try { await initGlobalAuth(); } catch { /* Unreachable auth resolves as guest. */ }
+  // site.js may swallow a network failure without firing auth-changed.
+  if (dashboardSection.dataset.authState === 'pending') showLoggedOut();
+}
+
 function showLoggedIn(email, roles) {
   currentUser = email;
   currentRoles = roles;
@@ -1031,13 +1037,14 @@ function showLoggedIn(email, roles) {
   loadPreferences().then(() => applyPlanDefaultsToForm({ skipBroNudge: true }));
   const section = document.getElementById('authSection');
   section.innerHTML = `
-    <span class="text-sm text-gray-700">${escapeHtml(email)}</span>
-    <button id="logoutBtn" class="text-sm bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-semibold py-2 px-4 rounded-md transition">Log out</button>
+    <span class="text-sm text-gray-700 truncate min-w-0" title="${escapeHtml(email)}">${escapeHtml(email)}</span>
+    <button id="logoutBtn" class="shrink-0 whitespace-nowrap text-sm bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-semibold py-2 px-4 rounded-md transition">Log out</button>
   `;
   document.getElementById('logoutBtn').addEventListener('click', logout);
 
   welcomeSection.classList.add('hidden');
   dashboardSection.classList.remove('hidden');
+  dashboardSection.dataset.authState = 'signed-in';
   if (dashboardExtras) dashboardExtras.classList.remove('hidden');
   updateNextWorkoutCard();
 
@@ -1072,9 +1079,8 @@ function showLoggedOut() {
 
   welcomeSection.classList.remove('hidden');
   dashboardSection.classList.add('hidden');
+  dashboardSection.dataset.authState = 'guest';
   if (dashboardExtras) dashboardExtras.classList.add('hidden');
-  const nextWorkoutCard = document.getElementById('nextWorkoutCard');
-  if (nextWorkoutCard) nextWorkoutCard.classList.add('hidden');
   closeCustomPlan();
   if (plannerSection) plannerSection.classList.remove('hidden');
   if (togglePlannerBtn) togglePlannerBtn.classList.add('hidden');
@@ -1090,8 +1096,11 @@ function syncDashboardEmptyState(totalPlans, totalSessions) {
   if (!emptyState) return;
   const card = document.getElementById('nextWorkoutCard');
   const t = lastDashboardTotals;
-  const hasContent = !t || t.plans > 0 || t.sessions > 0 || (card && !card.classList.contains('hidden'));
-  emptyState.classList.toggle('hidden', hasContent);
+  const state = card ? card.dataset.state : 'loading';
+  const hasData = t && (t.plans > 0 || t.sessions > 0);
+  const hasPlanContent = state === 'populated';
+  const definitelyEmpty = state === 'empty' && t && t.plans === 0 && t.sessions === 0;
+  emptyState.classList.toggle('hidden', !definitelyEmpty || hasData || hasPlanContent);
 }
 
 async function loadDashboard() {
@@ -1100,10 +1109,10 @@ async function loadDashboard() {
     const response = await fetch('/api/dashboard', { credentials: 'include' });
     if (!response.ok) {
       if (typeof showToast === 'function') showToast('Could not load dashboard.', 'error');
-      return;
+    } else {
+      const data = await response.json();
+      renderDashboard(data);
     }
-    const data = await response.json();
-    renderDashboard(data);
   } catch (err) {
     if (typeof showToast === 'function') showToast(`Dashboard load failed: ${err.message}`, 'error');
   }
@@ -1255,6 +1264,10 @@ function computeHomeStreak(sessionList) {
 
 function renderHomeToday(sessions) {
   if (!homeToday) return;
+  const skeleton = document.getElementById('homeTodaySkeleton');
+  const content = document.getElementById('homeTodayContent');
+  if (skeleton) skeleton.classList.add('hidden');
+  if (content) content.classList.remove('hidden');
   const badge = document.getElementById('homeStreakBadge');
   const hint = document.getElementById('homeStreakHint');
   const count = document.getElementById('homeStreakCount');
@@ -1291,8 +1304,6 @@ function renderHomeToday(sessions) {
         </div>`;
     }
   }
-
-  homeToday.classList.remove('hidden');
 }
 
 // --- Next workout suggestion ---
@@ -1359,8 +1370,17 @@ function rewriteSoftRunnerHrefs(plan, planId, href) {
 async function updateNextWorkoutCard() {
   const card = document.getElementById('nextWorkoutCard');
   if (!card) return;
+  const skeleton = document.getElementById('nextWorkoutSkeleton');
+  const content = document.getElementById('nextWorkoutContent');
+  const populated = document.getElementById('nextWorkoutPopulated');
+  const empty = document.getElementById('nextWorkoutEmpty');
+  const error = document.getElementById('nextWorkoutError');
   const seq = (updateNextWorkoutCard._seq || 0) + 1;
   updateNextWorkoutCard._seq = seq;
+  card.dataset.state = 'loading';
+  syncDashboardEmptyState();
+  if (skeleton) skeleton.classList.remove('hidden');
+  if (content) content.classList.add('hidden');
 
   const isSignedIn = !!currentUser;
   let plan = null;
@@ -1392,7 +1412,16 @@ async function updateNextWorkoutCard() {
     }
 
     if (seq !== updateNextWorkoutCard._seq) return;
-    if (!plan || !plan.plan) { card.classList.add('hidden'); syncDashboardEmptyState(); return; }
+    if (!plan || !plan.plan) {
+      if (skeleton) skeleton.classList.add('hidden');
+      if (content) content.classList.remove('hidden');
+      if (populated) populated.classList.add('hidden');
+      if (empty) empty.classList.remove('hidden');
+      if (error) error.classList.add('hidden');
+      card.dataset.state = 'empty';
+      syncDashboardEmptyState();
+      return;
+    }
 
     const NW = typeof NextWorkout !== 'undefined' ? NextWorkout : null;
     if (isSignedIn && planId) {
@@ -1406,7 +1435,16 @@ async function updateNextWorkoutCard() {
       ? NW.resolveNextWorkoutDay({ plan, planId, sessions, storage: localStorage })
       : null;
     if (seq !== updateNextWorkoutCard._seq) return;
-    if (!found) { card.classList.add('hidden'); syncDashboardEmptyState(); return; }
+    if (!found) {
+      if (skeleton) skeleton.classList.add('hidden');
+      if (content) content.classList.remove('hidden');
+      if (populated) populated.classList.add('hidden');
+      if (empty) empty.classList.remove('hidden');
+      if (error) error.classList.add('hidden');
+      card.dataset.state = 'empty';
+      syncDashboardEmptyState();
+      return;
+    }
 
     const nextDay = found.day;
     const goal = capitalize((plan.criteria && plan.criteria.goal) || 'training');
@@ -1438,10 +1476,23 @@ async function updateNextWorkoutCard() {
     }
     if (btn) btn.href = startHref;
     rewriteSoftRunnerHrefs(plan, planId, startHref);
-    card.classList.remove('hidden');
+    if (skeleton) skeleton.classList.add('hidden');
+    if (content) content.classList.remove('hidden');
+    if (populated) populated.classList.remove('hidden');
+    if (empty) empty.classList.add('hidden');
+    if (error) error.classList.add('hidden');
+    card.dataset.state = 'populated';
     syncDashboardEmptyState();
   } catch {
-    if (seq === updateNextWorkoutCard._seq) { card.classList.add('hidden'); syncDashboardEmptyState(); }
+    if (seq === updateNextWorkoutCard._seq) {
+      if (skeleton) skeleton.classList.add('hidden');
+      if (content) content.classList.remove('hidden');
+      if (populated) populated.classList.add('hidden');
+      if (empty) empty.classList.add('hidden');
+      if (error) error.classList.remove('hidden');
+      card.dataset.state = 'error';
+      syncDashboardEmptyState();
+    }
   }
 }
 
