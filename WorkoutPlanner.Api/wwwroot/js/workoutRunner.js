@@ -596,6 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function onQuitDiscard() {
     await teardownSession();
     if (typeof showToast === 'function') showToast('Workout discarded.', 'info');
+    try { window.location.href = '/'; } catch { /* ignore */ }
   }
 
   wire(byId('workQuitBtn'), 'click', () => openQuitSheet(false));
@@ -1413,7 +1414,7 @@ async function _renderDayPreviewInner() {
             <input id="workingWeight-${i}" type="number" inputmode="decimal" min="0" step="0.5"
               data-working-weight-index="${i}"
               data-exercise-id="${escapeHtmlRunner(ex.id)}"
-              class="w-20 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+              class="runner-weight-input border border-gray-300 rounded-md px-2 py-1.5 text-sm"
               placeholder="\u2014" aria-label="Working weight for ${escapeHtmlRunner(ex.name)}" />
             <span class="text-xs text-gray-500">${escapeHtmlRunner(unit)}</span>
           </div>
@@ -1987,7 +1988,7 @@ function renderWeightSheetList(indexes, exercises) {
         <label class="text-xs text-gray-500" for="sheetWeight-${i}">Weight</label>
         <input id="sheetWeight-${i}" type="number" inputmode="decimal" min="0" step="0.5"
           data-sheet-weight-index="${i}"
-          class="w-24 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+          class="runner-weight-input border border-gray-300 rounded-md px-2 py-1.5 text-sm"
           placeholder="—" aria-label="Working weight for ${name}" value="${escapeHtmlRunner(existing)}" />
         <span class="text-xs text-gray-500">${escapeHtmlRunner(unit)}</span>
       </div>

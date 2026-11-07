@@ -225,3 +225,105 @@ test('workoutRunner reads window.QuitWorkout with a fallback', () => {
   assert.match(src, /QuitWorkout/);
   assert.match(src, /teardownSession\s*\(/);
 });
+
+test('Quit > Discard awaits teardown then navigates to dashboard root', () => {
+  const src = require('node:fs').readFileSync(
+    path.join(__dirname, '..', 'WorkoutPlanner.Api', 'wwwroot', 'js', 'workoutRunner.js'),
+    'utf8'
+  );
+  const fn = src.match(/async function onQuitDiscard\(\)\s*\{[\s\S]*?\n  \}/);
+  assert.ok(fn, 'onQuitDiscard function found');
+  const body = fn[0];
+  assert.match(body, /await\s+teardownSession\s*\(\)/, 'discard awaits teardown first');
+  assert.match(body, /window\.location\.href\s*=\s*['"]\/['"]/, 'discard navigates to /');
+});
+
+test('Quit > Save does not navigate on success; failed save keeps sheet open for retry/discard/keep-going', () => {
+  const src = require('node:fs').readFileSync(
+    path.join(__dirname, '..', 'WorkoutPlanner.Api', 'wwwroot', 'js', 'workoutRunner.js'),
+    'utf8'
+  );
+  const fn = src.match(/async function onQuitSave\(\)\s*\{[\s\S]*?\n  \}/);
+  assert.ok(fn, 'onQuitSave function found');
+  const body = fn[0];
+  assert.doesNotMatch(body, /window\.location\.href\s*=/, 'successful Save stays on setup');
+  assert.match(body, /setQuitButtonsDisabled\(false\)/, 'failed save re-enables buttons');
+  assert.match(body, /return;/, 'failed save returns early without teardown');
+  assert.match(body, /keep going/i, 'keep-going option is referenced in failure copy');
+});
+
+test('Keep going only closes sheet and resumes; it does not save, teardown or navigate', () => {
+  const src = require('node:fs').readFileSync(
+    path.join(__dirname, '..', 'WorkoutPlanner.Api', 'wwwroot', 'js', 'workoutRunner.js'),
+    'utf8'
+  );
+  const fn = src.match(/function keepGoing\(\)\s*\{[\s\S]*?\n  \}/);
+  assert.ok(fn, 'keepGoing function found');
+  const body = fn[0];
+  assert.doesNotMatch(body, /teardownSession/, 'keep going does not teardown');
+  assert.doesNotMatch(body, /window\.location\.href\s*=/, 'keep going does not navigate');
+  assert.doesNotMatch(body, /postSessionPayload|markDayCompleted/, 'keep going does not save');
+});
+
+function loadQuitHandlers(overrides = {}) {
+  const vm = require('node:vm');
+  const src = require('node:fs').readFileSync(
+    path.join(__dirname, '..', 'WorkoutPlanner.Api', 'wwwroot', 'js', 'workoutRunner.js'), 'utf8');
+  const events = [];
+  const location = { get href() { return '/workout.html'; }, set href(value) { events.push(`navigate:${value}`); } };
+  const ctx = {
+    events, window: { location }, Date,
+    QuitWorkout: {
+      quitOptions: () => ({ canSave: true, done: 1 }),
+      quitDecision: () => ({ post: true, markComplete: true }),
+      buildPartialSessionPayload: () => ({ exercises: [] })
+    },
+    sessionExercises: [], currentUser: 'qa', sessionPlanName: 'Mock plan',
+    resolveSavedPlanId: () => null, selectedWeek: 1, selectedDayIndex: 0,
+    startTime: Date.now(), isPaused: false, pauseStartTime: null, sessionSaved: false,
+    quitWorkoutStatus: { classList: { remove() {} } },
+    setQuitButtonsDisabled: (disabled) => events.push(`disabled:${disabled}`),
+    postSessionPayload: async () => { events.push('post'); },
+    markDayCompleted: () => events.push('markComplete'),
+    teardownSession: async () => { events.push('teardown'); },
+    showToast: () => events.push('toast'),
+    quitAutoPaused: true,
+    closeQuitSheet: () => { events.push('close'); return { focus: () => events.push('focus') }; },
+    resumeWorkout: () => events.push('resume'),
+    ...overrides
+  };
+  vm.createContext(ctx);
+  for (const name of ['onQuitDiscard', 'onQuitSave', 'keepGoing']) {
+    const match = src.match(new RegExp(`(?:async )?function ${name}\\(\\)\\s*\\{[\\s\\S]*?\\n  \\}`));
+    assert.ok(match, `${name} found`);
+    vm.runInContext(match[0], ctx);
+  }
+  return ctx;
+}
+
+test('Discard behavior waits for teardown, navigates once, never posts or marks complete', async () => {
+  let finish;
+  const ctx = loadQuitHandlers({ teardownSession: () => new Promise(resolve => { finish = resolve; }) });
+  const pending = ctx.onQuitDiscard();
+  assert.deepEqual(ctx.events, []);
+  finish();
+  await pending;
+  assert.deepEqual(ctx.events, ['toast', 'navigate:/']);
+});
+
+test('Save behavior posts and tears down without changing destination', async () => {
+  const ctx = loadQuitHandlers();
+  await ctx.onQuitSave();
+  assert.deepEqual(ctx.events, ['disabled:true', 'post', 'markComplete', 'teardown', 'toast']);
+  assert.equal(ctx.sessionSaved, true);
+});
+
+test('Save failure keeps state, reenables actions, and Keep going resumes without navigation', async () => {
+  const ctx = loadQuitHandlers({ postSessionPayload: async () => { throw new Error('offline'); } });
+  await ctx.onQuitSave();
+  assert.deepEqual(ctx.events, ['disabled:true', 'disabled:false']);
+  assert.equal(ctx.sessionSaved, false);
+  assert.match(ctx.quitWorkoutStatus.textContent, /Try again, discard, or keep going/);
+  ctx.keepGoing();
+  assert.deepEqual(ctx.events, ['disabled:true', 'disabled:false', 'close', 'resume', 'focus']);
+});

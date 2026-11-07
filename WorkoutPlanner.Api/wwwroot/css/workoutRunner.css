@@ -1221,23 +1221,36 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 #activeScreen .flex.justify-between.text-xs {
   font-size: 1.125rem;
 }
+#overflowModal {
+  font-size: 1.125rem;
+}
+#overflowModal .text-sm,
+#overflowModal .text-xs,
 #overflowModal label,
 #overflowModal #volumeValue,
-#overflowModal #musicStyleActive {
-  font-size: 0.95rem;
+#overflowModal #musicStyleActive,
+#overflowModal #nowPlaying {
+  font-size: 1.125rem;
 }
 
 /* Prevent iOS Safari focus auto-zoom: text-entry controls must be >= 16px. */
 #setupScreen select,
 #setupScreen input,
-#overflowModal #musicStyleActive,
-#overflowModal input[type="number"],
 #weightSheetModal input[type="number"] {
   font-size: 1rem;
 }
 
-#overflowModal #nowPlaying {
-  font-size: 0.8rem;
+#overflowModal #musicStyleActive,
+#overflowModal input[type="number"] {
+  font-size: 1.125rem !important;
+}
+
+/* Constrain working-weight inputs so label + input + unit fits narrow cards. */
+.runner-weight-input {
+  flex: 1 1 auto;
+  min-width: 3.5rem;
+  max-width: 6rem;
+  width: auto;
 }
 #activeScreen #pausedOverlay .text-xl,
 #restScreen #restPausedOverlay .text-xl {

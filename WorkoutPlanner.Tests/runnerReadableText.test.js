@@ -14,6 +14,7 @@ const TARGET_SELECTORS = [
   '#pausedOverlay',
   '#restPausedOverlay',
   '#quitWorkoutModal',
+  '#overflowModal',
   '.runner-',
   '.ll-runner',
   '#timerDisplay',
@@ -218,4 +219,26 @@ test('rest content is padded clear of the fixed button bar and demo shrinks on p
   assert.match(block, /#restLongevityCue\s*\{\s*display:\s*none/);
   assert.match(block, /max-height:\s*10vh/);
   assert.match(block, /\.demo-caption[\s\S]*\.demo-actions\s*\{\s*display:\s*none/);
+});
+
+test('working-weight inputs use a scoped flex width instead of the missing w-20 utility', () => {
+  assert.doesNotMatch(runnerJs, /class="[^"]*w-20[^"]*"/);
+  const rule = runnerCss.match(/\.runner-weight-input\s*\{[^}]+\}/);
+  assert.ok(rule, '.runner-weight-input rule exists');
+  const text = rule[0];
+  assert.match(text, /flex\s*:\s*1\s+1\s+auto/, 'input flexes to fill row');
+  assert.match(text, /max-width\s*:\s*6rem/, 'capped so label/unit fit at 360/390px');
+  assert.match(text, /min-width\s*:\s*3\.5rem/, 'does not shrink below usable size');
+});
+
+test('dashboard cards reserve responsive space with skeleton placeholders', () => {
+  const styles = fs.readFileSync(path.join(wwwroot, 'css', 'styles.css'), 'utf8');
+  assert.match(styles, /#nextWorkoutCard\s*\{[^}]*height\s*:\s*17rem/);
+  assert.match(styles, /#homeToday\s*\{[^}]*height\s*:\s*10rem/);
+  assert.match(styles, /@media \(min-width: 640px\)\s*\{\s*#nextWorkoutCard \{ height: 10rem; \}\s*#homeToday \{ height: 8rem; \}/);
+  const indexHtml = fs.readFileSync(path.join(wwwroot, 'index.html'), 'utf8');
+  assert.match(indexHtml, /<div[^>]*id="nextWorkoutSkeleton"[^>]*>/);
+  assert.match(indexHtml, /<div[^>]*id="homeTodaySkeleton"[^>]*>/);
+  assert.match(indexHtml, /<div[^>]*id="nextWorkoutContent"[^>]*class="[^"]*hidden[^"]*"/);
+  assert.match(indexHtml, /<div[^>]*id="homeTodayContent"[^>]*class="[^"]*hidden[^"]*"/);
 });
