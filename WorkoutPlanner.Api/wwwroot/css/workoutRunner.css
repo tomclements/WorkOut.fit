@@ -35,6 +35,7 @@ button, a {
   --runner-mint: #3DDC97;
   --runner-text: #FFFFFF;
   --runner-muted: #94A3B8;
+  --runner-bar-h: 76px;
 }
 
 .runner-phase-context {
@@ -178,11 +179,32 @@ button, a {
 .runner-rest-layout {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.25rem;
+  min-height: 100%;
+}
+.runner-rest-layout > .runner-rest-timer-block,
+.runner-rest-layout > .runner-up-next {
+  flex: none;
 }
 .runner-rest-card {
-  padding: 0.75rem 0.9rem !important;
-  margin-bottom: 0.35rem !important;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  padding: 0.5rem 0.65rem !important;
+  margin-bottom: 0.15rem !important;
+}
+.runner-rest-card > * {
+  flex: none;
+}
+.runner-rest-card > .demo-panel--rest {
+  flex: 1 1 0;
+  min-height: calc(64px + 2.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+body.rest-phase:not(.tv-mode) .runner-rest-card > .demo-panel--rest {
+  container-type: size;
 }
 
 
@@ -230,6 +252,8 @@ body.rest-phase.tv-mode #restTimer {
 body.tv-mode.rest-phase #restScreen .demo-frame {
   max-height: 35vh;
   height: auto;
+  width: auto;
+  margin: 0 auto;
 }
 
 .rep-display {
@@ -450,7 +474,7 @@ body.rest-phase .overflow-btn {
 
 /* Single animated WebP (prebuilt from 0/1 stills) — no JS flip needed */
 .demo-frame--anim {
-  background: #111827;
+  background: #d9d9d9;
 }
 
 .demo-frame--anim img.demo-frame__anim,
@@ -480,10 +504,17 @@ body.rest-phase .overflow-btn {
 }
 
 .demo-attribution {
-  margin-top: 0.25rem;
-  text-align: center;
-  font-size: 0.7rem;
-  color: #9ca3af;
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  font-size: 0.65rem;
+  line-height: 1;
+  white-space: nowrap;
+  color: #111827;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.35rem;
+  pointer-events: none;
 }
 
 
@@ -504,8 +535,19 @@ body.rest-phase .overflow-btn {
 }
 
 .demo-panel--rest .demo-frame {
-  max-width: 17.5rem;
-  aspect-ratio: 1 / 1;
+  flex: none;
+  width: min(100%, 17.5rem);
+  aspect-ratio: var(--demo-ar, 1);
+  margin: 0 auto;
+}
+/* Rest (floor): demo is the only shrinkable item; size by the space left above Video search. */
+body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
+  width: min(100cqw, calc((100cqh - 2.5rem) * var(--demo-ar, 1)));
+  max-width: none;
+  height: auto;
+}
+.demo-panel--rest .demo-frame img {
+  object-fit: contain;
 }
 
 body.high-contrast .demo-frame {
@@ -520,6 +562,22 @@ body.high-contrast .demo-frame--placeholder {
 
 body.high-contrast .demo-caption {
   color: #c5ccd6 !important;
+}
+
+/* Tiny rest demo (short screens): keep the whole label inside the frame. */
+@container (max-height: 10rem) {
+  .demo-attribution {
+    top: 0.2rem;
+    right: 0.2rem;
+    max-width: calc(100% - 0.4rem);
+    font-size: 0.55rem;
+    padding: 0.1rem 0.2rem;
+    white-space: normal;
+    text-align: right;
+  }
+}body.high-contrast .demo-attribution {
+  color: #f1f5f9 !important;
+  background: rgba(15, 23, 42, 0.75) !important;
 }
 
 body.high-contrast .demo-actions a {
@@ -559,7 +617,7 @@ body.work-phase #activeScreen {
   position: fixed;
   inset: 0;
   z-index: 20;
-  padding: 0.45rem 0.75rem calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;
+  padding: 0.45rem 0.75rem calc(var(--runner-bar-h) + 1rem + env(safe-area-inset-bottom, 0px)) !important;
   padding-top: calc(0.4rem + env(safe-area-inset-top, 0px)) !important;
   display: flex !important;
   flex-direction: column !important;
@@ -776,21 +834,16 @@ body.quit-sheet-open #restPausedOverlay:not(.hidden) {
   display: none !important;
 }
 
-/* ---------- Rest screen readability ---------- */
-.demo-panel--rest .demo-caption {
-  font-size: 0.9rem;
-}
-
 /* ---------- Rest screen — phone on floor (portrait) ---------- */
 body.rest-phase #restScreen {
   position: fixed;
   inset: 0;
   z-index: 20;
-  overflow: hidden;
+  overflow-y: auto;
   background: #0B1220 !important;
   color: #FFFFFF !important;
   padding-top: calc(0.35rem + env(safe-area-inset-top, 0px)) !important;
-  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;
+  padding-bottom: calc(var(--runner-bar-h) + 1rem + env(safe-area-inset-bottom, 0px)) !important;
   min-height: 100dvh !important;
   min-height: 100svh !important;
   height: 100dvh !important;
@@ -851,6 +904,7 @@ body.rest-phase .runner-rest-next-name {
   margin-bottom: 0.35rem !important;
   text-align: center !important;
   width: 100%;
+  line-height: 1.15 !important;
 }
 
 body.rest-phase #nextExerciseMeta {
@@ -862,24 +916,38 @@ body.rest-phase .runner-rest-coaching-form {
   font-size: clamp(1.65rem, 5.8vw, 2.1rem) !important; /* much larger instructions */
   font-weight: 700 !important;
   color: #E8EEF7 !important;
-  line-height: 1.3 !important;
+  line-height: 1.15 !important;
   text-align: center !important;
 }
 body.rest-phase .runner-rest-coaching {
-  margin-top: 0.2rem;
+  margin-top: 0.1rem;
 }
 body.rest-phase #restScreen .runner-rest-card {
-  padding: 0.65rem 0.85rem !important;
-  margin-bottom: 0.25rem !important;
+  padding: 0.5rem 0.65rem !important;
+  margin-bottom: 0.15rem !important;
 }
 body.rest-phase #restScreen .demo-panel--rest {
-  margin-top: 0.35rem !important;
-}
-body.rest-phase #restScreen .demo-panel--rest .demo-frame {
-  max-height: 20vh;
+  margin-top: 0.2rem !important;
 }
 body.rest-phase #restScreen .runner-session-timer--rest {
-  margin: 0.2rem 0 0.4rem;
+  margin: 0;
+}
+
+.runner-up-next-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.runner-up-next-row > .runner-up-next-label {
+  white-space: nowrap;
+}
+body.rest-phase #restScreen .runner-up-next {
+  margin: 0.1rem 0 0.25rem;
+}
+body.rest-phase #restScreen .runner-rest-layout > .h-2 {
+  margin-bottom: 0.25rem !important;
 }
 
 body.rest-phase #restScreen .runner-rest-card {
@@ -940,7 +1008,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   /* Work screen landscape: name+target | hero timer */
   body.work-phase #activeScreen {
     min-height: 100vh !important;
-    padding: 0.5rem 1.25rem 4.75rem !important;
+    padding: 0.5rem 1.25rem calc(var(--runner-bar-h) + 0.75rem) !important;
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) minmax(0, auto);
     align-items: center !important;
@@ -999,7 +1067,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   /* Rest screen landscape */
   body.rest-phase #restScreen {
     min-height: 100vh !important;
-    padding: 0.5rem 1rem calc(4.25rem + env(safe-area-inset-bottom)) !important;
+    padding: 0.5rem 1rem calc(var(--runner-bar-h) + 0.75rem + env(safe-area-inset-bottom)) !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -1313,7 +1381,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 /* ---------- Short phone viewports: keep work/rest on-screen (not TV) ---------- */
 @media (max-height: 860px) {
   body.work-phase:not(.tv-mode) #activeScreen {
-    padding: 0.25rem 0.6rem calc(5.1rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 0.25rem 0.6rem calc(var(--runner-bar-h) + 1rem + env(safe-area-inset-bottom, 0px)) !important;
     padding-top: calc(0.25rem + env(safe-area-inset-top, 0px)) !important;
     justify-content: flex-start !important;
     gap: 0.12rem;
@@ -1355,7 +1423,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 
   body.rest-phase:not(.tv-mode) #restScreen {
     padding-top: calc(0.25rem + env(safe-area-inset-top, 0px)) !important;
-    padding-bottom: calc(5.1rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: calc(var(--runner-bar-h) + 1rem + env(safe-area-inset-bottom, 0px)) !important;
     overflow-y: auto;
   }
   body.rest-phase:not(.tv-mode) #restScreen #restHeading,
@@ -1371,16 +1439,13 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   body.rest-phase:not(.tv-mode) #nextExerciseName {
     font-size: clamp(2.4rem, 8vw, 2.65rem) !important;
     text-align: center !important;
+    line-height: 1.15 !important;
   }
   body.rest-phase:not(.tv-mode) .runner-rest-coaching-tags,
   body.rest-phase:not(.tv-mode) .runner-rest-coaching-form {
     font-size: clamp(1.55rem, 5.5vw, 1.95rem) !important;
     text-align: center !important;
-  }
-  body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
-  body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
-    aspect-ratio: 1 / 1;
-    max-height: 15vh;
+    line-height: 1.15 !important;
   }
   body.rest-phase:not(.tv-mode) #skipRestBtn,
   body.rest-phase:not(.tv-mode) #startNextBtn {
@@ -1396,7 +1461,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 
 @media (max-height: 700px) {
   body.work-phase:not(.tv-mode) #activeScreen {
-    padding: 0.15rem 0.55rem calc(4.9rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 0.15rem 0.55rem calc(var(--runner-bar-h) + 1rem + env(safe-area-inset-bottom, 0px)) !important;
     padding-top: calc(0.15rem + env(safe-area-inset-top, 0px)) !important;
     gap: 0.08rem;
   }
@@ -1414,13 +1479,9 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   }
   body.rest-phase:not(.tv-mode) #restScreen {
     padding-top: calc(0.15rem + env(safe-area-inset-top, 0px)) !important;
-    padding-bottom: calc(4.9rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: calc(var(--runner-bar-h) + 1rem + env(safe-area-inset-bottom, 0px)) !important;
   }
-  body.rest-phase:not(.tv-mode) #nextDemo .demo-frame,
-  body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
-    aspect-ratio: 1 / 1;
-    max-height: 12.5vh;
-  }
+
   body.work-phase:not(.tv-mode) #activeScreen #workCue {
     display: none !important;
   }
@@ -1429,6 +1490,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   }
   body.rest-phase:not(.tv-mode) #nextExerciseName {
     font-size: clamp(1.75rem, 5.5vw, 2.1rem) !important;
+    line-height: 1.15 !important;
   }
   body.rest-phase:not(.tv-mode) #restScreen #restHeading,
   body.rest-phase:not(.tv-mode) #restScreen .text-center .uppercase {
@@ -1437,6 +1499,7 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   body.rest-phase:not(.tv-mode) .runner-rest-coaching-tags,
   body.rest-phase:not(.tv-mode) .runner-rest-coaching-form {
     font-size: clamp(1.2rem, 4vw, 1.4rem) !important;
+    line-height: 1.15 !important;
   }
 }
 
@@ -1479,8 +1542,19 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   font-size: 1.125rem !important;
 }
 
-body.rest-phase #restScreen .demo-caption,
-body.rest-phase #restScreen .demo-attribution,
+#quitWorkoutDesc,
+#quitSaveSub,
+#quitDiscardSub,
+#quitWorkoutStatus,
+#quitWorkoutModal p {
+  line-height: 1.5 !important;
+}
+
+#quitSaveSub,
+#quitDiscardSub {
+  margin-top: 0.25rem !important;
+}
+
 body.rest-phase #restScreen .demo-actions a {
   font-size: 1.125rem !important;
 }
@@ -1504,22 +1578,13 @@ body.rest-phase #restScreen #restLongevityCue .ll-runner-cue {
 
 /* Rest: keep content clear of the fixed Skip rest / Start next bar */
 body.rest-phase:not(.tv-mode) #restScreen {
-  padding-bottom: calc(6.75rem + env(safe-area-inset-bottom, 0px)) !important;
+  padding-bottom: calc(var(--runner-bar-h) + 1rem + env(safe-area-inset-bottom, 0px)) !important;
   overflow-y: auto !important;
 }
 
-/* Phone heights: hide the Longevity cue and shrink the rest demo */
+/* Phone heights: demo image is the only flex-shrink element; keep text >=18px */
 @media (max-height: 860px) {
   body.rest-phase:not(.tv-mode) #restScreen #restLongevityCue {
-    display: none !important;
-  }
-  body.rest-phase:not(.tv-mode) #restScreen .demo-panel--rest .demo-frame,
-  body.rest-phase:not(.tv-mode) #restScreen #nextDemo img {
-    max-height: 10vh !important;
-    object-fit: contain;
-  }
-  body.rest-phase:not(.tv-mode) #restScreen #nextDemo .demo-caption,
-  body.rest-phase:not(.tv-mode) #restScreen #nextDemo .demo-actions {
     display: none !important;
   }
 }

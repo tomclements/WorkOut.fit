@@ -208,17 +208,17 @@ test('restLongevityCue is filled from runnerCueHtml in rest render and resume pa
   assert.match(resumeSession, /fillRestLongevityCue\s*\(\s*nextEx\s*\)/);
 });
 
-test('rest content is padded clear of the fixed button bar and demo shrinks on phone heights', () => {
+test('rest content is padded by the measured bar height and short screens keep demo and Video search', () => {
   const css = fs.readFileSync(path.join(__dirname, '..', 'WorkoutPlanner.Api', 'wwwroot', 'css', 'workoutRunner.css'), 'utf8');
-  assert.match(css, /body\.rest-phase:not\(\.tv-mode\) #restScreen \{[^}]*padding-bottom:\s*calc\(6\.75rem[^}]*overflow-y:\s*auto/);
+  assert.match(css, /body\.rest-phase:not\(\.tv-mode\) #restScreen \{[^}]*padding-bottom:\s*calc\(var\(--runner-bar-h\)[^}]*overflow-y:\s*auto/);
   const idx = css.indexOf('@media (max-height: 860px) {\r\n  body.rest-phase:not(.tv-mode) #restScreen #restLongevityCue');
   const idxLf = css.indexOf('@media (max-height: 860px) {\n  body.rest-phase:not(.tv-mode) #restScreen #restLongevityCue');
   const start = idx >= 0 ? idx : idxLf;
   assert.ok(start >= 0, 'missing max-height 860px rest block');
   const block = css.slice(start, css.indexOf('\n}', start));
   assert.match(block, /#restLongevityCue\s*\{\s*display:\s*none/);
-  assert.match(block, /max-height:\s*10vh/);
-  assert.match(block, /\.demo-caption[\s\S]*\.demo-actions\s*\{\s*display:\s*none/);
+  assert.doesNotMatch(block, /max-height:\s*10vh/);
+  assert.doesNotMatch(block, /\.demo-actions/);
 });
 
 test('working-weight inputs use a scoped flex width instead of the missing w-20 utility', () => {
