@@ -524,3 +524,18 @@ test('silent and rejected auth failures release the pending reservation as guest
     assert.equal(section.classList.contains('hidden'), true);
   }
 });
+
+test('pending auth hides the signed-out header to avoid flash', () => {
+  const styles = fs.readFileSync(path.join(wwwroot, 'css', 'styles.css'), 'utf8');
+  assert.match(styles, /body:has\(#dashboardSection\[data-auth-state="pending"\]\) #authSection\s*\{\s*visibility:\s*hidden;/);
+});
+
+test('resolveInitialAuth starts before awaiting loadPreferences in DOMContentLoaded', () => {
+  const handler = appSource.match(/document\.addEventListener\('DOMContentLoaded',\s*async\s*\(\)\s*=>\s*\{([\s\S]*)\}\);/);
+  assert.ok(handler, 'DOMContentLoaded handler found');
+  const body = handler[1];
+  const authStart = body.indexOf('const authReady = resolveInitialAuth();');
+  const prefsAwait = body.indexOf('await loadPreferences();');
+  assert.ok(authStart >= 0, 'auth is started and assigned to authReady');
+  assert.ok(prefsAwait > authStart, 'loadPreferences is awaited after auth start');
+});

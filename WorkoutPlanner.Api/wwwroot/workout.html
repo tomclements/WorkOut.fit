@@ -244,24 +244,22 @@
         <div class="runner-rest-card bg-white rounded-lg p-4 mb-3">
           <div id="nextExerciseName" class="runner-rest-next-name text-2xl font-semibold text-gray-900 mb-2 text-center"></div>
           <div id="restLongevityCue" class="hidden" aria-live="polite"></div>
-          <!-- RestCoaching: tags + form cue (moved off Work) -->
+          <!-- RestCoaching: form cue (moved off Work) -->
           <div id="restCoaching" class="runner-rest-coaching">
-            <div id="restCoachingTags" class="runner-rest-coaching-tags"></div>
             <div id="restCoachingForm" class="runner-rest-coaching-form"></div>
           </div>
           <!-- legacy meta node kept for JS; filled with coaching summary -->
           <div id="nextExerciseMeta" class="hidden" aria-hidden="true"></div>
-          <div id="nextDemo" class="demo-panel demo-panel--rest mt-3"></div>
+          <button type="button" id="seeDemoBtn" class="runner-btn runner-see-demo-btn" aria-haspopup="dialog" aria-controls="demoView">&#x25B6;&#xFE0E; SEE DEMO</button>
+        </div>
+
+        <div id="restSessionClock" class="runner-session-timer runner-session-timer--rest">
+          <span class="runner-session-label">SESSION</span>
+          <span id="restStatSession" class="runner-session-clock" aria-live="polite">00:00</span>
         </div>
 
         <div id="restNext" class="runner-up-next">
-          <div class="runner-up-next-row">
-            <div class="runner-up-next-label">UP NEXT</div>
-            <div id="restSessionClock" class="runner-session-timer runner-session-timer--rest">
-              <span class="runner-session-label">SESSION</span>
-              <span id="restStatSession" class="runner-session-clock" aria-live="polite">00:00</span>
-            </div>
-          </div>
+          <div class="runner-up-next-label">UP NEXT</div>
           <div id="restNextName" class="runner-up-next-name"></div>
         </div>
 
@@ -280,6 +278,18 @@
         <div class="text-xl font-bold text-amber-600">Paused</div>
         <button id="restResumeWorkoutBtn" type="button" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-md touch-manipulation">Resume</button>
       </div>
+    </section>
+
+    <!-- Full-screen demo view (overlay, keeps timer/audio/wake-lock alive) -->
+    <section id="demoView" class="runner-demo-view hidden" role="dialog" aria-modal="true" aria-labelledby="demoViewTitle">
+      <div class="runner-demo-view__top">
+        <div class="runner-demo-view__clock" aria-live="off"><span class="runner-session-label" id="demoViewTimerLabel">REST</span> <span id="demoViewTimer">00:00</span></div>
+        <button type="button" id="demoCloseBtn" class="runner-demo-view__x" aria-label="Back to timer">&times;</button>
+      </div>
+      <h2 id="demoViewTitle" class="runner-demo-view__title"></h2>
+      <p id="demoViewForm" class="runner-demo-view__form"></p>
+      <div id="demoViewMedia" class="runner-demo-view__media"></div>
+      <button type="button" id="demoBackBtn" class="runner-btn runner-btn--primary runner-demo-view__back">&larr; BACK TO TIMER</button>
     </section>
 
     <!-- Session options overflow (music / skip / previous / view all) -->

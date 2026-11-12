@@ -135,9 +135,9 @@ test('static: workout.html and admin.html do not load share.js', () => {
   }
 });
 
-test('static: sw.js bumped to v11 and precaches share.js', () => {
+test('static: sw.js bumped to v12 and precaches share.js', () => {
   const sw = fs.readFileSync(path.join(WWWROOT, 'sw.js'), 'utf8');
-  assert.ok(sw.includes("CACHE_NAME = 'plan4strength-v11'"), 'sw.js cache name must be plan4strength-v11');
+  assert.ok(sw.includes("CACHE_NAME = 'plan4strength-v12'"), 'sw.js cache name must be plan4strength-v12');
   assert.ok(sw.includes("'/js/share.js'"), 'sw.js must precache /js/share.js');
 });
 

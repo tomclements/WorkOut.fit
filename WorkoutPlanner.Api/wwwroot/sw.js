@@ -1,4 +1,4 @@
-const CACHE_NAME = 'plan4strength-v11';
+const CACHE_NAME = 'plan4strength-v12';
 const PRECACHE = [
   '/manifest.json',
   '/icon.svg',

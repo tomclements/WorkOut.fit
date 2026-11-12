@@ -964,6 +964,9 @@ body.high-contrast .shadow-lg {
 body:has(#dashboardSection[data-auth-state="pending"]) #welcomeSection {
   display: none;
 }
+body:has(#dashboardSection[data-auth-state="pending"]) #authSection {
+  visibility: hidden;
+}
 
 /* Zero-data onboarding replaces the fixed-height card slots so Templates don't shift. */
 #dashboardSection:has(#dashboardEmptyState:not(.hidden)) #nextWorkoutCard,

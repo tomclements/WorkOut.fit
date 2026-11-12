@@ -119,19 +119,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Local defaults first (works for guests), then server prefs overlay when signed in
-  loadLocalPlanDefaults();
-  await loadPreferences();
-  applyPlanDefaultsToForm({ skipBroNudge: true });
-  await loadFavorites();
-  loadEquipment();
   // Global auth check (site.js) — listen for auth-changed to update planner UI
   window.addEventListener('auth-changed', (e) => {
     const { user, roles } = e.detail;
     if (user) showLoggedIn(user, roles || []);
     else showLoggedOut();
   });
-  await resolveInitialAuth();
+  // Start auth immediately; it resolves in parallel with prefs/favorites/equipment
+  const authReady = resolveInitialAuth();
+  // Local defaults first (works for guests), then server prefs overlay when signed in
+  loadLocalPlanDefaults();
+  await loadPreferences();
+  applyPlanDefaultsToForm({ skipBroNudge: true });
+  await loadFavorites();
+  loadEquipment();
+  await authReady;
   // Re-apply after session in case server prefs arrived late for returning users
   applyPlanDefaultsToForm({ skipBroNudge: true });
   handleReturnUrl();

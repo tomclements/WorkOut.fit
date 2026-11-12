@@ -15,6 +15,9 @@ const TARGET_SELECTORS = [
   '#restPausedOverlay',
   '#quitWorkoutModal',
   '#overflowModal',
+  '#demoView',
+  '#seeDemoBtn',
+  '#demoBackBtn',
   '.runner-',
   '.ll-runner',
   '#timerDisplay',
@@ -98,6 +101,7 @@ function parseBlocks(css) {
 
 function isTargeted(selector) {
   if (/\btv-mode\b/.test(selector)) return false;
+  if (selector.includes('.demo-attribution')) return false;
   return TARGET_SELECTORS.some(s => selector.includes(s));
 }
 
@@ -208,17 +212,32 @@ test('restLongevityCue is filled from runnerCueHtml in rest render and resume pa
   assert.match(resumeSession, /fillRestLongevityCue\s*\(\s*nextEx\s*\)/);
 });
 
-test('rest content is padded by the measured bar height and short screens keep demo and Video search', () => {
+test('rest content is padded by the measured bar height and demo view keeps Video search readable', () => {
   const css = fs.readFileSync(path.join(__dirname, '..', 'WorkoutPlanner.Api', 'wwwroot', 'css', 'workoutRunner.css'), 'utf8');
   assert.match(css, /body\.rest-phase:not\(\.tv-mode\) #restScreen \{[^}]*padding-bottom:\s*calc\(var\(--runner-bar-h\)[^}]*overflow-y:\s*auto/);
-  const idx = css.indexOf('@media (max-height: 860px) {\r\n  body.rest-phase:not(.tv-mode) #restScreen #restLongevityCue');
-  const idxLf = css.indexOf('@media (max-height: 860px) {\n  body.rest-phase:not(.tv-mode) #restScreen #restLongevityCue');
-  const start = idx >= 0 ? idx : idxLf;
-  assert.ok(start >= 0, 'missing max-height 860px rest block');
-  const block = css.slice(start, css.indexOf('\n}', start));
-  assert.match(block, /#restLongevityCue\s*\{\s*display:\s*none/);
-  assert.doesNotMatch(block, /max-height:\s*10vh/);
-  assert.doesNotMatch(block, /\.demo-actions/);
+  const blocks = parseBlocks(css);
+  const demoActionBlocks = blocks.filter(b =>
+    !b.selector.includes('tv-mode') &&
+    (b.selector.includes('#demoView .demo-actions a') || b.selector.includes('.runner-demo-view__media .demo-actions a'))
+  );
+  assert.ok(demoActionBlocks.length > 0, '#demoView .demo-actions a rule exists');
+  const offenders = [];
+  for (const block of demoActionBlocks) {
+    const decls = block.body
+      .replace(/\{[^{}]*\}/g, '')
+      .split(';')
+      .map(d => d.trim())
+      .filter(Boolean);
+    for (const decl of decls) {
+      const m = decl.match(/^font-size\s*:\s*(.+)$/i);
+      if (!m) continue;
+      const parsed = parseValue(m[1]);
+      if (!parsed) continue;
+      const px = toPx(parsed.num, parsed.unit);
+      if (px < 18 - 1e-6) offenders.push(`${block.selector} { font-size: ${parsed.raw} }`);
+    }
+  }
+  assert.deepStrictEqual(offenders, []);
 });
 
 test('working-weight inputs use a scoped flex width instead of the missing w-20 utility', () => {

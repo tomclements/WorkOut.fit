@@ -138,16 +138,15 @@ button, a {
   margin-top: 0.35rem;
 }
 
-.runner-rest-coaching-tags,
 .runner-rest-coaching-form {
   font-size: clamp(1.25rem, 4.5vw, 1.65rem); /* ~20–26px */
   font-weight: 700;
   line-height: 1.35;
   color: #E8EEF7; /* high contrast on #0B1220 */
-}
-
-.runner-rest-coaching-tags {
-  margin-bottom: 0.35rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .runner-btn {
@@ -179,32 +178,42 @@ button, a {
 .runner-rest-layout {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  justify-content: space-between;
+  gap: 0.35rem;
   min-height: 100%;
 }
 .runner-rest-layout > .runner-rest-timer-block,
+.runner-rest-layout > #restSessionClock,
 .runner-rest-layout > .runner-up-next {
   flex: none;
 }
 .runner-rest-card {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   padding: 0.5rem 0.65rem !important;
   margin-bottom: 0.15rem !important;
 }
 .runner-rest-card > * {
   flex: none;
 }
-.runner-rest-card > .demo-panel--rest {
-  flex: 1 1 0;
-  min-height: calc(64px + 2.5rem);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.runner-see-demo-btn {
+  display: block;
+  width: 100%;
+  max-width: 22rem;
+  margin: 0.5rem auto 0;
+  min-height: 56px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #E8EEF7;
+  border-radius: 1.1rem;
 }
-body.rest-phase:not(.tv-mode) .runner-rest-card > .demo-panel--rest {
-  container-type: size;
+body.rest-phase #restScreen .runner-see-demo-btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #E8EEF7;
 }
 
 
@@ -540,14 +549,151 @@ body.rest-phase .overflow-btn {
   aspect-ratio: var(--demo-ar, 1);
   margin: 0 auto;
 }
-/* Rest (floor): demo is the only shrinkable item; size by the space left above Video search. */
-body.rest-phase:not(.tv-mode) .demo-panel--rest .demo-frame {
-  width: min(100cqw, calc((100cqh - 2.5rem) * var(--demo-ar, 1)));
-  max-width: none;
-  height: auto;
-}
 .demo-panel--rest .demo-frame img {
   object-fit: contain;
+}
+
+/* ---------- Full-screen demo view (overlay inside workout.html) ---------- */
+.runner-demo-view {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #0B1220;
+  color: #FFFFFF;
+  padding: calc(0.5rem + env(safe-area-inset-top, 0px)) 0.75rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
+}
+.runner-demo-view.hidden {
+  display: none;
+}
+.runner-demo-view__top {
+  width: 100%;
+  max-width: 28rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.runner-demo-view__clock {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+.runner-demo-view__clock .runner-session-label {
+  font-size: 1.125rem;
+  color: #94A3B8;
+}
+#demoViewTimer {
+  font-size: clamp(3rem, 12vw, 4.5rem);
+  font-weight: 800;
+  color: #7DD3FC;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.runner-demo-view__x {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #E8EEF7;
+  background: #16223b;
+  border: 1px solid #24365c;
+  border-radius: 9999px;
+}
+.runner-demo-view__title {
+  width: 100%;
+  max-width: 28rem;
+  margin: 0.5rem 0 0.35rem;
+  font-size: clamp(1.75rem, 6vw, 2.25rem);
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.runner-demo-view__form {
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  line-height: 1.35;
+  color: #cbd5e1;
+  text-align: center;
+  flex-shrink: 0;
+}
+.runner-demo-view__form:empty {
+  display: none;
+}
+.runner-demo-view__media {
+  width: 100%;
+  max-width: 28rem;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+  container-type: size;
+}
+.runner-demo-view__media .demo-panel {
+  width: 100%;
+}
+.runner-demo-view__media .demo-frame {
+  /* Fit inside the media box: 3.5rem = 48px link row + its margin. */
+  max-width: 28rem;
+  width: min(100cqw, calc((100cqh - 3.5rem) * var(--demo-ar, 1)));
+  height: auto;
+  max-height: none;
+  margin: 0 auto;
+}
+.runner-demo-view__media .demo-actions {
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+}
+.runner-demo-view__media .demo-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #93c5fd;
+  background: #16223b;
+  border: 1px solid #24365c;
+  border-radius: 9999px;
+  text-decoration: none;
+}
+.runner-demo-view__back {
+  width: 100%;
+  max-width: 28rem;
+  margin-top: 0.5rem;
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+  min-height: 56px;
+  font-size: 1.125rem;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 1rem;
+  border: none;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.runner-demo-view__back:active {
+  background: #1d4ed8;
+}
+body.high-contrast .runner-demo-view {
+  background: #0B1220;
 }
 
 body.high-contrast .demo-frame {
@@ -911,11 +1057,10 @@ body.rest-phase #nextExerciseMeta {
   display: none !important;
 }
 
-body.rest-phase .runner-rest-coaching-tags,
 body.rest-phase .runner-rest-coaching-form {
   font-size: clamp(1.65rem, 5.8vw, 2.1rem) !important; /* much larger instructions */
   font-weight: 700 !important;
-  color: #E8EEF7 !important;
+  color: #cbd5e1 !important;
   line-height: 1.15 !important;
   text-align: center !important;
 }
@@ -951,8 +1096,9 @@ body.rest-phase #restScreen .runner-rest-layout > .h-2 {
 }
 
 body.rest-phase #restScreen .runner-rest-card {
-  background: #16223b !important;
-  border: 1px solid #24365c;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 body.rest-phase #restScreen .text-sm,
@@ -1082,11 +1228,6 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 
   body.rest-phase #restScreen .text-center .uppercase {
     font-size: 1.125rem !important;
-  }
-
-  body.rest-phase #nextDemo img,
-  body.rest-phase #nextDemo video {
-    max-height: 32.5vh !important;
   }
 
   body.rest-phase #restControls {
@@ -1441,7 +1582,6 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
     text-align: center !important;
     line-height: 1.15 !important;
   }
-  body.rest-phase:not(.tv-mode) .runner-rest-coaching-tags,
   body.rest-phase:not(.tv-mode) .runner-rest-coaching-form {
     font-size: clamp(1.55rem, 5.5vw, 1.95rem) !important;
     text-align: center !important;
@@ -1496,7 +1636,6 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
   body.rest-phase:not(.tv-mode) #restScreen .text-center .uppercase {
     font-size: 1.2rem !important;
   }
-  body.rest-phase:not(.tv-mode) .runner-rest-coaching-tags,
   body.rest-phase:not(.tv-mode) .runner-rest-coaching-form {
     font-size: clamp(1.2rem, 4vw, 1.4rem) !important;
     line-height: 1.15 !important;
@@ -1553,10 +1692,6 @@ body.rest-phase #restScreen #restPausedOverlay:not(.hidden) .text-xl {
 #quitSaveSub,
 #quitDiscardSub {
   margin-top: 0.25rem !important;
-}
-
-body.rest-phase #restScreen .demo-actions a {
-  font-size: 1.125rem !important;
 }
 
 body.rest-phase #restScreen .ll-runner .ll-badge {

@@ -33,6 +33,7 @@ let pauseStartTime = 0;
 let pauseAccumulatedMs = 0;
 let ignoreVisibilityUntil = 0;
 let phaseBusy = false;
+let demoViewOpen = false;
 let Engine = window.RunnerEngine || null;
 let OverflowSettings = window.OverflowSettings || null;
 let StartWeightGate = window.StartWeightGate || null;
@@ -184,7 +185,6 @@ const nextExerciseMetaEl = document.getElementById('nextExerciseMeta');
 const restLongevityCueEl = document.getElementById('restLongevityCue');
 const restNextNameEl = document.getElementById('restNextName');
 const workNextNameEl = document.getElementById('workNextName');
-const nextDemoEl = document.getElementById('nextDemo');
 const skipRestBtn = document.getElementById('skipRestBtn');
 const movesListModal = document.getElementById('movesListModal');
 const movesList = document.getElementById('movesList');
@@ -277,6 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const overflowModal = byId('overflowModal');
   let overflowWasPaused = false;
   const openOverflow = () => {
+    closeDemoView({ restoreFocus: false });
     if (!overflowModal) return;
     overflowModal.classList.remove('hidden');
     // Auto-pause when opening session options (unless already paused)
@@ -475,6 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openQuitSheet(fromOverflow) {
+    closeDemoView({ restoreFocus: false });
     if (!quitWorkoutModal) return;
     if (phase !== 'work' && phase !== 'rest') return;
 
@@ -635,12 +637,21 @@ document.addEventListener('DOMContentLoaded', () => {
     userPickedDay = true;
     renderDayPreview(e);
   });
+  wire(byId('seeDemoBtn'), 'click', openDemoView);
+  wire(byId('demoBackBtn'), 'click', () => closeDemoView());
+  wire(byId('demoCloseBtn'), 'click', () => closeDemoView());
+
+  // Demo view history navigation
+  wire(window, 'popstate', () => {
+    if (demoViewOpen) closeDemoView({ fromPopstate: true });
+  });
 
   // Space / Enter: skip work/rest
   wire(document, 'keydown', (e) => {
     if (e.code !== 'Space' && e.code !== 'Enter') return;
     const tag = e.target && e.target.tagName;
     if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+    if (demoViewOpen) return;
     if (overflowModal && !overflowModal.classList.contains('hidden')) return;
     if (byId('weightSheetModal') && !byId('weightSheetModal').classList.contains('hidden')) return;
     if (quitWorkoutModal && !quitWorkoutModal.classList.contains('hidden')) return;
@@ -653,9 +664,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Escape closes the overflow modal or quit sheet
+  // Escape closes the overflow modal, quit sheet, or demo view
   wire(document, 'keydown', (e) => {
     if (e.key !== 'Escape') return;
+    if (demoViewOpen) {
+      closeDemoView();
+      return;
+    }
     if (overflowModal && !overflowModal.classList.contains('hidden')) closeOverflow();
     if (quitWorkoutModal && !quitWorkoutModal.classList.contains('hidden')) keepGoing();
   });
@@ -1910,14 +1925,12 @@ async function resumeSession(fromGesture = false) {
       fillRestCoaching(nextEx);
       fillUpNext(restNextNameEl);
       fillRestLongevityCue(nextEx);
-      if (nextDemoEl) {
-        nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
-        startDemoFlip(nextDemoEl);
-      }
       const remain = Engine
         ? Engine.remainingSeconds(clockSnapshot(), Date.now())
         : Math.max(0, phaseDurationSeconds - Math.floor((Date.now() - phaseStartTime) / 1000));
       if (restTimerEl) restTimerEl.textContent = formatTime(remain);
+      const demoViewTimer = document.getElementById('demoViewTimer');
+      if (demoViewTimer) demoViewTimer.textContent = formatTime(remain);
       startTimer();
       updatePauseUI();
     } else {
@@ -2373,6 +2386,15 @@ function updatePauseUI() {
   if (pausedOverlay) pausedOverlay.classList.toggle('hidden', !isPaused);
   if (restPausedOverlay) restPausedOverlay.classList.toggle('hidden', !isPaused);
   if (pauseBtn) pauseBtn.classList.toggle('hidden', isPaused);
+
+  const demoViewTimerLabel = document.getElementById('demoViewTimerLabel');
+  if (demoViewTimerLabel) {
+    if (isPaused) {
+      demoViewTimerLabel.textContent = 'PAUSED';
+    } else if (phase === 'rest') {
+      demoViewTimerLabel.textContent = noSetsCompletedYet() ? 'GET READY' : 'REST';
+    }
+  }
 }
 
 function onVolumeChange(e) {
@@ -2405,11 +2427,12 @@ async function handleVisibilityChange() {
     if (autoPaused && !quitSheetOpen) {
       resumeWorkout({ fromVisibility: true });
     }
-    if (phase === 'rest') startDemoFlip(nextDemoEl);
+    if (demoViewOpen) startDemoFlip(document.getElementById('demoViewMedia'));
   }
 }
 
 function showScreen(screen) {
+  if (screen !== restScreen) closeDemoView({ restoreFocus: false });
   [setupScreen, activeScreen, restScreen, finishScreen].forEach(s => s.classList.remove('active'));
   screen.classList.add('active');
   document.body.classList.toggle('rest-phase', screen === restScreen);
@@ -2420,6 +2443,56 @@ function showScreen(screen) {
     setWorkoutChromeVisible(!inSession);
   } else {
     document.body.classList.toggle('workout-active', inSession);
+  }
+}
+
+function openDemoView() {
+  if (phase !== 'rest') return;
+  const ex = currentExercise();
+  if (!ex) return;
+  const demoView = document.getElementById('demoView');
+  const demoViewTitle = document.getElementById('demoViewTitle');
+  const demoViewMedia = document.getElementById('demoViewMedia');
+  const demoViewTimer = document.getElementById('demoViewTimer');
+  if (!demoView || !demoViewMedia) return;
+  if (demoViewTitle) demoViewTitle.textContent = ex.name || '';
+  const demoViewForm = document.getElementById('demoViewForm');
+  if (demoViewForm) demoViewForm.textContent = formCueForExercise(ex) || '';
+  demoViewMedia.innerHTML = exerciseMediaHtml(ex);
+  startDemoFlip(demoViewMedia);
+  if (demoViewTimer) demoViewTimer.textContent = restTimerEl ? restTimerEl.textContent : formatTime(phaseDurationSeconds);
+  const demoViewTimerLabel = document.getElementById('demoViewTimerLabel');
+  const restHeadingEl = document.getElementById('restHeading');
+  if (demoViewTimerLabel) demoViewTimerLabel.textContent = isPaused ? 'PAUSED' : ((restHeadingEl && restHeadingEl.textContent.trim()) || 'REST');
+  demoView.classList.remove('hidden');
+  document.body.classList.add('demo-view-open');
+  demoViewOpen = true;
+  if (!(history.state && history.state.runnerDemo)) {
+    try { history.pushState({ runnerDemo: true }, ''); } catch { /* ignore */ }
+  }
+  const backBtn = document.getElementById('demoBackBtn');
+  if (backBtn && typeof backBtn.focus === 'function') {
+    try { backBtn.focus(); } catch { /* ignore */ }
+  }
+}
+
+function closeDemoView({ restoreFocus = true, fromPopstate = false } = {}) {
+  if (!demoViewOpen) return;
+  const demoView = document.getElementById('demoView');
+  const demoViewMedia = document.getElementById('demoViewMedia');
+  demoViewOpen = false;
+  if (demoView) demoView.classList.add('hidden');
+  stopDemoFlip();
+  if (demoViewMedia) demoViewMedia.innerHTML = '';
+  document.body.classList.remove('demo-view-open');
+  if (!fromPopstate && history.state && history.state.runnerDemo) {
+    try { history.back(); } catch { /* ignore */ }
+  }
+  if (restoreFocus) {
+    const seeBtn = document.getElementById('seeDemoBtn');
+    if (seeBtn && typeof seeBtn.focus === 'function') {
+      try { seeBtn.focus(); } catch { /* ignore */ }
+    }
   }
 }
 
@@ -2682,28 +2755,11 @@ function formCueForExercise(ex) {
   return `Aim for ${ex.repsDisplay || 'your target'} reps this set`;
 }
 
-function coachingTagsForExercise(ex) {
-  if (!ex) return '';
-  const p = exercisePhase(ex);
-  const phaseTag = p === 'warmup' ? 'Warm-up' : (p === 'cooldown' ? 'Cool-down' : 'Work');
-  const muscles = (ex.primary || []).filter(Boolean);
-  let region = 'Full body';
-  if (muscles.length === 1) {
-    region = String(muscles[0]).replace(/^\w/, c => c.toUpperCase());
-  } else if (muscles.length > 1 && muscles.length <= 3) {
-    region = muscles.map(m => String(m).replace(/^\w/, c => c.toUpperCase())).join(', ');
-  }
-  return `${phaseTag}. ${region}. Scale anytime.`;
-}
-
 function fillRestCoaching(ex) {
-  const tagsEl = document.getElementById('restCoachingTags');
   const formEl = document.getElementById('restCoachingForm');
-  const tags = coachingTagsForExercise(ex);
   const form = formCueForExercise(ex);
-  if (tagsEl) tagsEl.textContent = tags;
   if (formEl) formEl.textContent = form;
-  if (nextExerciseMetaEl) nextExerciseMetaEl.textContent = [tags, form].filter(Boolean).join(' ');
+  if (nextExerciseMetaEl) nextExerciseMetaEl.textContent = form || '';
 }
 
 function roundBadgeLabel(ex) {
@@ -2746,6 +2802,7 @@ function showMovePreview() { }
 function beginSetFromPreview() { }
 
 function enterWork(resuming = false, fromGesture = false) {
+  closeDemoView({ restoreFocus: false });
   const ex = currentExercise();
   if (!ex) {
     showLoadError('No exercise to run.');
@@ -2850,6 +2907,8 @@ function tick() {
     }
   } else if (phase === 'rest') {
     if (restTimerEl) restTimerEl.textContent = formatTime(remaining);
+    const demoViewTimer = document.getElementById('demoViewTimer');
+    if (demoViewOpen && demoViewTimer) demoViewTimer.textContent = formatTime(remaining);
     updatePhaseProgressBar(restProgressBar, remaining, phaseDurationSeconds);
     updateSessionClocks();
     maybeCountdownCue('rest', remaining);
@@ -2931,6 +2990,7 @@ function completeSet(early = false) {
 
 function enterRest(fromGesture = false) {
   document.body.classList.remove('work-phase');
+  closeDemoView({ restoreFocus: false });
   const nextEx = currentExercise();
   if (!nextEx) {
     finishWorkout();
@@ -2954,13 +3014,11 @@ function enterRest(fromGesture = false) {
   fillRoundBadges(nextEx);
   fillUpNext(restNextNameEl);
   fillRestLongevityCue(nextEx);
-  if (nextDemoEl) {
-    nextDemoEl.innerHTML = exerciseMediaHtml(nextEx, { compact: true });
-    startDemoFlip(nextDemoEl);
-  }
   updateRestHeading();
   updateSessionClocks();
   restTimerEl.textContent = formatTime(phaseDurationSeconds);
+  const demoViewTimer = document.getElementById('demoViewTimer');
+  if (demoViewTimer) demoViewTimer.textContent = formatTime(phaseDurationSeconds);
   updatePhaseProgressBar(restProgressBar, phaseDurationSeconds, phaseDurationSeconds);
 
   if (musicEngine.isPlaying) musicEngine.setVolume(0.35);
@@ -3081,6 +3139,7 @@ function stopSessionMedia() {
 
 async function teardownSession() {
   stopSessionMedia();
+  closeDemoView({ restoreFocus: false });
   phaseBusy = false;
   quitSheetOpen = false;
   document.body.classList.remove('quit-sheet-open');
@@ -3154,6 +3213,7 @@ async function teardownSession() {
 
 function finishWorkout() {
   markDayCompleted();
+  closeDemoView({ restoreFocus: false });
   document.body.classList.remove('work-phase');
   phase = 'finish';
   clearInterval(timerInterval);
