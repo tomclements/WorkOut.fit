@@ -255,13 +255,14 @@
         </div>
 
         <div id="restNext" class="runner-up-next">
-          <div class="runner-up-next-label">UP NEXT</div>
+          <div class="runner-up-next-row">
+            <div class="runner-up-next-label">UP NEXT</div>
+            <div id="restSessionClock" class="runner-session-timer runner-session-timer--rest">
+              <span class="runner-session-label">SESSION</span>
+              <span id="restStatSession" class="runner-session-clock" aria-live="polite">00:00</span>
+            </div>
+          </div>
           <div id="restNextName" class="runner-up-next-name"></div>
-        </div>
-
-        <div id="restSessionClock" class="runner-session-timer runner-session-timer--rest">
-          <span class="runner-session-label">SESSION</span>
-          <span id="restStatSession" class="runner-session-clock" aria-live="polite">00:00</span>
         </div>
 
         <div id="restControls" class="grid gap-3 runner-rest-controls" style="grid-template-columns: auto 1fr 1fr;">
@@ -373,7 +374,7 @@
           </button>
           <button id="quitDiscardBtn" type="button" class="w-full bg-red-50 active:bg-red-100 text-red-600 font-semibold py-3 px-4 rounded-lg touch-manipulation min-h-[3rem] text-left">
             <span class="block">Discard workout</span>
-            <span class="block text-xs font-normal text-red-500 mt-0.5">Nothing is saved; this day stays on your list.</span>
+            <span id="quitDiscardSub" class="block text-xs font-normal text-red-500 mt-0.5">Nothing is saved; this day stays on your list.</span>
           </button>
           <button id="quitKeepGoingBtn" type="button" class="w-full bg-blue-600 active:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg touch-manipulation min-h-[3rem]">
             Keep going

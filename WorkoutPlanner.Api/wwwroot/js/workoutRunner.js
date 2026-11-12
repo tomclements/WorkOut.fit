@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const byId = (id) => document.getElementById(id);
 
   wire(startBtn, 'click', startWorkout);
-  wire(resumeBtn, 'click', resumeSession);
+  wire(resumeBtn, 'click', () => resumeSession(true));
   wire(discardBtn, 'click', discardSession);
   wire(testSoundBtn, 'click', testSound);
   wire(completeSetBtn, 'click', () => completeSet(true));
@@ -692,6 +692,29 @@ document.addEventListener('DOMContentLoaded', () => {
   // Tone / voice cue toggles — no async dependency, init synchronously
   try { initTonesToggle(); } catch (e) { /* ignore */ }
   try { initVoiceCuesToggle(); } catch (e) { /* ignore */ }
+
+  // Measure the fixed bottom control bar so work/rest screens can pad exactly.
+  try {
+    const setRunnerBarHeight = () => {
+      const restControls = document.getElementById('restControls');
+      const workControls = document.querySelector('.runner-work-controls');
+      const h = Math.max(
+        restControls ? restControls.offsetHeight : 0,
+        workControls ? workControls.offsetHeight : 0,
+        76
+      );
+      document.documentElement.style.setProperty('--runner-bar-h', h + 'px');
+    };
+    setRunnerBarHeight();
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(setRunnerBarHeight);
+      const restControls = document.getElementById('restControls');
+      const workControls = document.querySelector('.runner-work-controls');
+      if (restControls) ro.observe(restControls);
+      if (workControls) ro.observe(workControls);
+    }
+    window.addEventListener('resize', setRunnerBarHeight);
+  } catch { /* ignore */ }
 });
 
 async function initAsyncSetup() {
@@ -758,11 +781,12 @@ async function loadUserPreferences() {
     document.getElementById('volumeValue').textContent = volume + '%';
     musicEngine.setBaseVolume(volume / 100);
     musicEngine.setStyle(style);
-    if (style === 'device') {
-      const Coexist = getAudioCoexistence();
-      if (Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
-        Coexist.probeAndApplyAudioSession('ambient');
-      }
+    const Coexist = getAudioCoexistence();
+    const desired = Coexist && typeof Coexist.desiredAudioSessionType === 'function'
+      ? Coexist.desiredAudioSessionType(style)
+      : (style === 'device' || style === 'off' ? 'ambient' : null);
+    if (desired && Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
+      Coexist.probeAndApplyAudioSession(desired);
     }
   } catch {
     // ignore
@@ -778,13 +802,28 @@ function setMusicStyleUI(style) {
   if (deviceMusicHintActive) deviceMusicHintActive.classList.toggle('hidden', s !== 'device');
   if (deviceVoiceHint) deviceVoiceHint.classList.toggle('hidden', s !== 'device');
   if (deviceVoiceHintActive) deviceVoiceHintActive.classList.toggle('hidden', s !== 'device');
+  const ringerLine = 'Beeps follow your ringer switch.';
   if (musicStyleHint) {
-    musicStyleHint.textContent = s === 'device'
+    let base = s === 'device'
       ? 'Beeps may briefly interrupt/duck Spotify; voice more likely to pause — leave Voice off for best coexistence.'
       : s === 'off'
         ? 'Music off. You can turn a style on during the session.'
         : 'Built-in playlist will start when you begin the workout.';
+    if (s === 'off') base += ' ' + ringerLine;
+    musicStyleHint.textContent = base;
   }
+  [deviceMusicHint, deviceMusicHintActive].forEach(el => {
+    if (!el) return;
+    let ringerSpan = el.querySelector('.device-ringer-hint');
+    if (s === 'device' && !ringerSpan) {
+      ringerSpan = document.createElement('span');
+      ringerSpan.className = 'device-ringer-hint';
+      ringerSpan.textContent = ' ' + ringerLine;
+      el.appendChild(ringerSpan);
+    } else if (s !== 'device' && ringerSpan) {
+      ringerSpan.remove();
+    }
+  });
 }
 
 function onMusicStyleChange() {
@@ -867,25 +906,29 @@ function preferVoiceOffForDevice() {
 }
 
 /**
- * On enter device: prefer ambient audioSession, turn voice off once, stop silent osc
- * when tones are on. Leaving device does not force voice back on.
+ * On enter device or off: prefer ambient audioSession, turn voice off once when
+ * entering device, stop silent oscillator for non-built-in styles. Leaving device
+ * does not force voice back on.
  */
 function applyMusicStyleCoexistence(prevStyle, nextStyle) {
   const Coexist = getAudioCoexistence();
   const prev = prevStyle || 'off';
   const next = nextStyle || 'off';
   lastAppliedMusicStyle = next;
+  const desired = Coexist && typeof Coexist.desiredAudioSessionType === 'function'
+    ? Coexist.desiredAudioSessionType(next)
+    : (next === 'device' || next === 'off' ? 'ambient' : null);
+  if (desired && Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
+    Coexist.probeAndApplyAudioSession(desired);
+  }
   if (next === 'device') {
-    if (Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
-      Coexist.probeAndApplyAudioSession('ambient');
-    }
     if (Coexist && typeof Coexist.shouldPreferVoiceOffOnDeviceTransition === 'function'
         ? Coexist.shouldPreferVoiceOffOnDeviceTransition(prev, next)
         : (next === 'device' && prev !== 'device')) {
       preferVoiceOffForDevice();
     }
-    if (tonesEnabled()) stopSilentAudioKeepAlive();
   }
+  if (!shouldArmSilentKeepAlive()) stopSilentAudioKeepAlive();
 }
 
 async function loadPlan() {
@@ -1786,7 +1829,7 @@ function applyEngineState(state) {
   ignoreVisibilityUntil = state.ignoreVisibilityUntil || (Date.now() + 800);
 }
 
-async function resumeSession() {
+async function resumeSession(fromGesture = false) {
   const saved = localStorage.getItem('workoutSession');
   if (!saved) return;
 
@@ -1834,7 +1877,15 @@ async function resumeSession() {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     startAudioKeepAlive();
-    requestWakeLock().catch(() => {});
+    const Coexist = getAudioCoexistence();
+    const restoredStyle = raw.musicStyle || 'off';
+    const desired = Coexist && typeof Coexist.desiredAudioSessionType === 'function'
+      ? Coexist.desiredAudioSessionType(restoredStyle)
+      : (restoredStyle === 'device' || restoredStyle === 'off' ? 'ambient' : null);
+    if (desired && Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
+      Coexist.probeAndApplyAudioSession(desired);
+    }
+    requestWakeLock({ allowNoSleepVideo: fromGesture }).catch(() => {});
 
     if (raw.musicStyle) {
       if (musicStyleSelect) musicStyleSelect.value = raw.musicStyle;
@@ -2091,7 +2142,7 @@ function beginWorkoutFromMapped(mapped) {
 
   document.addEventListener('visibilitychange', handleVisibilityChange);
   startAudioKeepAlive();
-  requestWakeLock().catch(() => {});
+  requestWakeLock({ allowNoSleepVideo: true }).catch(() => {});
 
   if (shouldAutoStartMusic()) {
     musicEngine.start();
@@ -2099,7 +2150,7 @@ function beginWorkoutFromMapped(mapped) {
   }
 
   try {
-    enterRest();
+    enterRest(true);
   } catch (err) {
     console.error(err);
     showLoadError('Could not start the workout.');
@@ -2112,8 +2163,11 @@ async function startWorkout() {
   // Unlock audio / speech on the Start user gesture so rest 3-2-1 beeps can fire on iOS
   try {
     const Coexist = getAudioCoexistence();
-    if (currentMusicStyle() === 'device' && Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
-      Coexist.probeAndApplyAudioSession('ambient');
+    const desired = Coexist && typeof Coexist.desiredAudioSessionType === 'function'
+      ? Coexist.desiredAudioSessionType(currentMusicStyle())
+      : (currentMusicStyle() === 'device' || currentMusicStyle() === 'off' ? 'ambient' : null);
+    if (desired && Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
+      Coexist.probeAndApplyAudioSession(desired);
     }
     const ctx = await ensureAudioRunning();
     if (ctx) {
@@ -2225,7 +2279,7 @@ function stopNoSleepVideo() {
   noSleepVideo = null;
 }
 
-async function requestWakeLock() {
+async function requestWakeLock(opts = {}) {
   wakeLockWanted = true;
   let gotLock = false;
   if ('wakeLock' in navigator) {
@@ -2235,7 +2289,7 @@ async function requestWakeLock() {
       if (wakeLock && typeof wakeLock.addEventListener === 'function') {
         wakeLock.addEventListener('release', () => {
           if (wakeLockWanted && document.visibilityState === 'visible' && phase !== 'setup' && phase !== 'finish') {
-            requestWakeLock().catch(() => {});
+            requestWakeLock({ allowNoSleepVideo: false }).catch(() => {});
           }
         });
       }
@@ -2247,7 +2301,11 @@ async function requestWakeLock() {
     pauseNoSleepVideo();
     return;
   }
-  startNoSleepVideo();
+  // Only fall back to the noSleep video when the wakeLock API is absent and
+  // the caller explicitly allows it (user-gesture paths only).
+  if (opts.allowNoSleepVideo && !('wakeLock' in navigator)) {
+    startNoSleepVideo();
+  }
 }
 
 function releaseWakeLock() {
@@ -2279,7 +2337,7 @@ function pauseWorkout(auto = false) {
   saveSessionState();
 }
 
-function resumeWorkout() {
+function resumeWorkout(opts = {}) {
   if (!isPaused) return;
   const pauseDuration = Date.now() - (pauseStartTime || Date.now());
   phaseStartTime += pauseDuration;
@@ -2287,18 +2345,24 @@ function resumeWorkout() {
   isPaused = false;
   autoPaused = false;
   const targetVol = phase === 'rest' ? 0.35 : 1.0;
-  if (musicEngine.isPlaying) {
-    musicEngine.setVolume(targetVol);
-    // iOS may have suspended the audio element while the phone was locked
-    musicEngine.audio.play().catch(() => {});
-  } else if (shouldAutoStartMusic() && (phase === 'work' || phase === 'rest')) {
-    musicEngine.start();
-    musicEngine.setVolume(targetVol);
+  const Coexist = getAudioCoexistence();
+  const shouldPlay = Coexist && typeof Coexist.shouldPlayMusicOnResume === 'function'
+    ? Coexist.shouldPlayMusicOnResume({ musicStyle: currentMusicStyle(), isPlaying: musicEngine.isPlaying, fromVisibility: !!opts.fromVisibility })
+    : (!!opts.fromVisibility ? false : (musicEngine.isPlaying || shouldAutoStartMusic()));
+  if (shouldPlay) {
+    if (musicEngine.isPlaying) {
+      musicEngine.setVolume(targetVol);
+      // iOS may have suspended the audio element while the phone was locked
+      musicEngine.audio.play().catch(() => {});
+    } else if (shouldAutoStartMusic() && (phase === 'work' || phase === 'rest')) {
+      musicEngine.start();
+      musicEngine.setVolume(targetVol);
+    }
   }
   startTimer();
   updatePauseUI();
   saveSessionState();
-  requestWakeLock().catch(() => {});
+  requestWakeLock({ allowNoSleepVideo: !opts.fromVisibility }).catch(() => {});
 }
 
 function updatePauseUI() {
@@ -2327,21 +2391,19 @@ async function handleVisibilityChange() {
     if (!isPaused && phase !== 'setup' && phase !== 'finish') {
       pauseWorkout(true);
     }
+    musicWasPlayingWhenHidden = shouldAutoStartMusic() && !!(musicEngine && musicEngine.isPlaying);
     // Keep nosleep armed while mid-session; pausing here kills the iOS fallback.
     const pauseVideo = (StayAwake && typeof StayAwake.shouldPauseNoSleepOnHidden === 'function')
       ? StayAwake.shouldPauseNoSleepOnHidden(phase, wakeLockWanted)
       : !(wakeLockWanted && (phase === 'work' || phase === 'rest'));
     if (pauseVideo) pauseNoSleepVideo();
   } else {
+    // Visible branch must not start/resume any media without a gesture.
     if (phase !== 'setup' && phase !== 'finish') {
-      await requestWakeLock();
+      await requestWakeLock({ allowNoSleepVideo: false });
     }
     if (autoPaused && !quitSheetOpen) {
-      resumeWorkout();
-    }
-    const audioCtx = sharedAudioCtx;
-    if (audioCtx && audioCtx.state === 'suspended') {
-      try { await audioCtx.resume(); } catch { /* ignore */ }
+      resumeWorkout({ fromVisibility: true });
     }
     if (phase === 'rest') startDemoFlip(nextDemoEl);
   }
@@ -2444,7 +2506,7 @@ const GROK_DEMO_IDS = new Set([
 ]);
 
 /** Bump with sw.js CACHE_NAME plan4strength-vN. */
-const DEMO_WEBP_V = "9";
+const DEMO_WEBP_V = "10";
 
 /** Prebuilt animated WebP under /demos (Grok batch + any other demos). */
 function demoWebpUrl(ex) {
@@ -2462,11 +2524,8 @@ function exerciseMediaHtml(ex, options = {}) {
   const compact = !!options.compact;
   const urls = demoImageUrls(ex);
   const webp = demoWebpUrl(ex);
-  const cue = ex.progression && isMobilityExercise(ex)
-    ? `<div class="demo-caption">${escapeHtmlRunner(ex.progression)}</div>`
-    : (ex.primary && ex.primary.length
-      ? `<div class="demo-caption">${escapeHtmlRunner((ex.primary || []).join(' · '))}</div>`
-      : '');
+
+  const setAspectOnload = `onload="const f=this.closest('.demo-frame'); if(f && this.naturalWidth && this.naturalHeight && Math.abs(this.naturalWidth/this.naturalHeight - 1) > 0.02) { f.style.aspectRatio = this.naturalWidth + '/' + this.naturalHeight; f.style.setProperty('--demo-ar', String(this.naturalWidth / this.naturalHeight)); }"`;
 
   let frame;
   if (webp) {
@@ -2475,11 +2534,12 @@ function exerciseMediaHtml(ex, options = {}) {
     frame = `<div class="demo-frame demo-frame--anim" data-demo-flip="0" data-stills="${stills}">
       <img src="${webp}" alt="${escapeHtmlRunner(ex.name || 'Exercise demo')}" loading="eager"
         class="demo-frame__visible demo-frame__anim"
-        onerror="if (window.onDemoWebpError) window.onDemoWebpError(this);" />
+        onerror="if (window.onDemoWebpError) window.onDemoWebpError(this);"
+        ${setAspectOnload} />
     </div>`;
   } else if (urls.length) {
     const imgs = urls.map((src, i) =>
-      `<img src="${src}" alt="${escapeHtmlRunner(ex.name || 'Exercise demo')}" loading="eager" class="${i === 0 ? 'demo-frame__visible' : ''}" data-demo-idx="${i}" onerror="this.dataset.broken='1'; if (window.onDemoImgError) window.onDemoImgError(this);" />`
+      `<img src="${src}" alt="${escapeHtmlRunner(ex.name || 'Exercise demo')}" loading="eager" class="${i === 0 ? 'demo-frame__visible' : ''}" data-demo-idx="${i}" onerror="this.dataset.broken='1'; if (window.onDemoImgError) window.onDemoImgError(this);" ${setAspectOnload} />`
     ).join('');
     frame = `<div class="demo-frame" data-demo-flip="${urls.length > 1 ? '1' : '0'}">${imgs}</div>`;
   } else {
@@ -2505,14 +2565,15 @@ function exerciseMediaHtml(ex, options = {}) {
   }
 
   const attribution = webp && ex.id && GROK_DEMO_IDS.has(ex.id)
-    ? `<div class="demo-attribution">Demo art: Grok</div>`
+    ? `<span class="demo-attribution">Demo art: Grok</span>`
     : '';
+
+  // Corner attribution overlay goes inside the frame; skip the separate caption under rest.
+  const frameWithAttribution = frame.replace('</div>', `${attribution}</div>`);
 
   return `
     <div class="demo-panel${compact ? ' demo-panel--rest' : ''}">
-      ${frame}
-      ${cue}
-      ${attribution}
+      ${frameWithAttribution}
       ${actions.length ? `<div class="demo-actions">${actions.join('')}</div>` : ''}
     </div>`;
 }
@@ -2684,7 +2745,7 @@ function shouldPreviewMove() { return false; }
 function showMovePreview() { }
 function beginSetFromPreview() { }
 
-function enterWork(resuming = false) {
+function enterWork(resuming = false, fromGesture = false) {
   const ex = currentExercise();
   if (!ex) {
     showLoadError('No exercise to run.');
@@ -2727,7 +2788,7 @@ function enterWork(resuming = false) {
     }
   }
 
-  requestWakeLock().catch(() => {});
+  requestWakeLock({ allowNoSleepVideo: fromGesture }).catch(() => {});
   setWorkChromeMode();
   lastSpokenSecondKey = '';
 
@@ -2836,7 +2897,7 @@ function completeSet(early = false) {
       finishWorkout();
       return;
     }
-    enterRest();
+    enterRest(false);
     return;
   }
 
@@ -2865,10 +2926,10 @@ function completeSet(early = false) {
   }
 
   phaseBusy = false;
-  enterRest();
+  enterRest(false);
 }
 
-function enterRest() {
+function enterRest(fromGesture = false) {
   document.body.classList.remove('work-phase');
   const nextEx = currentExercise();
   if (!nextEx) {
@@ -2904,7 +2965,7 @@ function enterRest() {
 
   if (musicEngine.isPlaying) musicEngine.setVolume(0.35);
   showScreen(restScreen);
-  requestWakeLock().catch(() => {});
+  requestWakeLock({ allowNoSleepVideo: fromGesture }).catch(() => {});
   startTimer();
   saveSessionState();
 }
@@ -2915,7 +2976,7 @@ function endRest() {
   if (musicEngine.isPlaying) musicEngine.setVolume(1.0);
   if (navigator.vibrate) navigator.vibrate(30);
   showScreen(activeScreen);
-  enterWork();
+  enterWork(false, true);
 }
 
 function movesListHtml() {
@@ -2985,7 +3046,7 @@ function skipCurrentExercise() {
   // Show a brief toast
   if (typeof showToast === 'function') showToast('Skipped — next exercise', 'info');
   
-  enterRest();
+  enterRest(true);
 }
 
 function goBackExercise() {
@@ -3005,7 +3066,7 @@ function goBackExercise() {
   if (phase === 'rest') {
     clearInterval(timerInterval);
   }
-  enterWork();
+  enterWork(false, true);
 }
 
 function stopSessionMedia() {
@@ -3599,16 +3660,41 @@ function announcePhase(kind) {
 }
 
 function getAudioContext() {
+  const Coexist = getAudioCoexistence();
+  const desired = Coexist && typeof Coexist.desiredAudioSessionType === 'function'
+    ? Coexist.desiredAudioSessionType(currentMusicStyle())
+    : (currentMusicStyle() === 'device' || currentMusicStyle() === 'off' ? 'ambient' : null);
+  if (desired && Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
+    Coexist.probeAndApplyAudioSession(desired);
+  }
   if (!sharedAudioCtx || sharedAudioCtx.state === 'closed') {
     sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
-  if (sharedAudioCtx.state === 'suspended') {
-    sharedAudioCtx.resume().catch(() => {});
-  }
+  // Never auto-resume outside a gesture; let unlockAudioOnGesture and Start do it.
   return sharedAudioCtx;
 }
 
 let silentKeepAliveNode = null;
+let audioNeedsGesture = false;
+let audioGestureToastShown = false;
+let musicWasPlayingWhenHidden = false;
+
+const gestureAudioRecovery = (() => {
+  const Coexist = getAudioCoexistence();
+  if (!Coexist || typeof Coexist.createGestureAudioRecovery !== 'function') return null;
+  return Coexist.createGestureAudioRecovery({
+    getCtx: () => sharedAudioCtx,
+    setCtx: (c) => { sharedAudioCtx = c; },
+    makeCtx: () => new (window.AudioContext || window.webkitAudioContext)(),
+    onRecreated: (ctx) => {
+      stopSilentAudioKeepAlive();
+      if (musicEngine && musicEngine.isPlaying && shouldArmSilentKeepAlive()) {
+        startSilentAudioKeepAlive(ctx);
+      }
+    }
+  });
+})();
+
 function startSilentAudioKeepAlive(ctx) {
   // Policy gate: device + tones must not hold a long-lived destination graph (Spotify).
   if (!shouldArmSilentKeepAlive()) return;
@@ -3648,32 +3734,55 @@ async function ensureAudioRunning() {
 }
 
 /**
- * Browsers (notably iOS/Android) suspend the AudioContext when the tab or
- * screen goes idle, and resume() needs a user gesture in some cases. Hook
- * taps so timer beeps keep coming back even mid-workout.
+ * Gesture recovery for iOS app-switch / interruption. Only pointerup/touchend/click
+ * are activation-triggering on iOS; pointerdown is harmless extra.
  */
-function unlockAudioOnGesture() {
+async function unlockAudioOnGesture(evType) {
   try {
-    const ctx = getAudioContext();
-    if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+    const Coexist = getAudioCoexistence();
+    const desired = Coexist && typeof Coexist.desiredAudioSessionType === 'function'
+      ? Coexist.desiredAudioSessionType(currentMusicStyle())
+      : (currentMusicStyle() === 'device' || currentMusicStyle() === 'off' ? 'ambient' : null);
+    if (desired && Coexist && typeof Coexist.probeAndApplyAudioSession === 'function') {
+      Coexist.probeAndApplyAudioSession(desired);
+    }
+
+    const ctx = gestureAudioRecovery
+      ? await gestureAudioRecovery(evType)
+      : sharedAudioCtx;
+    if (ctx && ctx.state === 'running') {
+      audioNeedsGesture = false;
+      audioGestureToastShown = false;
+    }
+
+    // Resume built-in music on a real recovery tap (not pointerdown).
+    // While still auto-paused, keep the flag: the Resume tap restarts music via resumeWorkout.
+    if (musicWasPlayingWhenHidden && (evType === 'pointerup' || evType === 'touchend' || evType === 'click')) {
+      const stillWanted = shouldAutoStartMusic() && (phase === 'work' || phase === 'rest') && musicEngine && musicEngine.isPlaying && musicEngine.audio;
+      if (!stillWanted) {
+        musicWasPlayingWhenHidden = false;
+      } else if (!isPaused) {
+        if (musicEngine.audio.paused) musicEngine.audio.play().catch(() => {});
+        musicWasPlayingWhenHidden = false;
+      }
+    }
   } catch {
     // ignore
   }
 }
-document.addEventListener('pointerdown', unlockAudioOnGesture);
-document.addEventListener('touchstart', unlockAudioOnGesture);
+['pointerup', 'touchend', 'click'].forEach(ev => document.addEventListener(ev, (e) => unlockAudioOnGesture(e.type), { capture: true, passive: true }));
+document.addEventListener('pointerdown', (e) => unlockAudioOnGesture(e.type), { capture: true, passive: true });
 
 let audioKeepAliveInterval = null;
 function startAudioKeepAlive() {
   clearInterval(audioKeepAliveInterval);
   audioKeepAliveInterval = setInterval(() => {
-    const ctx = sharedAudioCtx;
-    if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+    // Never resume AudioContext from a timer; wait for the next gesture.
     const keep = (StayAwake && typeof StayAwake.shouldKeepAwake === 'function')
       ? StayAwake.shouldKeepAwake(phase, wakeLockWanted)
       : (wakeLockWanted && (phase === 'work' || phase === 'rest'));
     if (keep && document.visibilityState === 'visible') {
-      requestWakeLock().catch(() => {});
+      requestWakeLock({ allowNoSleepVideo: false }).catch(() => {});
     }
   }, 4000);
 }
@@ -3683,12 +3792,23 @@ function stopAudioKeepAlive() {
   stopSilentAudioKeepAlive();
 }
 
+function maybeShowAudioGestureToast() {
+  if (!audioNeedsGesture || audioGestureToastShown) return;
+  if (phase !== 'work' && phase !== 'rest') return;
+  audioGestureToastShown = true;
+  if (typeof showToast === 'function') {
+    showToast('Tap to re-enable beeps', 'info', 3500);
+  }
+}
+
 async function beep(frequency = 880, duration = 0.15, volume = 0.7) {
   try {
-    // Resume briefly if suspended. ensureAudioRunning gates silent keep-alive for device+tones
-    // (accepted residual: after long screen-off without silent osc, beep may no-op until gesture).
-    const ctx = await ensureAudioRunning();
-    if (!ctx || ctx.state !== 'running') return;
+    const ctx = getAudioContext();
+    if (!ctx || ctx.state !== 'running') {
+      audioNeedsGesture = true;
+      maybeShowAudioGestureToast();
+      return;
+    }
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'square';

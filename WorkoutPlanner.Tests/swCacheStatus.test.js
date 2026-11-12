@@ -7,8 +7,19 @@ const vm = require('node:vm');
 const swPath = path.join(__dirname, '..', 'WorkoutPlanner.Api', 'wwwroot', 'sw.js');
 const swSource = fs.readFileSync(swPath, 'utf8');
 
-function makeRequest(url, method = 'GET') {
-  return { url, method };
+function makeRequest(url, method = 'GET', opts = {}) {
+  const headers = new Map();
+  if (opts.range) headers.set('range', opts.range);
+  if (opts.accept) headers.set('Accept', opts.accept);
+  return {
+    url,
+    method,
+    mode: opts.mode || 'no-cors',
+    headers: {
+      has: (k) => headers.has(k),
+      get: (k) => headers.get(k) || null
+    }
+  };
 }
 
 function makeResponse(status, body = '') {
@@ -74,6 +85,7 @@ function runSw() {
     },
     caches: mockCaches,
     URL,
+    Response,
     fetch: async (req, opts) => {
       fetchCalls.push({ req, opts });
       return makeResponse(200);
@@ -105,7 +117,7 @@ test('install precache uses cache.addAll for the static manifest and icons', asy
   listeners.install[0](event);
   assert.ok(event._waited, 'install waits on cache setup');
   await event._waited;
-  const cache = await caches.open('plan4strength-v10');
+  const cache = await caches.open('plan4strength-v11');
   assert.equal(cache.addAllCalls.length, 1, 'addAll called once');
   assert.ok(cache.addAllCalls[0].includes('/manifest.json'), 'precache includes manifest');
 });
@@ -118,7 +130,7 @@ test('network-first asset branch caches 200 and returns uncached 206', async () 
   const response = await event._response();
   assert.equal(response.status, 200);
   await flush();
-  const cache = await caches.open('plan4strength-v10');
+  const cache = await caches.open('plan4strength-v11');
   assert.equal(cache.puts.length, 1, '200 asset is cached');
   assert.equal(cache.puts[0].res.status, 200);
 
@@ -133,7 +145,7 @@ test('network-first asset branch caches 200 and returns uncached 206', async () 
 
 test('network-first asset branch does not cache 404 or 500', async () => {
   const { listeners, caches, context } = runSw();
-  const cache = await caches.open('plan4strength-v10');
+  const cache = await caches.open('plan4strength-v11');
   for (const status of [404, 500]) {
     const event = makeEvent(makeRequest(`https://example.com/js/app${status}.js`));
     context.fetch = async () => makeResponse(status);
@@ -153,7 +165,7 @@ test('cache-first static branch caches 200 and returns uncached 206', async () =
   const response = await event._response();
   assert.equal(response.status, 200);
   await flush();
-  const cache = await caches.open('plan4strength-v10');
+  const cache = await caches.open('plan4strength-v11');
   assert.equal(cache.puts.length, 1, '200 static is cached');
 
   const event206 = makeEvent(makeRequest('https://example.com/music/partial.mp3'));
@@ -167,7 +179,7 @@ test('cache-first static branch caches 200 and returns uncached 206', async () =
 
 test('API and health requests bypass cache and are not stored', async () => {
   const { listeners, caches, context, fetchCalls } = runSw();
-  const cache = await caches.open('plan4strength-v10');
+  const cache = await caches.open('plan4strength-v11');
   for (const pathname of ['/api/dashboard', '/health']) {
     fetchCalls.length = 0;
     const event = makeEvent(makeRequest(`https://example.com${pathname}`));
@@ -184,22 +196,24 @@ test('API and health requests bypass cache and are not stored', async () => {
   assert.equal(cache.puts.length, 0, 'API/health not cached');
 });
 
-test('cross-origin responses are returned but not cached in either branch', async () => {
-  const { listeners, caches, context } = runSw();
-  const cache = await caches.open('plan4strength-v10');
+test('cross-origin requests are not intercepted', () => {
+  const { listeners } = runSw();
+  for (const pathname of ['/js/app.js', '/icon.png']) {
+    const event = makeEvent(makeRequest(`https://other.cdn.com${pathname}`));
+    let responded = false;
+    event.respondWith = () => { responded = true; };
+    listeners.fetch[0](event);
+    assert.equal(responded, false, `${pathname} cross-origin not intercepted`);
+  }
+});
 
-  const assetEvent = makeEvent(makeRequest('https://other.cdn.com/js/app.js'));
-  context.fetch = async () => makeResponse(200);
-  listeners.fetch[0](assetEvent);
-  await assetEvent._response();
-  await flush();
-
-  const staticEvent = makeEvent(makeRequest('https://other.cdn.com/icon.png'));
-  listeners.fetch[0](staticEvent);
-  await staticEvent._response();
-  await flush();
-
-  assert.equal(cache.puts.length, 0, 'cross-origin not cached');
+test('Range requests are not intercepted', () => {
+  const { listeners } = runSw();
+  const event = makeEvent(makeRequest('https://example.com/nosleep.mp4', 'GET', { range: 'bytes=0-' }));
+  let responded = false;
+  event.respondWith = () => { responded = true; };
+  listeners.fetch[0](event);
+  assert.equal(responded, false, 'Range request not intercepted');
 });
 
 test('non-GET requests are ignored by fetch handler', () => {
@@ -211,6 +225,49 @@ test('non-GET requests are ignored by fetch handler', () => {
   assert.equal(responded, false, 'POST not handled');
 });
 
+test('network reject + cache miss for asset returns 503 Response', async () => {
+  const { listeners, context } = runSw();
+  const event = makeEvent(makeRequest('https://example.com/js/x.js'));
+  context.fetch = async () => { throw new Error('offline'); };
+  listeners.fetch[0](event);
+  const r = await event._response();
+  assert.ok(r, 'responded');
+  assert.equal(r.status, 503, 'status 503');
+});
+
+test('network reject + cache hit for asset returns cached response', async () => {
+  const { listeners, caches, context } = runSw();
+  const cache = await caches.open('plan4strength-v11');
+  const cached = makeResponse(200);
+  const request = makeRequest('https://example.com/js/x.js');
+  cache.store.set(request.url, cached);
+  const event = makeEvent(request);
+  context.fetch = async () => { throw new Error('offline'); };
+  listeners.fetch[0](event);
+  const r = await event._response();
+  assert.equal(r, cached);
+});
+
+test('cache-first miss + network reject returns 503 Response', async () => {
+  const { listeners, context } = runSw();
+  const event = makeEvent(makeRequest('https://example.com/icon.svg'));
+  context.fetch = async () => { throw new Error('offline'); };
+  listeners.fetch[0](event);
+  const r = await event._response();
+  assert.ok(r, 'responded');
+  assert.equal(r.status, 503, 'status 503');
+});
+
+test('API network reject returns 503 JSON', async () => {
+  const { listeners, context } = runSw();
+  const event = makeEvent(makeRequest('https://example.com/api/x'));
+  context.fetch = async () => { throw new Error('offline'); };
+  listeners.fetch[0](event);
+  const r = await event._response();
+  assert.ok(r, 'responded');
+  assert.equal(r.status, 503, 'status 503');
+});
+
 test('source uses response.status === 200, not response.ok', () => {
   assert.match(swSource, /response\.status === 200/);
   assert.doesNotMatch(swSource, /response\.ok\s*&&/);
@@ -219,7 +276,7 @@ test('source uses response.status === 200, not response.ok', () => {
 for (const pathname of ['/js/runner.js', '/music/drive.mp3']) {
   test(`runtime ${pathname} only caches exactly 200, not other success or error statuses`, async () => {
     const { listeners, caches, context } = runSw();
-    const cache = await caches.open('plan4strength-v10');
+    const cache = await caches.open('plan4strength-v11');
     for (const status of [201, 204, 206, 302, 404, 500]) {
       const response = makeResponse(status);
       context.fetch = async () => response;
@@ -233,7 +290,7 @@ for (const pathname of ['/js/runner.js', '/music/drive.mp3']) {
 
   test(`runtime ${pathname} delivers 200 even when caching fails`, async () => {
     const { listeners, caches, context } = runSw();
-    const cache = await caches.open('plan4strength-v10');
+    const cache = await caches.open('plan4strength-v11');
     cache.put = async () => { throw new Error('quota exceeded'); };
     const response = makeResponse(200);
     context.fetch = async () => response;
@@ -246,7 +303,7 @@ for (const pathname of ['/js/runner.js', '/music/drive.mp3']) {
 
 test('network-first falls back to cache offline; cache-first reuses an existing hit', async () => {
   const { listeners, caches, context } = runSw();
-  const cache = await caches.open('plan4strength-v10');
+  const cache = await caches.open('plan4strength-v11');
   const cached = makeResponse(200);
   for (const pathname of ['/js/app.js', '/icon.svg']) {
     const request = makeRequest(`https://example.com${pathname}`);
