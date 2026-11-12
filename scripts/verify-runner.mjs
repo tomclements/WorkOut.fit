@@ -150,16 +150,22 @@ export default async function run(page, ui) {
     fail('done-advances-rest', 'restScreen never received .active after Done');
   }
 
-  const afterDone = await page.evaluate(() => {
+  const afterDone = await page.evaluate(async () => {
     const rest = document.getElementById('restScreen');
     const timer = document.getElementById('restTimer');
     const next = document.getElementById('nextExerciseName');
-    const demo = document.getElementById('nextDemo');
+    const seeBtn = document.getElementById('seeDemoBtn');
+    if (seeBtn) seeBtn.click();
+    await new Promise(r => setTimeout(r, 50));
+    const demoMedia = document.getElementById('demoViewMedia');
+    const hasDemo = !!(demoMedia && demoMedia.querySelector('.demo-frame'));
+    const backBtn = document.getElementById('demoBackBtn');
+    if (backBtn) backBtn.click();
     return {
       restActive: !!(rest && rest.classList.contains('active')),
       restTimer: timer ? timer.textContent.trim() : null,
       nextName: next ? next.textContent.trim() : null,
-      hasDemo: !!(demo && demo.querySelector('.demo-frame'))
+      hasDemo
     };
   });
   if (!afterDone.restActive) fail('rest-active', JSON.stringify(afterDone));
